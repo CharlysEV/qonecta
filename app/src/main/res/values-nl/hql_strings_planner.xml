@@ -82,4 +82,13 @@
     <string name="hql_guess_stops_fail_title">Kon de route van Google Maps niet wijzigen</string>
     <string name="hql_guess_stops_fail_text">Maps volgt nog zijn eigen route. Stop die met de X en tik op «Opnieuw».</string>
     <string name="hql_guess_stops_retry">Opnieuw</string>
+    <!-- «Ruta en Qonecta+» (ShareDestActivity, SharedDest) -->
+    <string name="hql_share_label">Route in Qonecta+</string>
+    <string name="hql_share_working">Plek zoeken…</string>
+    <string name="hql_share_saved">Bewaard voor je volgende rit: %1$s. Zodra je met de auto verbindt, start de route vanzelf.</string>
+    <string name="hql_share_now">Route naar %1$s in de auto gezet.</string>
+    <string name="hql_share_failed">Ik vond geen plek in wat je deelde.</string>
+    <string name="hql_share_place">Gedeelde bestemming</string>
+    <string name="hql_share_applied_title">Route vanaf de telefoon gestuurd</string>
+    <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
 </resources>

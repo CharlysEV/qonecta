@@ -81,4 +81,13 @@
     <string name="hql_guess_stops_fail_title">无法更改 Google Maps 路线</string>
     <string name="hql_guess_stops_fail_text">Maps 仍在使用自己的路线。请点 X 结束导航，然后点按“重试”。</string>
     <string name="hql_guess_stops_retry">重试</string>
+    <!-- «Ruta en Qonecta+» (ShareDestActivity, SharedDest) -->
+    <string name="hql_share_label">在 Qonecta+ 中导航</string>
+    <string name="hql_share_working">正在查找地点…</string>
+    <string name="hql_share_saved">已保存到下次行程：%1$s。连接车辆后会自动开始导航。</string>
+    <string name="hql_share_now">已在车上设置前往 %1$s 的路线。</string>
+    <string name="hql_share_failed">在你分享的内容中没有找到地点。</string>
+    <string name="hql_share_place">分享的目的地</string>
+    <string name="hql_share_applied_title">从手机发送的路线</string>
+    <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
 </resources>

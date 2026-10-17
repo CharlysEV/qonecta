@@ -83,4 +83,13 @@
     <string name="hql_guess_stops_fail_title">Non sono riuscito a cambiare il percorso di Google Maps</string>
     <string name="hql_guess_stops_fail_text">Maps è ancora sul suo percorso. Chiudilo con la X e tocca «Riprova».</string>
     <string name="hql_guess_stops_retry">Riprova</string>
+    <!-- «Ruta en Qonecta+» (ShareDestActivity, SharedDest) -->
+    <string name="hql_share_label">Percorso in Qonecta+</string>
+    <string name="hql_share_working">Cerco il luogo…</string>
+    <string name="hql_share_saved">Salvato per il prossimo viaggio: %1$s. Quando ti colleghi all\'auto, il percorso parte da solo.</string>
+    <string name="hql_share_now">Percorso verso %1$s impostato in auto.</string>
+    <string name="hql_share_failed">Non ho trovato nessun luogo in ciò che hai condiviso.</string>
+    <string name="hql_share_place">Destinazione condivisa</string>
+    <string name="hql_share_applied_title">Percorso inviato dal telefono</string>
+    <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
 </resources>

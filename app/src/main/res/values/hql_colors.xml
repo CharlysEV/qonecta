@@ -36,4 +36,8 @@
 
     <!-- Log de Diagnóstico (texto de terminal) -->
     <color name="hql_log_text">#9EE6D6</color>
+    <!-- Clima encendido desde el widget (LinkWidgetViews): frío, calor y automático. -->
+    <color name="hql_climate_cold">#64B5F6</color>
+    <color name="hql_climate_heat">#F28B82</color>
+    <color name="hql_climate_auto">#FDD663</color>
 </resources>

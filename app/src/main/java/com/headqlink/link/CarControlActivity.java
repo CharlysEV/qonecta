@@ -302,6 +302,9 @@ public final class CarControlActivity extends AppCompatActivity {
             try {
                 good = CarCloudSession.command(this, c);
                 result = Str.get(good ? R.string.hql_cc_done : R.string.hql_cc_sent, c.label());
+                if (c.kind == CarCommand.Kind.CLIMATE_ON || c.kind == CarCommand.Kind.CLIMATE_OFF || c.kind == CarCommand.Kind.DEFROST) {
+                    CarOrders.noteClimate(this, c);
+                }
             } catch (Exception e) {
                 good = false;
                 L.w("widget «Coche»: orden " + c + " fallida: " + Http.safeError(e));

@@ -111,6 +111,17 @@ final class LinkWidgetViews {
         rv.setOnClickPendingIntent(R.id.hql_w_car_unlock, CarOrders.tap(c, "unlock", 2));
         rv.setOnClickPendingIntent(R.id.hql_w_car_trunk, CarOrders.tap(c, "trunk", 3));
         rv.setOnClickPendingIntent(R.id.hql_w_car_climate, CarOrders.tap(c, "climate", 4));
+        // El clima encendido desde el widget: azul (frío), rojo (calor) o amarillo (auto), con el modo debajo.
+        CarCommand.Mode climate = CarOrders.climate(c);
+        int color = climate == CarCommand.Mode.COLD ? ContextCompat.getColor(c, R.color.hql_climate_cold)
+                : climate == CarCommand.Mode.HEAT ? ContextCompat.getColor(c, R.color.hql_climate_heat)
+                : climate == CarCommand.Mode.AUTO ? ContextCompat.getColor(c, R.color.hql_climate_auto)
+                : ContextCompat.getColor(c, R.color.hql_text);
+        rv.setInt(R.id.hql_w_car_climate_icon, "setColorFilter", color);
+        rv.setTextColor(R.id.hql_w_car_climate_label, color);
+        rv.setTextViewText(R.id.hql_w_car_climate_label, c.getString(climate == CarCommand.Mode.COLD ? R.string.hql_cc_mode_cold
+                : climate == CarCommand.Mode.HEAT ? R.string.hql_cc_mode_heat
+                : climate == CarCommand.Mode.AUTO ? R.string.hql_cc_mode_auto : R.string.hql_cw_climate));
         rv.setOnClickPendingIntent(R.id.hql_w_car_find, CarOrders.tap(c, "find", 5));
         rv.setOnClickPendingIntent(R.id.hql_w_car_voice, CarOrders.tap(c, CarControlActivity.VOICE, 6));
     }

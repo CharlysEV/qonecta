@@ -82,4 +82,13 @@
     <string name="hql_guess_stops_fail_title">Google-Maps-Route konnte nicht geändert werden</string>
     <string name="hql_guess_stops_fail_text">Maps folgt noch seiner Route. Beende sie mit dem X und tippe auf «Erneut versuchen».</string>
     <string name="hql_guess_stops_retry">Erneut versuchen</string>
+    <!-- «Ruta en Qonecta+» (ShareDestActivity, SharedDest) -->
+    <string name="hql_share_label">Route in Qonecta+</string>
+    <string name="hql_share_working">Ort wird gesucht…</string>
+    <string name="hql_share_saved">Für die nächste Fahrt gespeichert: %1$s. Sobald du mit dem Auto verbunden bist, startet die Route von selbst.</string>
+    <string name="hql_share_now">Route nach %1$s im Auto gestartet.</string>
+    <string name="hql_share_failed">In dem Geteilten habe ich keinen Ort gefunden.</string>
+    <string name="hql_share_place">Geteiltes Ziel</string>
+    <string name="hql_share_applied_title">Route vom Handy gesendet</string>
+    <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
 </resources>

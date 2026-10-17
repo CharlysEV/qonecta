@@ -83,4 +83,13 @@
     <string name="hql_guess_stops_fail_title">Impossible de changer l\'itinéraire Google Maps</string>
     <string name="hql_guess_stops_fail_text">Maps est toujours sur son itinéraire. Arrêtez-le avec le X et touchez «Réessayer».</string>
     <string name="hql_guess_stops_retry">Réessayer</string>
+    <!-- «Ruta en Qonecta+» (ShareDestActivity, SharedDest) -->
+    <string name="hql_share_label">Itinéraire dans Qonecta+</string>
+    <string name="hql_share_working">Recherche du lieu…</string>
+    <string name="hql_share_saved">Enregistré pour le prochain trajet : %1$s. En vous connectant à la voiture, l\'itinéraire démarre tout seul.</string>
+    <string name="hql_share_now">Itinéraire vers %1$s lancé dans la voiture.</string>
+    <string name="hql_share_failed">Je n\'ai trouvé aucun lieu dans ce que vous avez partagé.</string>
+    <string name="hql_share_place">Destination partagée</string>
+    <string name="hql_share_applied_title">Itinéraire envoyé depuis le téléphone</string>
+    <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
 </resources>

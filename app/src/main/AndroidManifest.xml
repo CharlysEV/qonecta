@@ -564,6 +564,30 @@
                 android:resource="@xml/hql_widget_info" />
         </receiver>
 
+        <!--
+            headqlink: «Ruta en Qonecta+»: un sitio compartido desde Google Maps, WhatsApp o una dirección (texto) o un
+            enlace «geo:», para el próximo viaje (SharedDest). Exportada: la abre el menú Compartir de Android.
+        -->
+        <activity
+            android:name="com.headqlink.link.ShareDestActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/hql_share_label"
+            android:taskAffinity="com.headqlink.app.share"
+            android:theme="@style/Theme.HeadQLink.Translucent">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="geo" />
+            </intent-filter>
+        </activity>
+
         <!-- headqlink: la ventanita de las órdenes al coche del widget (voz, confirmación y resultado), transparente y fuera de recientes. -->
         <activity
             android:name="com.headqlink.link.CarControlActivity"

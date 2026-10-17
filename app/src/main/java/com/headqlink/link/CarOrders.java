@@ -16,6 +16,34 @@ final class CarOrders {
     static final String K_ENABLED = "car_orders";
     static final String K_LAST = "car_orders_last";
     private static final int RC_BASE = 7800;
+    /** Config: el clima encendido desde el widget, «MODO,hora de pared» («» apagado). */
+    static final String K_CLIMATE = "car_climate_on";
+    /** El widget enseña el clima encendido como mucho esto tras la orden (el coche lo apaga solo pasado un rato). */
+    static final long CLIMATE_SHOW_MS = 30 * 60_000L;
+
+    /** Tras una orden de clima que ha llegado al coche: encendido (y en qué modo) o apagado. */
+    static void noteClimate(Context c, CarCommand cmd) {
+        String v = cmd.kind == CarCommand.Kind.CLIMATE_OFF ? ""
+                : (cmd.kind == CarCommand.Kind.DEFROST ? CarCommand.Mode.HEAT : cmd.mode).name() + "," + System.currentTimeMillis();
+        new Config(c).putString(K_CLIMATE, v);
+    }
+
+    /** El modo del clima encendido desde el widget, o null (apagado o hace más de CLIMATE_SHOW_MS). */
+    static CarCommand.Mode climate(Context c) {
+        return climate(new Config(c).getString(K_CLIMATE), System.currentTimeMillis());
+    }
+
+    /** Puro: lo mismo con lo guardado. */
+    static CarCommand.Mode climate(String stored, long nowMs) {
+        if (stored == null || stored.isEmpty()) return null;
+        String[] f = stored.split(",");
+        try {
+            if (f.length != 2 || nowMs - Long.parseLong(f[1]) > CLIMATE_SHOW_MS) return null;
+            return CarCommand.Mode.valueOf(f[0]);
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
 
     private CarOrders() {
     }

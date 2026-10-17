@@ -378,6 +378,16 @@ final class RoutePlanner {
             instance = new RoutePlanner(ctx);
             instance.running = true;
             if (!instance.demo) new Thread(instance::loop, "route-planner").start();
+            if (!instance.demo) {
+                // «Ruta en Qonecta+»: el sitio compartido desde el móvil, unos segundos después (Android Auto ya en marcha).
+                Context app = ctx.getApplicationContext();
+                new Thread(() -> {
+                    SystemClock.sleep(SHARED_AFTER_MS);
+                    if (instance == null) return;
+                    Place shared = SharedDest.take(app);
+                    if (shared != null) useShared(app, shared);
+                }, "shared-dest-start").start();
+            }
             // Demostración en vivo: el plan de carga también se vigila con la pestaña Ruta cerrada (avisos sobre AA).
             else if (DemoMode.live()) new Thread(instance::demoLoop, "route-planner-demo").start();
         }
@@ -1059,6 +1069,45 @@ final class RoutePlanner {
             if (st.charger != null && RoadInfo.dist(lat, lon, st.charger.lat, st.charger.lon) / 1000.0 <= km) return true;
         }
         return false;
+    }
+
+    /** Tras empezar la sesión, cuándo se pone el destino compartido (que Android Auto ya esté). */
+    static final long SHARED_AFTER_MS = 8000;
+    /** Para abrir la navegación con las paradas, se espera al plan de carga como mucho esto. */
+    static final long SHARED_PLAN_WAIT_MS = 30_000;
+
+    /**
+     * «Ruta en Qonecta+» (SharedDest): el sitio compartido desde el móvil pasa a ser el destino (como uno elegido en el
+     * coche) y se abre la navegación (con las paradas de carga, si el plan las pide). En el coche, la tarjeta verde «Ruta
+     * enviada desde el móvil»; para quitarla, «Terminar ruta» o la ✕ de la tarjeta flotante.
+     */
+    static void useShared(Context ctx, Place pl) {
+        L.i("ruta: destino compartido desde el móvil: lo planifico y abro la navegación");
+        nextGuess = false;
+        nextGuessChecked = false;
+        routeOffer = null;
+        setManualDestination(pl);
+        new Thread(() -> {
+            long t0 = SystemClock.elapsedRealtime();
+            Plan p = null;
+            ChargePlanner.Result cp = null;
+            while (SystemClock.elapsedRealtime() - t0 < SHARED_PLAN_WAIT_MS) {
+                RoutePlanner r = instance;
+                if (r == null || manual != pl) return;
+                p = r.plan;
+                cp = r.lastChargePlan();
+                if (p != null && cp != null) break;
+                SystemClock.sleep(1000);
+            }
+            if (manual != pl) return;
+            if (p != null && ((cp != null && cp.next() != null) || p.multi())) NavApps.goWithStops(ctx, p, cp);
+            else NavApps.go(ctx, pl.lat, pl.lon);
+            ChargeAlertListener l = chargeAlerts;
+            if (l != null) {
+                l.onChargeAlert(Str.get(R.string.hql_share_applied_title),
+                        p != null ? Str.get(R.string.hql_share_applied_text, pl.name, p.totalKm) : pl.name, ALERT_READY);
+            }
+        }, "shared-dest").start();
     }
 
     /** El panel del coche: el usuario ha elegido uno de la tarjeta (sigue la navegación de Maps). */
