@@ -87,7 +87,7 @@ public class CarCloudActivity extends Activity {
     private TextView sentryState;
     private View pinBox;
     private View sentryActions;
-    /** Órdenes desde el widget «Coche» (CarControlWidget), con el PIN guardado. */
+    /** Órdenes al coche desde el widget de Qonecta+ (CarOrders), con el PIN guardado. */
     private com.google.android.material.materialswitch.MaterialSwitch orders;
     private View addWidget;
     private android.widget.EditText pinInput;
@@ -131,17 +131,12 @@ public class CarCloudActivity extends Activity {
         sentryActions = findViewById(R.id.hql_cloud_sentry_actions);
         orders = findViewById(R.id.hql_cloud_orders);
         addWidget = findViewById(R.id.hql_cloud_add_widget);
-        addWidget.setOnClickListener(v -> {
-            android.appwidget.AppWidgetManager m = android.appwidget.AppWidgetManager.getInstance(this);
-            boolean asked = m.requestPinAppWidget(new android.content.ComponentName(this, CarControlWidget.class), null, null);
-            L.i("widget «Coche»: " + (asked ? "pedido a la pantalla de inicio" : "esta pantalla de inicio no deja ponerlo desde la app"));
-        });
         orders.setOnCheckedChangeListener((v, on) -> {
             if (rendering) return;
-            new Config(this).putBool(CarControlWidget.K_ENABLED, on);
+            new Config(this).putBool(CarOrders.K_ENABLED, on);
             render();
-            L.i("nube Leapmotor: órdenes desde el widget «Coche» " + (on ? "activadas" : "desactivadas"));
-            CarControlWidget.refresh(this);
+            L.i("nube Leapmotor: órdenes al coche desde el widget " + (on ? "activadas" : "desactivadas"));
+            CarOrders.refresh(this);
         });
         pinInput = findViewById(R.id.hql_cloud_pin);
         findViewById(R.id.hql_cloud_pin_save).setOnClickListener(v -> savePin());
@@ -149,7 +144,7 @@ public class CarCloudActivity extends Activity {
             store.deletePin();
             L.i("nube Leapmotor: PIN del coche olvidado");
             render();
-            CarControlWidget.refresh(this);
+            CarOrders.refresh(this);
         });
         findViewById(R.id.hql_cloud_sentry_on).setOnClickListener(v -> confirmSentry(true));
         findViewById(R.id.hql_cloud_sentry_off).setOnClickListener(v -> confirmSentry(false));
@@ -268,9 +263,8 @@ public class CarCloudActivity extends Activity {
         pinBox.setVisibility(pin ? View.GONE : View.VISIBLE);
         sentryActions.setVisibility(pin ? View.VISIBLE : View.GONE);
         orders.setVisibility(pin ? View.VISIBLE : View.GONE);
-        orders.setChecked(new Config(this).getBool(CarControlWidget.K_ENABLED));
-        addWidget.setVisibility(pin && orders.isChecked()
-                && android.appwidget.AppWidgetManager.getInstance(this).isRequestPinAppWidgetSupported() ? View.VISIBLE : View.GONE);
+        orders.setChecked(new Config(this).getBool(CarOrders.K_ENABLED));
+        addWidget.setVisibility(pin && orders.isChecked() ? View.VISIBLE : View.GONE);
         Boolean sentry = snap.hasData() && !snap.demo ? snap.status.sentry : null;
         sentryState.setText(Str.get(sentry == null ? R.string.hql_cloud_sentry_unknown
                 : sentry ? R.string.hql_cloud_sentry_state_on : R.string.hql_cloud_sentry_state_off));

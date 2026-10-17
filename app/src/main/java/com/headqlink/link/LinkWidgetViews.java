@@ -45,7 +45,7 @@ final class LinkWidgetViews {
     /** Las vistas de un tamaño. */
     static RemoteViews build(Context c, LinkGlance g, LinkGlance.Size size) {
         boolean compact = size.compact();
-        boolean tall = size == LinkGlance.Size.WIDE || size == LinkGlance.Size.COMPACT;
+        boolean tall = size == LinkGlance.Size.WIDE || size == LinkGlance.Size.WIDE_CAR || size == LinkGlance.Size.COMPACT;
         RemoteViews rv = new RemoteViews(c.getPackageName(), compact ? R.layout.hql_widget_compact : R.layout.hql_widget_wide);
         String title = title(c, g);
         String detail = detail(c, g);
@@ -96,7 +96,23 @@ final class LinkWidgetViews {
             option(c, rv, LINK_IDS[i], name, name, LINKS[i].equals(g.linkMode),
                     broadcast(c, RC_LINK + i, LinkWidget.ACTION_LINK, LINKS[i]));
         }
+        car(c, rv, size == LinkGlance.Size.WIDE_CAR);
         return rv;
+    }
+
+    /** 4x3: la fila de las órdenes al coche (cerrar, abrir, maletero, clima, localizar y la voz) y la última orden. */
+    private static void car(Context c, RemoteViews rv, boolean show) {
+        rv.setViewVisibility(R.id.hql_w_car, show ? View.VISIBLE : View.GONE);
+        if (!show) return;
+        String last = new Config(c).getString(CarOrders.K_LAST);
+        rv.setTextViewText(R.id.hql_w_car_status, c.getString(R.string.hql_cw_title) + " · "
+                + (last != null && !last.isEmpty() ? last : c.getString(R.string.hql_cw_ready)));
+        rv.setOnClickPendingIntent(R.id.hql_w_car_lock, CarOrders.tap(c, "lock", 1));
+        rv.setOnClickPendingIntent(R.id.hql_w_car_unlock, CarOrders.tap(c, "unlock", 2));
+        rv.setOnClickPendingIntent(R.id.hql_w_car_trunk, CarOrders.tap(c, "trunk", 3));
+        rv.setOnClickPendingIntent(R.id.hql_w_car_climate, CarOrders.tap(c, "climate", 4));
+        rv.setOnClickPendingIntent(R.id.hql_w_car_find, CarOrders.tap(c, "find", 5));
+        rv.setOnClickPendingIntent(R.id.hql_w_car_voice, CarOrders.tap(c, CarControlActivity.VOICE, 6));
     }
 
     /**
@@ -111,6 +127,8 @@ final class LinkWidgetViews {
         m.put(new SizeF(110f, LinkGlance.TALL_MIN_DP), build(c, g, LinkGlance.Size.COMPACT));
         m.put(new SizeF(LinkGlance.WIDE_MIN_DP, 110f), build(c, g, LinkGlance.Size.WIDE_SHORT));
         m.put(new SizeF(LinkGlance.WIDE_MIN_DP, LinkGlance.TALL_MIN_DP), build(c, g, LinkGlance.Size.WIDE));
+        // Con las órdenes al coche activadas, el 4x3 lleva debajo su fila.
+        if (CarOrders.enabled(c)) m.put(new SizeF(LinkGlance.WIDE_MIN_DP, LinkGlance.CAR_MIN_DP), build(c, g, LinkGlance.Size.WIDE_CAR));
         return new RemoteViews(m);
     }
 
@@ -119,6 +137,7 @@ final class LinkWidgetViews {
         int w = options != null ? options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 0) : 0;
         int h = options != null ? options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0) : 0;
         LinkGlance.Size size = w <= 0 ? LinkGlance.Size.WIDE : LinkGlance.sizeFor(w, h > 0 ? h : LinkGlance.TALL_MIN_DP);
+        if (size == LinkGlance.Size.WIDE && h >= LinkGlance.CAR_MIN_DP && CarOrders.enabled(c)) size = LinkGlance.Size.WIDE_CAR;
         return build(c, g, size);
     }
 

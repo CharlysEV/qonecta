@@ -173,9 +173,7 @@
     <string name="hql_cloud_sentry_sent">Commande envoyée ; la voiture ne l\'a pas encore confirmée (elle est peut-être en veille).</string>
     <string name="hql_cloud_sentry_failed">Impossible d\'envoyer la commande : %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>
-    <!-- Widget «Coche» y su ventanita (CarControlWidget, CarControlActivity) -->
-    <string name="hql_cw_name">Qonecta+ · Voiture</string>
-    <string name="hql_cw_description">Verrouiller, déverrouiller, coffre, climatisation et localiser la voiture, aussi à la voix</string>
+    <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">Voiture</string>
     <string name="hql_cw_ready">Prêt</string>
     <string name="hql_cw_off">Activez-le dans Données de la voiture</string>
@@ -207,6 +205,7 @@
     <string name="hql_cc_done">✓ %1$s</string>
     <string name="hql_cc_sent">%1$s : envoyé ; la voiture n\'a pas confirmé</string>
     <string name="hql_cc_failed">%1$s : échec (%2$s)</string>
-    <string name="hql_cloud_orders">Commandes depuis le widget « Voiture » : verrouiller, ouvrir, coffre, clim et localiser, aussi à la voix</string>
-    <string name="hql_cloud_add_widget">Ajouter le widget « Voiture » à l\'écran d\'accueil</string>
+    <string name="hql_cloud_orders">Commandes de la voiture depuis le widget Qonecta+ : verrouiller, ouvrir, coffre, clim et localiser, aussi à la voix</string>
+    <string name="hql_cloud_add_widget">Elles apparaissent dans le widget Qonecta+ en l\'agrandissant (4×3) : appui long puis étirez-le vers le bas.</string>
+    <string name="hql_cw_voice_short">Voix</string>
 </resources>

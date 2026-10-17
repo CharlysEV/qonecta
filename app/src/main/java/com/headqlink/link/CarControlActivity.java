@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * La ventanita del widget «Coche» sobre la pantalla de inicio: escucha (voz de Android, sin micrófono propio), entiende
+ * La ventanita de las órdenes al coche del widget de Qonecta+ sobre la pantalla de inicio: escucha (voz de Android, sin micrófono propio), entiende
  * la frase (CarCommand.parse), confirma lo que abre el coche y manda la orden (CarCloudSession.command), con su
  * resultado. Transparente, en su propia tarea y fuera de recientes.
  */
@@ -40,7 +40,7 @@ public final class CarControlActivity extends AppCompatActivity {
         super.onCreate(b);
         L.init(this);
         if (b != null) return;
-        if (!CarControlWidget.enabled(this)) {
+        if (!CarOrders.enabled(this)) {
             show(new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.hql_cc_disabled_title)
                     .setMessage(R.string.hql_cc_disabled_text)
@@ -130,8 +130,8 @@ public final class CarControlActivity extends AppCompatActivity {
                 result = Str.get(R.string.hql_cc_failed, c.label(), Http.safeError(e));
             }
             String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
-            new Config(this).putString(CarControlWidget.K_LAST, result + " · " + time);
-            CarControlWidget.refresh(this);
+            new Config(this).putString(CarOrders.K_LAST, result + " · " + time);
+            CarOrders.refresh(this);
             String r = result;
             boolean ok = good;
             main.post(() -> {

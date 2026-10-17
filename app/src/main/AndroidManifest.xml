@@ -564,24 +564,7 @@
                 android:resource="@xml/hql_widget_info" />
         </receiver>
 
-        <!--
-            headqlink: widget «Coche» (cerrar, abrir, maletero, clima y localizar por la nube de Leapmotor, también por
-            voz). No exportado, como el otro: los toques llegan con PendingIntent propios a CarControlActivity.
-        -->
-        <receiver
-            android:name="com.headqlink.link.CarControlWidget"
-            android:enabled="@bool/hql_widget_enabled"
-            android:exported="false"
-            android:label="@string/hql_cw_name">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/hql_car_widget_info" />
-        </receiver>
-
-        <!-- headqlink: la ventanita del widget «Coche» (voz, confirmación y resultado), transparente y fuera de recientes. -->
+        <!-- headqlink: la ventanita de las órdenes al coche del widget (voz, confirmación y resultado), transparente y fuera de recientes. -->
         <activity
             android:name="com.headqlink.link.CarControlActivity"
             android:excludeFromRecents="true"

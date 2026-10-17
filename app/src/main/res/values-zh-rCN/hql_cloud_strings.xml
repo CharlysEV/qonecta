@@ -173,9 +173,7 @@
     <string name="hql_cloud_sentry_sent">指令已发送；车辆尚未确认（可能在休眠）。</string>
     <string name="hql_cloud_sentry_failed">无法发送指令：%1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37.3 kWh</string>
-    <!-- Widget «Coche» y su ventanita (CarControlWidget, CarControlActivity) -->
-    <string name="hql_cw_name">Qonecta+ · 车辆</string>
-    <string name="hql_cw_description">上锁、解锁、后备箱、空调和寻车，也可语音控制</string>
+    <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">车辆</string>
     <string name="hql_cw_ready">就绪</string>
     <string name="hql_cw_off">请在车辆数据中开启</string>
@@ -207,6 +205,7 @@
     <string name="hql_cc_done">✓ %1$s</string>
     <string name="hql_cc_sent">%1$s：已发送；车辆未确认</string>
     <string name="hql_cc_failed">%1$s：失败（%2$s）</string>
-    <string name="hql_cloud_orders">来自「车辆」小组件的指令：上锁、解锁、后备箱、空调和寻车，也可语音</string>
-    <string name="hql_cloud_add_widget">将「车辆」小组件添加到主屏幕</string>
+    <string name="hql_cloud_orders">从 Qonecta+ 小组件向车辆发送指令：上锁、解锁、后备箱、空调和寻车，也可语音</string>
+    <string name="hql_cloud_add_widget">将 Qonecta+ 小组件调高（4×3）即可显示：长按后向下拖动。</string>
+    <string name="hql_cw_voice_short">语音</string>
 </resources>

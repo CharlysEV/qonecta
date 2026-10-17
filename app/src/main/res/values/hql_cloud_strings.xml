@@ -173,9 +173,7 @@
     <string name="hql_cloud_sentry_sent">Order sent; the car has not confirmed it yet (it may be asleep).</string>
     <string name="hql_cloud_sentry_failed">Could not send the order: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37.3 kWh</string>
-    <!-- Widget «Coche» y su ventanita (CarControlWidget, CarControlActivity) -->
-    <string name="hql_cw_name">Qonecta+ · Car</string>
-    <string name="hql_cw_description">Lock, unlock, trunk, climate and find your car, also by voice</string>
+    <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">Car</string>
     <string name="hql_cw_ready">Ready</string>
     <string name="hql_cw_off">Turn it on in Car data</string>
@@ -207,6 +205,7 @@
     <string name="hql_cc_done">✓ %1$s</string>
     <string name="hql_cc_sent">%1$s: sent; the car did not confirm it</string>
     <string name="hql_cc_failed">%1$s: failed (%2$s)</string>
-    <string name="hql_cloud_orders">Commands from the «Car» widget: lock, unlock, trunk, climate and find, also by voice</string>
-    <string name="hql_cloud_add_widget">Add the «Car» widget to the home screen</string>
+    <string name="hql_cloud_orders">Car commands from the Qonecta+ widget: lock, unlock, trunk, climate and find, also by voice</string>
+    <string name="hql_cloud_add_widget">They show in the Qonecta+ widget when you make it taller (4×3): long-press it and drag it down.</string>
+    <string name="hql_cw_voice_short">Voice</string>
 </resources>

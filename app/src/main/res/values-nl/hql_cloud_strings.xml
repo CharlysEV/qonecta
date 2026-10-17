@@ -173,9 +173,7 @@
     <string name="hql_cloud_sentry_sent">Opdracht verstuurd; de auto heeft hem nog niet bevestigd (misschien slaapt hij).</string>
     <string name="hql_cloud_sentry_failed">Kon de opdracht niet versturen: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>
-    <!-- Widget «Coche» y su ventanita (CarControlWidget, CarControlActivity) -->
-    <string name="hql_cw_name">Qonecta+ · Auto</string>
-    <string name="hql_cw_description">Vergrendelen, ontgrendelen, kofferbak, klimaat en auto zoeken, ook met je stem</string>
+    <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">Auto</string>
     <string name="hql_cw_ready">Klaar</string>
     <string name="hql_cw_off">Zet het aan in Autogegevens</string>
@@ -207,6 +205,7 @@
     <string name="hql_cc_done">✓ %1$s</string>
     <string name="hql_cc_sent">%1$s: verstuurd; de auto heeft het niet bevestigd</string>
     <string name="hql_cc_failed">%1$s: mislukt (%2$s)</string>
-    <string name="hql_cloud_orders">Opdrachten vanuit de widget „Auto”: vergrendelen, openen, kofferbak, klimaat en zoeken, ook met je stem</string>
-    <string name="hql_cloud_add_widget">Widget „Auto” op het startscherm zetten</string>
+    <string name="hql_cloud_orders">Opdrachten aan de auto vanuit de Qonecta+-widget: vergrendelen, openen, kofferbak, klimaat en zoeken, ook met je stem</string>
+    <string name="hql_cloud_add_widget">Ze verschijnen in de Qonecta+-widget als je hem hoger maakt (4×3): lang indrukken en naar beneden trekken.</string>
+    <string name="hql_cw_voice_short">Stem</string>
 </resources>

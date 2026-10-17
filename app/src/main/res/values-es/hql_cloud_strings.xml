@@ -173,9 +173,7 @@
     <string name="hql_cloud_sentry_sent">Orden enviada; el coche aún no la ha confirmado (puede estar dormido).</string>
     <string name="hql_cloud_sentry_failed">No se pudo mandar la orden: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>
-    <!-- Widget «Coche» y su ventanita (CarControlWidget, CarControlActivity) -->
-    <string name="hql_cw_name">Qonecta+ · Coche</string>
-    <string name="hql_cw_description">Cerrar, abrir, maletero, clima y localizar el coche, también por voz</string>
+    <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">Coche</string>
     <string name="hql_cw_ready">Listo</string>
     <string name="hql_cw_off">Actívalo en Datos del coche</string>
@@ -207,6 +205,7 @@
     <string name="hql_cc_done">✓ %1$s</string>
     <string name="hql_cc_sent">%1$s: enviado; el coche no lo ha confirmado</string>
     <string name="hql_cc_failed">%1$s: no se pudo (%2$s)</string>
-    <string name="hql_cloud_orders">Órdenes desde el widget «Coche»: cerrar, abrir, maletero, clima y localizar, también por voz</string>
-    <string name="hql_cloud_add_widget">Poner el widget «Coche» en la pantalla de inicio</string>
+    <string name="hql_cloud_orders">Órdenes al coche desde el widget de Qonecta+: cerrar, abrir, maletero, clima y localizar, también por voz</string>
+    <string name="hql_cloud_add_widget">Salen en el widget de Qonecta+ al hacerlo más alto (4×3): mantenlo pulsado y estíralo hacia abajo.</string>
+    <string name="hql_cw_voice_short">Voz</string>
 </resources>

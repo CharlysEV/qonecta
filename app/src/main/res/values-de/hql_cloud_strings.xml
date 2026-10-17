@@ -173,9 +173,7 @@
     <string name="hql_cloud_sentry_sent">Befehl gesendet; das Auto hat ihn noch nicht bestätigt (es schläft vielleicht).</string>
     <string name="hql_cloud_sentry_failed">Befehl konnte nicht gesendet werden: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>
-    <!-- Widget «Coche» y su ventanita (CarControlWidget, CarControlActivity) -->
-    <string name="hql_cw_name">Qonecta+ · Auto</string>
-    <string name="hql_cw_description">Verriegeln, entriegeln, Kofferraum, Klima und Auto finden, auch per Sprache</string>
+    <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">Auto</string>
     <string name="hql_cw_ready">Bereit</string>
     <string name="hql_cw_off">In Fahrzeugdaten einschalten</string>
@@ -207,6 +205,7 @@
     <string name="hql_cc_done">✓ %1$s</string>
     <string name="hql_cc_sent">%1$s: gesendet; das Auto hat es nicht bestätigt</string>
     <string name="hql_cc_failed">%1$s: fehlgeschlagen (%2$s)</string>
-    <string name="hql_cloud_orders">Befehle vom Widget „Auto“: verriegeln, entriegeln, Kofferraum, Klima und finden, auch per Sprache</string>
-    <string name="hql_cloud_add_widget">Widget „Auto“ auf den Startbildschirm legen</string>
+    <string name="hql_cloud_orders">Befehle an das Auto über das Qonecta+-Widget: verriegeln, entriegeln, Kofferraum, Klima und finden, auch per Sprache</string>
+    <string name="hql_cloud_add_widget">Sie erscheinen im Qonecta+-Widget, wenn du es höher machst (4×3): lange drücken und nach unten ziehen.</string>
+    <string name="hql_cw_voice_short">Sprache</string>
 </resources>

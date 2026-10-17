@@ -433,7 +433,7 @@
                             android:text="@string/hql_cloud_pin_forget" />
                     </LinearLayout>
 
-                    <!-- Widget «Coche»: cerrar, abrir, maletero, clima y localizar, también por voz (con el PIN). -->
+                    <!-- Órdenes desde el widget de Qonecta+: cerrar, abrir, maletero, clima y localizar, también por voz (con el PIN). -->
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/hql_cloud_orders"
                         android:layout_width="match_parent"
@@ -442,13 +442,13 @@
                         android:minHeight="48dp"
                         android:text="@string/hql_cloud_orders" />
 
-                    <!-- Pone el widget «Coche» en la pantalla de inicio (Android pregunta antes). -->
-                    <com.google.android.material.button.MaterialButton
+                    <!-- Dónde salen: en el widget de Qonecta+ a 4x3. -->
+                    <TextView
                         android:id="@+id/hql_cloud_add_widget"
-                        style="@style/HQL.Button.Quiet"
-                        android:layout_width="wrap_content"
+                        style="@style/HQL.Text.RowDetail"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="-8dp"
+                        android:layout_marginTop="2dp"
                         android:text="@string/hql_cloud_add_widget" />
                 </LinearLayout>
 

@@ -86,7 +86,9 @@ final class LinkGlance {
         COMPACT,
         /** 4x2 bajo: sin la cabecera (marca y modo) ni la etiqueta del botón. */
         WIDE_SHORT,
-        WIDE;
+        WIDE,
+        /** 4x3 con las órdenes al coche activadas: el 4x2 completo y debajo la fila del coche (CarOrders). */
+        WIDE_CAR;
 
         boolean compact() {
             return this == COMPACT || this == COMPACT_SHORT;
@@ -100,6 +102,8 @@ final class LinkGlance {
      * líneas y el detalle en dos, más bajo no caben). Un 4x2 de un móvil suele tener 180-220 dp.
      */
     static final int TALL_MIN_DP = 175;
+    /** Desde este alto (dp), con las órdenes al coche activadas, el 4x2 lleva debajo la fila del coche (un 4x3: 270-330). */
+    static final int CAR_MIN_DP = 265;
     /** Las cifras del vídeo llegan cada 5 s: el widget no se repinta por ellas más a menudo que esto. */
     static final long VIDEO_EVERY_MS = 4_500;
 
