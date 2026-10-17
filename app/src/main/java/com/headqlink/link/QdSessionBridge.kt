@@ -413,6 +413,11 @@ internal class QdSessionBridge(
                 L.w("traza: sin estado del socket (librería hqlnet no disponible)")
             }
             var last = SystemClock.elapsedRealtime()
+            // Por Wi-Fi (hay socket): un resumen de la radio cada minuto (RadioMinute), con la pantalla del móvil.
+            val radio = RadioMinute()
+            var radioStart = last
+            var radioMinute = 0
+            var ticks = 0
             try {
                 // Cada 100 ms (antes 50: el doble de despertares y de lecturas de TCP_INFO para lo mismo).
                 while (monitorRunning && !port.closed) {
@@ -422,6 +427,16 @@ internal class QdSessionBridge(
                     last = now
                     val net = port.monitorSample()
                     net?.let { PerfTrace.net(it) }
+                    if (net != null && session.socket != null) {
+                        radio.add(net[1] / 1000, net[4].toLong(), net[0])
+                        if (++ticks % 10 == 0) radio.screen(isInteractive())
+                        if (now - radioStart >= 60_000) {
+                            radioMinute++
+                            if (!radio.isEmpty()) L.i(radio.line(radioMinute))
+                            radio.reset()
+                            radioStart = now
+                        }
+                    }
                     checkStalls(net)
                     maybeLogReconnect()
                     logStats(force = false)
