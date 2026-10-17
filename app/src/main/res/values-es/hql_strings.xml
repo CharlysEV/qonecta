@@ -1079,4 +1079,5 @@
     <string name="hql_tr_other">Incidencia</string>
     <string name="hql_theme_auto">Automático</string>
     <string name="hql_theme_help">Android Auto, el panel y las pantallas del modo extendido. Automático: como la pantalla del coche o, si el coche no lo dice, con el sensor de luz del móvil.</string>
+    <string name="hql_cable_hint">Por Wi-Fi, los juegos, la TV y los vídeos pueden ir a saltos. Con el cable USB van más fluidos.</string>
 </resources>

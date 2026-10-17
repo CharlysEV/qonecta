@@ -1074,4 +1074,5 @@
     <string name="hql_tr_other">Evento</string>
     <string name="hql_theme_auto">Automatico</string>
     <string name="hql_theme_help">Android Auto, il pannello e le schermate della modalità estesa. Automatico: come lo schermo dell\'auto o, se l\'auto non lo dice, con il sensore di luce del telefono.</string>
+    <string name="hql_cable_hint">Via Wi-Fi, giochi, TV e video possono andare a scatti. Con il cavo USB sono più fluidi.</string>
 </resources>

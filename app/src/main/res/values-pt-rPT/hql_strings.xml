@@ -1074,4 +1074,5 @@
     <string name="hql_tr_other">Ocorrência</string>
     <string name="hql_theme_auto">Automático</string>
     <string name="hql_theme_help">Android Auto, o painel e os ecrãs do modo estendido. Automático: como o ecrã do carro ou, se o carro não o disser, pelo sensor de luz do telemóvel.</string>
+    <string name="hql_cable_hint">Por Wi-Fi, os jogos, a TV e os vídeos podem dar saltos. Com o cabo USB ficam mais fluidos.</string>
 </resources>

@@ -298,6 +298,8 @@ final class CarUi {
         main.removeCallbacks(hideVideoInfo);
         hideVideoInfo.run();
         videoInfo = null;
+        main.removeCallbacks(hideCableHint);
+        cableHint = null;
         pres.setContentView(buildRoot(pres.getContext()));
         open(name);
         if (wasHidden && "aa".equals(name)) setHidden(true);
@@ -1063,6 +1065,7 @@ final class CarUi {
             main.removeCallbacks(alertExpire);
             main.removeCallbacks(alertSeenTask);
             main.removeCallbacks(guessExpire);
+            main.removeCallbacks(hideCableHint);
             stopPanelSlide();
             main.removeCallbacks(railTick);
             main.removeCallbacks(floatTick);
@@ -1858,6 +1861,61 @@ final class CarUi {
         return p;
     }
 
+    // ------------------------------------------------------------------ aviso del cable (juegos, TV y vídeos por Wi-Fi)
+
+    /**
+     * Por Wi-Fi (zona Wi-Fi o Wi-Fi Direct) el enlace va bien con Android Auto, la música y lo que se mueve poco; con
+     * juegos, TV y vídeos (imagen que cambia en cada fotograma) puede ir a saltos. Al abrirlos, un aviso arriba unos
+     * segundos: con el cable USB, más fluido (16-10, lo pidió el conductor). Se quita solo o tocándolo.
+     */
+    private TextView cableHint;
+    static final long CABLE_HINT_MS = 7000;
+    private final Runnable hideCableHint = () -> {
+        if (cableHint != null) cableHint.setVisibility(View.GONE);
+    };
+
+    /** Puro: ¿la pantalla mueve mucha imagen (juegos, TV, vídeos)? */
+    static boolean cableHintFor(String screen) {
+        return "games".equals(screen) || "tv".equals(screen) || "videos".equals(screen);
+    }
+
+    /** ¿La sesión con el coche va por Wi-Fi? Por cable (también el cable por delante del Wi-Fi) o en el coche virtual, no. */
+    static boolean onWifi() {
+        if (RoutePlanner.testMode() || LinkState.usbOverride) return false;
+        String m = LinkState.activeLinkMode;
+        return Config.LINK_P2P.equals(m) || Config.LINK_HOTSPOT.equals(m);
+    }
+
+    private void showCableHint(String screen) {
+        if (root == null) return;
+        if (cableHint == null) {
+            TextView t = CarStyle.text(root.getContext(), Str.get(R.string.hql_cable_hint), 22, CarStyle.TEXT);
+            t.setGravity(Gravity.CENTER);
+            t.setPadding(28, 14, 28, 14);
+            t.setMaxLines(2);
+            t.setBackground(CarStyle.round(CarTheme.alertBg(false), 24));
+            t.setOnClickListener(v -> hideCableHint.run());
+            root.addView(t, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                    Gravity.TOP | Gravity.LEFT));
+            cableHint = t;
+        }
+        // Arriba en el centro de nuestra pantalla.
+        int areaX = ((FrameLayout.LayoutParams) content.getLayoutParams()).leftMargin;
+        int areaW = contentWidth();
+        cableHint.setMaxWidth(Math.max(200, areaW - 64));
+        cableHint.measure(View.MeasureSpec.makeMeasureSpec(Math.max(200, areaW - 64), View.MeasureSpec.AT_MOST),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) cableHint.getLayoutParams();
+        lp.leftMargin = areaX + Math.max(0, (areaW - cableHint.getMeasuredWidth()) / 2);
+        lp.topMargin = 16;
+        cableHint.setLayoutParams(lp);
+        cableHint.setVisibility(View.VISIBLE);
+        cableHint.bringToFront();
+        main.removeCallbacks(hideCableHint);
+        main.postDelayed(hideCableHint, CABLE_HINT_MS);
+        L.i("CarUi: aviso: " + screen + " por Wi-Fi, mejor con el cable USB");
+    }
+
     // ------------------------------------------------------------------ cartel de la imagen
 
     /** Cartel de la imagen (resolución, fps y temperatura del móvil), arriba en el centro, encima de Android Auto. */
@@ -2148,6 +2206,7 @@ final class CarUi {
     private String lastSplitScreen = "car";
 
     private void open(String name) {
+        String before = screenName;
         // Pantalla partida: AA se queda en su mitad (cada cambio de ancho lo reinicia: 16-10). «Auto» lo deja donde está,
         // junto a la última pantalla de al lado; para verlo entero se quita la pantalla partida con su botón.
         if (split && "aa".equals(name)) {
@@ -2230,6 +2289,7 @@ final class CarUi {
         saveScreen();
         // Fuera de la TV o los vídeos a pantalla completa, AA vuelve a tener su vídeo.
         aaForGame();
+        if (!name.equals(before) && cableHintFor(name) && onWifi()) showCableHint(name);
     }
 
     private static Supplier<CarScreen> factory(String name) {

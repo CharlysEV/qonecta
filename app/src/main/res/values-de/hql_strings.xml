@@ -1073,4 +1073,5 @@
     <string name="hql_tr_other">Meldung</string>
     <string name="hql_theme_auto">Automatisch</string>
     <string name="hql_theme_help">Android Auto, die Seitenleiste und die Bildschirme des erweiterten Modus. Automatisch: wie der Autobildschirm oder, wenn das Auto es nicht meldet, mit dem Lichtsensor des Handys.</string>
+    <string name="hql_cable_hint">Über WLAN können Spiele, TV und Videos ruckeln. Mit dem USB-Kabel laufen sie flüssiger.</string>
 </resources>

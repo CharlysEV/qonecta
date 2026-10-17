@@ -1074,4 +1074,5 @@
     <string name="hql_tr_other">Événement</string>
     <string name="hql_theme_auto">Automatique</string>
     <string name="hql_theme_help">Android Auto, le panneau et les écrans du mode étendu. Automatique : comme l\'écran de la voiture ou, si la voiture ne le dit pas, avec le capteur de lumière du téléphone.</string>
+    <string name="hql_cable_hint">En Wi-Fi, les jeux, la TV et les vidéos peuvent saccader. Avec le câble USB, c\'est plus fluide.</string>
 </resources>

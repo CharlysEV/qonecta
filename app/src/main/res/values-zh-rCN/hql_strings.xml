@@ -1077,4 +1077,5 @@
     <string name="hql_tr_other">交通事件</string>
     <string name="hql_theme_auto">自动</string>
     <string name="hql_theme_help">Android Auto、侧边栏和扩展模式的界面。自动：跟随车机屏幕；车机未提供时，使用手机的光线传感器。</string>
+    <string name="hql_cable_hint">通过 Wi-Fi 时，游戏、电视和视频可能会卡顿。连接 USB 数据线会更流畅。</string>
 </resources>
