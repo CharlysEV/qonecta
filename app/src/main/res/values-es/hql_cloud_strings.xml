@@ -155,7 +155,7 @@
     <string name="hql_cloud_profile_reev">C10 REEV · 28,4 kWh + gasolina</string>
     <string name="hql_cloud_3d_hint">Gíralo con el dedo</string>
     <string name="hql_cloud_step_sentry">5 · Modo centinela</string>
-    <string name="hql_cloud_sentry_note">Opcional. Es la única orden que Qonecta+ manda al coche, y solo si guardas aquí el PIN del coche (cifrado en el móvil). Sin PIN, todo sigue siendo de solo lectura.</string>
+    <string name="hql_cloud_sentry_note">Opcional. Con el PIN del coche guardado aquí (cifrado en el móvil), Qonecta+ manda el modo centinela y, si activas abajo las órdenes del widget «Coche», cerrar, abrir, maletero, clima y localizar. Sin PIN, todo sigue siendo de solo lectura.</string>
     <string name="hql_cloud_pin_hint">PIN del coche (el de la app de Leapmotor)</string>
     <string name="hql_cloud_pin_save">Guardar PIN</string>
     <string name="hql_cloud_pin_forget">Olvidar PIN</string>
@@ -208,4 +208,5 @@
     <string name="hql_cc_sent">%1$s: enviado; el coche no lo ha confirmado</string>
     <string name="hql_cc_failed">%1$s: no se pudo (%2$s)</string>
     <string name="hql_cloud_orders">Órdenes desde el widget «Coche»: cerrar, abrir, maletero, clima y localizar, también por voz</string>
+    <string name="hql_cloud_add_widget">Poner el widget «Coche» en la pantalla de inicio</string>
 </resources>

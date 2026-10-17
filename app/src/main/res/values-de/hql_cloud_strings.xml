@@ -155,7 +155,7 @@
     <string name="hql_cloud_profile_reev">C10 REEV · 28,4 kWh + Benzin</string>
     <string name="hql_cloud_3d_hint">Zum Drehen ziehen</string>
     <string name="hql_cloud_step_sentry">5 · Wächtermodus</string>
-    <string name="hql_cloud_sentry_note">Optional. Das ist der einzige Befehl, den Qonecta+ an das Auto sendet, und nur, wenn du hier die PIN des Autos speicherst (verschlüsselt auf dem Handy). Ohne PIN bleibt alles nur lesend.</string>
+    <string name="hql_cloud_sentry_note">Optional. Mit der hier gespeicherten PIN des Autos (verschlüsselt auf dem Handy) sendet Qonecta+ den Wächtermodus und, wenn du unten die Befehle des Widgets „Auto“ einschaltest, verriegeln, entriegeln, Kofferraum, Klima und finden. Ohne PIN bleibt alles nur lesend.</string>
     <string name="hql_cloud_pin_hint">PIN des Autos (die aus der Leapmotor-App)</string>
     <string name="hql_cloud_pin_save">PIN speichern</string>
     <string name="hql_cloud_pin_forget">PIN vergessen</string>
@@ -208,4 +208,5 @@
     <string name="hql_cc_sent">%1$s: gesendet; das Auto hat es nicht bestätigt</string>
     <string name="hql_cc_failed">%1$s: fehlgeschlagen (%2$s)</string>
     <string name="hql_cloud_orders">Befehle vom Widget „Auto“: verriegeln, entriegeln, Kofferraum, Klima und finden, auch per Sprache</string>
+    <string name="hql_cloud_add_widget">Widget „Auto“ auf den Startbildschirm legen</string>
 </resources>

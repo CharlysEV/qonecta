@@ -155,7 +155,7 @@
     <string name="hql_cloud_profile_reev">C10 REEV · 28,4 kWh + gasolina</string>
     <string name="hql_cloud_3d_hint">Gire com o dedo</string>
     <string name="hql_cloud_step_sentry">5 · Modo sentinela</string>
-    <string name="hql_cloud_sentry_note">Opcional. É o único comando que o Qonecta+ envia ao carro, e só se você salvar aqui o PIN do carro (criptografado no celular). Sem PIN, tudo continua só de leitura.</string>
+    <string name="hql_cloud_sentry_note">Opcional. Com o PIN do carro salvo aqui (criptografado no celular), o Qonecta+ envia o modo sentinela e, se você ativar abaixo os comandos do widget «Carro», trancar, abrir, porta-malas, clima e localizar. Sem PIN, tudo continua só de leitura.</string>
     <string name="hql_cloud_pin_hint">PIN do carro (o do app da Leapmotor)</string>
     <string name="hql_cloud_pin_save">Salvar PIN</string>
     <string name="hql_cloud_pin_forget">Esquecer PIN</string>
@@ -208,4 +208,5 @@
     <string name="hql_cc_sent">%1$s: enviado; o carro não confirmou</string>
     <string name="hql_cc_failed">%1$s: não foi possível (%2$s)</string>
     <string name="hql_cloud_orders">Comandos do widget «Carro»: trancar, abrir, porta-malas, clima e localizar, também por voz</string>
+    <string name="hql_cloud_add_widget">Colocar o widget «Carro» na tela inicial</string>
 </resources>

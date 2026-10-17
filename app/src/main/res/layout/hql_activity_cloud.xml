@@ -441,6 +441,15 @@
                         android:layout_marginTop="8dp"
                         android:minHeight="48dp"
                         android:text="@string/hql_cloud_orders" />
+
+                    <!-- Pone el widget «Coche» en la pantalla de inicio (Android pregunta antes). -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/hql_cloud_add_widget"
+                        style="@style/HQL.Button.Quiet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="-8dp"
+                        android:text="@string/hql_cloud_add_widget" />
                 </LinearLayout>
 
                 <!-- Prueba -->

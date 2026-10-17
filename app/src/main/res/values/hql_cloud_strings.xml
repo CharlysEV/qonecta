@@ -155,7 +155,7 @@
     <string name="hql_cloud_profile_reev">C10 REEV · 28.4 kWh + petrol</string>
     <string name="hql_cloud_3d_hint">Drag to rotate</string>
     <string name="hql_cloud_step_sentry">5 · Sentry mode</string>
-    <string name="hql_cloud_sentry_note">Optional. It is the only command Qonecta+ sends to the car, and only if you save your car PIN here (encrypted on the phone). Without a PIN everything stays read-only.</string>
+    <string name="hql_cloud_sentry_note">Optional. With your car PIN saved here (encrypted on the phone), Qonecta+ sends sentry mode and, if you turn on the «Car» widget commands below, lock, unlock, trunk, climate and find. Without a PIN everything stays read-only.</string>
     <string name="hql_cloud_pin_hint">Car PIN (the one in the Leapmotor app)</string>
     <string name="hql_cloud_pin_save">Save PIN</string>
     <string name="hql_cloud_pin_forget">Forget PIN</string>
@@ -208,4 +208,5 @@
     <string name="hql_cc_sent">%1$s: sent; the car did not confirm it</string>
     <string name="hql_cc_failed">%1$s: failed (%2$s)</string>
     <string name="hql_cloud_orders">Commands from the «Car» widget: lock, unlock, trunk, climate and find, also by voice</string>
+    <string name="hql_cloud_add_widget">Add the «Car» widget to the home screen</string>
 </resources>

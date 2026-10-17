@@ -155,7 +155,7 @@
     <string name="hql_cloud_profile_reev">C10 REEV · 28.4 kWh + 汽油</string>
     <string name="hql_cloud_3d_hint">拖动以旋转</string>
     <string name="hql_cloud_step_sentry">5 · 哨兵模式</string>
-    <string name="hql_cloud_sentry_note">可选。这是 Qonecta+ 唯一会发送给车辆的指令，并且只有在此处保存了车辆 PIN（在手机上加密保存）时才会发送。没有 PIN 时一切保持只读。</string>
+    <string name="hql_cloud_sentry_note">可选。在此保存车辆 PIN（在手机上加密）后，Qonecta+ 会发送哨兵模式；如果在下方开启「车辆」小组件指令，还可上锁、解锁、后备箱、空调和寻车。没有 PIN 时一切保持只读。</string>
     <string name="hql_cloud_pin_hint">车辆 PIN（Leapmotor 应用中的那个）</string>
     <string name="hql_cloud_pin_save">保存 PIN</string>
     <string name="hql_cloud_pin_forget">删除 PIN</string>
@@ -208,4 +208,5 @@
     <string name="hql_cc_sent">%1$s：已发送；车辆未确认</string>
     <string name="hql_cc_failed">%1$s：失败（%2$s）</string>
     <string name="hql_cloud_orders">来自「车辆」小组件的指令：上锁、解锁、后备箱、空调和寻车，也可语音</string>
+    <string name="hql_cloud_add_widget">将「车辆」小组件添加到主屏幕</string>
 </resources>

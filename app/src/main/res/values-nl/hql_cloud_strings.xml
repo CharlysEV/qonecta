@@ -155,7 +155,7 @@
     <string name="hql_cloud_profile_reev">C10 REEV · 28,4 kWh + benzine</string>
     <string name="hql_cloud_3d_hint">Sleep om te draaien</string>
     <string name="hql_cloud_step_sentry">5 · Schildwachtmodus</string>
-    <string name="hql_cloud_sentry_note">Optioneel. Dit is de enige opdracht die Qonecta+ naar de auto stuurt, en alleen als je hier de pincode van de auto opslaat (versleuteld op de telefoon). Zonder pincode blijft alles alleen-lezen.</string>
+    <string name="hql_cloud_sentry_note">Optioneel. Met de pincode van de auto hier opgeslagen (versleuteld op de telefoon) stuurt Qonecta+ de schildwachtmodus en, als je hieronder de opdrachten van de widget „Auto” aanzet, vergrendelen, openen, kofferbak, klimaat en zoeken. Zonder pincode blijft alles alleen-lezen.</string>
     <string name="hql_cloud_pin_hint">Pincode van de auto (die van de Leapmotor-app)</string>
     <string name="hql_cloud_pin_save">Opslaan</string>
     <string name="hql_cloud_pin_forget">Pincode vergeten</string>
@@ -208,4 +208,5 @@
     <string name="hql_cc_sent">%1$s: verstuurd; de auto heeft het niet bevestigd</string>
     <string name="hql_cc_failed">%1$s: mislukt (%2$s)</string>
     <string name="hql_cloud_orders">Opdrachten vanuit de widget „Auto”: vergrendelen, openen, kofferbak, klimaat en zoeken, ook met je stem</string>
+    <string name="hql_cloud_add_widget">Widget „Auto” op het startscherm zetten</string>
 </resources>
