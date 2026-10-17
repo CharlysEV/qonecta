@@ -298,6 +298,12 @@ final class CarUi {
         main.removeCallbacks(hideVideoInfo);
         hideVideoInfo.run();
         videoInfo = null;
+        // Si el cartel estaba a la vista (un mensaje de Claude, la resolución…), vuelve en la interfaz nueva.
+        if (infoText != null && android.os.SystemClock.uptimeMillis() < infoUntil) {
+            String again = infoText;
+            // Tras el marcador (que se vuelve a poner con un post más abajo), para quedar debajo de él.
+            main.postDelayed(() -> showVideoInfoNow(again), 100);
+        }
         main.removeCallbacks(hideCableHint);
         cableHint = null;
         // El marcador de la variante de pruebas, también: se vuelve a crear en la interfaz nueva.
@@ -2032,8 +2038,16 @@ final class CarUi {
         u.main.post(() -> u.showVideoInfoNow(text));
     }
 
+    /** Lo que dice el cartel y hasta cuándo (reloj uptimeMillis): para volver a enseñarlo si se rehace la interfaz. */
+    private String infoText;
+    private long infoUntil;
+
     private void showVideoInfoNow(String text) {
         if (root == null) return;
+        if (!text.equals(infoText) || android.os.SystemClock.uptimeMillis() >= infoUntil) {
+            infoText = text;
+            infoUntil = android.os.SystemClock.uptimeMillis() + VIDEO_INFO_MS;
+        }
         if (videoInfo == null) {
             TextView t = CarStyle.text(ctx, "", 26, CarStyle.ON_ACCENT);
             t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
@@ -2054,7 +2068,9 @@ final class CarUi {
         int areaX = aaShown ? aaRegX : 0;
         int areaW = aaShown ? aaRegW : width;
         int x = Math.max(0, areaX + (areaW - w) / 2);
-        int y = 16;
+        // Con el marcador de la variante de pruebas arriba a la derecha, el cartel justo debajo (no se pisan).
+        int[] hud = labHudRect;
+        int y = hud != null ? hud[1] + hud[3] + 8 : 16;
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) videoInfo.getLayoutParams();
         lp.leftMargin = x;
         lp.topMargin = y;
@@ -2066,7 +2082,7 @@ final class CarUi {
             infoRect = new int[]{x, y, w, h};
             pushRects();
         }
-        main.postDelayed(hideVideoInfo, VIDEO_INFO_MS);
+        main.postDelayed(hideVideoInfo, Math.max(500, infoUntil - android.os.SystemClock.uptimeMillis()));
     }
 
     /** Texto de un botón del panel por su id (Config.PANEL_BUTTONS_ALL). */
