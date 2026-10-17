@@ -691,6 +691,10 @@
     <string name="hql_req_aa_version_untested">尚未与 Qonecta+ 测试（已测试：%1$s）。如果出现问题，请关闭 Android Auto 自动更新（Play Store › Android Auto › ⋮），并查看手册中的“Android Auto 版本”。</string>
     <string name="hql_req_aa_version_store">Play Store</string>
     <string name="hql_route_arrival_compare">到达时：预计 %1$.1f kWh · 实际 %2$.1f kWh（车辆数据）</string>
+    <string name="hql_route_end">结束路线</string>
+    <string name="hql_route_ended_title">行程结束</string>
+    <string name="hql_route_ended_text">预计 %1$.1f kWh · 实际 %2$.1f kWh · %3$.0f km</string>
+    <string name="hql_route_ended_generator">预计 %1$.1f kWh · %2$.0f km（增程器充电：未测量）</string>
     <string name="hql_route_arrival_generator">到达时：预计 %1$.1f kWh · 途中发电机充过电（未计量）</string>
     <string name="hql_route_car_avg">车辆平均：%1$.1f kWh/100</string>
     <string name="hql_route_flat_ahead">剩余路段基本平坦</string>

@@ -111,8 +111,10 @@ final class RoutePlanner {
         double startCap = Double.NaN;
         double startFuel = Double.NaN;
         int startProgress;
-        /** Hora (de pared) de la llegada, o 0. */
+        /** Hora (de pared) de la llegada (o de «Terminar ruta»), o 0. */
         long arrivedAtMs;
+        /** Punto de la ruta hasta el que se hizo (al llegar, el final; al terminarla antes, donde se estaba); -1 sin llegar. */
+        int endProgress = -1;
         /** Lo previsto y lo real al llegar (kWh); NaN hasta saberlo. */
         volatile double arrivalPredictedKwh = Double.NaN;
         volatile double arrivalRealKwh = Double.NaN;
@@ -307,6 +309,9 @@ final class RoutePlanner {
         manual = pl;
         RoutePlanner r = instance;
         if (r != null) {
+            // Una ruta ya terminada (llegada o «Terminar ruta») sigue esperando el dato del coche para cerrar sus cuentas.
+            Plan old = r.plan;
+            if (old != null && old.arrivedAtMs != 0 && !old.arrivalDone) r.finishing = old;
             r.plan = null;
             r.lastAttemptMs = 0;
             r.failedDestination = null;
@@ -381,6 +386,7 @@ final class RoutePlanner {
 
     static synchronized void stop() {
         if (instance == null) return;
+        instance.finishOnStop();
         instance.running = false;
         CarSensors.stop();
         VoiceAlert.shutdown();
@@ -474,6 +480,8 @@ final class RoutePlanner {
         Plan p = plan;
         if (p != null && origin == null && !Double.isNaN(s.lat)) p.progress = nearest(p, s.lat, s.lon, p.progress);
         if (p != null) compareOnArrival(p, s);
+        Plan f = finishing;
+        if (f != null && f != p) finishPending(f);
         // Tráfico de la DGT sobre la ruta (obras, accidentes, retenciones, vehículos detenidos…).
         DgtTraffic.update(ctx, p, p == null ? 0 : p.km[Math.min(p.progress, p.n - 1)], this::trafficAlert);
         if (p != null && !demo && !p.routeTiles.isEmpty() && p.dgtVersion != DgtChargers.version) {
@@ -520,6 +528,14 @@ final class RoutePlanner {
                 if (!keptAtStopLogged) L.i("ruta: Google Maps ha dejado de navegar junto a una parada de carga del plan: sigo con la ruta");
                 keptAtStopLogged = true;
             } else {
+                // Junto al destino es la llegada (aparcado algo antes): las cuentas del viaje se cierran igual.
+                Plan cur = plan;
+                if (cur != null && here != null && cur.arrivedAtMs == 0 && !Double.isNaN(cur.startSoc)) {
+                    double toGo = cur.totalKm - cur.km[Math.min(cur.progress, cur.n - 1)];
+                    if (arrived(toGo, straightToEndKm(cur, here[0], here[1]), false, true)) {
+                        markArrived(cur, toGo, "Google Maps terminó la navegación junto al destino");
+                    }
+                }
                 L.i("ruta: Google Maps ha dejado de navegar: quito el destino que había deducido");
                 keptAtStopLogged = false;
                 guessAsked = false;
@@ -1556,6 +1572,60 @@ final class RoutePlanner {
 
     /** Distancia al destino por debajo de la cual se da por llegado (km). */
     static final double ARRIVED_KM = 0.3;
+    /**
+     * Aparcar algo antes (un parking, otra calle): en línea recta a menos de esto del final, con menos de NEAR_ROUTE_KM de
+     * ruta por delante, y parado STOPPED_MS (o con Maps ya sin navegar), también es llegar.
+     */
+    static final double NEAR_DEST_KM = 0.4;
+    /** Ruta por delante como mucho para la llegada «cerca»: en una ida y vuelta, la salida también está junto al final. */
+    static final double NEAR_ROUTE_KM = 3.0;
+    static final double STOPPED_KMH = 3;
+    static final long STOPPED_MS = 60_000;
+    /** El dato del coche que cierra las cuentas: como mucho de esto antes de la llegada (si no, falta parte del viaje). */
+    static final long LAST_DATA_MAX_MS = 120_000;
+    /** Terminada la ruta, se espera su lectura del coche como mucho esto; si no llega, el viaje no cuenta para afinar. */
+    static final long FINISH_WAIT_MS = 10 * 60_000L;
+
+    /** La ruta ya terminada que espera el dato del coche para cerrar sus cuentas (null: ninguna). */
+    private volatile Plan finishing;
+    /** Desde cuándo está parado el coche (reloj de arranque; 0: en marcha). */
+    private long stoppedSinceMs;
+    /** Lo último medido al terminar una ruta: {previsto kWh, real kWh (NaN sin medir), km, hora de pared}; null nada. */
+    private static volatile double[] lastArrival;
+
+    /**
+     * Puro: ¿se da por llegado? A menos de ARRIVED_KM por la ruta; o en línea recta a menos de NEAR_DEST_KM del final,
+     * con menos de NEAR_ROUTE_KM de ruta por delante, y parado un rato o con Maps ya sin navegar.
+     */
+    static boolean arrived(double toGoKm, double straightKm, boolean stopped, boolean mapsEnded) {
+        if (toGoKm <= ARRIVED_KM) return true;
+        return straightKm <= NEAR_DEST_KM && toGoKm <= NEAR_ROUTE_KM && (stopped || mapsEnded);
+    }
+
+    /** Puro: lo previsto (kWh) entre dos puntos de la ruta (0 si no avanza). */
+    static double predictedKwh(double[] kwhCum, int from, int to) {
+        if (kwhCum == null || kwhCum.length == 0) return Double.NaN;
+        int a = Math.max(0, Math.min(from, kwhCum.length - 1));
+        int b = Math.max(0, Math.min(to, kwhCum.length - 1));
+        return b <= a ? 0 : kwhCum[b] - kwhCum[a];
+    }
+
+    /** Puro: ¿sirve el dato del coche de la hora dataMs para un viaje que acabó en arrivedMs (horas de pared)? */
+    static boolean freshEnough(long dataMs, long arrivedMs) {
+        return dataMs > 0 && arrivedMs > 0 && dataMs >= arrivedMs - LAST_DATA_MAX_MS;
+    }
+
+    private static double straightToEndKm(Plan p, double lat, double lon) {
+        return RoadInfo.dist(lat, lon, p.lat[p.n - 1], p.lon[p.n - 1]) / 1000.0;
+    }
+
+    /** La ruta se da por terminada aquí (llegada, o «Terminar ruta»): sus cuentas, con el próximo dato del coche. */
+    private void markArrived(Plan p, double toGo, String why) {
+        if (p.arrivedAtMs != 0 || p.arrivalDone) return;
+        p.arrivedAtMs = System.currentTimeMillis();
+        p.endProgress = toGo <= ARRIVED_KM ? p.n - 1 : Math.min(p.progress, p.n - 1);
+        L.i(String.format(Locale.US, "ruta: terminada (%s; quedaban %.2f km por la ruta)", why, toGo));
+    }
 
     /**
      * Lo previsto frente a lo real: la primera lectura de la nube tras calcular la ruta marca el inicio; al llegar, la
@@ -1579,16 +1649,88 @@ final class RoutePlanner {
             p.arrivalDone = true; // cargó por el camino: no se compara
             return;
         }
-        double toGo = p.totalKm - p.km[Math.min(p.progress, p.n - 1)];
         if (p.arrivedAtMs == 0) {
-            if (toGo > ARRIVED_KM || Double.isNaN(s.lat)) return;
-            p.arrivedAtMs = System.currentTimeMillis();
+            if (Double.isNaN(s.lat)) return;
+            long now = SystemClock.elapsedRealtime();
+            if (s.speedKmh < STOPPED_KMH) {
+                if (stoppedSinceMs == 0) stoppedSinceMs = now;
+            } else {
+                stoppedSinceMs = 0;
+            }
+            boolean stopped = stoppedSinceMs != 0 && now - stoppedSinceMs >= STOPPED_MS;
+            double toGo = p.totalKm - p.km[Math.min(p.progress, p.n - 1)];
+            if (!arrived(toGo, straightToEndKm(p, s.lat, s.lon), stopped, false)) return;
+            markArrived(p, toGo, toGo <= ARRIVED_KM ? "a menos de 300 m por la ruta" : "parado junto al destino");
             return;
         }
-        // La lectura de después de llegar (el coche sube el dato cada poco; se espera a una nueva).
-        if (cs.fetchedAtMs < p.arrivedAtMs + 20_000) return;
+        // La lectura de después de llegar (el coche sube el dato cada poco; se espera a una nueva y de esa hora).
+        if (cs.fetchedAtMs < p.arrivedAtMs + 20_000 || !freshEnough(cs.dataTimeMs(), p.arrivedAtMs)) return;
+        finishCompare(p, cs);
+    }
+
+    /** La ruta ya quitada que espera su dato: se cierra con él o, pasado FINISH_WAIT_MS, se deja sin contar. */
+    private void finishPending(Plan f) {
+        if (f.arrivalDone) {
+            finishing = null;
+            return;
+        }
+        if (System.currentTimeMillis() - f.arrivedAtMs > FINISH_WAIT_MS) {
+            finishing = null;
+            L.i("ruta: sin un dato del coche de cuando terminó la ruta: este viaje no cuenta para afinar");
+            return;
+        }
+        CarCloud.Snapshot cs = CarCloud.snapshot();
+        if (cs == null || !cs.hasData() || cs.demo) return;
+        if (cs.fetchedAtMs < f.arrivedAtMs + 20_000 || !freshEnough(cs.dataTimeMs(), f.arrivedAtMs)) return;
+        finishCompare(f, cs);
+        finishing = null;
+    }
+
+    /**
+     * Fin de la sesión (se apaga el coche): la ruta terminada, o aparcada junto al destino sin llegar a contar, se cierra
+     * con el último dato del coche si es de cuando se llegó (LAST_DATA_MAX_MS); si no, no cuenta (mejor que un dato malo).
+     */
+    private synchronized void finishOnStop() {
+        if (demo || testMode) return;
+        Plan f = finishing != null ? finishing : plan;
+        if (f == null || f.arrivalDone || Double.isNaN(f.startSoc) || f.n < 2) return;
+        if (f.arrivedAtMs == 0) {
+            CarSensors.Snapshot s = sensors.snapshot();
+            double[] here = Double.isNaN(s.lat) ? lastKnown(ctx) : new double[]{s.lat, s.lon, 0};
+            if (here == null) return;
+            double toGo = f.totalKm - f.km[Math.min(f.progress, f.n - 1)];
+            if (!arrived(toGo, straightToEndKm(f, here[0], here[1]), true, false)) return;
+            markArrived(f, toGo, "la sesión acaba junto al destino");
+        }
+        finishing = null;
+        CarCloud.Snapshot cs = CarCloud.snapshot();
+        if (cs == null || !cs.hasData() || cs.demo) return;
+        if (freshEnough(cs.dataTimeMs(), f.arrivedAtMs)) {
+            finishCompare(f, cs);
+        } else {
+            f.arrivalDone = true;
+            L.i("ruta: la sesión acaba al llegar sin un dato reciente del coche: este viaje no cuenta para afinar");
+        }
+    }
+
+    /** Para el resumen del viaje en el móvil (TripNotice): cierra lo pendiente antes de leer lastArrival. */
+    static void finishNow() {
+        RoutePlanner r = instance;
+        if (r != null) r.finishOnStop();
+    }
+
+    /** Lo medido al terminar la última ruta desde sinceMs (hora de pared): {previsto, real, km}, o null. */
+    static double[] lastArrival(long sinceMs) {
+        double[] a = lastArrival;
+        return a != null && a[3] >= sinceMs ? new double[]{a[0], a[1], a[2]} : null;
+    }
+
+    /** Las cuentas del viaje: lo previsto para lo hecho frente a lo que bajó la batería, y la tarjeta en el coche. */
+    private void finishCompare(Plan p, CarCloud.Snapshot cs) {
         p.arrivalDone = true;
-        double predicted = p.kwhCum[p.n - 1] - p.kwhCum[Math.min(p.startProgress, p.n - 1)];
+        LeapStatus st = cs.status;
+        int end = p.endProgress >= 0 ? p.endProgress : p.n - 1;
+        double predicted = predictedKwh(p.kwhCum, p.startProgress, end);
         double real = (p.startSoc - st.socBest()) / 100.0 * p.startCap;
         double km = st.odometerKm - p.startOdo;
         // REEV con el generador en marcha: la bajada del % no es lo gastado.
@@ -1606,6 +1748,32 @@ final class RoutePlanner {
         }
         L.i(String.format(Locale.US, "ruta: llegada: previsto %.2f kWh, real %s (nube Leapmotor, %.0f km)%s", predicted,
                 generator ? "sin medir (el generador del REEV cargó)" : String.format(Locale.US, "%.2f kWh", real), km, note));
+        lastArrival = new double[]{predicted, p.arrivalRealKwh, km, System.currentTimeMillis()};
+        ChargeAlertListener l = chargeAlerts;
+        if (l != null) {
+            l.onChargeAlert(Str.get(R.string.hql_route_ended_title), generator
+                    ? Str.get(R.string.hql_route_ended_generator, predicted, km)
+                    : Str.get(R.string.hql_route_ended_text, predicted, real, km), ALERT_READY);
+        }
+    }
+
+    /**
+     * Coche › Ruta «Terminar ruta» y la ✕ de la tarjeta flotante: la ruta se da por terminada donde se esté (aparcado algo
+     * antes del destino); sus cuentas, con lo previsto para lo hecho, y fuera la ruta. Con la de Google Maps, Maps sigue
+     * guiando pero esa navegación no se vuelve a leer.
+     */
+    static void endRoute(String why) {
+        RoutePlanner r = instance;
+        Plan p = r == null ? null : r.plan;
+        if (r != null && p != null && !r.demo && !testMode && !Double.isNaN(p.startSoc) && p.n >= 2) {
+            synchronized (r) {
+                r.markArrived(p, p.totalKm - p.km[Math.min(p.progress, p.n - 1)], why);
+            }
+        }
+        L.i("ruta: terminada a mano (" + why + ")");
+        if (guessed) guessAsked = true;
+        routeOffer = null;
+        setManualDestination(null);
     }
 
     /**

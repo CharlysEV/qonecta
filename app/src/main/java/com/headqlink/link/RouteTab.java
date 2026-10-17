@@ -142,7 +142,7 @@ final class RouteTab implements CarScreen {
         actionsRow = actions;
         search = CarKit.pill(ctx, Str.get(R.string.hql_route_search_dest), true);
         goMaps = CarKit.pill(ctx, Str.get(R.string.hql_route_guide_maps), false);
-        clear = CarKit.pill(ctx, Str.get(R.string.hql_remove), false);
+        clear = CarKit.pill(ctx, Str.get(R.string.hql_route_end), false);
         // Coche virtual (modo prueba): desde dónde sale la ruta (el GPS o un lugar elegido: «un Sevilla-Barcelona»).
         originPill = CarKit.pill(ctx, "", false);
         originPill.setOnClickListener(v -> openSearch(true));
@@ -191,8 +191,9 @@ final class RouteTab implements CarScreen {
             if (pl != null && ((cp != null && cp.next() != null) || pl.multi())) RoutePlanner.navigateWithStops(ctx, pl, cp);
             else navigateTo(m.lat, m.lon);
         });
+        // Aparcado algo antes del destino: la ruta se da por terminada aquí y se cierran sus cuentas.
         clear.setOnClickListener(v -> {
-            RoutePlanner.setManualDestination(null);
+            RoutePlanner.endRoute("Coche › Ruta");
             tick();
         });
         // Sin destino: el botón grande en el centro.
@@ -2619,7 +2620,7 @@ final class RouteTab implements CarScreen {
         }
         // El hueco de los botones, medido (en otros idiomas son más anchos que en español).
         float pillsW = actionsRow.getWidth() > 0 ? actionsRow.getWidth() + 20
-                : goMaps.getVisibility() == View.VISIBLE ? 620 : clear.getVisibility() == View.VISIBLE ? 360 : 240;
+                : goMaps.getVisibility() == View.VISIBLE ? 620 : clear.getVisibility() == View.VISIBLE ? 420 : 240;
         if (r.width() - pillsW - 60 < r.width() * 0.3f) {
             // Sin sitio para el destino al lado de los botones (T03 con los botones más grandes; C10 con «Viaje» y,
             // en el coche virtual, «Desde»: quedaba en «A…»): va debajo.

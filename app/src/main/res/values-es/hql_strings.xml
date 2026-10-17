@@ -693,6 +693,10 @@
     <string name="hql_req_aa_version_untested">Sin probar todavía con Qonecta+ (probadas: %1$s). Si falla, desactiva la actualización automática de Android Auto (Play Store › Android Auto › ⋮) y mira «Versiones de Android Auto» en el manual.</string>
     <string name="hql_req_aa_version_store">Play Store</string>
     <string name="hql_route_arrival_compare">Al llegar: previsto %1$.1f kWh · real %2$.1f kWh (datos del coche)</string>
+    <string name="hql_route_end">Terminar ruta</string>
+    <string name="hql_route_ended_title">Viaje terminado</string>
+    <string name="hql_route_ended_text">Previsto %1$.1f kWh · real %2$.1f kWh · %3$.0f km</string>
+    <string name="hql_route_ended_generator">Previsto %1$.1f kWh · %2$.0f km (el generador cargó: sin medir)</string>
     <string name="hql_route_arrival_generator">Al llegar: previsto %1$.1f kWh · el generador cargó por el camino (sin medir)</string>
     <string name="hql_route_car_avg">Media del coche: %1$.1f kWh/100</string>
     <string name="hql_route_flat_ahead">Lo que falta es casi llano</string>

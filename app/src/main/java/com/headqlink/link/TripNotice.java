@@ -44,11 +44,12 @@ final class TripNotice {
             if (s == null || !cfg.tripNotice() || !Config.isAa(cfg.mode())) return;
             double predicted = Double.NaN;
             double real = Double.NaN;
-            RoutePlanner rp = RoutePlanner.get();
-            RoutePlanner.Plan p = rp == null ? null : rp.plan();
-            if (p != null) {
-                predicted = p.arrivalPredictedKwh;
-                real = p.arrivalRealKwh;
+            // Lo de la ruta terminada en este viaje (también si se quitó, o si la sesión acaba justo al llegar).
+            RoutePlanner.finishNow();
+            double[] a = RoutePlanner.lastArrival(System.currentTimeMillis() - Math.round((s.getMinutes() + 5) * 60_000));
+            if (a != null) {
+                predicted = a[0];
+                real = a[1];
             }
             String text = text(s, ThermalGuard.tripPeakC(), predicted, real);
             if (text == null) return;

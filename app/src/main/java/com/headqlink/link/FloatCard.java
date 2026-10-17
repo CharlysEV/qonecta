@@ -18,7 +18,8 @@ import com.andrerinas.openheadunit.aap.NavTap;
 /**
  * Tarjeta flotante sobre Android Auto con la próxima parada del plan de carga (o, sin paradas, con qué % se llega al
  * destino). CarUi la coloca encima de la zona de AA y GlFrameRelay vuelve a pintar su rectángulo sobre la imagen de AA.
- * Un toque abre la ruta; mantenerla pulsada y arrastrar la mueve (la posición se guarda).
+ * Un toque abre la ruta; mantenerla pulsada y arrastrar la mueve (la posición se guarda). La ✕ de la derecha termina la
+ * ruta (aparcado algo antes del destino: RoutePlanner.endRoute).
  */
 final class FloatCard extends LinearLayout {
     static final int W = 470;
@@ -33,6 +34,9 @@ final class FloatCard extends LinearLayout {
         void onDrag(float dx, float dy);
 
         void onDrop();
+
+        /** La ✕: terminar la ruta. */
+        void onEnd();
     }
 
     private final Listener listener;
@@ -69,6 +73,15 @@ final class FloatCard extends LinearLayout {
         sub.setEllipsize(android.text.TextUtils.TruncateAt.END);
         texts.addView(sub);
         addView(texts, new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        // Terminar la ruta: su propio botón (un toque en el resto de la tarjeta sigue abriendo la ruta).
+        TextView end = CarStyle.text(c, "✕", 28, CarStyle.TEXT_DIM);
+        end.setGravity(Gravity.CENTER);
+        end.setBackground(CarStyle.round(CarKit.alpha(CarStyle.TEXT_DIM, 0.16f), 30));
+        end.setContentDescription(Str.get(R.string.hql_route_end));
+        end.setOnClickListener(v -> listener.onEnd());
+        LayoutParams elp = new LayoutParams(60, 60);
+        elp.leftMargin = 10;
+        addView(end, elp);
         paintBackground();
     }
 

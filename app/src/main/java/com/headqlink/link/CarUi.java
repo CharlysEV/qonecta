@@ -1318,6 +1318,12 @@ final class CarUi {
             }
 
             @Override
+            public void onEnd() {
+                RoutePlanner.endRoute("tarjeta flotante");
+                refreshFloat();
+            }
+
+            @Override
             public void onDrag(float dx, float dy) {
                 int[] r = floatRect;
                 if (r == null) return;
