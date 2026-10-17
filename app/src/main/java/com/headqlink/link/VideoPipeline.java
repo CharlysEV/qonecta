@@ -574,7 +574,8 @@ final class VideoPipeline {
     static void onTouch() {
         lastTouchMs = SystemClock.elapsedRealtime();
         VideoPipeline p = current;
-        if (p == null || p.stopped || p.touchBoost || !p.boostOnTouch) return;
+        Boolean lab = LabControl.touchBoost;
+        if (p == null || p.stopped || p.touchBoost || !(lab != null ? lab : p.boostOnTouch)) return;
         p.touchBoost = true;
         p.h.post(() -> {
             p.applyFpsCap();
@@ -613,6 +614,8 @@ final class VideoPipeline {
         boolean full = gameMode || !prof.capsContentTo30();
         int content = interactiveCap(prof.best(), gameMode, touchBoost, contentCap(full, cfg.fluidity(), plan.fps));
         int fps = Math.min(Math.min(thermalFpsCap, linkFpsCap), content);
+        // Variante de pruebas: el tope de Claude (LabControl), si lo hay.
+        if (LabControl.fpsCap > 0) fps = Math.min(fps, LabControl.fpsCap);
         if (!gated) {
             fpsCap = vp != null ? vp.fps : plan.fps;
             return;
@@ -651,7 +654,36 @@ final class VideoPipeline {
 
     /** Techo del ABR: el del perfil o, con calor, el tope térmico (lo que sea menor). */
     private int abrCeiling() {
-        return thermalMaxBps > 0 ? Math.min(abrMax, thermalMaxBps) : abrMax;
+        return labCap(thermalMaxBps > 0 ? Math.min(abrMax, thermalMaxBps) : abrMax);
+    }
+
+    /** Variante de pruebas: bps con el tope de bitrate de Claude (LabControl), si lo hay. */
+    private static int labCap(int bps) {
+        int lab = LabControl.maxKbps * 1000;
+        return lab > 0 ? Math.min(bps, lab) : bps;
+    }
+
+    /** Variante de pruebas: los topes de Claude (fps, bitrate, salto al tocar) se aplican ya, en hql-video. */
+    static void labApply() {
+        VideoPipeline p = current;
+        if (p == null || p.stopped) return;
+        p.h.post(() -> {
+            p.applyFpsCap();
+            VideoEncoder enc = p.encoder;
+            if (enc == null || p.vp == null) return;
+            int bps;
+            if (p.abrMax > 0) {
+                p.abrBps = Math.min(Math.max(p.abrBps, Math.min(p.abrMin, p.abrCeiling())), p.abrCeiling());
+                bps = p.abrBps;
+            } else if (p.link != null) {
+                p.link.setCeiling(labCap(p.thermalMaxBps > 0 ? p.thermalMaxBps : p.vp.bitrate));
+                bps = p.link.bitrate();
+            } else {
+                bps = labCap(p.thermalMaxBps > 0 ? p.thermalMaxBps : p.vp.bitrate);
+            }
+            enc.setBitrate(bps);
+            L.i(String.format(Locale.US, "laboratorio: el vídeo va ahora a %d fps como mucho · %.1f Mbit/s", p.fpsCap, bps / 1e6));
+        });
     }
 
     /**
@@ -684,7 +716,7 @@ final class VideoPipeline {
             bps = abrBps;
         } else if (lk != null) {
             // El techo del enlace es el térmico (o el del perfil al enfriarse); el bitrate que lleva, el del enlace.
-            lk.setCeiling(thermalMaxBps > 0 ? thermalMaxBps : vp.bitrate);
+            lk.setCeiling(labCap(thermalMaxBps > 0 ? thermalMaxBps : vp.bitrate));
             bps = lk.bitrate();
         } else {
             bps = thermalMaxBps > 0 ? thermalMaxBps : vp.bitrate;

@@ -19,6 +19,7 @@ import java.util.ArrayDeque;
  * en el coche, con datos móviles, sin cable ni adb. Se apaga solo en la hora fijada al activarlo.
  *
  * GET /log?k=CLAVE&since=N → las líneas con número &gt; N, una por línea; la cabecera X-Next dice el último número.
+ * GET /cmd?k=CLAVE&c=ORDEN → solo en la variante de pruebas (LabControl): ejecuta la orden y responde qué ha hecho.
  */
 public final class LiveLog {
     static final int PORT = 47900;
@@ -31,6 +32,8 @@ public final class LiveLog {
     private static volatile ServerSocket server;
     private static volatile String key = "";
     private static volatile long untilMs;
+    /** Para las órdenes de la variante de pruebas (LabControl). */
+    private static volatile Context app;
 
     private LiveLog() {
     }
@@ -69,6 +72,7 @@ public final class LiveLog {
 
     /** Al arrancar la app: si estaba activo y no ha caducado, sigue. */
     public static void resume(Context c) {
+        app = c.getApplicationContext();
         SharedPreferences p = sp(c);
         long until = p.getLong("until", 0);
         String k = p.getString("key", "");
@@ -77,6 +81,7 @@ public final class LiveLog {
 
     /** Lo activa hasta untilMs con esa clave (LiveLogReceiver) y lo guarda para los arranques siguientes. */
     static void enable(Context c, String k, long until) {
+        app = c.getApplicationContext();
         sp(c).edit().putString("key", k).putLong("until", until).apply();
         start(k, until);
     }
@@ -132,6 +137,15 @@ public final class LiveLog {
                 String k = param(path, "k");
                 long since = parseLong(param(path, "since"));
                 OutputStream out = c.getOutputStream();
+                if (key.equals(k) && path.startsWith("/cmd") && LabControl.enabled() && app != null) {
+                    String reply = LabControl.handle(app, java.net.URLDecoder.decode(param(path, "c"), "UTF-8"));
+                    byte[] r = (reply + "\n").getBytes(StandardCharsets.UTF_8);
+                    out.write(("HTTP/1.0 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Length: " + r.length
+                            + "\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
+                    out.write(r);
+                    out.flush();
+                    continue;
+                }
                 if (!key.equals(k) || !path.startsWith("/log")) {
                     out.write("HTTP/1.0 403 Forbidden\r\n\r\n".getBytes(StandardCharsets.US_ASCII));
                     continue;

@@ -300,6 +300,11 @@ final class CarUi {
         videoInfo = null;
         main.removeCallbacks(hideCableHint);
         cableHint = null;
+        // El marcador de la variante de pruebas, también: se vuelve a crear en la interfaz nueva.
+        main.removeCallbacks(labHudTick);
+        labHudView = null;
+        labHudRect = null;
+        if (LabControl.hud) main.post(labHudTick);
         pres.setContentView(buildRoot(pres.getContext()));
         open(name);
         if (wasHidden && "aa".equals(name)) setHidden(true);
@@ -985,6 +990,7 @@ final class CarUi {
             listenNight();
             RadioPlayer.addListener(radioChanged);
             current = this;
+            if (LabControl.hud) main.post(labHudTick);
             // Sección Coche: viajes, ruta y datos de la vía, mientras dure el modo ampliado (y los datos reales del coche
             // de la cuenta de Leapmotor, si está configurada: CarCloud).
             CarCloud.acquire(ctx, "ui");
@@ -1066,6 +1072,7 @@ final class CarUi {
             main.removeCallbacks(alertSeenTask);
             main.removeCallbacks(guessExpire);
             main.removeCallbacks(hideCableHint);
+            main.removeCallbacks(labHudTick);
             stopPanelSlide();
             main.removeCallbacks(railTick);
             main.removeCallbacks(floatTick);
@@ -1367,7 +1374,7 @@ final class CarUi {
     /** Manda al relay los trozos que hay ahora (si han cambiado). */
     private void pushRects() {
         java.util.List<int[]> l = new java.util.ArrayList<>();
-        for (int[] r : new int[][]{panelRect, floatRect, guessRect, infoRect}) if (r != null) l.add(r);
+        for (int[] r : new int[][]{panelRect, floatRect, guessRect, infoRect, labHudRect}) if (r != null) l.add(r);
         int[][] now = l.isEmpty() ? null : l.toArray(new int[0][]);
         if (java.util.Arrays.deepEquals(now, sentRects)) return;
         sentRects = now;
@@ -1859,6 +1866,67 @@ final class CarUi {
         p.addView(battery);
         p.addView(buildRailInfo(c));
         return p;
+    }
+
+    // ------------------------------------------------------------------ variante de pruebas: el marcador de Claude
+
+    /** Ancho fijo del marcador (px del lienzo): el trozo que pinta el relay no cambia cada vez que cambia el texto. */
+    private static final int LAB_HUD_W = 660;
+    private TextView labHudView;
+    private int[] labHudRect;
+    /**
+     * Variante de pruebas: el marcador de la esquina de arriba a la derecha (LabControl.hudText: temperatura, calor, fps,
+     * bitrate, radio y lo que Claude tenga forzado), cada 2 s mientras esté encendido. Encima de AA lo pinta el relay
+     * (labHudRect); sus toques siguen yendo a AA.
+     */
+    private final Runnable labHudTick = new Runnable() {
+        @Override
+        public void run() {
+            main.removeCallbacks(this);
+            if (!LabControl.hud || root == null) {
+                if (labHudView != null) labHudView.setVisibility(View.GONE);
+                if (labHudRect != null) {
+                    labHudRect = null;
+                    pushRects();
+                }
+                return;
+            }
+            if (labHudView == null) {
+                TextView t = CarStyle.text(root.getContext(), "", 17, 0xFFFFFFFF);
+                t.setPadding(14, 6, 14, 6);
+                t.setSingleLine(true);
+                t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                t.setGravity(Gravity.CENTER);
+                t.setBackground(CarStyle.round(0xCC000000, 14));
+                root.addView(t, new FrameLayout.LayoutParams(LAB_HUD_W, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT));
+                labHudView = t;
+            }
+            labHudView.setText(LabControl.hudText(ctx));
+            labHudView.measure(View.MeasureSpec.makeMeasureSpec(LAB_HUD_W, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            int x = Math.max(0, width - LAB_HUD_W - 12);
+            int y = 8;
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) labHudView.getLayoutParams();
+            if (lp.leftMargin != x || lp.topMargin != y) {
+                lp.leftMargin = x;
+                lp.topMargin = y;
+                labHudView.setLayoutParams(lp);
+            }
+            labHudView.setVisibility(View.VISIBLE);
+            labHudView.bringToFront();
+            int[] r = {x, y, LAB_HUD_W, labHudView.getMeasuredHeight()};
+            if (!java.util.Arrays.equals(r, labHudRect)) {
+                labHudRect = r;
+                pushRects();
+            }
+            main.postDelayed(this, 2000);
+        }
+    };
+
+    /** Variante de pruebas: enciende o apaga el marcador (LabControl, orden «hud»). */
+    static void labHud(boolean on) {
+        CarUi ui = current;
+        if (ui != null) ui.main.post(ui.labHudTick);
     }
 
     // ------------------------------------------------------------------ aviso del cable (juegos, TV y vídeos por Wi-Fi)

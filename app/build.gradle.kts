@@ -122,6 +122,11 @@ android {
         // This is scanned at build time from values-XX directories
         buildConfigField("String", "AVAILABLE_LOCALES", "\"${availableLocales.joinToString(",")}\"")
         buildConfigField("String", "GIT_SHA", "\"$gitDescription\"")
+        // Variante de pruebas (-Plab): el apartado de Claude (LabControl), con órdenes por el log en directo. Solo para el
+        // móvil del desarrollador; la versión que se publica se compila sin -Plab (LAB false).
+        val lab = project.hasProperty("lab")
+        buildConfigField("boolean", "LAB", lab.toString())
+        if (lab) versionNameSuffix = "-pruebas"
 
         externalNativeBuild {
             cmake {
