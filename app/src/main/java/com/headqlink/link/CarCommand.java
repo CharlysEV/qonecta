@@ -15,6 +15,9 @@ import java.util.regex.Pattern;
 final class CarCommand {
     enum Kind { LOCK, UNLOCK, TRUNK_OPEN, TRUNK_CLOSE, CLIMATE_ON, CLIMATE_OFF, DEFROST, FIND }
 
+    /** Clima: automático (el coche decide), frío o calefacción. */
+    enum Mode { AUTO, COLD, HEAT }
+
     static final int TEMP_MIN = 18;
     static final int TEMP_MAX = 32;
     static final int TEMP_DEFAULT = 22;
@@ -22,14 +25,21 @@ final class CarCommand {
     final Kind kind;
     /** Clima: la temperatura pedida (°C). */
     final int tempC;
+    /** Clima: el modo. */
+    final Mode mode;
 
     CarCommand(Kind kind) {
-        this(kind, TEMP_DEFAULT);
+        this(kind, TEMP_DEFAULT, Mode.AUTO);
     }
 
     CarCommand(Kind kind, int tempC) {
+        this(kind, tempC, Mode.AUTO);
+    }
+
+    CarCommand(Kind kind, int tempC, Mode mode) {
         this.kind = kind;
         this.tempC = Math.max(TEMP_MIN, Math.min(TEMP_MAX, tempC));
+        this.mode = mode == null ? Mode.AUTO : mode;
     }
 
     /** Lo que se abre pide un toque de confirmación. */
@@ -53,8 +63,9 @@ final class CarCommand {
     }
 
     /**
-     * El cuerpo de la orden. interiorC (NaN sin dato): con el clima a una temperatura, calor si dentro hace menos y frío
-     * si hace más. El apagado del clima depende del modelo (el T03 quiere el cuerpo entero).
+     * El cuerpo de la orden. El clima, en el modo elegido: frío o calefacción, manuales; automático, operate «auto» (el
+     * coche decide) con el modo según el interior (interiorC; NaN sin dato: frío). El apagado depende del modelo (el T03
+     * quiere el cuerpo entero).
      */
     String content(String carType, double interiorC) {
         switch (kind) {
@@ -73,16 +84,26 @@ final class CarCommand {
                 return CarCloudStore.isT03(carType)
                         ? "{\"circle\":\"out\",\"mode\":\"wind\",\"operate\":\"off\",\"position\":\"all\",\"temperature\":\"26\",\"windlevel\":\"3\",\"wshld\":\"0\"}"
                         : "{\"operate\":\"off\"}";
-            default: {
-                boolean hot = Double.isNaN(interiorC) ? tempC >= TEMP_DEFAULT : interiorC < tempC;
-                return climate("out", hot ? "hot" : "cold", tempC, 4, 0);
-            }
+            default:
+                switch (mode) {
+                    case COLD:
+                        return climate("out", "cold", "manual", tempC, 4, 0);
+                    case HEAT:
+                        return climate("out", "hot", "manual", tempC, 4, 0);
+                    default:
+                        boolean hot = !Double.isNaN(interiorC) && interiorC < tempC;
+                        return climate("out", hot ? "hot" : "cold", "auto", tempC, 3, 0);
+                }
         }
     }
 
     private static String climate(String circle, String mode, int temp, int wind, int wshld) {
-        return String.format(Locale.ROOT, "{\"circle\":\"%s\",\"mode\":\"%s\",\"operate\":\"manual\",\"position\":\"all\","
-                + "\"temperature\":\"%d\",\"windlevel\":\"%d\",\"wshld\":\"%d\"}", circle, mode, temp, wind, wshld);
+        return climate(circle, mode, "manual", temp, wind, wshld);
+    }
+
+    private static String climate(String circle, String mode, String operate, int temp, int wind, int wshld) {
+        return String.format(Locale.ROOT, "{\"circle\":\"%s\",\"mode\":\"%s\",\"operate\":\"%s\",\"position\":\"all\","
+                + "\"temperature\":\"%d\",\"windlevel\":\"%d\",\"wshld\":\"%d\"}", circle, mode, operate, temp, wind, wshld);
     }
 
     /** Lo que se hace, para la pantalla («Abrir el maletero», «Clima a 21 °C»). */
@@ -103,14 +124,15 @@ final class CarCommand {
             case FIND:
                 return Str.get(R.string.hql_cc_find);
             default:
-                return Str.get(R.string.hql_cc_climate_on, tempC);
+                return Str.get(mode == Mode.COLD ? R.string.hql_cc_climate_cold : mode == Mode.HEAT ? R.string.hql_cc_climate_heat
+                        : R.string.hql_cc_climate_on, tempC);
         }
     }
 
     /** Para el log (sin traducir). */
     @Override
     public String toString() {
-        return kind == Kind.CLIMATE_ON ? "CLIMATE_ON " + tempC + " °C" : kind.name();
+        return kind == Kind.CLIMATE_ON ? "CLIMATE_ON " + mode + " " + tempC + " °C" : kind.name();
     }
 
     /** Los botones del widget (extra de CarControlActivity), o null. */
@@ -134,11 +156,17 @@ final class CarCommand {
 
     private static final Pattern NUMBER = Pattern.compile("\\b(\\d{2})\\b");
 
-    /**
-     * Puro: la orden de una frase dicha («cierra el coche», «abre el maletero», «pon el clima a 21», «desempaña», «apaga
-     * el aire», «dónde está el coche»), o null si no se entiende. En castellano y lo básico en inglés.
-     */
+    /** Puro: como parse(spoken, defTemp, defMode), con 22 °C y automático si no se dicen. */
     static CarCommand parse(String spoken) {
+        return parse(spoken, TEMP_DEFAULT, Mode.AUTO);
+    }
+
+    /**
+     * Puro: la orden de una frase dicha («cierra el coche», «abre el maletero», «pon el clima a 21», «frío a 20»,
+     * «calefacción», «clima automático», «desempaña», «apaga el aire», «dónde está el coche»), o null si no se entiende.
+     * Sin temperatura o sin modo dichos, los de la última vez (defTemp, defMode). En castellano y lo básico en inglés.
+     */
+    static CarCommand parse(String spoken, int defTemp, Mode defMode) {
         if (spoken == null) return null;
         String t = Normalizer.normalize(spoken.toLowerCase(Locale.ROOT), Normalizer.Form.NFD).replaceAll("\\p{M}", "");
         t = " " + t.replaceAll("[^a-z0-9 ]", " ").replaceAll("\\s+", " ").trim() + " ";
@@ -150,13 +178,14 @@ final class CarCommand {
         if (has(t, " desempan", " desempen", " luna", " parabrisas", " defrost", " windshield")) {
             return off ? new CarCommand(Kind.CLIMATE_OFF) : new CarCommand(Kind.DEFROST);
         }
-        boolean warm = has(t, " calienta", " calentar", " calefac", " warm", " heat");
-        boolean cool = has(t, " enfria", " enfriar", " refresca", " cool");
-        if (warm || cool || has(t, " clima", " aire", " temperatura", " grados", " climate", " air ", " ac ")) {
+        boolean warm = has(t, " calienta", " calentar", " calefac", " calor", " warm", " heat");
+        boolean cool = has(t, " enfria", " enfriar", " refresca", " frio", " fresco", " cool", " cold");
+        boolean auto = has(t, " automatic", " auto ");
+        if (warm || cool || auto || has(t, " clima", " aire", " temperatura", " grados", " climate", " air ", " ac ")) {
             if (off || close) return new CarCommand(Kind.CLIMATE_OFF);
             Matcher m = NUMBER.matcher(t);
-            int temp = m.find() ? Integer.parseInt(m.group(1)) : warm ? 26 : cool ? 19 : TEMP_DEFAULT;
-            return new CarCommand(Kind.CLIMATE_ON, temp);
+            Mode mode = warm ? Mode.HEAT : cool ? Mode.COLD : auto ? Mode.AUTO : defMode;
+            return new CarCommand(Kind.CLIMATE_ON, m.find() ? Integer.parseInt(m.group(1)) : defTemp, mode);
         }
         if (has(t, " localiza", " donde esta", " encuentra", " busca", " pita", " pite", " pitar", " claxon", " bocina", " find", " where ")) {
             return new CarCommand(Kind.FIND);

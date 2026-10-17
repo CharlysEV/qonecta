@@ -187,7 +187,7 @@
     <string name="hql_cc_unlock">Abrir el coche</string>
     <string name="hql_cc_trunk_open">Abrir el maletero</string>
     <string name="hql_cc_trunk_close">Cerrar el maletero</string>
-    <string name="hql_cc_climate_on">Clima a %1$d °C</string>
+    <string name="hql_cc_climate_on">Clima automático a %1$d °C</string>
     <string name="hql_cc_climate_off">Apagar el clima</string>
     <string name="hql_cc_defrost">Desempañar</string>
     <string name="hql_cc_find">Pitar y luces</string>
@@ -219,4 +219,10 @@
     <string name="hql_cc_age_h">hace %1$d h</string>
     <string name="hql_cc_age_d">hace %1$d días</string>
     <string name="hql_cc_age_unknown">hora desconocida</string>
+    <string name="hql_cc_climate_cold">Frío a %1$d °C</string>
+    <string name="hql_cc_climate_heat">Calefacción a %1$d °C</string>
+    <string name="hql_cc_mode_auto">Auto</string>
+    <string name="hql_cc_mode_cold">Frío</string>
+    <string name="hql_cc_mode_heat">Calor</string>
+    <string name="hql_cc_on">Encender</string>
 </resources>

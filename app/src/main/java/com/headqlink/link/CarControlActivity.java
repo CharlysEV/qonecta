@@ -62,7 +62,105 @@ public final class CarControlActivity extends AppCompatActivity {
             return;
         }
         if (c.kind == CarCommand.Kind.FIND) locate();
+        else if (c.kind == CarCommand.Kind.CLIMATE_ON) climateDialog();
         else confirmAndSend(c);
+    }
+
+    /** Config: la última temperatura y el modo del clima. */
+    static final String K_CLIMATE_TEMP = "car_climate_temp";
+    static final String K_CLIMATE_MODE = "car_climate_mode";
+
+    private int savedTemp() {
+        try {
+            return Integer.parseInt(new Config(this).getString(K_CLIMATE_TEMP));
+        } catch (RuntimeException e) {
+            return CarCommand.TEMP_DEFAULT;
+        }
+    }
+
+    private CarCommand.Mode savedMode() {
+        try {
+            return CarCommand.Mode.valueOf(new Config(this).getString(K_CLIMATE_MODE));
+        } catch (RuntimeException e) {
+            return CarCommand.Mode.AUTO;
+        }
+    }
+
+    private void saveClimate(CarCommand c) {
+        Config cfg = new Config(this);
+        cfg.putString(K_CLIMATE_TEMP, Integer.toString(c.tempC));
+        cfg.putString(K_CLIMATE_MODE, c.mode.name());
+    }
+
+    /**
+     * El botón Clima: la temperatura (− +), el modo (Auto · Frío · Calor) y Encender, Desempañar o Apagar. Empieza con lo
+     * de la última vez.
+     */
+    private void climateDialog() {
+        int[] temp = {savedTemp()};
+        CarCommand.Mode[] mode = {savedMode()};
+        android.content.Context c = this;
+        float dp = getResources().getDisplayMetrics().density;
+        android.widget.LinearLayout box = new android.widget.LinearLayout(c);
+        box.setOrientation(android.widget.LinearLayout.VERTICAL);
+        box.setPadding(Math.round(24 * dp), Math.round(8 * dp), Math.round(24 * dp), 0);
+        android.widget.LinearLayout row = new android.widget.LinearLayout(c);
+        row.setGravity(android.view.Gravity.CENTER);
+        com.google.android.material.button.MaterialButton minus = new com.google.android.material.button.MaterialButton(c, null,
+                com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        minus.setText("−");
+        android.widget.TextView value = new android.widget.TextView(c);
+        value.setTextSize(30);
+        value.setGravity(android.view.Gravity.CENTER);
+        value.setMinWidth(Math.round(110 * dp));
+        com.google.android.material.button.MaterialButton plus = new com.google.android.material.button.MaterialButton(c, null,
+                com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        plus.setText("+");
+        Runnable paint = () -> value.setText(temp[0] + " °C");
+        paint.run();
+        minus.setOnClickListener(v -> {
+            temp[0] = Math.max(CarCommand.TEMP_MIN, temp[0] - 1);
+            paint.run();
+        });
+        plus.setOnClickListener(v -> {
+            temp[0] = Math.min(CarCommand.TEMP_MAX, temp[0] + 1);
+            paint.run();
+        });
+        row.addView(minus);
+        row.addView(value);
+        row.addView(plus);
+        box.addView(row);
+        com.google.android.material.button.MaterialButtonToggleGroup modes = new com.google.android.material.button.MaterialButtonToggleGroup(c);
+        modes.setSingleSelection(true);
+        modes.setSelectionRequired(true);
+        int[] labels = {R.string.hql_cc_mode_auto, R.string.hql_cc_mode_cold, R.string.hql_cc_mode_heat};
+        CarCommand.Mode[] values = CarCommand.Mode.values();
+        for (int i = 0; i < values.length; i++) {
+            com.google.android.material.button.MaterialButton b = new com.google.android.material.button.MaterialButton(c, null,
+                    com.google.android.material.R.attr.materialButtonOutlinedStyle);
+            b.setId(android.view.View.generateViewId());
+            b.setText(labels[i]);
+            CarCommand.Mode m = values[i];
+            modes.addView(b, new android.widget.LinearLayout.LayoutParams(0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+            if (m == mode[0]) modes.check(b.getId());
+            b.addOnCheckedChangeListener((btn, on) -> {
+                if (on) mode[0] = m;
+            });
+        }
+        android.widget.LinearLayout.LayoutParams mlp = new android.widget.LinearLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+        mlp.topMargin = Math.round(12 * dp);
+        box.addView(modes, mlp);
+        show(new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.hql_cw_climate)
+                .setView(box)
+                .setPositiveButton(R.string.hql_cc_on, (d, w) -> {
+                    CarCommand on = new CarCommand(CarCommand.Kind.CLIMATE_ON, temp[0], mode[0]);
+                    saveClimate(on);
+                    send(on);
+                })
+                .setNeutralButton(R.string.hql_cc_defrost, (d, w) -> send(new CarCommand(CarCommand.Kind.DEFROST)))
+                .setNegativeButton(R.string.hql_cc_climate_off, (d, w) -> send(new CarCommand(CarCommand.Kind.CLIMATE_OFF))));
     }
 
     /** La voz de Android (Google), en el idioma de la app; el resultado llega a onActivityResult. */
@@ -90,11 +188,15 @@ public final class CarControlActivity extends AppCompatActivity {
             return;
         }
         for (String h : heard) {
-            CarCommand c = CarCommand.parse(h);
+            CarCommand c = CarCommand.parse(h, savedTemp(), savedMode());
             if (c != null) {
                 L.i("widget «Coche»: por voz → " + c);
-                if (c.kind == CarCommand.Kind.FIND) locate();
-                else confirmAndSend(c);
+                if (c.kind == CarCommand.Kind.FIND) {
+                    locate();
+                } else {
+                    if (c.kind == CarCommand.Kind.CLIMATE_ON) saveClimate(c);
+                    confirmAndSend(c);
+                }
                 return;
             }
         }

@@ -187,7 +187,7 @@
     <string name="hql_cc_unlock">解锁车辆</string>
     <string name="hql_cc_trunk_open">打开后备箱</string>
     <string name="hql_cc_trunk_close">关闭后备箱</string>
-    <string name="hql_cc_climate_on">空调 %1$d °C</string>
+    <string name="hql_cc_climate_on">自动空调 %1$d °C</string>
     <string name="hql_cc_climate_off">关闭空调</string>
     <string name="hql_cc_defrost">除雾</string>
     <string name="hql_cc_find">鸣笛和闪灯</string>
@@ -219,4 +219,10 @@
     <string name="hql_cc_age_h">%1$d 小时前</string>
     <string name="hql_cc_age_d">%1$d 天前</string>
     <string name="hql_cc_age_unknown">时间未知</string>
+    <string name="hql_cc_climate_cold">制冷 %1$d °C</string>
+    <string name="hql_cc_climate_heat">制热 %1$d °C</string>
+    <string name="hql_cc_mode_auto">自动</string>
+    <string name="hql_cc_mode_cold">制冷</string>
+    <string name="hql_cc_mode_heat">制热</string>
+    <string name="hql_cc_on">开启</string>
 </resources>

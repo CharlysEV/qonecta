@@ -31,8 +31,16 @@ class CarCommandTest {
         assertEquals(CarCommand.Kind.CLIMATE_ON, c.kind)
         assertEquals(21, c.tempC)
         assertEquals(CarCommand.TEMP_DEFAULT, CarCommand.parse("enciende el aire")!!.tempC)
-        assertEquals(26, CarCommand.parse("calienta el coche")!!.tempC)
-        assertEquals(19, CarCommand.parse("enfría el coche")!!.tempC)
+        assertEquals(CarCommand.Mode.HEAT, CarCommand.parse("calienta el coche")!!.mode)
+        assertEquals(CarCommand.Mode.COLD, CarCommand.parse("enfría el coche")!!.mode)
+        assertEquals(CarCommand.Mode.COLD, CarCommand.parse("frío a 20")!!.mode)
+        assertEquals(CarCommand.Mode.HEAT, CarCommand.parse("pon la calefacción")!!.mode)
+        assertEquals(CarCommand.Mode.AUTO, CarCommand.parse("clima automático", 22, CarCommand.Mode.COLD)!!.mode)
+        // Sin decir modo ni temperatura: los de la última vez.
+        val last = CarCommand.parse("pon el clima", 24, CarCommand.Mode.HEAT)!!
+        assertEquals(24, last.tempC)
+        assertEquals(CarCommand.Mode.HEAT, last.mode)
+        assertEquals(20, CarCommand.parse("pon el clima a 20", 24, CarCommand.Mode.HEAT)!!.tempC)
         // Fuera del margen del coche: al límite.
         assertEquals(CarCommand.TEMP_MAX, CarCommand.parse("clima a 40")!!.tempC)
         assertEquals(CarCommand.Kind.CLIMATE_OFF, kind("Apaga el clima"))
@@ -80,6 +88,12 @@ class CarCommandTest {
         assertTrue(CarCommand(CarCommand.Kind.CLIMATE_ON, 21).content("C10", 10.0).contains("\"mode\":\"hot\""))
         assertTrue(CarCommand(CarCommand.Kind.CLIMATE_ON, 21).content("C10", 10.0).contains("\"temperature\":\"21\""))
         assertTrue(CarCommand(CarCommand.Kind.DEFROST).content("C10", Double.NaN).contains("\"wshld\":\"1\""))
+        // Frío y calefacción, manuales; automático, «operate» auto.
+        val cold = CarCommand(CarCommand.Kind.CLIMATE_ON, 20, CarCommand.Mode.COLD).content("C10", 10.0)
+        assertTrue(cold.contains("\"mode\":\"cold\"") && cold.contains("\"operate\":\"manual\""))
+        val heat = CarCommand(CarCommand.Kind.CLIMATE_ON, 24, CarCommand.Mode.HEAT).content("C10", 30.0)
+        assertTrue(heat.contains("\"mode\":\"hot\"") && heat.contains("\"temperature\":\"24\""))
+        assertTrue(CarCommand(CarCommand.Kind.CLIMATE_ON, 22, CarCommand.Mode.AUTO).content("C10", Double.NaN).contains("\"operate\":\"auto\""))
     }
 
     @Test

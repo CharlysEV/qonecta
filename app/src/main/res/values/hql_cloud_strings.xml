@@ -187,7 +187,7 @@
     <string name="hql_cc_unlock">Unlock the car</string>
     <string name="hql_cc_trunk_open">Open the trunk</string>
     <string name="hql_cc_trunk_close">Close the trunk</string>
-    <string name="hql_cc_climate_on">Climate at %1$d °C</string>
+    <string name="hql_cc_climate_on">Auto climate at %1$d °C</string>
     <string name="hql_cc_climate_off">Turn off climate</string>
     <string name="hql_cc_defrost">Defrost</string>
     <string name="hql_cc_find">Horn and lights</string>
@@ -219,4 +219,10 @@
     <string name="hql_cc_age_h">%1$d h ago</string>
     <string name="hql_cc_age_d">%1$d days ago</string>
     <string name="hql_cc_age_unknown">unknown time</string>
+    <string name="hql_cc_climate_cold">Cooling at %1$d °C</string>
+    <string name="hql_cc_climate_heat">Heating at %1$d °C</string>
+    <string name="hql_cc_mode_auto">Auto</string>
+    <string name="hql_cc_mode_cold">Cool</string>
+    <string name="hql_cc_mode_heat">Heat</string>
+    <string name="hql_cc_on">Turn on</string>
 </resources>

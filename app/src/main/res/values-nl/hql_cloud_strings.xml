@@ -187,7 +187,7 @@
     <string name="hql_cc_unlock">Auto ontgrendelen</string>
     <string name="hql_cc_trunk_open">Kofferbak openen</string>
     <string name="hql_cc_trunk_close">Kofferbak sluiten</string>
-    <string name="hql_cc_climate_on">Klimaat op %1$d °C</string>
+    <string name="hql_cc_climate_on">Klimaat automatisch op %1$d °C</string>
     <string name="hql_cc_climate_off">Klimaat uitzetten</string>
     <string name="hql_cc_defrost">Ontwasemen</string>
     <string name="hql_cc_find">Claxon en lichten</string>
@@ -219,4 +219,10 @@
     <string name="hql_cc_age_h">%1$d u geleden</string>
     <string name="hql_cc_age_d">%1$d dagen geleden</string>
     <string name="hql_cc_age_unknown">tijd onbekend</string>
+    <string name="hql_cc_climate_cold">Koelen op %1$d °C</string>
+    <string name="hql_cc_climate_heat">Verwarmen op %1$d °C</string>
+    <string name="hql_cc_mode_auto">Auto</string>
+    <string name="hql_cc_mode_cold">Koelen</string>
+    <string name="hql_cc_mode_heat">Warm</string>
+    <string name="hql_cc_on">Aanzetten</string>
 </resources>

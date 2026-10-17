@@ -187,7 +187,7 @@
     <string name="hql_cc_unlock">Auto entriegeln</string>
     <string name="hql_cc_trunk_open">Kofferraum öffnen</string>
     <string name="hql_cc_trunk_close">Kofferraum schließen</string>
-    <string name="hql_cc_climate_on">Klima auf %1$d °C</string>
+    <string name="hql_cc_climate_on">Klimaautomatik auf %1$d °C</string>
     <string name="hql_cc_climate_off">Klima ausschalten</string>
     <string name="hql_cc_defrost">Enteisen</string>
     <string name="hql_cc_find">Hupe und Licht</string>
@@ -219,4 +219,10 @@
     <string name="hql_cc_age_h">vor %1$d Std.</string>
     <string name="hql_cc_age_d">vor %1$d Tagen</string>
     <string name="hql_cc_age_unknown">Zeit unbekannt</string>
+    <string name="hql_cc_climate_cold">Kühlen auf %1$d °C</string>
+    <string name="hql_cc_climate_heat">Heizen auf %1$d °C</string>
+    <string name="hql_cc_mode_auto">Auto</string>
+    <string name="hql_cc_mode_cold">Kühlen</string>
+    <string name="hql_cc_mode_heat">Heizen</string>
+    <string name="hql_cc_on">Einschalten</string>
 </resources>
