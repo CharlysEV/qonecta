@@ -65,9 +65,13 @@ final class FloatCard extends LinearLayout {
         texts.setPadding(18, 0, 0, 0);
         title = CarStyle.text(c, "", 27, CarStyle.TEXT);
         title.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        title.setSingleLine(true);
+        // Una línea, con la letra más pequeña si el nombre es largo («Iberdrola · Guadalajara», 18-10) y solo si ni así
+        // cabe, cortado. Con setSingleLine el ajuste de tamaño no funciona: maxLines 1.
+        title.setMaxLines(1);
         title.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        texts.addView(title);
+        androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(title, CarStyle.textPx(19), CarStyle.textPx(27), 1,
+                android.util.TypedValue.COMPLEX_UNIT_PX);
+        texts.addView(title, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         sub = CarStyle.text(c, "", 22, CarStyle.TEXT_DIM);
         sub.setSingleLine(true);
         sub.setEllipsize(android.text.TextUtils.TruncateAt.END);
@@ -94,14 +98,18 @@ final class FloatCard extends LinearLayout {
         ChargePlanner.Result cp = r.lastChargePlan();
         if (cp == null) return false;
         ChargePlanner.Stop st = cp.next();
+        boolean stuck = cp.outcome == ChargePlanner.Outcome.NO_CHARGER;
         if (st != null) {
-            icon.set(Icon.BOLT, CarKit.ACCENT);
+            // Con paradas, pero tras la última ya no se llega a ningún cargador (con los filtros): en ámbar, sin un «llegas
+            // con» que haga pensar que está todo bien (17-10, un viaje largo).
+            icon.set(Icon.BOLT, stuck ? CarKit.AMBER : CarKit.ACCENT);
             title.setText(RoutePlanner.chargerName(st.charger));
-            sub.setText(Str.get(R.string.hql_float_stop_sub, cp.kmTo(st), st.arrivePct));
-        } else if (cp.outcome == ChargePlanner.Outcome.NO_CHARGER) {
+            sub.setText(stuck ? Str.get(R.string.hql_float_stop_stuck, cp.kmTo(st)) : Str.get(R.string.hql_float_stop_sub, cp.kmTo(st), st.arrivePct));
+        } else if (stuck) {
+            // «Sin cargador» y debajo si se llega: nunca «llegas con −1 %» (la pestaña Ruta dice «No llegas sin cargar»).
             icon.set(Icon.BOLT, CarKit.AMBER);
             title.setText(Str.get(R.string.hql_float_no_charger));
-            sub.setText(Str.get(R.string.hql_float_dest, cp.arrivalPct));
+            sub.setText(cp.arrivalPct < 0.5 ? Str.get(R.string.hql_float_no_charger_none) : Str.get(R.string.hql_float_no_charger_pct, cp.arrivalPct));
         } else {
             icon.set(Icon.FLAG, CarKit.ACCENT);
             title.setText(Str.get(R.string.hql_float_dest, cp.arrivalPct));

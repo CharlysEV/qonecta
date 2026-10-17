@@ -197,6 +197,16 @@ final class RoutePlanner {
     private static String noRoute() {
         return Str.get(R.string.hql_route_none);
     }
+
+    /**
+     * Google Maps navega, aquí no hay destino y su tarjeta se leerá en cuanto se vea Android Auto (había una pantalla
+     * nuestra delante): sus km, para que la pestaña Ruta lo diga en vez de «¿A dónde vamos?» a secas (18-10). NaN si no.
+     */
+    static double mapsWaitingKm() {
+        if (readWantedMs == 0 || manual != null) return Double.NaN;
+        MapsNavListener.Info mi = MapsNavListener.ongoing();
+        return MapsNavListener.routing(mi) ? mi.remainingM / 1000.0 : Double.NaN;
+    }
     /**
      * Destino elegido en la pestaña Ruta. Hace falta porque Android Auto solo nos manda la próxima
      * maniobra: con el cuadro de instrumentos que anuncia Open Headunit (ImageCodesOnly) no llegan
@@ -739,9 +749,10 @@ final class RoutePlanner {
             offRouteSinceMs = 0;
         }
         Google gl = p.googleMismatch ? null : google(dest);
-        if (gl != null) {
+        double end = mapsEndKm(p);
+        if (gl != null && !Double.isNaN(end)) {
             double google = gl.remainingM / 1000.0;
-            double ours = p.totalKm - p.km[Math.min(Math.max(0, p.progress), p.n - 1)];
+            double ours = end - p.km[Math.min(Math.max(0, p.progress), p.n - 1)];
             if (googleDisagrees(ours, google)) {
                 if (googleGapSinceMs == 0) googleGapSinceMs = t;
                 if (t - googleGapSinceMs >= GOOGLE_GAP_MS) {
@@ -761,6 +772,15 @@ final class RoutePlanner {
      */
     static double matchScore(double routeM, double googleM, int roadHits) {
         return Math.abs(routeM - googleM) / Math.max(1, googleM) - 0.02 * roadHits;
+    }
+
+    /**
+     * Puro: ¿la hora de llegada de Maps es la del destino? No si su navegación lleva paradas (es la de la próxima) ni si
+     * saldría una media imposible (más de 140 km/h: la de otra cosa).
+     */
+    static boolean googleTimeFits(double googleKm, long googleSec, boolean mapsStops) {
+        if (mapsStops || googleSec <= 0 || googleKm <= 0) return false;
+        return googleKm / (googleSec / 3600.0) <= 140;
     }
 
     /** Puro: factor para pasar los tiempos de OSRM a los de Google (entre 0,6 y 2,5: lo demás sería un dato raro). */
@@ -837,6 +857,69 @@ final class RoutePlanner {
         return null;
     }
 
+    /**
+     * El final de la navegación que se le mandó a Google Maps cuando no es el destino del plan ({lat, lon}: Maps admite 3
+     * paradas y con más va hasta la cuarta; o «Ir» a un cargador), y cuántas paradas intermedias lleva. Con paradas, la
+     * hora de llegada de su notificación es la de la próxima parada (18-10: «Llegada 1:45» con 546 km por delante), no la
+     * del destino; sus km sí son los de toda su ruta. Se olvida cuando Maps quita la navegación.
+     */
+    private static volatile double[] mapsEnd;
+    private static volatile int mapsStops;
+    /** Cuándo se le mandó (reloj de arranque): Maps tarda unos segundos en poner su notificación nueva. */
+    private static volatile long mapsSentAtMs;
+    static final long MAPS_SENT_GRACE_MS = 30_000;
+
+    /** NavApps: Google Maps navega a lat, lon con stops paradas intermedias. */
+    static void mapsNavigatesTo(double lat, double lon, int stops) {
+        RoutePlanner r = get();
+        Plan p = r == null ? null : r.plan();
+        boolean dest = p != null && distanceKm(lat, lon, p.destLat, p.destLon) < 0.5;
+        mapsEnd = dest ? null : new double[]{lat, lon};
+        mapsStops = Math.max(0, stops);
+        mapsSentAtMs = SystemClock.elapsedRealtime();
+    }
+
+    /** ¿Lleva paradas la navegación de Maps que se le mandó? (su hora de llegada es la de la próxima). */
+    static boolean mapsHasStops() {
+        return mapsStops > 0;
+    }
+
+    /** El km del plan en el que acaba la navegación de Maps: el destino o, si se le mandó otro final, el punto del plan junto a él (NaN si no pasa cerca). */
+    static double mapsEndKm(Plan p) {
+        double[] e = mapsEnd;
+        if (e == null) return p.totalKm;
+        return kmNear(p, e[0], e[1], 3.0);
+    }
+
+    /** Puro: el km del plan en el punto más cercano a lat, lon, si está a menos de maxKm; si no, NaN. */
+    static double kmNear(Plan p, double lat, double lon, double maxKm) {
+        int best = -1;
+        double bd = Double.MAX_VALUE;
+        for (int i = 0; i < p.n; i++) {
+            double d = distanceKm(lat, lon, p.lat[i], p.lon[i]);
+            if (d < bd) {
+                bd = d;
+                best = i;
+            }
+        }
+        return best >= 0 && bd <= maxKm ? p.km[best] : Double.NaN;
+    }
+
+    /**
+     * Los km que faltan según Google Maps si guía esta ruta hasta su destino (para enseñar la misma cifra que Maps); NaN
+     * si no (Maps no navega, va a otro sitio o no acaba en el destino).
+     */
+    static double mapsRemainingKm(Plan p) {
+        if (p == null || p.googleMismatch || mapsEnd != null || p.n < 2) return Double.NaN;
+        Google gl = google(p.destination);
+        if (gl == null || gl.remainingM <= 0) return Double.NaN;
+        double ours = p.totalKm - p.km[Math.min(Math.max(0, p.progress), p.n - 1)];
+        double g = gl.remainingM / 1000.0;
+        if (ours < MAPS_RATIO_MIN_KM) return Double.NaN;
+        double r = g / ours;
+        return r >= MAPS_RATIO_MIN && r <= MAPS_RATIO_MAX ? g : Double.NaN;
+    }
+
     /** Con menos de esto por delante (km), la proporción con Google Maps ya no se toca (cerca del final baila). */
     static final double MAPS_RATIO_MIN_KM = 10;
     /** Fuera de esto, Maps no va por esta ruta (otro destino, o recalculando): no se usa. */
@@ -863,10 +946,18 @@ final class RoutePlanner {
      * una parada, Maps puede dar el tramo por acabado). Al cambiar, al registro, sin lugares.
      */
     private void updateMapsRatio(Plan p, String dest) {
+        if (MapsNavListener.ongoing() == null && SystemClock.elapsedRealtime() - mapsSentAtMs > MAPS_SENT_GRACE_MS) {
+            // Maps ya no navega (y no es que aún esté empezando la que se le mandó): lo que se le mandó ya no vale.
+            mapsEnd = null;
+            mapsStops = 0;
+        }
         Google gl = p.googleMismatch ? null : google(dest);
         if (gl == null) return;
         double google = gl.remainingM / 1000.0;
-        double ours = p.totalKm - p.km[Math.min(Math.max(0, p.progress), p.n - 1)];
+        // Hasta donde acaba la navegación de Maps (el destino, o la cuarta parada si se le mandaron más de 3).
+        double end = mapsEndKm(p);
+        if (Double.isNaN(end)) return;
+        double ours = end - p.km[Math.min(Math.max(0, p.progress), p.n - 1)];
         double r = mapsRatio(ours, google, p.mapsRatio);
         if (r == p.mapsRatio) return;
         p.mapsRatio = r;
@@ -1507,9 +1598,12 @@ final class RoutePlanner {
             // Fuera del coche solo en un viaje o en carga rápida (en casa, en alterna y sin ruta, no hace falta vigilar
             // horas); en las capturas de la demostración, nunca.
             // La demostración nunca vigila fuera del coche (si no, sus avisos seguían en el móvil al salir de ella).
-            ChargeWatch.begin(ctx, s, (p != null || s.dc) && !cs.demo, cs.demo);
+            // Con el coche virtual, su ruta es de prueba: la carga del coche de verdad no se vigila por ella.
+            ChargeWatch.begin(ctx, s, ((p != null && !testMode) || s.dc) && !cs.demo, cs.demo);
         }
-        if (s != null && p != null && p.n >= 2) sessionTarget(s, p);
+        // Con el coche virtual, la ruta es de prueba (y su batería, la indicada): el coche de verdad cargando en casa no
+        // tiene nada que ver con ella; sin «ya puedes seguir» por esa ruta (18-10: «llegas a Madrid… con 12 %»).
+        if (s != null && p != null && p.n >= 2 && !testMode) sessionTarget(s, p);
         ChargeWatch.tick(ctx, cs);
     }
 
@@ -1943,7 +2037,7 @@ final class RoutePlanner {
         // prueban hasta tres y se queda el que da una ruta como la de Google. Un viaje de varios tramos, de una vez y sin
         // comparar con Google (Google Maps va a su siguiente parada, no al final).
         boolean trip = wps != null && !wps.isEmpty();
-        Google gl = trip ? null : google(destination);
+        Google gl = trip || mapsEnd != null ? null : google(destination);
         double googleM = gl != null ? gl.remainingM : -1;
         List<double[]> places = new ArrayList<>();
         JSONObject route = null;
@@ -2053,7 +2147,8 @@ final class RoutePlanner {
         if (p.waypointKm.length > 0) p.waypointKm[p.waypointKm.length - 1] = p.totalKm;
         // Los tiempos, los de Google (con el tráfico de ahora) si la ruta encaja con la suya: se reparte su hora de llegada
         // entre los tramos. Así la hora de cada parada y la velocidad de cada tramo (y su gasto) son las de hoy.
-        if (gl != null && gl.remainingSec > 0 && googleM > 0 && bestScore < 0.15 && p.totalSeconds > 0) {
+        if (gl != null && gl.remainingSec > 0 && googleM > 0 && bestScore < 0.15 && p.totalSeconds > 0
+                && googleTimeFits(googleM / 1000.0, gl.remainingSec, mapsHasStops())) {
             double f = timeFactor(gl.remainingSec, p.totalSeconds);
             for (int i = 0; i < n; i++) segS[i] *= f;
             p.totalSeconds = Math.round(p.totalSeconds * f);
@@ -2734,7 +2829,8 @@ final class RoutePlanner {
         if (Double.isNaN(c.lat) || Double.isNaN(c.lon)) return null;
         c.network = ChargerFilter.classify(tags.optString("brand"), tags.optString("network"), tags.optString("operator"),
                 tags.optString("name"));
-        c.name = firstNonEmpty(tags.optString("name"), tags.optString("operator"), tags.optString("brand"), Str.get(R.string.hql_charge_point));
+        c.name = DgtChargers.withoutCountry(firstNonEmpty(tags.optString("name"), tags.optString("operator"), tags.optString("brand"),
+                Str.get(R.string.hql_charge_point)), c.network);
         StringBuilder sockets = new StringBuilder();
         java.util.Iterator<String> it = tags.keys();
         while (it.hasNext()) {

@@ -636,6 +636,7 @@
     <string name="hql_route_source_own">itinéraire propre : Google Maps ne guide pas</string>
     <string name="hql_route_source_differs">différent de Google Maps</string>
     <string name="hql_route_where">Où allons-nous ?</string>
+    <string name="hql_route_maps_wait">Google Maps guide (%1$.0f km). Revenez à Android Auto et je lirai sa destination pour planifier la recharge.</string>
     <string name="hql_route_battery_no">Recharge nécessaire</string>
     <string name="hql_route_battery_tight">Juste : mieux vaut recharger en route</string>
     <string name="hql_route_battery_ok">Vous arrivez avec de la marge</string>
@@ -953,7 +954,10 @@
     <string name="hql_float_stop_sub">dans %1$.0f km · vous arrivez avec %2$.0f %%</string>
     <string name="hql_float_dest">Vous arrivez avec %1$.0f %%</string>
     <string name="hql_float_no_stop">Sans arrêt</string>
-    <string name="hql_float_no_charger">Aucune borne à portée</string>
+    <string name="hql_float_no_charger">Aucune borne</string>
+    <string name="hql_float_no_charger_none">à portée · vous n\'arrivez pas</string>
+    <string name="hql_float_no_charger_pct">à portée · vous arrivez avec %1$.0f %%</string>
+    <string name="hql_float_stop_stuck">dans %1$.0f km · puis plus de borne</string>
     <string name="hql_move_up">Monter</string>
     <string name="hql_move_down">Descendre</string>
     <string name="hql_snes_sub">bsnes · vos jeux, manette ou tactile</string>

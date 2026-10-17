@@ -47,6 +47,8 @@ final class DgtChargers {
         double lon;
         String name = "";
         String operator = "";
+        /** Municipio («Municipio: Getafe» de su dirección): para el nombre cuando el suyo es un código. */
+        String town = "";
         /** Potencia máxima en continua y en alterna (kW) y voltaje máximo en continua (V); 0 si no hay o no se sabe. */
         double dcKw;
         double acKw;
@@ -65,9 +67,9 @@ final class DgtChargers {
             c.id = id == null || id.isEmpty() ? "" : "dgt:" + id;
             c.lat = lat;
             c.lon = lon;
-            c.name = name.isEmpty() ? operator : name;
             // La red, por el operador oficial (el nombre engaña: hay «superchargers» que no son de Tesla).
             c.network = ChargerFilter.classify("", "", operator, "");
+            c.name = displayName(name, operator, c.network, town);
             boolean dc = (sockets & ChargerFilter.SOCKET_DC) != 0;
             c.acOnly = !dc;
             c.maxKw = dc ? dcKw : acKw;
@@ -117,11 +119,14 @@ final class DgtChargers {
             long at = head == null ? 0 : Long.parseLong(head.trim());
             List<Site> out = new ArrayList<>();
             String line;
+            boolean oldFormat = false;
             while ((line = r.readLine()) != null) {
                 Site s = fromLine(line);
                 if (s != null) out.add(s);
+                if (out.size() == 1 && line.split("\t", -1).length < 12) oldFormat = true;
             }
-            setSites(out, at);
+            // Guardados sin el municipio (versiones de antes): valen mientras, pero se vuelven a descargar ya.
+            setSites(out, oldFormat ? 0 : at);
             L.i("cargadores DGT: " + out.size() + " puntos del móvil (de hace " + (System.currentTimeMillis() - at) / 86_400_000L + " días)");
             return sites;
         } catch (IOException | RuntimeException e) {
@@ -273,6 +278,7 @@ final class DgtChargers {
                 if (cur != null) {
                     if (n.endsWith(":value") && siteNameDepth > 0 && cur.name.isEmpty()) cur.name = t;
                     else if (n.endsWith(":value") && operatorDepth > 0 && cur.operator.isEmpty()) cur.operator = t;
+                    else if (n.endsWith(":value") && t.startsWith(TOWN) && cur.town.isEmpty()) cur.town = t.substring(TOWN.length()).trim();
                     else if (n.endsWith(":latitude")) cur.lat = num(t);
                     else if (n.endsWith(":longitude")) cur.lon = num(t);
                     else if (inConnector && n.endsWith(":connectorType")) connType = t;
@@ -324,9 +330,13 @@ final class DgtChargers {
 
     // ------------------------------------------------------------------ guardado compacto (una línea por punto)
 
+    /** Lo que antecede al municipio en las líneas de la dirección de cada punto. */
+    static final String TOWN = "Municipio: ";
+
     static String toLine(Site s) {
-        return String.format(Locale.US, "%s\t%.6f\t%.6f\t%s\t%s\t%.1f\t%.1f\t%.0f\t%d\t%d\t%d", clean(s.id), s.lat, s.lon, clean(s.name),
-                clean(s.operator), s.dcKw, s.acKw, s.dcVolts, s.sockets, (s.ccs ? 1 : 0) | (s.chademo ? 2 : 0) | (s.type2 ? 4 : 0), s.points);
+        return String.format(Locale.US, "%s\t%.6f\t%.6f\t%s\t%s\t%.1f\t%.1f\t%.0f\t%d\t%d\t%d\t%s", clean(s.id), s.lat, s.lon, clean(s.name),
+                clean(s.operator), s.dcKw, s.acKw, s.dcVolts, s.sockets, (s.ccs ? 1 : 0) | (s.chademo ? 2 : 0) | (s.type2 ? 4 : 0), s.points,
+                clean(s.town));
     }
 
     static Site fromLine(String line) {
@@ -348,6 +358,7 @@ final class DgtChargers {
             s.chademo = (k & 2) != 0;
             s.type2 = (k & 4) != 0;
             s.points = Integer.parseInt(p[10]);
+            if (p.length > 11) s.town = p[11];
             return s;
         } catch (NumberFormatException e) {
             return null;
@@ -356,6 +367,77 @@ final class DgtChargers {
 
     private static String clean(String s) {
         return s == null ? "" : s.replace('\t', ' ').replace('\n', ' ').replace('\r', ' ').trim();
+    }
+
+    /**
+     * Puro: ¿el nombre es un código y no un nombre? Media publicación trae códigos («GU-Guadalajara-008»,
+     * «22XP22T3KKJAK00963», «ES*IBD*E5860»: una sola palabra con cifras) y los de Tesla, «Getafe, Spain».
+     */
+    static boolean codeName(String name) {
+        String n = name == null ? "" : name.trim();
+        if (n.isEmpty()) return true;
+        if (n.endsWith(", Spain") || n.endsWith(", España")) return true;
+        return n.indexOf(' ') < 0 && n.matches(".*\\d.*");
+    }
+
+    /**
+     * Puro: el nombre que se enseña. Con un código por nombre (codeName), la marca y el municipio («Tesla · Getafe»,
+     * «Iberdrola · Guadalajara»): la red conocida o, si no, el operador sin la forma jurídica. Un nombre de verdad
+     * («IONITY Saelices», «Zunder Lleida») se queda.
+     */
+    static String displayName(String name, String operator, String network, String town) {
+        String n = name == null ? "" : name.trim();
+        if (!codeName(n)) return n;
+        String brand = network != null && !network.equals(ChargerFilter.OTHER) ? ChargerFilter.label(network) : shortOperator(operator);
+        String t = townName(town);
+        if (t.isEmpty() && n.endsWith(", Spain")) t = n.substring(0, n.length() - 7).trim();
+        if (t.isEmpty() && n.endsWith(", España")) t = n.substring(0, n.length() - 8).trim();
+        if (!brand.isEmpty() && !t.isEmpty()) return brand + " · " + t;
+        if (!t.isEmpty()) return t;
+        if (!brand.isEmpty()) return brand;
+        return n;
+    }
+
+    private static final java.util.Set<String> LOWER_WORDS = new java.util.HashSet<>(java.util.Arrays.asList(
+            "de", "del", "la", "las", "los", "el", "y", "e", "i", "d", "en", "por"));
+
+    /**
+     * Puro: un nombre de OpenStreetMap con el país pegado, como los de Tesla («Madrid, Spain - Plaza de los Mostenses»):
+     * sin el país y con la marca delante si no la lleva («Tesla · Madrid - Plaza de los Mostenses»). Los demás, igual.
+     */
+    static String withoutCountry(String name, String network) {
+        String n = name == null ? "" : name.trim();
+        String cut = n.replaceAll(",\\s*(Spain|España)\\b", "").trim();
+        if (cut.equals(n) || cut.isEmpty()) return n;
+        String brand = network != null && !network.equals(ChargerFilter.OTHER) ? ChargerFilter.label(network) : "";
+        return brand.isEmpty() || cut.toLowerCase(Locale.ROOT).contains(brand.toLowerCase(Locale.ROOT)) ? cut : brand + " · " + cut;
+    }
+
+    /** Puro: el municipio como se dice, con el artículo delante («Ejido, El» → «El Ejido», «Hospitalet de Llobregat, L'» → «L'Hospitalet de Llobregat»). */
+    static String townName(String town) {
+        String t = town == null ? "" : town.trim();
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("^(.+), (El|La|Los|Las|Les|Els|Es|Sa|O|A|Os|As|L'|L’|S')$").matcher(t);
+        if (!m.matches()) return t;
+        String art = m.group(2);
+        return art.endsWith("'") || art.endsWith("’") ? art + m.group(1) : art + " " + m.group(1);
+    }
+
+    /** Puro: el operador para enseñar: sin la forma jurídica («, S.L.», « S.A.U.»…) y, si viene todo en mayúsculas, como nombre. */
+    static String shortOperator(String operator) {
+        String o = operator == null ? "" : operator.trim();
+        // Tras la coma, la forma jurídica o algo más («…, S.L.», «…, SOCIEDAD LIMITADA»).
+        if (o.indexOf(',') > 2) o = o.substring(0, o.indexOf(',')).trim();
+        o = o.replaceAll("(?i)[,.]?\\s+(s\\.?\\s?l\\.?\\s?u?\\.?|s\\.?\\s?a\\.?\\s?u?\\.?|s\\.?\\s?coop\\.?.*|sociedad .*)$", "").trim();
+        if (o.length() > 2 && o.equals(o.toUpperCase(Locale.ROOT)) && o.matches(".*[A-ZÁÉÍÓÚÑ].*")) {
+            StringBuilder b = new StringBuilder();
+            for (String w : o.toLowerCase(Locale.ROOT).split(" ")) {
+                if (w.isEmpty()) continue;
+                if (b.length() > 0) b.append(' ');
+                b.append(b.length() > 0 && LOWER_WORDS.contains(w) ? w : Character.toUpperCase(w.charAt(0)) + w.substring(1));
+            }
+            o = b.toString();
+        }
+        return o.length() > 28 ? o.substring(0, 28).trim() + "…" : o;
     }
 
     private static void save(Context ctx, List<Site> out, long at) throws IOException {

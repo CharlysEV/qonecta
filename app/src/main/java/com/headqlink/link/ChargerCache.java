@@ -44,7 +44,8 @@ final class ChargerCache {
         RoutePlanner.Charger toCharger() {
             RoutePlanner.Charger c = new RoutePlanner.Charger();
             c.id = id == null || id.isEmpty() ? "" : "osm:" + id;
-            c.name = name;
+            // Los guardados antes también sin el país (los de Tesla: «Getafe, Spain»).
+            c.name = DgtChargers.withoutCountry(name, network);
             c.detail = detail;
             c.lat = lat;
             c.lon = lon;

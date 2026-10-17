@@ -2649,7 +2649,9 @@ final class RouteTab implements CarScreen {
         // Lo que falta como lo cuenta Google Maps si guía (mapsRatio): la energía del plan de carga ya va con esos km.
         ChargePlanner.Result cpNow = chargePlan;
         double ratio = cpNow != null ? cpNow.mapsRatio : 1;
-        double remKm = nav.remainingMeters >= 0 ? nav.remainingMeters / 1000.0 : (pl.totalKm - pl.km[prog]) * ratio;
+        double mapsKm = RoutePlanner.mapsRemainingKm(pl);
+        double remKm = nav.remainingMeters >= 0 ? nav.remainingMeters / 1000.0
+                : !Double.isNaN(mapsKm) ? mapsKm : (pl.totalKm - pl.km[prog]) * ratio;
         long remSec = nav.remainingSeconds >= 0 ? nav.remainingSeconds
                 : Math.round(pl.totalSeconds * (pl.totalKm - pl.km[prog]) / Math.max(0.1, pl.totalKm));
         String eta = nav.eta != null ? nav.eta : android.text.format.DateFormat.getTimeFormat(ctx)
@@ -2922,10 +2924,15 @@ final class RouteTab implements CarScreen {
         CarKit.text(cv, here2, tmp.centerX(), tmp.bottom - 9, 20, CarKit.TEXT, CarKit.MEDIUM, p, Paint.Align.CENTER);
         // Km bajo el eje.
         double stepKm = pl.totalKm > 300 ? 100 : pl.totalKm > 120 ? 50 : pl.totalKm > 40 ? 10 : 5;
+        p.setTypeface(CarKit.MEDIUM);
+        p.setTextSize(18);
+        // Sin pisar el «km» del final (18-10: «150» encima de «km» en una ruta de 151 km).
+        float unitLeft = c.right - p.measureText("km") - 10;
         for (double k = 0; k <= pl.totalKm + 0.1; k += stepKm) {
             float x = (float) (c.left + k / pl.totalKm * c.width());
-            CarKit.text(cv, String.format(Locale.getDefault(), "%.0f", k), x, c.bottom + 24, 18, CarKit.FAINT, CarKit.MEDIUM, p,
-                    k == 0 ? Paint.Align.LEFT : Paint.Align.CENTER);
+            String label = String.format(Locale.getDefault(), "%.0f", k);
+            if (k > 0 && x + p.measureText(label) / 2 > unitLeft) break;
+            CarKit.text(cv, label, x, c.bottom + 24, 18, CarKit.FAINT, CarKit.MEDIUM, p, k == 0 ? Paint.Align.LEFT : Paint.Align.CENTER);
         }
         CarKit.text(cv, "km", c.right, c.bottom + 24, 18, CarKit.FAINT, CarKit.MEDIUM, p, Paint.Align.RIGHT);
     }
@@ -3050,7 +3057,9 @@ final class RouteTab implements CarScreen {
         p.setStrokeCap(Paint.Cap.BUTT);
         CarIcons.pin(cv, cx + 74, top + 6, 64, CarKit.ACCENT, CarKit.SURFACE, p);
         CarKit.text(cv, Str.get(R.string.hql_route_where), cx, top + 310, 42, CarKit.TEXT, CarKit.MEDIUM, p, Paint.Align.CENTER);
-        String msg = status.isEmpty() ? Str.get(R.string.hql_calculating) : status;
+        double mapsKm = RoutePlanner.mapsWaitingKm();
+        String msg = !Double.isNaN(mapsKm) ? Str.get(R.string.hql_route_maps_wait, mapsKm)
+                : status.isEmpty() ? Str.get(R.string.hql_calculating) : status;
         para.draw(cv, msg, r.left + 80, top + 336, (int) r.width() - 160, true);
     }
 

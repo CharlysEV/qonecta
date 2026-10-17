@@ -206,6 +206,10 @@ final class CarUi {
     private int dragLeft;
     private int dragTop;
     private static final int FLOAT_MARGIN = 20;
+    /** La tarjeta flotante recién puesta tarda un par de fotogramas en estar pintada: su trozo va al relay pasado esto. */
+    private static final long FLOAT_DRAW_MS = 150;
+    private long floatShownAtMs;
+    private final Runnable floatLater = this::refreshFloat;
     private static final long FLOAT_TICK_MS = 5000;
     private final Runnable floatTick = new Runnable() {
         @Override
@@ -1405,9 +1409,11 @@ final class CarUi {
         if (floatCard == null) return;
         boolean show = aaShown && !splitActive() && !compact && aaRegW > FloatCard.W + 2 * FLOAT_MARGIN
                 && new Config(ctx).floatCard() && floatCard.update();
-        if (show != (floatCard.getVisibility() == View.VISIBLE)) {
+        boolean wasShown = floatCard.getVisibility() == View.VISIBLE;
+        if (show != wasShown) {
             L.i("CarUi: tarjeta de la próxima parada " + (show ? "a la vista" : "fuera"));
         }
+        if (show && !wasShown) floatShownAtMs = SystemClock.uptimeMillis();
         floatCard.setVisibility(show ? View.VISIBLE : View.GONE);
         if (!show) {
             setFloatRect(null);
@@ -1424,6 +1430,18 @@ final class CarUi {
         int spanY = Math.max(0, height - FloatCard.H - 2 * FLOAT_MARGIN);
         int left = aaRegX + FLOAT_MARGIN + Math.round((fx < 0 ? 1f : fx) * spanX);
         int top = FLOAT_MARGIN + Math.round((fy < 0 ? 0f : fy) * spanY);
+        long sinceShown = SystemClock.uptimeMillis() - floatShownAtMs;
+        if (sinceShown < FLOAT_DRAW_MS) {
+            // Recién puesta: aún no está pintada en nuestra capa. Se coloca ya, pero su trozo va al relay unos fotogramas
+            // después; si no, se veía un instante el fondo de la capa (un recuadro rojo en el coche virtual, 18-10).
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) floatCard.getLayoutParams();
+            lp.leftMargin = Math.max(aaRegX + FLOAT_MARGIN, Math.min(aaRegX + aaRegW - FloatCard.W - FLOAT_MARGIN, left));
+            lp.topMargin = Math.max(FLOAT_MARGIN, Math.min(height - FloatCard.H - FLOAT_MARGIN, top));
+            floatCard.setLayoutParams(lp);
+            main.removeCallbacks(floatLater);
+            main.postDelayed(floatLater, FLOAT_DRAW_MS - sinceShown + 10);
+            return;
+        }
         placeFloatAt(left, top);
         int[] r = floatRect;
         if (r != null) {
@@ -1733,7 +1751,13 @@ final class CarUi {
             guessCard.setBackground(CarStyle.round(CarTheme.alertBg(false), 24));
             guessTitle.setTextColor(CarKit.AMBER);
             guessTitle.setText(Str.get(R.string.hql_guess_title, name));
-            guessText.setText(Str.get(R.string.hql_guess_auto_nocharger, dist, Str.get(R.string.hql_tab_route)));
+            // Si yendo más despacio sí se llega (SpeedAdvice «y así se llega»), se dice: no es lo mismo que no llegar (18-10).
+            RoutePlanner rp = RoutePlanner.get();
+            ChargePlanner.Result cp = rp == null ? null : rp.lastChargePlan();
+            SpeedAdvice slow = cp == null ? null : cp.speed;
+            guessText.setText(slow != null && slow.rescue
+                    ? Str.get(R.string.hql_guess_auto_nocharger_speed, dist, slow.capKmh, Str.get(R.string.hql_tab_route))
+                    : Str.get(R.string.hql_guess_auto_nocharger, dist, Str.get(R.string.hql_tab_route)));
             guessPill(Str.get(R.string.hql_tab_route), true, () -> {
                 clearGuess();
                 CarHubScreen.selectTab(0);

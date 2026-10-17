@@ -51,6 +51,15 @@ class MapsRatioTest {
         assertEquals(50.0, later.kmMark(50.0), 1e-9)
     }
 
+    /** 18-10: con paradas, la «Llegada» de la notificación de Maps es la de la próxima (546 km, 51 min): no vale para la ruta. */
+    @Test
+    fun mapsArrivalTimeOnlyCountsForTheDestination() {
+        assertEquals(true, RoutePlanner.googleTimeFits(543.0, 5 * 3600L + 26 * 60L, false))
+        assertEquals(false, RoutePlanner.googleTimeFits(546.0, 51 * 60L, false))
+        assertEquals(false, RoutePlanner.googleTimeFits(543.0, 5 * 3600L + 26 * 60L, true))
+        assertEquals(false, RoutePlanner.googleTimeFits(543.0, -1, false))
+    }
+
     @Test
     fun theEnergyOfWhatIsLeftGrowsWithMapsKm() {
         val km = doubleArrayOf(0.0, 100.0, 200.0)

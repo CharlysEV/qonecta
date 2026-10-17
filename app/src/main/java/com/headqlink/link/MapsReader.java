@@ -46,7 +46,7 @@ final class MapsReader {
     /** Copias tras el «atrás» para ver que la tarjeta se ha cerrado. */
     private static final int CLOSE_LOOKS = 3;
     /** Copias en las que se busca la X de Maps para quitar su navegación, y la pausa entre ellas. */
-    private static final int X_LOOKS = 3;
+    private static final int X_LOOKS = 5;
     private static final long X_LOOK_MS = 700;
     /** Lo que se espera a cada copia de la imagen y a cada lectura. */
     static final long CAPTURE_MS = 2000;
@@ -161,10 +161,13 @@ final class MapsReader {
             Bitmap card = capture(src);
             if (card == null) continue;
             List<MapsCard.Line> cardLines = ocr(rec, card);
-            card.recycle();
             opened |= MapsCard.cardEta(cardLines) != null;
             address = MapsCard.addressQueries(cardLines);
             if (!address.isEmpty()) label = MapsCard.placeLabel(cardLines);
+            // Sin leer en la última mirada: la imagen, en el móvil (como maps-lector.png), para ver luego por qué (18-10: una
+            // tarjeta de solo «Zaragoza» no se reconoció). No va al log.
+            if (address.isEmpty() && i == CARD_LOOKS - 1) lastShot(ctx, card, "maps-tarjeta.png");
+            card.recycle();
         }
         // 3) Cerrarla con un «atrás» (si se abrió) y comprobarlo. Nunca un segundo: si el primero ya la cerró y la copia
         // llegó tarde, el segundo quitaría la navegación de Maps (pasó en el coche).
@@ -225,13 +228,18 @@ final class MapsReader {
                         int w = shot.getWidth();
                         int h = shot.getHeight();
                         MapsCard.Line eta = MapsCard.etaBox(lines, h);
+                        int icons = -1;
                         if (eta != null) {
                             int[] px = new int[w * h];
                             shot.getPixels(px, 0, w, 0, 0, w, h);
-                            x = MapsCard.cancelIcon(px, w, h, eta, MapsCard.kmLine(lines, eta));
+                            MapsCard.Line km = MapsCard.kmLine(lines, eta);
+                            x = MapsCard.cancelIcon(px, w, h, eta, km);
+                            if (x == null) icons = MapsCard.rowIcons(px, w, h, eta, km).size();
                         }
                         shot.recycle();
-                        if (x == null) L.i("Maps: no veo la X de su navegación (copia " + (look + 1) + " de " + X_LOOKS + ")");
+                        // Para saber por qué: sin el recuadro del tiempo y los km (Maps enseñaba otra cosa) o sin los botones.
+                        if (x == null) L.i("Maps: no veo la X de su navegación (copia " + (look + 1) + " de " + X_LOOKS + "; "
+                                + (eta == null ? "sin el recuadro, " + lines.size() + " líneas" : "recuadro visto, " + icons + " iconos en la fila") + ")");
                     }
                     if (x != null) {
                         float[] p = src.aaToCar(x[0], x[1]);

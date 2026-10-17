@@ -41,7 +41,7 @@ final class NavApps {
         String uri = o == null ? String.format(Locale.US, "google.navigation:q=%.6f,%.6f&mode=d", lat, lon)
                 : String.format(Locale.US, "https://www.google.com/maps/dir/?api=1&origin=%.6f,%.6f&destination=%.6f,%.6f&travelmode=driving",
                 o.lat, o.lon, lat, lon);
-        start(ctx, uri, MAPS, "Google Maps");
+        if (start(ctx, uri, MAPS, "Google Maps")) RoutePlanner.mapsNavigatesTo(lat, lon, 0);
     }
 
     /**
@@ -76,7 +76,10 @@ final class NavApps {
         String url = String.format(Locale.US, "https://www.google.com/maps/dir/?api=1&destination=%.6f,%.6f&travelmode=driving",
                 dest[0], dest[1]) + (o == null ? "&dir_action=navigate" : String.format(Locale.US, "&origin=%.6f,%.6f", o.lat, o.lon))
                 + (wp.length() > 0 ? "&waypoints=" + Uri.encode(wp.toString()) : "");
-        if (start(ctx, url, MAPS, "Google Maps")) L.i("ruta: Google Maps con " + (route.size() - 1) + " paradas por el camino");
+        if (start(ctx, url, MAPS, "Google Maps")) {
+            RoutePlanner.mapsNavigatesTo(dest[0], dest[1], route.size() - 1);
+            L.i("ruta: Google Maps con " + (route.size() - 1) + " paradas por el camino");
+        }
     }
 
     /** Puntos intermedios que admite Google Maps en el móvil. */

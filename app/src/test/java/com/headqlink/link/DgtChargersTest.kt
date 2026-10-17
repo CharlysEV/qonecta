@@ -36,12 +36,14 @@ class DgtChargersTest {
         "<egi:refillPoint xsi:type=\"egi:ElectricChargingPoint\" id=\"p\" version=\"\">" +
             "<fac:name><com:values><com:value lang=\"es\">ES*1*PUNTO</com:value></com:values></fac:name>$connectors</egi:refillPoint>"
 
-    private fun site(id: String, name: String, op: String, lat: Double, lon: Double, vararg points: String) =
+    private fun site(id: String, name: String, op: String, lat: Double, lon: Double, vararg points: String, town: String = "Torija") =
         "<egi:energyInfrastructureSite id=\"$id\" version=\"\">" +
             "<fac:name><com:values><com:value lang=\"es\">$name</com:value></com:values></fac:name>" +
             "<fac:locationReference xsi:type=\"loc:PointLocation\"><loc:_locationReferenceExtension><loc:facilityLocation>" +
             "<locx:address><locx:addressLine order=\"1\"><locx:text><com:values><com:value lang=\"es\">Dirección: Calle 1</com:value>" +
-            "</com:values></locx:text></locx:addressLine></locx:address></loc:facilityLocation></loc:_locationReferenceExtension>" +
+            "</com:values></locx:text></locx:addressLine><locx:addressLine order=\"2\"><locx:text><com:values>" +
+            "<com:value lang=\"es\">Municipio: $town</com:value></com:values></locx:text></locx:addressLine></locx:address>" +
+            "</loc:facilityLocation></loc:_locationReferenceExtension>" +
             "<loc:coordinatesForDisplay><loc:latitude>$lat</loc:latitude><loc:longitude>$lon</loc:longitude></loc:coordinatesForDisplay>" +
             "</fac:locationReference>" +
             "<fac:operator xsi:type=\"fac:OrganisationSpecification\" id=\"ES*1\" version=\"\">" +
@@ -62,6 +64,9 @@ class DgtChargersTest {
         ) +
         site("2", "Supercharger Torija", "Tesla Spain SLU", 40.75, -3.04, connector("iec62196T2COMBO", "mode4DC", 250000.0, 500.0)) +
         site("3", "Hotel", "Hotel SL", 40.76, -3.05, connector("iec62196T2", "mode3AC3p", 22000.0, null)) +
+        site("4", "GU-Guadalajara-008", "IBERDROLA CLIENTES, S.A.U.", 42.6, -1.6, connector("iec62196T2COMBO", "mode4DC", 180000.0, 1000.0),
+            town = "Guadalajara") +
+        site("5", "Getafe, Spain", "Tesla Spain SLU", 40.30, -3.72, connector("iec62196T2COMBO", "mode4DC", 250000.0, 500.0), town = "Getafe") +
         "</egi:energyInfrastructureTable></d2:payload>"
 
     private fun parsed() = DgtChargers.parse(xml.byteInputStream())
@@ -69,7 +74,7 @@ class DgtChargersTest {
     @Test
     fun eachSiteKeepsItsBestDirectCurrentPowerAndVoltage() {
         val s = parsed()
-        assertEquals(3, s.size)
+        assertEquals(5, s.size)
         val z = s[0]
         assertEquals("Hub Torija", z.name)
         assertEquals("(ZUNDER) Grupo Easychargar SA", z.operator)
@@ -96,6 +101,37 @@ class DgtChargersTest {
         assertTrue(h.acOnly)
         assertEquals(22.0, h.maxKw, 1e-9)
         assertEquals(0.0, h.maxVolts, 1e-9)
+    }
+
+    /**
+     * Media publicación trae un código por nombre («GU-Guadalajara-008») y los de Tesla, «Getafe, Spain»: se enseñan la
+     * marca y el municipio. Un nombre de verdad se queda.
+     */
+    @Test
+    fun codeNamesBecomeBrandAndTown() {
+        val s = parsed()
+        assertEquals("Torija", s[0].town)
+        assertEquals("Hub Torija", s[0].toCharger().name)
+        assertEquals("Iberdrola · Guadalajara", s[3].toCharger().name)
+        assertEquals("Tesla · Getafe", s[4].toCharger().name)
+        assertEquals("Tesla · Ocaña", DgtChargers.displayName("Ocaña, Spain", "Tesla Spain SLU", "tesla", ""))
+        assertEquals("Wenea · Sevilla", DgtChargers.displayName("22XP22T3KKJAK00124", "WENEA", "wenea", "Sevilla"))
+        assertEquals("Electrolineras del Norte · Burgos",
+            DgtChargers.displayName("ES*XYZ*E123", "ELECTROLINERAS DEL NORTE, S.L.", ChargerFilter.OTHER, "Burgos"))
+        assertEquals("IONITY Saelices", DgtChargers.displayName("IONITY Saelices", "IONITY GmbH", "ionity", "Saelices"))
+        assertEquals("Saelices", DgtChargers.displayName("CU-Saelices-001", "", ChargerFilter.OTHER, "Saelices"))
+        assertEquals("Iberdrola · El Ejido", DgtChargers.displayName("AL-ELEJIDO-010", "IBERDROLA CLIENTES S.A.U", "iberdrola", "Ejido, El"))
+        assertEquals("L'Hospitalet de Llobregat", DgtChargers.townName("Hospitalet de Llobregat, L'"))
+        assertEquals("A Coruña", DgtChargers.townName("Coruña, A"))
+        assertEquals("Etecnic Movilidad Electrica", DgtChargers.shortOperator("ETECNIC MOVILIDAD ELECTRICA, SOCIEDAD LIMITADA"))
+        assertEquals("Tesla · Madrid - Plaza de los Mostenses", DgtChargers.withoutCountry("Madrid, Spain - Plaza de los Mostenses", "tesla"))
+        assertEquals("Supercharger Getafe", DgtChargers.withoutCountry("Supercharger Getafe", "tesla"))
+        assertEquals("Tesla Getafe", DgtChargers.withoutCountry("Tesla Getafe, Spain", "tesla"))
+        assertTrue(DgtChargers.codeName("M-PozuelodeAlarcon-005"))
+        assertFalse(DgtChargers.codeName("Zunder Lleida"))
+        // Guardados de antes, sin el municipio: se leen igual.
+        val old = DgtChargers.toLine(s[3]).substringBeforeLast('\t')
+        assertEquals("", DgtChargers.fromLine(old)!!.town)
     }
 
     @Test

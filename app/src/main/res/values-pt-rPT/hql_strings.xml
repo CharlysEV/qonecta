@@ -636,6 +636,7 @@
     <string name="hql_route_source_own">rota própria: o Google Maps não está a guiar</string>
     <string name="hql_route_source_differs">diferente da do Google Maps</string>
     <string name="hql_route_where">Para onde vamos?</string>
+    <string name="hql_route_maps_wait">O Google Maps está a guiar (%1$.0f km). Volte ao Android Auto e eu leio o destino para planear o carregamento.</string>
     <string name="hql_route_battery_no">Não chega sem carregar</string>
     <string name="hql_route_battery_tight">À justa: melhor carregar pelo caminho</string>
     <string name="hql_route_battery_ok">Chega com margem</string>
@@ -953,7 +954,10 @@
     <string name="hql_float_stop_sub">a %1$.0f km · chega com %2$.0f %%</string>
     <string name="hql_float_dest">Chega com %1$.0f %%</string>
     <string name="hql_float_no_stop">Sem paragens</string>
-    <string name="hql_float_no_charger">Nenhum carregador ao alcance</string>
+    <string name="hql_float_no_charger">Sem carregador</string>
+    <string name="hql_float_no_charger_none">ao alcance · não chega</string>
+    <string name="hql_float_no_charger_pct">ao alcance · chega com %1$.0f %%</string>
+    <string name="hql_float_stop_stuck">a %1$.0f km · depois, sem carregador</string>
     <string name="hql_move_up">Mover para cima</string>
     <string name="hql_move_down">Mover para baixo</string>
     <string name="hql_snes_sub">bsnes · os seus jogos, comando ou toque</string>
