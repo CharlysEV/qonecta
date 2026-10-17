@@ -61,7 +61,8 @@ public final class CarControlActivity extends AppCompatActivity {
             finish();
             return;
         }
-        confirmAndSend(c);
+        if (c.kind == CarCommand.Kind.FIND) locate();
+        else confirmAndSend(c);
     }
 
     /** La voz de Android (Google), en el idioma de la app; el resultado llega a onActivityResult. */
@@ -92,7 +93,8 @@ public final class CarControlActivity extends AppCompatActivity {
             CarCommand c = CarCommand.parse(h);
             if (c != null) {
                 L.i("widget «Coche»: por voz → " + c);
-                confirmAndSend(c);
+                if (c.kind == CarCommand.Kind.FIND) locate();
+                else confirmAndSend(c);
                 return;
             }
         }
@@ -102,6 +104,80 @@ public final class CarControlActivity extends AppCompatActivity {
                 .setMessage(R.string.hql_cc_voice_prompt)
                 .setPositiveButton(R.string.hql_cc_retry, (d, w) -> listen())
                 .setNegativeButton(android.R.string.cancel, (d, w) -> finish()));
+    }
+
+    /** «Pitar y luces» solo tiene sentido cerca: a menos de esto (o sin saber dónde está el móvil). */
+    static final double HONK_MAX_M = 1000;
+
+    /**
+     * Localizar: dónde está el coche (una lectura solo para eso, CarCloudSession.readPosition), a cuánto de ti y de cuándo
+     * es el dato; «Ver en el mapa» lo abre en Google Maps (a pie) y, cerca, «Pitar y luces». La posición no se guarda.
+     */
+    private void locate() {
+        message(Str.get(R.string.hql_cc_find_searching), true);
+        new Thread(() -> {
+            CarCloudSession.Found f = null;
+            String error = null;
+            try {
+                f = CarCloudSession.readPosition(this);
+            } catch (Exception e) {
+                error = Http.safeError(e);
+                L.w("widget «Coche»: «Localizar» fallido: " + error);
+            }
+            double[] me = RoutePlanner.lastKnown(this);
+            CarCloudSession.Found found = f;
+            String err = error;
+            main.post(() -> {
+                if (isFinishing()) return;
+                if (found == null) {
+                    message(err != null ? Str.get(R.string.hql_cc_failed, Str.get(R.string.hql_cc_find_title), err)
+                            : Str.get(R.string.hql_cc_find_none), false);
+                    return;
+                }
+                showWhere(found, me);
+            });
+        }, "car-locate").start();
+    }
+
+    private void showWhere(CarCloudSession.Found f, double[] me) {
+        double[] car = f.position.near(me == null ? Double.NaN : me[0], me == null ? Double.NaN : me[1]);
+        String age = age(f.dataMs, System.currentTimeMillis());
+        double distM = me == null ? Double.NaN : RoadInfo.dist(me[0], me[1], car[0], car[1]);
+        String text = Double.isNaN(distM) ? Str.get(R.string.hql_cc_find_where_nophone, age)
+                : Str.get(R.string.hql_cc_find_where, CarOrders.distance(distM), age);
+        MaterialAlertDialogBuilder b = new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.hql_cc_find_title)
+                .setMessage(text)
+                .setPositiveButton(R.string.hql_cc_find_map, (d, w) -> {
+                    openMap(car[0], car[1]);
+                    finish();
+                })
+                .setNegativeButton(android.R.string.cancel, (d, w) -> finish());
+        if (Double.isNaN(distM) || distM <= HONK_MAX_M) {
+            b.setNeutralButton(R.string.hql_cc_find, (d, w) -> send(new CarCommand(CarCommand.Kind.FIND)));
+        }
+        show(b);
+    }
+
+    /** Google Maps con la ruta a pie hasta el coche (o el navegador, si no está Maps). */
+    private void openMap(double lat, double lon) {
+        String at = String.format(Locale.ROOT, "%.6f,%.6f", lat, lon);
+        android.net.Uri u = android.net.Uri.parse("https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=" + at);
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, u).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        } catch (ActivityNotFoundException e) {
+            L.w("widget «Coche»: sin app para el mapa");
+        }
+    }
+
+    /** De cuándo es el dato: «ahora mismo», «hace 15 min», «hace 2 h», «hace 3 días». */
+    static String age(long dataMs, long nowMs) {
+        if (dataMs <= 0) return Str.get(R.string.hql_cc_age_unknown);
+        long min = Math.max(0, (nowMs - dataMs) / 60_000);
+        if (min < 2) return Str.get(R.string.hql_cc_age_now);
+        if (min < 60) return Str.get(R.string.hql_cc_age_min, (int) min);
+        if (min < 48 * 60) return Str.get(R.string.hql_cc_age_h, (int) (min / 60));
+        return Str.get(R.string.hql_cc_age_d, (int) (min / (24 * 60)));
     }
 
     /** Lo que abre el coche, con un toque de confirmación; lo demás, directo. */

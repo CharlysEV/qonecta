@@ -192,6 +192,39 @@ final class CarCloudSession {
         }
     }
 
+    /** Dónde está el coche, para «Localizar»: la posición y la hora del dato (ms de pared; 0 si no se sabe). */
+    static final class Found {
+        final LeapStatus.Position position;
+        final long dataMs;
+
+        Found(LeapStatus.Position position, long dataMs) {
+            this.position = position;
+            this.dataMs = dataMs;
+        }
+    }
+
+    /**
+     * «Localizar»: una lectura del estado solo para la posición del coche, o null si no la da. No se guarda ni va al
+     * registro (ni el estado leído pasa a CarCloud).
+     */
+    static synchronized Found readPosition(Context ctx) throws IOException, GeneralSecurityException {
+        CarCloudStore st = new CarCloudStore(ctx);
+        ensure(st);
+        if (saved.vin.isEmpty()) throw new NotConfiguredException("sin coche elegido");
+        int v0 = api.sessionVersion();
+        try {
+            JSONObject data = api.status(saved.vin, saved.carType);
+            LeapStatus.Position p = LeapStatus.position(data);
+            L.i("nube Leapmotor: «Localizar»: " + (p == null ? "el coche no da su posición" : "posición leída (no se guarda)"));
+            return p == null ? null : new Found(p, LeapStatus.dataTime(LeapStatus.merge(data)));
+        } catch (LeapApi.SessionExpiredException e) {
+            api = null;
+            throw e;
+        } finally {
+            if (api != null && api.sessionVersion() != v0) persist(st);
+        }
+    }
+
     /** Consumo medio de las últimas semanas según el coche, o null si la nube no da cifras. */
     static synchronized CloudHistory.Weekly readWeekly(Context ctx) throws IOException, GeneralSecurityException {
         CarCloudStore st = new CarCloudStore(ctx);

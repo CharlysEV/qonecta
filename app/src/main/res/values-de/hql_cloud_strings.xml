@@ -190,7 +190,7 @@
     <string name="hql_cc_climate_on">Klima auf %1$d °C</string>
     <string name="hql_cc_climate_off">Klima ausschalten</string>
     <string name="hql_cc_defrost">Enteisen</string>
-    <string name="hql_cc_find">Auto finden</string>
+    <string name="hql_cc_find">Hupe und Licht</string>
     <string name="hql_cc_disabled_title">Befehle an das Auto sind aus</string>
     <string name="hql_cc_disabled_text">Schalte sie in ⚙ › Auto › Fahrzeugdaten ein, mit gespeicherter Auto-PIN.</string>
     <string name="hql_cc_open_settings">Einstellungen öffnen</string>
@@ -208,4 +208,15 @@
     <string name="hql_cloud_orders">Befehle an das Auto über das Qonecta+-Widget: verriegeln, entriegeln, Kofferraum, Klima und finden, auch per Sprache</string>
     <string name="hql_cloud_add_widget">Sie erscheinen im Qonecta+-Widget, wenn du es höher machst (4×3): lange drücken und nach unten ziehen.</string>
     <string name="hql_cw_voice_short">Sprache</string>
+    <string name="hql_cc_find_title">Dein Auto</string>
+    <string name="hql_cc_find_searching">Suche das Auto…</string>
+    <string name="hql_cc_find_where">%1$s von dir · Position von %2$s</string>
+    <string name="hql_cc_find_where_nophone">Position von %1$s (dein Standort ist unbekannt)</string>
+    <string name="hql_cc_find_none">Das Auto hat seine Position nicht gemeldet.</string>
+    <string name="hql_cc_find_map">Auf der Karte zeigen</string>
+    <string name="hql_cc_age_now">gerade eben</string>
+    <string name="hql_cc_age_min">vor %1$d Min.</string>
+    <string name="hql_cc_age_h">vor %1$d Std.</string>
+    <string name="hql_cc_age_d">vor %1$d Tagen</string>
+    <string name="hql_cc_age_unknown">Zeit unbekannt</string>
 </resources>

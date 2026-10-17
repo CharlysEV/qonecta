@@ -190,7 +190,7 @@
     <string name="hql_cc_climate_on">Climate at %1$d °C</string>
     <string name="hql_cc_climate_off">Turn off climate</string>
     <string name="hql_cc_defrost">Defrost</string>
-    <string name="hql_cc_find">Find the car</string>
+    <string name="hql_cc_find">Horn and lights</string>
     <string name="hql_cc_disabled_title">Car commands are off</string>
     <string name="hql_cc_disabled_text">Turn them on in ⚙ › Car › Car data, with the car PIN saved.</string>
     <string name="hql_cc_open_settings">Open settings</string>
@@ -208,4 +208,15 @@
     <string name="hql_cloud_orders">Car commands from the Qonecta+ widget: lock, unlock, trunk, climate and find, also by voice</string>
     <string name="hql_cloud_add_widget">They show in the Qonecta+ widget when you make it taller (4×3): long-press it and drag it down.</string>
     <string name="hql_cw_voice_short">Voice</string>
+    <string name="hql_cc_find_title">Your car</string>
+    <string name="hql_cc_find_searching">Finding where the car is…</string>
+    <string name="hql_cc_find_where">%1$s from you · position from %2$s</string>
+    <string name="hql_cc_find_where_nophone">Position from %1$s (I don\'t know where you are)</string>
+    <string name="hql_cc_find_none">The car did not report its position.</string>
+    <string name="hql_cc_find_map">Show on map</string>
+    <string name="hql_cc_age_now">just now</string>
+    <string name="hql_cc_age_min">%1$d min ago</string>
+    <string name="hql_cc_age_h">%1$d h ago</string>
+    <string name="hql_cc_age_d">%1$d days ago</string>
+    <string name="hql_cc_age_unknown">unknown time</string>
 </resources>

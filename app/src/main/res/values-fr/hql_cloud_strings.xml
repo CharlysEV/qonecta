@@ -190,7 +190,7 @@
     <string name="hql_cc_climate_on">Clim à %1$d °C</string>
     <string name="hql_cc_climate_off">Éteindre la clim</string>
     <string name="hql_cc_defrost">Désembuer</string>
-    <string name="hql_cc_find">Localiser la voiture</string>
+    <string name="hql_cc_find">Klaxon et feux</string>
     <string name="hql_cc_disabled_title">Commandes de la voiture désactivées</string>
     <string name="hql_cc_disabled_text">Activez-les dans ⚙ › Voiture › Données de la voiture, avec le code PIN enregistré.</string>
     <string name="hql_cc_open_settings">Ouvrir les réglages</string>
@@ -208,4 +208,15 @@
     <string name="hql_cloud_orders">Commandes de la voiture depuis le widget Qonecta+ : verrouiller, ouvrir, coffre, clim et localiser, aussi à la voix</string>
     <string name="hql_cloud_add_widget">Elles apparaissent dans le widget Qonecta+ en l\'agrandissant (4×3) : appui long puis étirez-le vers le bas.</string>
     <string name="hql_cw_voice_short">Voix</string>
+    <string name="hql_cc_find_title">Votre voiture</string>
+    <string name="hql_cc_find_searching">Recherche de la voiture…</string>
+    <string name="hql_cc_find_where">À %1$s de vous · position de %2$s</string>
+    <string name="hql_cc_find_where_nophone">Position de %1$s (je ne sais pas où vous êtes)</string>
+    <string name="hql_cc_find_none">La voiture n\'a pas donné sa position.</string>
+    <string name="hql_cc_find_map">Voir sur la carte</string>
+    <string name="hql_cc_age_now">à l\'instant</string>
+    <string name="hql_cc_age_min">il y a %1$d min</string>
+    <string name="hql_cc_age_h">il y a %1$d h</string>
+    <string name="hql_cc_age_d">il y a %1$d jours</string>
+    <string name="hql_cc_age_unknown">heure inconnue</string>
 </resources>

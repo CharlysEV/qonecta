@@ -38,4 +38,10 @@ final class CarOrders {
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         return PendingIntent.getActivity(c, RC_BASE + code, i, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
+
+    /** Puro: «350 m», «1,2 km» (a cuánto está el coche, en «Localizar»). */
+    static String distance(double m) {
+        if (m < 1000) return Math.max(10, Math.round(m / 10.0) * 10) + " m";
+        return String.format(java.util.Locale.getDefault(), "%.1f km", m / 1000.0);
+    }
 }

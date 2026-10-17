@@ -190,7 +190,7 @@
     <string name="hql_cc_climate_on">Klimaat op %1$d °C</string>
     <string name="hql_cc_climate_off">Klimaat uitzetten</string>
     <string name="hql_cc_defrost">Ontwasemen</string>
-    <string name="hql_cc_find">Auto zoeken</string>
+    <string name="hql_cc_find">Claxon en lichten</string>
     <string name="hql_cc_disabled_title">Opdrachten aan de auto staan uit</string>
     <string name="hql_cc_disabled_text">Zet ze aan in ⚙ › Auto › Autogegevens, met de pincode van de auto opgeslagen.</string>
     <string name="hql_cc_open_settings">Instellingen openen</string>
@@ -208,4 +208,15 @@
     <string name="hql_cloud_orders">Opdrachten aan de auto vanuit de Qonecta+-widget: vergrendelen, openen, kofferbak, klimaat en zoeken, ook met je stem</string>
     <string name="hql_cloud_add_widget">Ze verschijnen in de Qonecta+-widget als je hem hoger maakt (4×3): lang indrukken en naar beneden trekken.</string>
     <string name="hql_cw_voice_short">Stem</string>
+    <string name="hql_cc_find_title">Je auto</string>
+    <string name="hql_cc_find_searching">Zoeken waar de auto staat…</string>
+    <string name="hql_cc_find_where">Op %1$s van je · positie van %2$s</string>
+    <string name="hql_cc_find_where_nophone">Positie van %1$s (ik weet niet waar je bent)</string>
+    <string name="hql_cc_find_none">De auto gaf zijn positie niet door.</string>
+    <string name="hql_cc_find_map">Op de kaart</string>
+    <string name="hql_cc_age_now">zojuist</string>
+    <string name="hql_cc_age_min">%1$d min geleden</string>
+    <string name="hql_cc_age_h">%1$d u geleden</string>
+    <string name="hql_cc_age_d">%1$d dagen geleden</string>
+    <string name="hql_cc_age_unknown">tijd onbekend</string>
 </resources>

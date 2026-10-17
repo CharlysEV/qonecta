@@ -190,7 +190,7 @@
     <string name="hql_cc_climate_on">空调 %1$d °C</string>
     <string name="hql_cc_climate_off">关闭空调</string>
     <string name="hql_cc_defrost">除雾</string>
-    <string name="hql_cc_find">寻找车辆</string>
+    <string name="hql_cc_find">鸣笛和闪灯</string>
     <string name="hql_cc_disabled_title">车辆指令已关闭</string>
     <string name="hql_cc_disabled_text">请在 ⚙ › 车辆 › 车辆数据 中开启，并保存车辆 PIN。</string>
     <string name="hql_cc_open_settings">打开设置</string>
@@ -208,4 +208,15 @@
     <string name="hql_cloud_orders">从 Qonecta+ 小组件向车辆发送指令：上锁、解锁、后备箱、空调和寻车，也可语音</string>
     <string name="hql_cloud_add_widget">将 Qonecta+ 小组件调高（4×3）即可显示：长按后向下拖动。</string>
     <string name="hql_cw_voice_short">语音</string>
+    <string name="hql_cc_find_title">你的车</string>
+    <string name="hql_cc_find_searching">正在查找车辆位置…</string>
+    <string name="hql_cc_find_where">距你 %1$s · 位置时间 %2$s</string>
+    <string name="hql_cc_find_where_nophone">位置时间 %1$s（不知道你在哪里）</string>
+    <string name="hql_cc_find_none">车辆没有提供位置。</string>
+    <string name="hql_cc_find_map">在地图中查看</string>
+    <string name="hql_cc_age_now">刚刚</string>
+    <string name="hql_cc_age_min">%1$d 分钟前</string>
+    <string name="hql_cc_age_h">%1$d 小时前</string>
+    <string name="hql_cc_age_d">%1$d 天前</string>
+    <string name="hql_cc_age_unknown">时间未知</string>
 </resources>

@@ -10,7 +10,9 @@
  * Las señales del depósito de los REEV (3235 % de gasolina, 3263 mililitros, 3259 autonomía con gasolina y 3261
  * autonomía total) son las que descifró leapmotor-mate (ProtossBlaster, AGPL-3.0) con los datos de sus usuarios.
  *
- * A propósito NO se leen ni se guardan la posición del coche (latitud y longitud) ni nada que no enseñe HeadQLink.
+ * A propósito NO se leen ni se guardan la posición del coche (latitud y longitud) ni nada que no enseñe HeadQLink. La
+ * única excepción es «Localizar» (CarControlActivity): al pedirlo el usuario, position() la saca de esa lectura, se enseña
+ * y se pasa a Google Maps en el móvil, y no se guarda ni se registra.
  */
 package com.headqlink.link;
 
@@ -161,6 +163,54 @@ final class LeapStatus {
         fuelRangeKm = asDouble(m.get("fuelRange"));
         combinedRangeKm = asDouble(m.get("combinedRange"));
         sentry = asBool(m.get("sentryMode"));
+    }
+
+    /** La posición del coche (grados) y si trae su signo (las señales de valor absoluto lo pierden). */
+    static final class Position {
+        final double lat;
+        final double lon;
+        final boolean signed;
+
+        Position(double lat, double lon, boolean signed) {
+            this.lat = lat;
+            this.lon = lon;
+            this.signed = signed;
+        }
+
+        /**
+         * Puro: sin signo, el del hemisferio del móvil (el coche está cerca de quien lo busca: en España la longitud es
+         * negativa y el valor absoluto la llevaría al Mediterráneo). {lat, lon}.
+         */
+        double[] near(double phoneLat, double phoneLon) {
+            if (signed || Double.isNaN(phoneLat) || Double.isNaN(phoneLon)) return new double[]{lat, lon};
+            return new double[]{Math.copySign(Math.abs(lat), phoneLat), Math.copySign(Math.abs(lon), phoneLon)};
+        }
+    }
+
+    /**
+     * Puro: la posición del coche en el «data» del estado, o null. Solo para «Localizar»: no pasa a LeapStatus. Como
+     * leapmotor-api (markoceri, AGPL-3.0, models.py): los campos con nombre «latitude»/«longitude» (T03); si no, las
+     * señales con signo 3 y 2 y, si faltan, las de valor absoluto 3725/2190 y 3724/2191.
+     */
+    static Position position(JSONObject data) {
+        if (data == null) return null;
+        double lat = asDouble(unwrap(data.opt("latitude")));
+        double lon = asDouble(unwrap(data.opt("longitude")));
+        if (valid(lat, lon)) return new Position(lat, lon, true);
+        Object sig = data.opt("signal");
+        if (!(sig instanceof JSONObject)) return null;
+        JSONObject s = (JSONObject) sig;
+        String[][] pairs = {{"3", "2"}, {"3725", "3724"}, {"2190", "2191"}};
+        for (int i = 0; i < pairs.length; i++) {
+            lat = asDouble(unwrap(s.opt(pairs[i][0])));
+            lon = asDouble(unwrap(s.opt(pairs[i][1])));
+            if (valid(lat, lon)) return new Position(lat, lon, i == 0);
+        }
+        return null;
+    }
+
+    private static boolean valid(double lat, double lon) {
+        return !Double.isNaN(lat) && !Double.isNaN(lon) && Math.abs(lat) <= 90 && Math.abs(lon) <= 180 && (lat != 0 || lon != 0);
     }
 
     /** Estado a partir del objeto «data» de la respuesta de /status/get/…, con sus señales ya fusionadas. */
