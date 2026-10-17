@@ -167,6 +167,31 @@ final class CarCloudSession {
         }
     }
 
+    /**
+     * Una orden del widget «Coche» (CarCommand), con el PIN guardado. true si el coche la confirma; false si no contesta a
+     * tiempo. Para el clima a una temperatura, la del interior del coche (último dato) dice si calienta o enfría.
+     */
+    static synchronized boolean command(Context ctx, CarCommand c) throws IOException, GeneralSecurityException {
+        CarCloudStore st = new CarCloudStore(ctx);
+        ensure(st);
+        if (saved.vin.isEmpty()) throw new NotConfiguredException("sin coche elegido");
+        String pin = st.pin();
+        if (pin == null || pin.isEmpty()) throw new NotConfiguredException("sin PIN del coche");
+        CarCloud.Snapshot snap = CarCloud.snapshot();
+        double inside = snap != null && snap.hasData() && !snap.demo ? snap.status.interiorTempC : Double.NaN;
+        int v0 = api.sessionVersion();
+        try {
+            boolean ok = api.remote(saved.vin, c.cmdId(), c.content(saved.carType, inside), pin);
+            L.i("nube Leapmotor: orden " + c + (ok ? " (confirmada por el coche)" : " (sin confirmar)"));
+            return ok;
+        } catch (LeapApi.SessionExpiredException e) {
+            api = null;
+            throw e;
+        } finally {
+            if (api != null && api.sessionVersion() != v0) persist(st);
+        }
+    }
+
     /** Consumo medio de las últimas semanas según el coche, o null si la nube no da cifras. */
     static synchronized CloudHistory.Weekly readWeekly(Context ctx) throws IOException, GeneralSecurityException {
         CarCloudStore st = new CarCloudStore(ctx);

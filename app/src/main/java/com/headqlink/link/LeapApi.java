@@ -5,12 +5,13 @@
  * _baseHeaders, _signedHeaders, _parseBody, getVehicleList, getVehicleStatus y Vehicle.statusPath), de txurtxil:
  * https://github.com/txurtxil/LPB10 (GPL-3.0). HeadQLink (AGPL-3.0) lo incorpora según la sección 13 de ambas licencias.
  *
- * SOLO LECTURA salvo una orden opcional: de LMB10 se ha portado únicamente el login, la sesión, la lista de coches y el
- * estado, y la capa de transporte se niega a pedir cualquier ruta que no sea de las de lectura (ALLOWED_PATHS). La única
- * orden al coche es el modo centinela (encender y apagar), y solo si el usuario ha guardado a propósito el PIN del
- * coche: entonces, y solo dentro de remote(), se permiten las cuatro rutas de REMOTE_PATHS. Nada más (cerrar, abrir,
- * clima, ventanillas, carga…) existe aquí. El flujo (certificado, PIN cifrado, orden y confirmación) sigue
- * leapmotor-api (markoceri, AGPL-3.0).
+ * SOLO LECTURA salvo unas órdenes opcionales: de LMB10 se ha portado únicamente el login, la sesión, la lista de coches
+ * y el estado, y la capa de transporte se niega a pedir cualquier ruta que no sea de las de lectura (ALLOWED_PATHS). Las
+ * órdenes al coche son las de COMMANDS (centinela; y, con el ajuste «Órdenes desde el widget», cerrar y abrir, maletero,
+ * clima y localizar), y solo si el usuario ha guardado a propósito el PIN del coche: entonces, y solo dentro de remote(),
+ * se permiten las cuatro rutas de REMOTE_PATHS. Nada más (ventanillas, carga, aparcar…) existe aquí. El flujo
+ * (certificado, PIN cifrado, orden y confirmación) y los cuerpos de las órdenes siguen leapmotor-api (markoceri,
+ * AGPL-3.0).
  *
  * El historial de viajes (mileage/daily/detail/page, con los kWh y los litros de cada viaje según el coche) y el consumo
  * semanal (getLastNweeks100kmECAndRank) siguen lo documentado por leapmotor-mate (ProtossBlaster) y leapmotor-api
@@ -59,8 +60,16 @@ final class LeapApi {
     static final String PATH_REMOTE_RESULT = "/carownerservice/oversea/vehicle/v1/app/remote/ctl/result/query";
     static final List<String> REMOTE_PATHS = Collections.unmodifiableList(java.util.Arrays.asList(
             PATH_CERT_SYNC, PATH_OPER_VERIFY, PATH_REMOTE_CTL, PATH_REMOTE_RESULT));
-    /** La única orden que se manda: modo centinela (cmdId 220, {"value":"1"} encendido, {"value":"0"} apagado). */
+    /** Modo centinela (cmdId 220, {"value":"1"} encendido, {"value":"0"} apagado). */
     static final String CMD_SENTRY = "220";
+    /** Widget «Coche» (CarCommand): cerrar y abrir, localizar (pitido y luces), maletero y clima. */
+    static final String CMD_LOCK = "110";
+    static final String CMD_FIND = "120";
+    static final String CMD_TRUNK = "130";
+    static final String CMD_CLIMATE = "170";
+    /** Las únicas órdenes que se mandan. */
+    static final List<String> COMMANDS = Collections.unmodifiableList(java.util.Arrays.asList(
+            CMD_SENTRY, CMD_LOCK, CMD_FIND, CMD_TRUNK, CMD_CLIMATE));
 
     /** El cuerpo de la orden del centinela. */
     static String sentryContent(boolean on) {
@@ -431,7 +440,7 @@ final class LeapApi {
      * log.
      */
     boolean remote(String vin, String cmdId, String cmdContent, String pin) throws IOException {
-        if (!CMD_SENTRY.equals(cmdId)) throw new IOException("orden no permitida");
+        if (!COMMANDS.contains(cmdId)) throw new IOException("orden no permitida");
         if (pin == null || pin.isEmpty()) throw new IOException("sin PIN del coche");
         REMOTE_NOW.set(Boolean.TRUE);
         try {

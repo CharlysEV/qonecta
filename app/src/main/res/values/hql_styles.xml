@@ -55,6 +55,17 @@
 
     <style name="Theme.HeadQLink" parent="Base.Theme.HeadQLink" />
 
+    <!-- headqlink: ventanita del widget «Coche» (CarControlActivity): solo sus diálogos, sobre lo que haya debajo. -->
+    <style name="Theme.HeadQLink.Translucent" parent="Theme.HeadQLink">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
     <!-- ============================================================ diálogos -->
 
     <style name="HQL.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
