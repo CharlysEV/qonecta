@@ -632,6 +632,9 @@
     <string name="hql_legend_tailwind">de cauda</string>
     <string name="hql_legend_battery">Bateria prevista</string>
     <string name="hql_route_source">rota aproximada (OSM/OSRM)</string>
+    <string name="hql_route_source_google">igual à do Google Maps</string>
+    <string name="hql_route_source_own">rota própria: o Google Maps não está a guiar</string>
+    <string name="hql_route_source_differs">diferente da do Google Maps</string>
     <string name="hql_route_where">Para onde vamos?</string>
     <string name="hql_route_battery_no">Não chega sem carregar</string>
     <string name="hql_route_battery_tight">À justa: melhor carregar pelo caminho</string>

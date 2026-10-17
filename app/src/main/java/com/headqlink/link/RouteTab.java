@@ -2691,8 +2691,11 @@ final class RouteTab implements CarScreen {
             String why = pl.flatElevation ? Str.get(R.string.hql_route_flat) : explain(pl, prog);
             p.setTypeface(CarKit.MEDIUM);
             p.setTextSize(18);
-            float right = CarKit.text(cv, Str.get(R.string.hql_route_source), r.right, cy0 + 114, 18, CarKit.FAINT, CarKit.MEDIUM, p,
-                    Paint.Align.RIGHT) + 30;
+            // De dónde sale la ruta: la de Google Maps, o una propia (Maps no guía, o va por otro sitio) que puede no ser la
+            // carretera que se acabe haciendo (17-10: 146 km previstos y 164 hechos sin Maps guiando).
+            int src = RoutePlanner.sourceNote(pl);
+            float right = CarKit.text(cv, Str.get(src), r.right, cy0 + 114, 18,
+                    src == R.string.hql_route_source_google ? CarKit.FAINT : CarKit.AMBER, CarKit.MEDIUM, p, Paint.Align.RIGHT) + 30;
             if (!why.isEmpty()) {
                 p.setTextSize(21);
                 CarKit.text(cv, CarKit.ellipsize(why, r.width() - right, p), x0, cy0 + 114, 21, CarKit.DIM, CarKit.MEDIUM, p,

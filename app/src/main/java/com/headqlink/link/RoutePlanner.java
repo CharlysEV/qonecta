@@ -81,6 +81,11 @@ final class RoutePlanner {
         boolean googleTime;
         /** Al hacerlo, ninguna ruta se parecía a la de Google (va a otro sitio): no se rehace por diferir de ella. */
         boolean googleMismatch;
+        /**
+         * Es la ruta que guía Google Maps (se comparó con la suya y encaja). Si no (Maps no guiaba, o un viaje con paradas),
+         * es una ruta propia: puede ir por otra carretera que la que se acabe haciendo, y la pestaña Ruta lo dice.
+         */
+        boolean googleMatched;
         /** Sin alturas (los servicios no respondían): la ruta es llana, sin cuestas (RoutePlanner.elevations). */
         boolean flatElevation;
         double destTemp = Double.NaN;
@@ -1619,6 +1624,13 @@ final class RoutePlanner {
         NavApps.goWithStops(ctx, p, cp);
     }
 
+    /** La nota de la pestaña Ruta: como la de Google Maps, distinta de la suya, o propia (Maps no guía o hay paradas). */
+    static int sourceNote(Plan pl) {
+        if (pl.googleMatched) return R.string.hql_route_source_google;
+        if (pl.googleMismatch && !pl.multi()) return R.string.hql_route_source_differs;
+        return R.string.hql_route_source_own;
+    }
+
     /** Distancia al destino por debajo de la cual se da por llegado (km). */
     static final double ARRIVED_KM = 0.3;
     /**
@@ -1946,6 +1958,7 @@ final class RoutePlanner {
                     bestAlt + 1, alts, route.getDouble("distance") / 1000, googleM / 1000));
             // Ninguna se parece (más de un 25 %): Google va a otro sitio. No se insiste en igualarla con esta ruta.
             p.googleMismatch = bestScore > 0.25;
+            p.googleMatched = !p.googleMismatch;
         }
         JSONArray coords = route.getJSONObject("geometry").getJSONArray("coordinates");
         // Metros y segundos de cada tramo entre puntos: los de todos los tramos del viaje, seguidos.

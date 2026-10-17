@@ -279,6 +279,8 @@ final class DemoDrive {
         int n = 400;
         double total = 531;
         p.destination = DESTINATION;
+        // La demostración va como si Google Maps guiara esa misma ruta.
+        p.googleMatched = true;
         p.n = n;
         p.lat = new double[n];
         p.lon = new double[n];
