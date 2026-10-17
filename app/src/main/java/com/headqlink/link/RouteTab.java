@@ -2304,7 +2304,7 @@ final class RouteTab implements CarScreen {
         String dur = DriveTab.duration(Math.round(cp.chargeMinutes * 60));
         // Sin cargador alcanzable tras la última parada: dónde se queda, no un «llegas con -130 %».
         String sum = cp.outcome == ChargePlanner.Outcome.NO_CHARGER
-                ? Str.get(R.string.hql_plan_summary_stuck, cp.stops.size(), dur, cp.stops.get(cp.stops.size() - 1).km)
+                ? Str.get(R.string.hql_plan_summary_stuck, cp.stops.size(), dur, cp.kmMark(cp.stops.get(cp.stops.size() - 1).km))
                 : Str.plural(R.plurals.hql_plan_summary, cp.stops.size(), cp.stops.size(), dur, cp.arrivalPct);
         // Con el precio de ahora (si se cambia en Ajustes, el plan no se rehace por eso).
         double cost = ChargePlanner.cost(cp, new Config(ctx).fastChargePrice());
@@ -2329,7 +2329,7 @@ final class RouteTab implements CarScreen {
             name.setSingleLine(true);
             name.setEllipsize(android.text.TextUtils.TruncateAt.END);
             boolean low = ChargePlanner.lowVolts(st.charger, cp.carVolts);
-            TextView line = CarStyle.text(ctx, Str.get(R.string.hql_plan_stop_line, st.km, st.arrivePct, st.departPct,
+            TextView line = CarStyle.text(ctx, Str.get(R.string.hql_plan_stop_line, cp.kmMark(st.km), st.arrivePct, st.departPct,
                     DriveTab.duration(Math.round(st.minutes * 60))) + " · " + kwText(st.charger)
                     + (low ? " · " + Str.get(R.string.hql_charger_low_volts, st.charger.maxVolts) : ""), 20, low ? CarKit.AMBER : CarKit.ACCENT);
             line.setMaxLines(2);
@@ -2646,13 +2646,16 @@ final class RouteTab implements CarScreen {
         }
         // Fichas: lo que falta, llegada, energía y consumo previstos.
         int prog = Math.min(pl.progress, pl.n - 1);
-        double remKm = nav.remainingMeters >= 0 ? nav.remainingMeters / 1000.0 : pl.totalKm - pl.km[prog];
+        // Lo que falta como lo cuenta Google Maps si guía (mapsRatio): la energía del plan de carga ya va con esos km.
+        ChargePlanner.Result cpNow = chargePlan;
+        double ratio = cpNow != null ? cpNow.mapsRatio : 1;
+        double remKm = nav.remainingMeters >= 0 ? nav.remainingMeters / 1000.0 : (pl.totalKm - pl.km[prog]) * ratio;
         long remSec = nav.remainingSeconds >= 0 ? nav.remainingSeconds
                 : Math.round(pl.totalSeconds * (pl.totalKm - pl.km[prog]) / Math.max(0.1, pl.totalKm));
         String eta = nav.eta != null ? nav.eta : android.text.format.DateFormat.getTimeFormat(ctx)
                 .format(new java.util.Date(DemoMode.wallClockMs() + remSec * 1000));
         double kwh = remainingKwh();
-        double per100 = pl.totalKm - pl.km[prog] > 1 ? kwh / (pl.totalKm - pl.km[prog]) * 100 : Double.NaN;
+        double per100 = pl.totalKm - pl.km[prog] > 1 ? kwh / ((pl.totalKm - pl.km[prog]) * ratio) * 100 : Double.NaN;
         float gap = small ? 10 : 14;
         float cw = (r.width() - 3 * gap) / 4f;
         float cy0 = small ? y0 + 42 : y0 + 92;

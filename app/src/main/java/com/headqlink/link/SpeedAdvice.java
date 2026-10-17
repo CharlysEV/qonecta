@@ -61,7 +61,7 @@ final class SpeedAdvice {
         // La comparación, con un plan nuevo a la velocidad de la ruta y las mismas reglas que los de más despacio: el que se
         // enseña mantiene las paradas ya elegidas (keep), y que un plan nuevo quite una de ellas no es mérito de ir más
         // despacio.
-        ChargePlanner.Result base = ChargePlanner.plan(p.km, ChargePlanner.scaled(p.km, p.kwhCum, now.fromKm, now.trend),
+        ChargePlanner.Result base = ChargePlanner.plan(p.km, ChargePlanner.scaled(p.km, p.kwhCum, now.fromKm, now.energyFactor()),
                 now.fromKm, now.socNow, chargers, s);
         boolean stuck = now.outcome == ChargePlanner.Outcome.NO_CHARGER && base.outcome == ChargePlanner.Outcome.NO_CHARGER;
         int stopsNow = Math.min(now.stops.size(), base.stops.size());
@@ -70,7 +70,7 @@ final class SpeedAdvice {
             double[] extra = new double[1];
             double[] cum = cappedKwhCum(p, cap, now.fromKm, extra);
             if (extra[0] < MIN_EXTRA_S) continue;
-            ChargePlanner.Result r = ChargePlanner.plan(p.km, ChargePlanner.scaled(p.km, cum, now.fromKm, now.trend), now.fromKm,
+            ChargePlanner.Result r = ChargePlanner.plan(p.km, ChargePlanner.scaled(p.km, cum, now.fromKm, now.energyFactor()), now.fromKm,
                     now.socNow, chargers, s);
             if (r.outcome == ChargePlanner.Outcome.NO_CHARGER) continue;
             SpeedAdvice a = new SpeedAdvice(cap, extra[0] / 60, base.chargeMinutes - r.chargeMinutes, stopsNow,

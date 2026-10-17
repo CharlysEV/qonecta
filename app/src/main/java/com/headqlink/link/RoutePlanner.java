@@ -86,6 +86,12 @@ final class RoutePlanner {
          * es una ruta propia: puede ir por otra carretera que la que se acabe haciendo, y la pestaña Ruta lo dice.
          */
         boolean googleMatched;
+        /**
+         * Km que cuenta Google Maps por cada km de este plan en lo que falta (mapsRatio): Maps puede ir por otra carretera
+         * y, con las paradas añadidas, entra y sale de cada cargador. Multiplica el gasto de lo que falta y las distancias
+         * que se enseñan. 1 mientras Maps no guíe esta ruta.
+         */
+        volatile double mapsRatio = 1;
         /** Sin alturas (los servicios no respondían): la ruta es llana, sin cuestas (RoutePlanner.elevations). */
         boolean flatElevation;
         double destTemp = Double.NaN;
@@ -564,6 +570,7 @@ final class RoutePlanner {
         boolean replan = false;
         if (p != null && dest.equals(p.destination)) {
             // La misma ruta: se rehace solo si nos hemos salido del trazado o Google ha cambiado la suya (un desvío, un atasco).
+            if (origin == null) updateMapsRatio(p, dest);
             String why = origin == null ? replanReason(p, s, nav, dest) : null;
             long t = SystemClock.elapsedRealtime();
             if (why == null || t - lastReplanMs < REPLAN_GAP_MS) return;
@@ -828,6 +835,42 @@ final class RoutePlanner {
             return g;
         }
         return null;
+    }
+
+    /** Con menos de esto por delante (km), la proporción con Google Maps ya no se toca (cerca del final baila). */
+    static final double MAPS_RATIO_MIN_KM = 10;
+    /** Fuera de esto, Maps no va por esta ruta (otro destino, o recalculando): no se usa. */
+    static final double MAPS_RATIO_MIN = 0.9;
+    static final double MAPS_RATIO_MAX = 1.25;
+    /** Cambios menores que este no se aplican: el plan de carga no se rehace por décimas. */
+    static final double MAPS_RATIO_STEP = 0.015;
+
+    /**
+     * Puro: km de Google Maps por cada km del plan en lo que falta (oursKm y googleKm), a partir del anterior (prev). 17-10:
+     * el plan contaba 771 km y Maps, con las cuatro paradas añadidas, 835 (×1,08); la primera parada salía a 212 km aquí
+     * y a 230 en Maps. Sin dato de Maps o cerca del final, el anterior; si no cuadra (Maps va a otro sitio), 1.
+     */
+    static double mapsRatio(double oursKm, double googleKm, double prev) {
+        if (!(googleKm > 0) || !(oursKm >= MAPS_RATIO_MIN_KM)) return prev;
+        double r = googleKm / oursKm;
+        if (r < MAPS_RATIO_MIN || r > MAPS_RATIO_MAX) return 1;
+        r = Math.round(r * 100) / 100.0;
+        return Math.abs(r - prev) < MAPS_RATIO_STEP ? prev : r;
+    }
+
+    /**
+     * Pone al día la proporción de km con Google Maps (mapsRatio) si Maps guía esta ruta. Sin Maps se queda la última (en
+     * una parada, Maps puede dar el tramo por acabado). Al cambiar, al registro, sin lugares.
+     */
+    private void updateMapsRatio(Plan p, String dest) {
+        Google gl = p.googleMismatch ? null : google(dest);
+        if (gl == null) return;
+        double google = gl.remainingM / 1000.0;
+        double ours = p.totalKm - p.km[Math.min(Math.max(0, p.progress), p.n - 1)];
+        double r = mapsRatio(ours, google, p.mapsRatio);
+        if (r == p.mapsRatio) return;
+        p.mapsRatio = r;
+        L.i(String.format(Locale.US, "ruta: Google Maps cuenta %.0f km y el plan %.0f: lo que falta, ×%.2f (km y gasto)", google, ours, r));
     }
 
     /** Puro: ¿lo que falta según Google y según el plan es demasiado distinto? */
@@ -1300,7 +1343,8 @@ final class RoutePlanner {
                     + (realSoc ? "/real" : "/indicado") + "/c" + pl.chargerVersion + "/curva" + c.learnedChargeCurve() + "/m" + marks.hashCode() + (food ? "/f" + FoodNearby.version : "");
             int prog = Math.min(pl.progress, pl.n - 1);
             double f = demo ? DemoMode.planTrend() : trend.factor();
-            String key = settings + "/" + prog + "/" + Math.round(soc * 2) + "/" + Math.round(f * 100) + "/" + charging;
+            double mr = pl.mapsRatio;
+            String key = settings + "/" + prog + "/" + Math.round(soc * 2) + "/" + Math.round(f * 100) + "/" + Math.round(mr * 100) + "/" + charging;
             if (key.equals(chargeKey)) return charge;
             chargeKey = key;
             ChargePlanner.Settings s = planSettings(c, capKwh);
@@ -1314,8 +1358,10 @@ final class RoutePlanner {
             List<Charger> keep = new ArrayList<>();
             if (same) for (ChargePlanner.Stop st : charge.stops) keep.add(st.charger);
             double from = pl.km[prog];
-            ChargePlanner.Result r = ChargePlanner.plan(pl.km, ChargePlanner.scaled(pl.km, pl.kwhCum, from, f), from, soc, list, s, keep);
+            // Lo que falta, con la tendencia del viaje y los km de Google Maps (si guía y cuenta otros).
+            ChargePlanner.Result r = ChargePlanner.plan(pl.km, ChargePlanner.scaled(pl.km, pl.kwhCum, from, f * mr), from, soc, list, s, keep);
             r.trend = f;
+            r.mapsRatio = mr;
             // Si yendo más despacio sale mejor (SpeedAdvice). Lo que cuestan las paradas lo calcula RouteTab al enseñarlo,
             // con el precio de ese momento.
             r.speed = SpeedAdvice.best(pl, r, list, s);
@@ -1328,9 +1374,10 @@ final class RoutePlanner {
             int sig = r.outcome.ordinal() * 100 + r.stops.size();
             if (sig != chargeLogged || change != ChargePlanner.Change.NONE) {
                 chargeLogged = sig;
-                L.i(String.format(Locale.US, "ruta: plan de carga%s: %s, %d paradas, %.0f min cargando, llegada %.0f %%, gasto ×%.2f, %s",
+                L.i(String.format(Locale.US, "ruta: plan de carga%s: %s, %d paradas, %.0f min cargando, llegada %.0f %%, gasto ×%.2f%s, %s",
                         change == ChargePlanner.Change.NONE ? "" : " recalculado (" + change.name().toLowerCase(Locale.ROOT) + ")",
-                        r.outcome.name().toLowerCase(Locale.ROOT), r.stops.size(), r.chargeMinutes, r.arrivalPct, f, curveNote(s)));
+                        r.outcome.name().toLowerCase(Locale.ROOT), r.stops.size(), r.chargeMinutes, r.arrivalPct, f,
+                        mr == 1 ? "" : String.format(Locale.US, ", km de Maps ×%.2f", mr), curveNote(s)));
             }
             if (change != ChargePlanner.Change.NONE) alert(change, before, r);
             RouteOffer offer = routeOffer;
@@ -1508,7 +1555,7 @@ final class RoutePlanner {
         Config c = new Config(ctx);
         int prog = Math.min(p.progress, p.n - 1);
         double here = p.km[prog];
-        double f = demo ? DemoMode.planTrend() : trend.factor();
+        double f = (demo ? DemoMode.planTrend() : trend.factor()) * p.mapsRatio;
         int ahead = 0;
         if (before != null) for (ChargePlanner.Stop st : before.stops) if (st.km > here + ChargePlanner.HERE_KM) ahead++;
         String key = System.identityHashCode(p) + "/" + p.chargerVersion + "/" + c.chargerMinKw() + "/" + c.chargerNetworks() + "/"
@@ -1605,7 +1652,7 @@ final class RoutePlanner {
         } else {
             ChargePlanner.Stop a = ChargePlanner.added(before, now);
             if (a == null) a = next;
-            if (a != null) b.append(Str.get(R.string.hql_plan_alert_stop, chargerName(a.charger), a.km - now.fromKm, a.arrivePct));
+            if (a != null) b.append(Str.get(R.string.hql_plan_alert_stop, chargerName(a.charger), now.kmTo(a), a.arrivePct));
         }
         return b.toString().trim();
     }
@@ -1966,6 +2013,8 @@ final class RoutePlanner {
         double[] dist = ann[0];
         double[] dur = ann[1];
         double totalM = route.getDouble("distance");
+        // Maps ya guía esta ruta: su proporción de km desde el principio (luego se sigue al día con cada vuelta).
+        if (p.googleMatched) p.mapsRatio = mapsRatio(totalM / 1000, googleM / 1000, 1);
         p.totalSeconds = Math.round(route.getDouble("duration"));
         double stepM = Math.max(200, totalM / 400);
 

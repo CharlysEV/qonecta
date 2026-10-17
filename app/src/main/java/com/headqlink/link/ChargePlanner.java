@@ -99,6 +99,11 @@ final class ChargePlanner {
         final double capacityKwh;
         /** Cómo se está gastando frente a lo previsto (1 = como se preveía; 1,12 = un 12 % más). */
         double trend = 1;
+        /**
+         * Km de Google Maps por cada km de la ruta en lo que falta (RoutePlanner.mapsRatio): la energía de kwhCum ya va
+         * multiplicada por él, y las distancias que se enseñan también, para que cuadren con las de Maps. 1 sin Maps.
+         */
+        double mapsRatio = 1;
         /** Voltaje de la batería del coche con el que se calculó (V). */
         double carVolts = 400;
         /** Si yendo más despacio sale mejor (SpeedAdvice), o null. */
@@ -117,6 +122,21 @@ final class ChargePlanner {
             double m = 0;
             for (Stop s : stops) m += s.minutes;
             this.chargeMinutes = m;
+        }
+
+        /** Lo que multiplica la energía prevista de lo que falta: la tendencia del viaje y los km de Google Maps. */
+        double energyFactor() {
+            return trend * mapsRatio;
+        }
+
+        /** Km hasta la parada (desde donde se calculó) como los cuenta Google Maps. */
+        double kmTo(Stop st) {
+            return Math.max(0, st.km - fromKm) * mapsRatio;
+        }
+
+        /** El km del viaje en el que queda x (km de la ruta), con lo que falta contado como Google Maps. */
+        double kmMark(double x) {
+            return x <= fromKm ? x : fromKm + (x - fromKm) * mapsRatio;
         }
 
         /** % de batería en el km x de la ruta según el plan (con las cargas). */

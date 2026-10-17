@@ -97,7 +97,7 @@ final class FloatCard extends LinearLayout {
         if (st != null) {
             icon.set(Icon.BOLT, CarKit.ACCENT);
             title.setText(RoutePlanner.chargerName(st.charger));
-            sub.setText(Str.get(R.string.hql_float_stop_sub, Math.max(0, st.km - cp.fromKm), st.arrivePct));
+            sub.setText(Str.get(R.string.hql_float_stop_sub, cp.kmTo(st), st.arrivePct));
         } else if (cp.outcome == ChargePlanner.Outcome.NO_CHARGER) {
             icon.set(Icon.BOLT, CarKit.AMBER);
             title.setText(Str.get(R.string.hql_float_no_charger));
