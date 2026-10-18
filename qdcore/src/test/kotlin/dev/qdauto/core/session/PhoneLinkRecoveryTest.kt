@@ -142,6 +142,27 @@ class PhoneLinkRecoveryTest {
         }
     }
 
+    /**
+     * Ocupa el puerto como otro programa. Con SO_REUSEADDR, como MirrorServer: en Linux, un puerto recién cerrado queda
+     * unos instantes en TIME_WAIT y sin él no se deja ocupar (CI de GitHub, 18-10: BindException). Si aún lo tiene el
+     * enlace, se reintenta hasta 5 s.
+     */
+    private fun occupy(port: Int): ServerSocket {
+        val end = System.currentTimeMillis() + 5_000
+        while (true) {
+            val s = ServerSocket()
+            try {
+                s.reuseAddress = true
+                s.bind(InetSocketAddress(port))
+                return s
+            } catch (e: java.net.BindException) {
+                s.close()
+                if (System.currentTimeMillis() > end) throw e
+                Thread.sleep(50)
+            }
+        }
+    }
+
     private fun mirrorPortOf(p: DatagramPacket): Int = assertNotNull(UdpCodec.parseBroadcastAck(p.data, 0, p.length)).mirrorPort
 
     /** Primera sesión con un coche simulado y corte de radio: el coche ni habla ni lee hasta que el móvil la cierra. */
@@ -214,7 +235,7 @@ class PhoneLinkRecoveryTest {
         sim2.close()
         assertTrue(waitUntil(5_000) { events.ended.size == 2 && link.state == LinkState.SEARCHING })
         // Otro programa ocupa el puerto: se avisa y se usa uno aleatorio.
-        ServerSocket(port1).use {
+        occupy(port1).use {
             val sim3 = sim(simConfig(p))
             assertTrue(sim3.awaitState(CarSimState.STREAMING, 10_000), sim3.report().summary())
             assertNotEquals(port1, events.ports[2])
