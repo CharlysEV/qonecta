@@ -20,6 +20,8 @@ import java.util.List;
  * Casa (Home Assistant) en el coche: los elementos elegidos en el móvil en botones grandes (luces, enchufes, garaje,
  * persianas, cerraduras, escenas, scripts…) con su estado. Un toque hace lo suyo (HomeAssistant.action); las cerraduras y
  * puertas piden confirmar. Los sensores y el clima solo se miran. Se actualiza cada 5 s mientras se ve.
+ *
+ * Solo cosas de casa: lo de Leapmotor Mate (el coche) va en la sección Coche, pestañas Estado y Mandos.
  */
 final class HomeScreen implements CarScreen {
     private static final int COLUMNS = 4;
@@ -30,6 +32,7 @@ final class HomeScreen implements CarScreen {
     private FrameLayout area;
     private TextView status;
     private GridLayout grid;
+    private View empty;
     private volatile boolean running;
     private final List<HomeAssistant.Entity> shown = new ArrayList<>();
     /** Elemento con un toque en curso (se pinta «…» hasta la respuesta). */
@@ -39,8 +42,9 @@ final class HomeScreen implements CarScreen {
         public void run() {
             if (!running) return;
             load();
+            // La siguiente lectura, otra vez en su hilo (postDelayed la correría en el de la pantalla: red prohibida).
             host.post(() -> {
-                if (running && area != null) area.postDelayed(this, REFRESH_MS);
+                if (running && area != null) area.postDelayed(() -> new Thread(this, "hql-home").start(), REFRESH_MS);
             });
         }
     };
@@ -52,6 +56,7 @@ final class HomeScreen implements CarScreen {
         ha = new HomeAssistant(c);
         LinearLayout col = new LinearLayout(c);
         col.setOrientation(LinearLayout.VERTICAL);
+        col.setBackgroundColor(CarKit.BG);
         LinearLayout head = new LinearLayout(c);
         head.setGravity(Gravity.CENTER_VERTICAL);
         head.setPadding(28, 22, 28, 10);
@@ -60,6 +65,8 @@ final class HomeScreen implements CarScreen {
         head.addView(title);
         status = CarStyle.text(c, "", 22, CarStyle.TEXT_DIM);
         status.setPadding(24, 0, 0, 0);
+        status.setSingleLine(true);
+        status.setEllipsize(android.text.TextUtils.TruncateAt.END);
         head.addView(status, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         col.addView(head);
         area = new FrameLayout(c);
@@ -78,6 +85,9 @@ final class HomeScreen implements CarScreen {
         ScrollView sv = new ScrollView(c);
         sv.addView(grid);
         area.addView(sv);
+        empty = CarStyle.message(c, Str.get(R.string.hql_ha_none_chosen));
+        empty.setVisibility(View.GONE);
+        area.addView(empty);
         status.setText(Str.get(R.string.hql_ha_loading));
         running = true;
         new Thread(loop, "hql-home").start();
@@ -112,6 +122,8 @@ final class HomeScreen implements CarScreen {
     private void render() {
         Context c = host.context();
         grid.removeAllViews();
+        // Solo había cosas del coche (Leapmotor Mate, que van en la sección Coche): como si no hubiera nada elegido.
+        empty.setVisibility(shown.isEmpty() ? View.VISIBLE : View.GONE);
         int w = Math.max(200, (host.width() - 40) / COLUMNS - 16);
         for (HomeAssistant.Entity e : shown) {
             View tile = tile(c, e, w);
@@ -148,23 +160,26 @@ final class HomeScreen implements CarScreen {
         t.addView(name);
         if (act != null) {
             t.setOnClickListener(v -> {
-                if (HomeAssistant.needsConfirm(e)) confirm(e, act);
-                else run(e, act);
+                if (HomeAssistant.needsConfirm(e)) {
+                    confirm(area, Str.get("unlock".equals(act[1]) || "open_cover".equals(act[1]) ? R.string.hql_ha_confirm_open
+                            : R.string.hql_ha_confirm_close, e.name), () -> run(e, act));
+                } else {
+                    run(e, act);
+                }
             });
         }
         return t;
     }
 
-    /** Cerraduras y puertas: un segundo toque en «Sí» para hacerlo. */
-    private void confirm(HomeAssistant.Entity e, String[] act) {
-        Context c = host.context();
+    /** Pregunta antes de hacerlo (la cerradura de casa, abrir el coche…): un segundo toque en «Sí», sobre area. */
+    static void confirm(FrameLayout area, String question, Runnable yesDo) {
+        Context c = area.getContext();
         LinearLayout box = new LinearLayout(c);
         box.setOrientation(LinearLayout.VERTICAL);
         box.setGravity(Gravity.CENTER);
         box.setBackgroundColor(0xE60A0E14);
         box.setClickable(true);
-        TextView q = CarStyle.text(c, Str.get("unlock".equals(act[1]) || "open_cover".equals(act[1]) ? R.string.hql_ha_confirm_open
-                : R.string.hql_ha_confirm_close, e.name), 32, CarStyle.TEXT);
+        TextView q = CarStyle.text(c, question, 32, CarStyle.TEXT);
         q.setGravity(Gravity.CENTER);
         box.addView(q);
         LinearLayout row = new LinearLayout(c);
@@ -184,7 +199,7 @@ final class HomeScreen implements CarScreen {
         area.addView(box, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         yes.setOnClickListener(v -> {
             area.removeView(box);
-            run(e, act);
+            yesDo.run();
         });
         no.setOnClickListener(v -> area.removeView(box));
     }

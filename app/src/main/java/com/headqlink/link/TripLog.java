@@ -175,7 +175,7 @@ final class TripLog {
                 startDescent = s.descentM - (r == null ? 0 : r.optDouble("descent", 0));
             }
             if (s.gpsLive()) maxKmh = Math.max(maxKmh, s.speedKmh);
-            noteCloud(CarCloud.snapshot());
+            noteCloud(CarCloud.car());
             if (!Double.isNaN(s.lat)) {
                 synchronized (track) {
                     double[] last = track.isEmpty() ? null : track.get(track.size() - 1);
@@ -217,7 +217,7 @@ final class TripLog {
 
     /** Inicio del viaje en curso con datos de la nube, o null (en la demostración, el suyo). */
     static CloudMark cloudStart() {
-        if (DemoMode.active()) return CarCloud.snapshot().demo ? DemoMode.cloudTripStart() : null;
+        if (DemoMode.active()) return CarCloud.car().demo ? DemoMode.cloudTripStart() : null;
         TripLog t = instance;
         return t == null ? null : t.cloudStart;
     }

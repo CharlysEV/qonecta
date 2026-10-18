@@ -768,7 +768,7 @@ final class RouteTab implements CarScreen {
         boolean manual = RoutePlanner.manualDestination() != null;
         plan = planner.plan();
         // Batería: la real del coche si la hay (nube de Leapmotor); si no, la indicada con ±5.
-        cloud = CarCloud.snapshot();
+        cloud = CarCloud.car();
         double real = cloud.soc(DemoMode.wallClockMs(), CarCloud.SOC_MAX_AGE_MS);
         realSoc = !Double.isNaN(real) && !RoutePlanner.testMode();
         soc = realSoc ? real : planner.socNow();

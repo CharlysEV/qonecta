@@ -457,7 +457,7 @@ final class RoutePlanner {
         if (testMode) {
             // Empieza con el % real del coche (si hay cuenta) o un 80 %; luego, el que se elija con ±5.
             if (Double.isNaN(testSoc)) {
-                CarCloud.Snapshot cs = CarCloud.snapshot();
+                CarCloud.Snapshot cs = CarCloud.car();
                 double real = cs == null ? Double.NaN : cs.soc(System.currentTimeMillis(), CarCloud.SOC_MAX_AGE_MS);
                 testSoc = Double.isNaN(real) ? 80 : Math.round(real);
             }
@@ -1501,7 +1501,7 @@ final class RoutePlanner {
      * plan se rehace con el % de ahora; si cambia, avisa.
      */
     private void followCharge(Plan p) {
-        CarCloud.Snapshot cs = CarCloud.snapshot();
+        CarCloud.Snapshot cs = CarCloud.car();
         boolean data = cs != null && cs.hasData();
         boolean charging = data && (cs.status.charging() || cs.status.pluggedIn());
         if (data && !cs.demo && !testMode) {
@@ -1758,7 +1758,7 @@ final class RoutePlanner {
      * le pasa cada lectura de la nube. p puede ser null (cargando sin ruta: sin objetivo).
      */
     private void followChargeSession(Plan p) {
-        CarCloud.Snapshot cs = CarCloud.snapshot();
+        CarCloud.Snapshot cs = CarCloud.car();
         if (cs == null || !cs.hasData()) return;
         boolean charging = cs.status.charging();
         ChargeSession s = ChargeWatch.session();
@@ -2031,7 +2031,7 @@ final class RoutePlanner {
      */
     private void compareOnArrival(Plan p, CarSensors.Snapshot s) {
         if (p.arrivalDone || demo || testMode) return;
-        CarCloud.Snapshot cs = CarCloud.snapshot();
+        CarCloud.Snapshot cs = CarCloud.car();
         if (cs == null || !cs.hasData() || cs.demo) return;
         LeapStatus st = cs.status;
         if (Double.isNaN(p.startSoc)) {
@@ -2077,7 +2077,7 @@ final class RoutePlanner {
             L.i("ruta: sin un dato del coche de cuando terminó la ruta: este viaje no cuenta para afinar");
             return;
         }
-        CarCloud.Snapshot cs = CarCloud.snapshot();
+        CarCloud.Snapshot cs = CarCloud.car();
         if (cs == null || !cs.hasData() || cs.demo) return;
         if (cs.fetchedAtMs < f.arrivedAtMs + 20_000 || !freshEnough(cs.dataTimeMs(), f.arrivedAtMs)) return;
         finishCompare(f, cs);
@@ -2101,7 +2101,7 @@ final class RoutePlanner {
             markArrived(f, toGo, "la sesión acaba junto al destino");
         }
         finishing = null;
-        CarCloud.Snapshot cs = CarCloud.snapshot();
+        CarCloud.Snapshot cs = CarCloud.car();
         if (cs == null || !cs.hasData() || cs.demo) return;
         if (freshEnough(cs.dataTimeMs(), f.arrivedAtMs)) {
             finishCompare(f, cs);
@@ -2138,7 +2138,7 @@ final class RoutePlanner {
     double liveKmPerPct() {
         Plan p = plan;
         if (p == null || demo || testMode || Double.isNaN(p.startSoc)) return Double.NaN;
-        CarCloud.Snapshot cs = CarCloud.snapshot();
+        CarCloud.Snapshot cs = CarCloud.car();
         if (cs == null || !cs.hasData() || cs.demo) return Double.NaN;
         LeapStatus st = cs.status;
         if (st.charging() || st.pluggedIn() || Double.isNaN(st.odometerKm) || Double.isNaN(st.socBest())) return Double.NaN;

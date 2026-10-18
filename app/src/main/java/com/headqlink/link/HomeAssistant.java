@@ -32,6 +32,8 @@ final class HomeAssistant {
     private static final String PREFS = "hql_home_assistant";
     private static final String K_URL = "url";
     private static final String K_ENTITIES = "entities";
+    /** La casa tiene Leapmotor Mate (lo apunta cada lectura; lo usa MateFeed). */
+    private static final String K_MATE = "mate_seen";
     private static final String F_TOKEN = "ha_token.bin";
     private static final String ALIAS = "hql_ha_v1";
 
@@ -227,27 +229,102 @@ final class HomeAssistant {
             Entity e = parse(a.getJSONObject(i));
             if (ok.contains(e.domain)) out.add(e);
         }
+        withoutMate(out, a);
         out.sort((x, y) -> x.domain.equals(y.domain) ? x.name.compareToIgnoreCase(y.name) : x.domain.compareTo(y.domain));
         return out;
     }
 
     /** Los elegidos, con su estado de ahora (los que ya no existen se saltan). */
     List<Entity> chosen() throws Exception {
+        if (entities().isEmpty()) return new ArrayList<>();
+        return chosen(states());
+    }
+
+    /** Todos los estados de la casa (/api/states), tal cual. */
+    JSONArray states() throws Exception {
+        return new JSONArray(request("GET", "/api/states", null));
+    }
+
+    /**
+     * Solo los elementos de un dispositivo (los que llevan objectPrefix en su entity_id), con la unidad y los límites
+     * de los números: una plantilla de Home Assistant (/api/template) en vez de toda la casa (unos KB en vez de cientos,
+     * con datos móviles en el coche). null si la plantilla no está permitida o falla.
+     */
+    JSONArray statesOf(String objectPrefix) {
+        if (objectPrefix == null || !objectPrefix.matches("[a-z0-9_]+")) return null;
+        try {
+            String t = "[{%- for s in states if s.entity_id is search('[.]" + objectPrefix + "_') -%}"
+                    + "{{ {'entity_id': s.entity_id, 'state': s.state, 'attributes': {"
+                    + "'unit_of_measurement': s.attributes.get('unit_of_measurement'), 'min': s.attributes.get('min'),"
+                    + " 'max': s.attributes.get('max'), 'step': s.attributes.get('step')}} | tojson }}"
+                    + "{{ ',' if not loop.last }}{%- endfor -%}]";
+            return new JSONArray(request("POST", "/api/template", new JSONObject().put("template", t).toString()));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** Los elegidos, de unos estados ya leídos. */
+    List<Entity> chosen(JSONArray a) {
         List<String> ids = entities();
         List<Entity> out = new ArrayList<>();
         if (ids.isEmpty()) return out;
-        JSONArray a = new JSONArray(request("GET", "/api/states", null));
         java.util.Map<String, Entity> byId = new java.util.HashMap<>();
         for (int i = 0; i < a.length(); i++) {
-            Entity e = parse(a.getJSONObject(i));
+            JSONObject o = a.optJSONObject(i);
+            if (o == null) continue;
+            Entity e = parse(o);
             byId.put(e.id, e);
         }
         for (String id : ids) if (byId.containsKey(id)) out.add(byId.get(id));
+        if (withoutMate(out, a)) {
+            // Elegidos de antes (cuando el coche iba en Casa): fuera de la lista, que ya van en la sección Coche.
+            List<String> keep = new ArrayList<>();
+            for (Entity e : out) keep.add(e.id);
+            for (String id : ids) if (!byId.containsKey(id)) keep.add(id);
+            if (keep.size() < ids.size()) {
+                L.i("Casa: " + (ids.size() - keep.size()) + " elementos de Leapmotor Mate fuera de Casa (van en Coche)");
+                setEntities(keep);
+            }
+        }
         return out;
     }
 
+    /**
+     * Casa es para cosas de casa: los elementos de Leapmotor Mate (el coche) se quitan de la lista; van en la sección
+     * Coche (Estado y Mandos). Apunta si la casa tiene Mate (MateFeed.seen). true si había.
+     */
+    boolean withoutMate(List<Entity> list, JSONArray states) {
+        boolean has = removeMate(list, states);
+        noteMate(has);
+        return has;
+    }
+
+    void noteMate(boolean has) {
+        if (sp.getBoolean(K_MATE, false) != has) sp.edit().putBoolean(K_MATE, has).apply();
+    }
+
+    /** Puro: quita de la lista los elementos de Leapmotor Mate; true si la casa lo tiene. */
+    static boolean removeMate(List<Entity> list, JSONArray states) {
+        MateHa.Car car = MateHa.find(states);
+        if (car == null) return false;
+        list.removeIf(e -> MateHa.keyOf(e.id, car) != null);
+        return true;
+    }
+
+    /** ¿Tiene la casa Leapmotor Mate? (lo último que se vio). */
+    boolean mateSeen() {
+        return sp.getBoolean(K_MATE, false);
+    }
+
     void call(String domain, String service, String entityId) throws Exception {
-        JSONObject body = new JSONObject().put("entity_id", entityId);
+        call(domain, service, entityId, null);
+    }
+
+    /** Un servicio con datos (number.set_value lleva «value»). */
+    void call(String domain, String service, String entityId, JSONObject data) throws Exception {
+        JSONObject body = data == null ? new JSONObject() : new JSONObject(data.toString());
+        body.put("entity_id", entityId);
         request("POST", "/api/services/" + domain + "/" + service, body.toString());
     }
 

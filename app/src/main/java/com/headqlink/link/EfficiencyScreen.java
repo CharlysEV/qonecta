@@ -111,7 +111,7 @@ final class EfficiencyScreen implements CarScreen {
         s = sensors.snapshot();
         sensors.tripBreakdown(trip);
         powerN = sensors.powerHistory(power);
-        cloud = CarCloud.snapshot();
+        cloud = CarCloud.car();
         realTrip = TripLog.liveReal(cloud);
         nowMs = DemoMode.wallClockMs();
         powerCard.invalidate();

@@ -46,7 +46,7 @@ public class ChargeWatchService extends Service {
     private void loop() {
         NotificationManager nm = getSystemService(NotificationManager.class);
         while (running) {
-            ChargeWatch.tick(this, CarCloud.snapshot());
+            ChargeWatch.tick(this, CarCloud.car());
             if (ChargeWatch.session() == null) break;
             nm.notify(ChargeWatch.NOTIF_ID, ChargeWatch.ongoing(this));
             SystemClock.sleep(TICK_MS);

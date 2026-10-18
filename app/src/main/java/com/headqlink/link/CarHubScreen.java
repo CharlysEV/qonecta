@@ -10,12 +10,15 @@ import android.widget.LinearLayout;
 
 /**
  * Sección "Coche": pestañas Ruta, Conducción, Viajes, Instrumentos y Eficiencia, con datos del móvil (GPS, sensores) y
- * servicios abiertos, y Estado, con los datos reales del coche si hay cuenta de Leapmotor (CarCloud, solo lectura).
- * Mientras se ve la sección, la nube se lee cada 30 s (si no, cada 60 s).
+ * servicios abiertos, y Estado, con los datos reales del coche si hay cuenta de Leapmotor (CarCloud, solo lectura) o
+ * Leapmotor Mate en Home Assistant (MateFeed). Con Mate, además Mandos (MateControlsTab). Mientras se ve la sección, la
+ * nube se lee cada 30 s (si no, cada 60 s).
  */
 final class CarHubScreen implements CarScreen {
     private static final int[] TABS = {R.string.hql_tab_route, R.string.hql_tab_drive, R.string.hql_tab_trips, R.string.hql_tab_gauges,
-            R.string.hql_tab_efficiency, R.string.hql_tab_status};
+            R.string.hql_tab_efficiency, R.string.hql_tab_status, R.string.hql_mate_controls};
+    /** La última, Mandos, solo con Leapmotor Mate en Home Assistant (MateFeed.seen). */
+    private static final int TAB_CONTROLS = 6;
     private static int lastTab;
 
     /** Para la vista previa (PreviewActivity): pestaña con la que se abrirá la sección. */
@@ -38,8 +41,10 @@ final class CarHubScreen implements CarScreen {
         LinearLayout col = new LinearLayout(c);
         col.setOrientation(LinearLayout.VERTICAL);
         col.setBackgroundColor(CarKit.BG);
-        String[] names = new String[TABS.length];
-        for (int i = 0; i < TABS.length; i++) names[i] = Str.get(TABS[i]);
+        int n = MateFeed.seen(c) ? TABS.length : TABS.length - 1;
+        if (lastTab >= n) lastTab = n - 1;
+        String[] names = new String[n];
+        for (int i = 0; i < n; i++) names[i] = Str.get(TABS[i]);
         // Con la pantalla partida (la mitad de ancho) las seis pestañas no caben: la fila se desplaza.
         android.widget.HorizontalScrollView tabScroll = new android.widget.HorizontalScrollView(c);
         tabScroll.setHorizontalScrollBarEnabled(false);
@@ -77,6 +82,9 @@ final class CarHubScreen implements CarScreen {
                 break;
             case 5:
                 current = new CarStatusTab();
+                break;
+            case TAB_CONTROLS:
+                current = new MateControlsTab();
                 break;
             default:
                 current = new EfficiencyScreen();

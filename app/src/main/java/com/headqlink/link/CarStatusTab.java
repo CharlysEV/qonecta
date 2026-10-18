@@ -54,10 +54,18 @@ final class CarStatusTab implements CarScreen {
     /** Lo que ocupan, bajo el coche, el cierre, las puertas, las presiones y la nota. */
     private static final int TYRES_TEXT_H = 196;
     private final Paint bmp = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.ANTI_ALIAS_FLAG);
+    /**
+     * Con Leapmotor Mate en Home Assistant (MateFeed): se lee también mientras se ve la pestaña, y se enseña la foto con
+     * el dato del coche más reciente (la de la nube o la de Mate), con su fuente en la tarjeta Datos.
+     */
+    private boolean mateOn;
+    private boolean fromMate;
 
     @Override
     public View create(Host h) {
         ctx = h.context();
+        mateOn = MateFeed.seen(ctx);
+        if (mateOn) MateFeed.acquire(ctx, "status", true);
         FrameLayout frame = new FrameLayout(ctx);
         CarKit.Card battery = new CarKit.Card(ctx, Str.get(R.string.hql_cloud_battery), this::paintBattery);
         CarKit.Card tyres = new CarKit.Card(ctx, Str.get(R.string.hql_cloud_tyres_doors), this::paintTyres);
@@ -98,7 +106,9 @@ final class CarStatusTab implements CarScreen {
 
     private void tick() {
         if (!running) return;
-        snap = CarCloud.snapshot();
+        CarCloud.Snapshot mate = mateOn ? MateFeed.snapshot() : null;
+        snap = MateFeed.freshest(CarCloud.snapshot(), mate);
+        fromMate = mate != null && snap == mate;
         now = DemoMode.wallClockMs();
         boolean data = snap.hasData();
         dataView.setVisibility(data ? View.VISIBLE : View.GONE);
@@ -115,6 +125,8 @@ final class CarStatusTab implements CarScreen {
     @Override
     public void destroy() {
         running = false;
+        if (mateOn) MateFeed.release("status");
+        mateOn = false;
         if (car3d != null) {
             car3d.stopLoading();
             car3d.destroy();
@@ -615,12 +627,14 @@ final class CarStatusTab implements CarScreen {
         row(cv, r.left, y, Str.get(R.string.hql_cloud_read), read, CarKit.TEXT, p, r.width());
         y += step;
         String type = snap.carType.isEmpty() ? "" : snap.carType.toUpperCase(Locale.ROOT);
-        row(cv, r.left, y, Str.get(R.string.hql_cloud_source), Str.get(R.string.hql_cloud_source_value, type).trim(), CarKit.TEXT, p, r.width());
+        row(cv, r.left, y, Str.get(R.string.hql_cloud_source), fromMate ? "Leapmotor Mate · Home Assistant"
+                : Str.get(R.string.hql_cloud_source_value, type).trim(), CarKit.TEXT, p, r.width());
         String warnText = problem(snap, now);
         if (warnText != null) {
             alert.draw(cv, warnText, r.left, r.bottom - 54, (int) r.width(), false);
         } else {
-            note.draw(cv, Str.get(R.string.hql_cloud_readonly_note), r.left, r.bottom - 50, (int) r.width(), false);
+            note.draw(cv, Str.get(fromMate ? R.string.hql_mate_note : R.string.hql_cloud_readonly_note), r.left, r.bottom - 50,
+                    (int) r.width(), false);
         }
     }
 

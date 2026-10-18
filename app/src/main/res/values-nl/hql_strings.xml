@@ -1091,4 +1091,30 @@
     <string name="hql_theme_auto">Automatisch</string>
     <string name="hql_theme_help">Android Auto, het zijpaneel en de schermen van de uitgebreide modus. Automatisch: zoals het autoscherm of, als de auto het niet doorgeeft, met de lichtsensor van de telefoon.</string>
     <string name="hql_cable_hint">Via wifi kunnen games, tv en video\'s haperen. Met de USB-kabel lopen ze vloeiender.</string>
+    <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
+    <string name="hql_mate_controls">Bediening</string>
+    <string name="hql_mate_access">Toegang</string>
+    <string name="hql_mate_climate">Klimaat</string>
+    <string name="hql_mate_charge">Laden</string>
+    <string name="hql_mate_comfort">Comfort</string>
+    <string name="hql_mate_quick_cool">Snel koelen</string>
+    <string name="hql_mate_quick_heat">Snel verwarmen</string>
+    <string name="hql_mate_ventilate">Ventileren</string>
+    <string name="hql_mate_windows_close">Ramen sluiten</string>
+    <string name="hql_mate_windows_open">Ramen openen</string>
+    <string name="hql_mate_preheat">Accu voorverwarmen</string>
+    <string name="hql_mate_unlock_cable">Kabel ontgrendelen</string>
+    <string name="hql_mate_limit">Laadlimiet</string>
+    <string name="hql_mate_seat_heat_d">Bestuurdersstoel: warmte</string>
+    <string name="hql_mate_seat_heat_p">Passagiersstoel: warmte</string>
+    <string name="hql_mate_seat_vent_d">Bestuurdersstoel: ventilatie</string>
+    <string name="hql_mate_seat_vent_p">Passagiersstoel: ventilatie</string>
+    <string name="hql_mate_wheel_heat">Stuur: warmte</string>
+    <string name="hql_mate_mirror_heat">Spiegels: warmte</string>
+    <string name="hql_mate_confirm">%1$s?</string>
+    <string name="hql_mate_note">Gegevens van Leapmotor Mate via Home Assistant. Bediening onder „Bediening”.</string>
+    <string name="hql_mate_climate_inside">Binnen %1$s</string>
+    <string name="hql_mate_k_charging">Laden</string>
+    <string name="hql_mate_k_plug">Ingeplugd</string>
+    <string name="hql_mate_picker_note">Leapmotor Mate: status en bediening van de auto staan onder Auto › Status en Bediening, niet hier.</string>
 </resources>

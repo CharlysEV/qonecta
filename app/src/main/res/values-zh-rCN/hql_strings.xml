@@ -1095,4 +1095,30 @@
     <string name="hql_theme_auto">自动</string>
     <string name="hql_theme_help">Android Auto、侧边栏和扩展模式的界面。自动：跟随车机屏幕；车机未提供时，使用手机的光线传感器。</string>
     <string name="hql_cable_hint">通过 Wi-Fi 时，游戏、电视和视频可能会卡顿。连接 USB 数据线会更流畅。</string>
+    <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
+    <string name="hql_mate_controls">控制</string>
+    <string name="hql_mate_access">车门</string>
+    <string name="hql_mate_climate">空调</string>
+    <string name="hql_mate_charge">充电</string>
+    <string name="hql_mate_comfort">舒适</string>
+    <string name="hql_mate_quick_cool">快速制冷</string>
+    <string name="hql_mate_quick_heat">快速制热</string>
+    <string name="hql_mate_ventilate">通风</string>
+    <string name="hql_mate_windows_close">关闭车窗</string>
+    <string name="hql_mate_windows_open">打开车窗</string>
+    <string name="hql_mate_preheat">电池预热</string>
+    <string name="hql_mate_unlock_cable">解锁充电枪</string>
+    <string name="hql_mate_limit">充电上限</string>
+    <string name="hql_mate_seat_heat_d">主驾座椅加热</string>
+    <string name="hql_mate_seat_heat_p">副驾座椅加热</string>
+    <string name="hql_mate_seat_vent_d">主驾座椅通风</string>
+    <string name="hql_mate_seat_vent_p">副驾座椅通风</string>
+    <string name="hql_mate_wheel_heat">方向盘加热</string>
+    <string name="hql_mate_mirror_heat">后视镜加热</string>
+    <string name="hql_mate_confirm">%1$s？</string>
+    <string name="hql_mate_note">数据来自 Home Assistant 中的 Leapmotor Mate。操作请见“控制”。</string>
+    <string name="hql_mate_climate_inside">车内 %1$s</string>
+    <string name="hql_mate_k_charging">充电中</string>
+    <string name="hql_mate_k_plug">已插枪</string>
+    <string name="hql_mate_picker_note">Leapmotor Mate：车辆状态和控制在“车辆 › 状态”和“控制”中，不在这里。</string>
 </resources>

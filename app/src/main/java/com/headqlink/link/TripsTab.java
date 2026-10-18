@@ -130,7 +130,7 @@ final class TripsTab implements CarScreen {
     private void tick() {
         if (!running) return;
         s = sensors.snapshot();
-        liveReal = TripLog.liveReal(CarCloud.snapshot());
+        liveReal = TripLog.liveReal(CarCloud.car());
         // El viaje en curso, solo si ya se ha movido el coche.
         live.setVisibility(s.tripKm >= 0.1 || (s.gpsLive() && s.speedKmh > 3) ? View.VISIBLE : View.GONE);
         live.invalidate();

@@ -119,6 +119,8 @@ public class HomeAssistantActivity extends Activity {
                 main.post(() -> {
                     all.clear();
                     all.addAll(got);
+                    // Leapmotor Mate: lo del coche no sale aquí (Casa es para cosas de casa).
+                    if (ha.mateSeen()) status.setText(Str.get(R.string.hql_mate_picker_note));
                     if (ha.entities().isEmpty()) filter = "light";
                     buildFilters();
                     showList();

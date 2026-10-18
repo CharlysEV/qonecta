@@ -1096,4 +1096,30 @@
     <string name="hql_theme_auto">Automatic</string>
     <string name="hql_theme_help">Android Auto, the side panel and the extended-mode screens. Automatic: like the car screen or, if the car doesn\'t say, with the phone\'s light sensor.</string>
     <string name="hql_cable_hint">Over Wi-Fi, games, TV and videos may stutter. With the USB cable they run smoother.</string>
+    <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
+    <string name="hql_mate_controls">Controls</string>
+    <string name="hql_mate_access">Access</string>
+    <string name="hql_mate_climate">Climate</string>
+    <string name="hql_mate_charge">Charging</string>
+    <string name="hql_mate_comfort">Comfort</string>
+    <string name="hql_mate_quick_cool">Quick cool</string>
+    <string name="hql_mate_quick_heat">Quick heat</string>
+    <string name="hql_mate_ventilate">Ventilate</string>
+    <string name="hql_mate_windows_close">Close windows</string>
+    <string name="hql_mate_windows_open">Open windows</string>
+    <string name="hql_mate_preheat">Preheat battery</string>
+    <string name="hql_mate_unlock_cable">Release cable</string>
+    <string name="hql_mate_limit">Charge limit</string>
+    <string name="hql_mate_seat_heat_d">Driver seat: heat</string>
+    <string name="hql_mate_seat_heat_p">Passenger seat: heat</string>
+    <string name="hql_mate_seat_vent_d">Driver seat: air</string>
+    <string name="hql_mate_seat_vent_p">Passenger seat: air</string>
+    <string name="hql_mate_wheel_heat">Steering wheel: heat</string>
+    <string name="hql_mate_mirror_heat">Mirrors: heat</string>
+    <string name="hql_mate_confirm">%1$s?</string>
+    <string name="hql_mate_note">Data from Leapmotor Mate via Home Assistant. Commands are under Controls.</string>
+    <string name="hql_mate_climate_inside">%1$s inside</string>
+    <string name="hql_mate_k_charging">Charging</string>
+    <string name="hql_mate_k_plug">Plugged in</string>
+    <string name="hql_mate_picker_note">Leapmotor Mate: the car’s status and controls are under Car › Status and Controls, not here.</string>
 </resources>

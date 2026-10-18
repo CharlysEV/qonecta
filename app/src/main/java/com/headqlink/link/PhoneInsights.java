@@ -69,6 +69,7 @@ final class PhoneInsights {
     void show() {
         visible = true;
         if (hasAccount(act)) CarCloud.acquire(act, CLOUD_OWNER);
+        else MateFeed.acquire(act, CLOUD_OWNER, false); // sin cuenta pero con Leapmotor Mate en Home Assistant
         main.removeCallbacks(refresher);
         main.post(refresher);
         // A los pocos segundos ya suele haber dato nuevo de la nube.
@@ -114,7 +115,7 @@ final class PhoneInsights {
 
         static Data load(Activity a) {
             Data d = new Data();
-            d.cloud = CarCloud.snapshot();
+            d.cloud = CarCloud.car();
             d.account = hasAccount(a);
             d.history = new ArrayList<>(CarCloud.history());
             d.trips = TripLog.recent(a, 120);

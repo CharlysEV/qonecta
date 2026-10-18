@@ -145,7 +145,7 @@ final class HomeReach {
         }
         long now = System.currentTimeMillis();
         // El % del coche: el de la nube si hay (se guarda), o el último guardado.
-        CarCloud.Snapshot cs = CarCloud.snapshot();
+        CarCloud.Snapshot cs = CarCloud.car();
         if (cs != null && cs.hasData() && !cs.demo && !Double.isNaN(cs.status.socBest())) {
             long at = cs.dataTimeMs();
             if (at != sp.getLong("home_soc_at", 0)) {

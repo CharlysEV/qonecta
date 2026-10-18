@@ -1092,4 +1092,30 @@
     <string name="hql_theme_auto">Automático</string>
     <string name="hql_theme_help">Android Auto, o painel e os ecrãs do modo estendido. Automático: como o ecrã do carro ou, se o carro não o disser, pelo sensor de luz do telemóvel.</string>
     <string name="hql_cable_hint">Por Wi-Fi, os jogos, a TV e os vídeos podem dar saltos. Com o cabo USB ficam mais fluidos.</string>
+    <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
+    <string name="hql_mate_controls">Comandos</string>
+    <string name="hql_mate_access">Acessos</string>
+    <string name="hql_mate_climate">Clima</string>
+    <string name="hql_mate_charge">Carga</string>
+    <string name="hql_mate_comfort">Conforto</string>
+    <string name="hql_mate_quick_cool">Arrefecer rápido</string>
+    <string name="hql_mate_quick_heat">Aquecer rápido</string>
+    <string name="hql_mate_ventilate">Ventilar</string>
+    <string name="hql_mate_windows_close">Fechar janelas</string>
+    <string name="hql_mate_windows_open">Abrir janelas</string>
+    <string name="hql_mate_preheat">Pré-aquecer bateria</string>
+    <string name="hql_mate_unlock_cable">Soltar o cabo</string>
+    <string name="hql_mate_limit">Limite de carga</string>
+    <string name="hql_mate_seat_heat_d">Banco do condutor: calor</string>
+    <string name="hql_mate_seat_heat_p">Banco do passageiro: calor</string>
+    <string name="hql_mate_seat_vent_d">Banco do condutor: ar</string>
+    <string name="hql_mate_seat_vent_p">Banco do passageiro: ar</string>
+    <string name="hql_mate_wheel_heat">Volante: calor</string>
+    <string name="hql_mate_mirror_heat">Retrovisores: calor</string>
+    <string name="hql_mate_confirm">%1$s?</string>
+    <string name="hql_mate_note">Dados do Leapmotor Mate via Home Assistant. Comandos em «Comandos».</string>
+    <string name="hql_mate_climate_inside">Dentro %1$s</string>
+    <string name="hql_mate_k_charging">A carregar</string>
+    <string name="hql_mate_k_plug">Ligado</string>
+    <string name="hql_mate_picker_note">Leapmotor Mate: o estado e os comandos do carro ficam em Carro › Estado e Comandos, não aqui.</string>
 </resources>

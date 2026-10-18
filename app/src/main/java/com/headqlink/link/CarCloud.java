@@ -210,12 +210,15 @@ final class CarCloud {
     static synchronized void acquire(Context ctx, String who) {
         owners.add(who);
         start(ctx);
+        // Con Leapmotor Mate en Home Assistant, también se lee (sin él, no hace nada).
+        MateFeed.acquire(ctx, who, false);
     }
 
     /** Ya no lo necesita; sin nadie, se para. */
     static synchronized void release(String who) {
         owners.remove(who);
         if (owners.isEmpty()) stop();
+        MateFeed.release(who);
     }
 
     /** Vigilando una carga en directo (lecturas cada HUB_MS). */
@@ -274,6 +277,14 @@ final class CarCloud {
     }
 
     /** Lo último que se sabe (en la demostración, sus datos inventados si no hay reales). */
+    /**
+     * «El coche»: la foto con el dato más reciente entre la nube y Leapmotor Mate (MateFeed.freshest). Sin Mate (o sin
+     * Home Assistant), la de la nube tal cual: es lo que leen las pantallas y el planificador.
+     */
+    static Snapshot car() {
+        return MateFeed.freshest(snapshot(), MateFeed.snapshot());
+    }
+
     static Snapshot snapshot() {
         Snapshot s = current;
         if (DemoMode.active() && (!s.hasData() || DemoMode.overridesCloud())) return DemoMode.cloudSnapshot();
