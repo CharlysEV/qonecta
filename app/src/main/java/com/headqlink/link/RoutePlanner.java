@@ -2107,6 +2107,25 @@ final class RoutePlanner {
         return a != null && a[3] >= sinceMs ? new double[]{a[0], a[1], a[2], a[4], a[5], a[6]} : null;
     }
 
+    /** Puro: km por cada punto de batería gastado en lo que va de viaje; NaN hasta que hayan bajado 2 puntos y 3 km. */
+    static double kmPerPctReal(double km, double dropPct) {
+        return km >= 3 && dropPct >= 2 ? km / dropPct : Double.NaN;
+    }
+
+    /**
+     * Lo real del viaje (nube Leapmotor) desde que se calculó la ruta, para la tarjeta flotante: NaN sin datos aún, en la
+     * demo o el coche virtual, o si cargó por el camino (la bajada del % ya no es lo gastado).
+     */
+    double liveKmPerPct() {
+        Plan p = plan;
+        if (p == null || demo || testMode || Double.isNaN(p.startSoc)) return Double.NaN;
+        CarCloud.Snapshot cs = CarCloud.snapshot();
+        if (cs == null || !cs.hasData() || cs.demo) return Double.NaN;
+        LeapStatus st = cs.status;
+        if (st.charging() || st.pluggedIn() || Double.isNaN(st.odometerKm) || Double.isNaN(st.socBest())) return Double.NaN;
+        return kmPerPctReal(st.odometerKm - p.startOdo, p.startSoc - st.socBest());
+    }
+
     /**
      * Puro: el resumen de la llegada en una línea: «Previsto 25 % (4,2 kWh) · real 27 % (3,6 kWh) · 12 km · 5,1 km por
      * cada 1 %» (18-10, idea de un usuario: los kWh junto a los % y cuántos km se hacen por cada punto de batería). Sin %,

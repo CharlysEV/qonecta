@@ -955,9 +955,10 @@
     <string name="hql_video_folder_set">Map met video\'s opgeslagen. In de auto: Video\'s › Mijn map.</string>
     <string name="hql_sim_night">Nachtmodus (virtuele auto)</string>
     <string name="hql_sim_night_help">Om de wissel tussen dag en nacht te testen. Bij opnieuw verbinden geldt weer de gewone.</string>
-    <string name="hql_float_stop_sub">over %1$.0f km · je komt aan met %2$.0f %%</string>
+    <string name="hql_float_stop_sub">over %1$.0f km · %2$.0f %%</string>
     <string name="hql_float_dest">Je komt aan met %1$.0f %%</string>
     <string name="hql_float_no_stop">Zonder stops</string>
+    <string name="hql_float_km_pct">%1$s km/%%</string>
     <string name="hql_float_no_charger">Geen laadpaal</string>
     <string name="hql_float_no_charger_none">binnen bereik · je haalt het niet</string>
     <string name="hql_float_no_charger_pct">binnen bereik · aankomst met %1$.0f %%</string>

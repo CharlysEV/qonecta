@@ -960,9 +960,10 @@
     <string name="hql_video_folder_set">Videos folder saved. In the car: Videos › My folder.</string>
     <string name="hql_sim_night">Night mode (virtual car)</string>
     <string name="hql_sim_night_help">To try the switch between day and night. When you reconnect, it goes back to normal.</string>
-    <string name="hql_float_stop_sub">in %1$.0f km · you arrive with %2$.0f %%</string>
+    <string name="hql_float_stop_sub">in %1$.0f km · %2$.0f %%</string>
     <string name="hql_float_dest">You arrive with %1$.0f %%</string>
     <string name="hql_float_no_stop">No stops</string>
+    <string name="hql_float_km_pct">%1$s km/%%</string>
     <string name="hql_float_no_charger">No charger</string>
     <string name="hql_float_no_charger_none">in reach · you don\'t make it</string>
     <string name="hql_float_no_charger_pct">in reach · you arrive with %1$.0f %%</string>

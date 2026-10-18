@@ -168,6 +168,17 @@ final class ChargePlanner {
             return soc - (kwhAt(km, kwhCum, x) - kwhAt(km, kwhCum, cur)) / capacityKwh * 100;
         }
 
+        /**
+         * Km (como los cuenta Google Maps) por cada punto de batería que cuesta lo que falta de ruta, según el plan (18-10,
+         * idea de una usuaria: en la tarjeta flotante, cuánto se hace con cada 1 %). NaN sin ruta por delante.
+         */
+        double kmPerPctPlanned() {
+            double end = km[km.length - 1];
+            double left = kmMark(end) - fromKm;
+            double pct = (kwhAt(km, kwhCum, end) - kwhAt(km, kwhCum, fromKm)) / capacityKwh * 100;
+            return left >= 1 && pct >= 0.5 ? left / pct : Double.NaN;
+        }
+
         /** La primera parada que queda por delante, o null. */
         Stop next() {
             for (Stop s : stops) if (s.km > fromKm + HERE_KM) return s;

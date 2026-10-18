@@ -104,7 +104,8 @@ final class FloatCard extends LinearLayout {
             // con» que haga pensar que está todo bien (17-10, un viaje largo).
             icon.set(Icon.BOLT, stuck ? CarKit.AMBER : CarKit.ACCENT);
             title.setText(RoutePlanner.chargerName(st.charger));
-            sub.setText(stuck ? Str.get(R.string.hql_float_stop_stuck, cp.kmTo(st)) : Str.get(R.string.hql_float_stop_sub, cp.kmTo(st), st.arrivePct));
+            sub.setText(stuck ? Str.get(R.string.hql_float_stop_stuck, cp.kmTo(st))
+                    : withKmPerPct(Str.get(R.string.hql_float_stop_sub, cp.kmTo(st), st.arrivePct), r, cp));
         } else if (stuck) {
             // «Sin cargador» y debajo si se llega: nunca «llegas con −1 %» (la pestaña Ruta dice «No llegas sin cargar»).
             icon.set(Icon.BOLT, CarKit.AMBER);
@@ -114,11 +115,28 @@ final class FloatCard extends LinearLayout {
             icon.set(Icon.FLAG, CarKit.ACCENT);
             title.setText(Str.get(R.string.hql_float_dest, cp.arrivalPct));
             NavTap.Info nav = DemoMode.navInfo();
-            sub.setText(cp.speedCap > 0 ? Str.get(R.string.hql_float_at_speed, cp.speedCap)
+            sub.setText(withKmPerPct(cp.speedCap > 0 ? Str.get(R.string.hql_float_at_speed, cp.speedCap)
                     : nav != null && nav.eta != null ? Str.get(R.string.hql_drive_arrival) + " " + nav.eta
-                    : Str.get(R.string.hql_float_no_stop));
+                    : Str.get(R.string.hql_float_no_stop), r, cp));
         }
         return true;
+    }
+
+    /** La segunda línea con los km por cada 1 % detrás («a 46 km · 85 % · 4,8 km/%»), si se saben. */
+    private static String withKmPerPct(String base, RoutePlanner r, ChargePlanner.Result cp) {
+        String k = kmPerPctText(r.liveKmPerPct(), cp.kmPerPctPlanned());
+        return k == null ? base : base + " · " + k;
+    }
+
+    /**
+     * Puro: «4,8 km/%» con lo real del viaje (18-10, idea de una usuaria: cuántos km se hacen con cada punto de batería)
+     * o, hasta tenerlo, «≈ 4,8 km/%» con lo previsto del plan; null sin nada.
+     */
+    static String kmPerPctText(double real, double planned) {
+        double v = !Double.isNaN(real) ? real : planned;
+        if (Double.isNaN(v) || v <= 0) return null;
+        String n = String.format(java.util.Locale.getDefault(), "%.1f", v);
+        return (Double.isNaN(real) ? "≈ " : "") + Str.get(R.string.hql_float_km_pct, n);
     }
 
     /**

@@ -107,6 +107,24 @@ class IdeasOctoberTest {
      * Al llegar (18-10, idea de un usuario): los % previsto y real con sus kWh, los km y cuántos km por cada punto de
      * batería. Sin %, los kWh; con menos de un punto de bajada, sin los km por punto.
      */
+    /** Km por cada 1 % en la tarjeta flotante (18-10): lo real en cuanto bajan 2 puntos; antes, lo previsto con «≈». */
+    @Test
+    fun kmPerPointOnTheFloatingCard() {
+        assertTrue(RoutePlanner.kmPerPctReal(10.0, 1.5).isNaN())
+        assertTrue(RoutePlanner.kmPerPctReal(2.0, 3.0).isNaN())
+        assertEquals(4.8, RoutePlanner.kmPerPctReal(24.0, 5.0), 0.001)
+        // 100 km que cuestan 18 kWh de 60 (30 puntos): 3,3 km por punto; con Maps contando un 10 % más, 3,7.
+        val r = ChargePlanner.Result(ChargePlanner.Outcome.NO_STOPS, emptyList(), 70.0, doubleArrayOf(0.0, 100.0),
+            doubleArrayOf(0.0, 18.0), 0.0, 100.0, 60.0)
+        assertEquals(3.33, r.kmPerPctPlanned(), 0.01)
+        r.mapsRatio = 1.1
+        assertEquals(3.67, r.kmPerPctPlanned(), 0.01)
+        val n = String.format(java.util.Locale.getDefault(), "%.1f", 4.8)
+        assertEquals("$n km/%", FloatCard.kmPerPctText(4.8, 3.3))
+        assertEquals("≈ $n km/%", FloatCard.kmPerPctText(Double.NaN, 4.8))
+        assertNull(FloatCard.kmPerPctText(Double.NaN, Double.NaN))
+    }
+
     @Test
     fun arrivalSummaryWithPercentKwhAndKmPerPoint() {
         Str.init(org.robolectric.RuntimeEnvironment.getApplication())

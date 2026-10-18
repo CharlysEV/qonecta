@@ -959,9 +959,10 @@
     <string name="hql_video_folder_set">已保存视频文件夹。在车上：视频 › 我的文件夹。</string>
     <string name="hql_sim_night">夜间模式（虚拟车辆）</string>
     <string name="hql_sim_night_help">用于试用白天与夜间之间的切换。重新连接后恢复正常。</string>
-    <string name="hql_float_stop_sub">%1$.0f km 后 · 到达时 %2$.0f %%</string>
+    <string name="hql_float_stop_sub">%1$.0f km 后 · %2$.0f %%</string>
     <string name="hql_float_dest">到达时 %1$.0f %%</string>
     <string name="hql_float_no_stop">无需停靠</string>
+    <string name="hql_float_km_pct">%1$s km/%%</string>
     <string name="hql_float_no_charger">没有充电桩</string>
     <string name="hql_float_no_charger_none">在范围内 · 无法到达</string>
     <string name="hql_float_no_charger_pct">在范围内 · 到达时 %1$.0f %%</string>

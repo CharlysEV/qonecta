@@ -956,9 +956,10 @@
     <string name="hql_video_folder_set">Dossier des vidéos enregistré. Dans la voiture : Vidéos › Mon dossier.</string>
     <string name="hql_sim_night">Mode nuit (voiture virtuelle)</string>
     <string name="hql_sim_night_help">Pour tester le passage du jour à la nuit. À la reconnexion, le mode habituel revient.</string>
-    <string name="hql_float_stop_sub">dans %1$.0f km · vous arrivez avec %2$.0f %%</string>
+    <string name="hql_float_stop_sub">dans %1$.0f km · %2$.0f %%</string>
     <string name="hql_float_dest">Vous arrivez avec %1$.0f %%</string>
     <string name="hql_float_no_stop">Sans arrêt</string>
+    <string name="hql_float_km_pct">%1$s km/%%</string>
     <string name="hql_float_no_charger">Aucune borne</string>
     <string name="hql_float_no_charger_none">à portée · vous n\'arrivez pas</string>
     <string name="hql_float_no_charger_pct">à portée · vous arrivez avec %1$.0f %%</string>
