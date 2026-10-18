@@ -633,6 +633,7 @@
     <string name="hql_route_source">approximate route (OSM/OSRM)</string>
     <string name="hql_route_source_google">same as Google Maps</string>
     <string name="hql_route_source_own">own route: Google Maps isn\'t guiding</string>
+    <string name="hql_route_source_stops">own route with stops</string>
     <string name="hql_route_source_differs">differs from Google Maps</string>
     <string name="hql_route_where">Where are we going?</string>
     <string name="hql_route_maps_wait">Google Maps is guiding (%1$.0f km). Go back to Android Auto and I\'ll read its destination to plan the charging.</string>

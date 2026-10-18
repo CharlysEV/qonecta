@@ -2021,10 +2021,14 @@ final class RoutePlanner {
         NavApps.goWithStops(ctx, p, cp);
     }
 
-    /** La nota de la pestaña Ruta: como la de Google Maps, distinta de la suya, o propia (Maps no guía o hay paradas). */
+    /**
+     * La nota de la pestaña Ruta: como la de Google Maps, distinta de la suya, propia con paradas (la calcula la app por
+     * tramos, aunque Maps guíe) o propia (Maps no guía).
+     */
     static int sourceNote(Plan pl) {
         if (pl.googleMatched) return R.string.hql_route_source_google;
-        if (pl.googleMismatch && !pl.multi()) return R.string.hql_route_source_differs;
+        if (pl.multi()) return R.string.hql_route_source_stops;
+        if (pl.googleMismatch) return R.string.hql_route_source_differs;
         return R.string.hql_route_source_own;
     }
 

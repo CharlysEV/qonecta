@@ -633,6 +633,7 @@
     <string name="hql_route_source">geschatte route (OSM/OSRM)</string>
     <string name="hql_route_source_google">zoals die van Google Maps</string>
     <string name="hql_route_source_own">eigen route: Google Maps navigeert niet</string>
+    <string name="hql_route_source_stops">eigen route met tussenstops</string>
     <string name="hql_route_source_differs">anders dan Google Maps</string>
     <string name="hql_route_where">Waar gaan we heen?</string>
     <string name="hql_route_maps_wait">Google Maps navigeert (%1$.0f km). Ga terug naar Android Auto, dan lees ik de bestemming en plan ik het laden.</string>

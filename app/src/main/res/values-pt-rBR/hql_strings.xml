@@ -634,6 +634,7 @@
     <string name="hql_route_source">rota aproximada (OSM/OSRM)</string>
     <string name="hql_route_source_google">igual à do Google Maps</string>
     <string name="hql_route_source_own">rota própria: o Google Maps não está guiando</string>
+    <string name="hql_route_source_stops">rota própria com paradas</string>
     <string name="hql_route_source_differs">diferente da do Google Maps</string>
     <string name="hql_route_where">Para onde vamos?</string>
     <string name="hql_route_maps_wait">O Google Maps está guiando (%1$.0f km). Volte ao Android Auto e eu leio o destino para planejar a recarga.</string>

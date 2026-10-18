@@ -634,6 +634,7 @@
     <string name="hql_route_source">percorso approssimativo (OSM/OSRM)</string>
     <string name="hql_route_source_google">come quello di Google Maps</string>
     <string name="hql_route_source_own">percorso proprio: Google Maps non guida</string>
+    <string name="hql_route_source_stops">percorso proprio con tappe</string>
     <string name="hql_route_source_differs">diverso da Google Maps</string>
     <string name="hql_route_where">Dove andiamo?</string>
     <string name="hql_route_maps_wait">Google Maps sta guidando (%1$.0f km). Torna ad Android Auto e leggo la destinazione per pianificare la ricarica.</string>

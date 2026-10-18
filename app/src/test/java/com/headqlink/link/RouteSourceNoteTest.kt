@@ -15,5 +15,11 @@ class RouteSourceNoteTest {
         p.googleMismatch = false
         p.googleMatched = true
         assertEquals(R.string.hql_route_source_google, RoutePlanner.sourceNote(p))
+        // Con paradas: la calcula la app por tramos, aunque Maps guíe (antes decía «Google Maps no guía»).
+        p.googleMatched = false
+        p.googleMismatch = true
+        p.waypoints.add(RoutePlanner.Place())
+        p.waypoints.add(RoutePlanner.Place())
+        assertEquals(R.string.hql_route_source_stops, RoutePlanner.sourceNote(p))
     }
 }

@@ -632,6 +632,7 @@
     <string name="hql_route_source">近似路线（OSM/OSRM）</string>
     <string name="hql_route_source_google">与 Google 地图一致</string>
     <string name="hql_route_source_own">自行规划：Google 地图未在导航</string>
+    <string name="hql_route_source_stops">自行规划（含途经点）</string>
     <string name="hql_route_source_differs">与 Google 地图不同</string>
     <string name="hql_route_where">我们去哪里？</string>
     <string name="hql_route_maps_wait">Google 地图正在导航（%1$.0f km）。回到 Android Auto，我会读取目的地并规划充电。</string>
