@@ -97,6 +97,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         });
         View menu = findViewById(R.id.hql_home_menu);
         menu.setOnClickListener(v -> showMenu(menu));
+        findViewById(R.id.hql_home_carsim).setOnClickListener(v -> openCarSim());
         btAuto = findViewById(R.id.hql_home_bt_auto);
         btAuto.setChecked(cfg.btAutoConnect());
         btAuto.setOnCheckedChangeListener(btAutoListener);
@@ -813,16 +814,20 @@ public class HomeActivity extends Activity implements LinkState.Listener {
                 showBackup();
                 break;
             case 11:
-                if (LinkState.running && (LinkState.car == LinkState.Car.CONNECTED || LinkState.car == LinkState.Car.RECONNECTING)) {
-                    // Con el coche de verdad conectado, no.
-                    android.widget.Toast.makeText(this, Str.get(R.string.hql_preview_busy), android.widget.Toast.LENGTH_LONG).show();
-                } else {
-                    // Si solo está buscando el coche, el coche virtual para la búsqueda y entra.
-                    startActivity(new Intent(this, CarSimActivity.class));
-                }
+                openCarSim();
                 break;
             default:
                 startActivity(new Intent(this, LogActivity.class));
+        }
+    }
+
+    /** El coche virtual (el botón de arriba o el menú); con el coche de verdad conectado, no. */
+    private void openCarSim() {
+        if (LinkState.running && (LinkState.car == LinkState.Car.CONNECTED || LinkState.car == LinkState.Car.RECONNECTING)) {
+            android.widget.Toast.makeText(this, Str.get(R.string.hql_preview_busy), android.widget.Toast.LENGTH_LONG).show();
+        } else {
+            // Si solo está buscando el coche, el coche virtual para la búsqueda y entra.
+            startActivity(new Intent(this, CarSimActivity.class));
         }
     }
 
