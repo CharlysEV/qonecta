@@ -137,7 +137,9 @@ final class ChargeSession {
         }
         if (last != null && !readyFired && !Double.isNaN(targetPct) && last.soc >= targetPct - 0.25) {
             readyFired = true;
-            out.add(Event.READY);
+            // Solo si se ha esperado: enchufado ya con el % que pide el plan, se ve en la pantalla pero sin aviso ni voz
+            // (18-10: el coche al 100 % en casa, con una ruta puesta, decía «ya puedes seguir» nada más verlo).
+            if (startSoc < targetPct - 0.25) out.add(Event.READY);
         }
         if (fresh && plugged && !completed && dc && !slowFired && !Double.isNaN(last.kw) && atMs - startMs >= SLOW_AFTER_MS && last.soc < SLOW_BELOW_PCT) {
             double expected = expectedKw(last.soc);

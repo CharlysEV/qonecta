@@ -1743,6 +1743,15 @@ final class RoutePlanner {
     /** El plan de justo antes de enchufar (para saber cuántas paradas quedaban después de esta). */
     private ChargePlanner.Result beforePlug;
     private String sessionKey = "";
+    /** La última carga que se empezó (para saber cuándo se ha cerrado). */
+    private ChargeSession lastSession;
+    /** Se cerró una carga con el coche enchufado: no empezar otra hasta verlo desenchufado. */
+    private boolean waitUnplug;
+
+    /** Puro: ¿el dato de la nube es reciente para empezar una carga? (el de un coche dormido no lo es). */
+    static boolean freshForCharge(long nowMs, long dataMs) {
+        return dataMs > 0 && nowMs - dataMs <= ChargeSession.STALE_MS;
+    }
 
     /**
      * La carga en directo: al ver que el coche carga empieza una (ChargeWatch), con el % para seguir según el plan, y
@@ -1753,6 +1762,15 @@ final class RoutePlanner {
         if (cs == null || !cs.hasData()) return;
         boolean charging = cs.status.charging();
         ChargeSession s = ChargeWatch.session();
+        // Una carga que se cerró con el coche aún enchufado (sin datos nuevos, terminada, más de 3 h): no se empieza otra
+        // hasta desenchufarlo. Antes, con el coche dormido al 100 % y la nube diciendo «cargando», empezaba y terminaba una
+        // cada 5 s, con su «ya puedes seguir» por voz cada vez (18-10).
+        if (!cs.status.pluggedIn()) waitUnplug = false;
+        if (s == null && lastSession != null) {
+            if (cs.status.pluggedIn() && !cs.demo) waitUnplug = true;
+            lastSession = null;
+        }
+        if (s == null && charging && (waitUnplug || !freshForCharge(DemoMode.wallClockMs(), cs.dataTimeMs()))) charging = false;
         if (s == null && !charging) {
             ChargePlanner.Result r = lastChargePlan();
             synchronized (chargeLock) {
@@ -1777,6 +1795,7 @@ final class RoutePlanner {
             // La demostración nunca vigila fuera del coche (si no, sus avisos seguían en el móvil al salir de ella).
             // Con el coche virtual, su ruta es de prueba: la carga del coche de verdad no se vigila por ella.
             ChargeWatch.begin(ctx, s, ((p != null && !testMode) || s.dc) && !cs.demo, cs.demo);
+            lastSession = s;
         }
         // Con el coche virtual, la ruta es de prueba (y su batería, la indicada): el coche de verdad cargando en casa no
         // tiene nada que ver con ella; sin «ya puedes seguir» por esa ruta (18-10: «llegas a Madrid… con 12 %»).

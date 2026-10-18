@@ -30,6 +30,21 @@ class ChargeSessionTest {
     /** C10 ProMax de 81,9 kWh (800 V, 180 kW de pico) en un cargador. */
     private fun session(c: RoutePlanner.Charger?, soc0: Double = 30.0) = ChargeSession(0, soc0, true, c, 81.9, 180.0, 800.0)
 
+    /**
+     * 18-10: el coche al 100 % y enchufado en casa, con una ruta puesta, decía «ya puedes seguir» por voz cada 5 s. Sin
+     * aviso si al enchufar ya tenía lo que pide el plan, y sin empezar una carga con un dato de la nube antiguo.
+     */
+    @Test
+    fun noReadyAlertIfItWasAlreadyEnoughWhenPluggedIn() {
+        val s = session(null, soc0 = 100.0)
+        s.setTarget(27.8, 22.0, "Decathlon")
+        assertTrue(s.observe(0, 100.0, 0.0, true, false, 0.0, 0).isEmpty())
+        assertTrue(s.readyFired) // en la pantalla sí: «ya puedes seguir»
+        assertTrue(RoutePlanner.freshForCharge(40 * min, 20 * min))
+        assertFalse(RoutePlanner.freshForCharge(120 * min, 20 * min))
+        assertFalse(RoutePlanner.freshForCharge(120 * min, 0))
+    }
+
     @Test
     fun readyFiresOnceWhenTheTargetIsReached() {
         val s = session(charger("zunder", 250.0, 920.0))
