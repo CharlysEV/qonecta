@@ -715,19 +715,81 @@ final class RoutePlanner {
                 || e instanceof java.net.SocketTimeoutException || e instanceof java.net.NoRouteToHostException;
     }
 
-    /** Entre dos recálculos de la misma ruta, como poco. */
-    static final long REPLAN_GAP_MS = 60_000;
+    /**
+     * Entre dos recálculos de la misma ruta, como poco (18-10: con 60 s, equivocarse dos veces seguidas tardaba un minuto
+     * en recalcularse; OffRouteSimTest).
+     */
+    static final long REPLAN_GAP_MS = 20_000;
     /** Fuera del trazado: a más de esto del plan… */
-    static final double OFF_ROUTE_KM = 0.35;
-    /** …durante esto (un túnel o un GPS que salta no cuentan). */
-    static final long OFF_ROUTE_MS = 15_000;
+    static final double OFF_ROUTE_KM = 0.2;
+    /** …durante esto (un GPS que salta o un túnel no cuentan). Con 350 m y 15 s, una salida equivocada se veía a los 46 s. */
+    static final long OFF_ROUTE_MS = 6_000;
+    /**
+     * Alejándose: a más de AWAY_KM y cada lectura más lejos que la anterior (AWAY_GROW_KM en total) durante AWAY_MS: ha
+     * cogido otra carretera, se recalcula ya (18-10: a los 12–16 s de una salida equivocada, en vez de 42–46).
+     */
+    static final double AWAY_KM = 0.12;
+    static final double AWAY_GROW_KM = 0.06;
+    static final long AWAY_MS = 4_000;
+    /**
+     * …y con el rumbo del coche (el del GPS, que no tiembla como la posición) separado del de la ruta al menos esto: si el
+     * coche sigue la carretera, lo que «se aleja» es el GPS rebotando entre edificios, no el coche.
+     */
+    static final double AWAY_HEADING_DEG = 15;
+    /** Un salto mayor que esto entre dos lecturas (2 s) no es el coche: es el GPS (rebote, túnel). No cuenta como alejarse. */
+    static final double JUMP_KM = 0.15;
     /** Google y el plan no coinciden en lo que falta: más de esto (km) y del 12 %… */
     static final double GOOGLE_GAP_KM = 3;
     /** …durante esto. */
     static final long GOOGLE_GAP_MS = 30_000;
     private long lastReplanMs;
-    private long offRouteSinceMs;
+    private final OffRouteWatch offRoute = new OffRouteWatch();
     private long googleGapSinceMs;
+
+    /**
+     * Puro: ¿toca rehacer la ruta por ir fuera de ella? A más de OFF_ROUTE_KM del trazado durante OFF_ROUTE_MS seguidos
+     * (un GPS que salta o un túnel no cuentan). El tope entre dos recálculos (REPLAN_GAP_MS) lo pone quien la usa.
+     */
+    static final class OffRouteWatch {
+        private long sinceMs = -1;
+        /** Desde cuándo cada lectura va más lejos que la anterior, y lo lejos que iba entonces y en la última. */
+        private long awaySinceMs = -1;
+        private double awayFromKm;
+        private double lastKm = Double.NaN;
+
+        /**
+         * Lo lejos que va del trazado ahora (km), lo que se separa su rumbo del de la ruta (grados; NaN si no se sabe:
+         * parado o sin rumbo) y la hora (ms): true si hay que recalcular (y vuelve a empezar).
+         */
+        boolean observe(double offKm, double headingOffDeg, long nowMs) {
+            boolean jump = !Double.isNaN(lastKm) && Math.abs(offKm - lastKm) > JUMP_KM;
+            boolean turned = !Double.isNaN(headingOffDeg) && Math.abs(headingOffDeg) >= AWAY_HEADING_DEG;
+            boolean growing = !Double.isNaN(lastKm) && offKm > lastKm && !jump && turned;
+            if (!growing || awaySinceMs < 0) {
+                awaySinceMs = growing ? nowMs : -1;
+                awayFromKm = Double.isNaN(lastKm) ? offKm : lastKm;
+            }
+            lastKm = offKm;
+            if (!(offKm > AWAY_KM)) {
+                sinceMs = -1;
+                return false;
+            }
+            if (awaySinceMs >= 0 && nowMs - awaySinceMs >= AWAY_MS && offKm - awayFromKm >= AWAY_GROW_KM) return fire();
+            if (!(offKm > OFF_ROUTE_KM)) {
+                sinceMs = -1;
+                return false;
+            }
+            if (sinceMs < 0) sinceMs = nowMs;
+            return nowMs - sinceMs >= OFF_ROUTE_MS && fire();
+        }
+
+        private boolean fire() {
+            sinceMs = -1;
+            awaySinceMs = -1;
+            lastKm = Double.NaN;
+            return true;
+        }
+    }
 
     /**
      * ¿Hay que rehacer el plan de esta ruta? Devuelve el motivo (para el log, sin ubicaciones) o null. Dos casos: el
@@ -739,15 +801,9 @@ final class RoutePlanner {
         long t = SystemClock.elapsedRealtime();
         if (Double.isNaN(s.lat) || p.n < 2) return null;
         double off = offRouteKm(p, s.lat, s.lon);
-        if (off > OFF_ROUTE_KM) {
-            if (offRouteSinceMs == 0) offRouteSinceMs = t;
-            if (t - offRouteSinceMs >= OFF_ROUTE_MS) {
-                offRouteSinceMs = 0;
-                return String.format(Locale.US, "fuera del trazado del plan (a %.1f km)", off);
-            }
-        } else {
-            offRouteSinceMs = 0;
-        }
+        int i = Math.min(Math.max(0, p.progress), p.n - 2);
+        double headingOff = s.speedKmh >= 10 && !Double.isNaN(s.headingDeg) ? angleDiff(s.headingDeg, bearing(p, i, i + 1)) : Double.NaN;
+        if (offRoute.observe(off, headingOff, t)) return String.format(Locale.US, "fuera del trazado del plan (a %.1f km)", off);
         Google gl = p.googleMismatch ? null : google(dest);
         double end = mapsEndKm(p);
         if (gl != null && !Double.isNaN(end)) {
@@ -2895,7 +2951,13 @@ final class RoutePlanner {
         return best;
     }
 
-    private static double bearing(Plan p, int a, int b) {
+    /** Puro: diferencia entre dos rumbos (grados, de −180 a 180). */
+    static double angleDiff(double a, double b) {
+        double d = ((a - b) % 360 + 540) % 360 - 180;
+        return d;
+    }
+
+    static double bearing(Plan p, int a, int b) {
         double la1 = Math.toRadians(p.lat[a]);
         double la2 = Math.toRadians(p.lat[b]);
         double dl = Math.toRadians(p.lon[b] - p.lon[a]);
