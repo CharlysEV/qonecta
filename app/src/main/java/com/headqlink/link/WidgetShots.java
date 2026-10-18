@@ -47,6 +47,8 @@ final class WidgetShots {
     /** Un 4x2 y un 2x2 de un móvil de unos 6,5" con la rejilla de 4 columnas (dp). */
     static final int WIDE_W = 340;
     static final int WIDE_H = 180;
+    /** La vista previa del selector, a 4x3 (el tamaño con que se pone: hql_widget_info). */
+    static final int PREVIEW_H = 270;
     static final int COMPACT_W = 165;
     static final int COMPACT_H = 180;
     /** Margen con el «fondo de pantalla» alrededor del widget (dp). */
@@ -163,13 +165,13 @@ final class WidgetShots {
 
     /**
      * La imagen de la vista previa (res/drawable-*nodpi/hql_widget_preview.png, que enseña también hql_widget_preview.xml):
-     * el widget de verdad, apagado, a 4x2 y a la densidad de ctx, sin fondo de pantalla ni margen (fuera de sus esquinas,
+     * el widget de verdad, apagado, a 4x3 y a la densidad de ctx, sin fondo de pantalla ni margen (fuera de sus esquinas,
      * transparente). La pinta WidgetRenderTest con -Ppreview.
      */
     static Bitmap renderPreview(Context ctx) {
         float d = ctx.getResources().getDisplayMetrics().density;
         int w = Math.round(WIDE_W * d);
-        int h = Math.round(WIDE_H * d);
+        int h = Math.round(PREVIEW_H * d);
         RemoteViews rv = LinkWidgetViews.build(ctx, glance(ctx, "apagado"), LinkGlance.Size.WIDE);
         View v = rv.apply(ctx, new FrameLayout(ctx));
         v.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY),

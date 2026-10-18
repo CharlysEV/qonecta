@@ -136,9 +136,9 @@ class LinkWidgetViewsTest {
         }
         assertEquals(R.layout.hql_widget_preview, previewLayout)
         assertEquals(R.drawable.hql_widget_preview, previewImage)
-        // La imagen: el 4x2 entero (340 x 180 dp), en su proporción.
+        // La imagen: el 4x3 entero (340 x 270 dp), en su proporción.
         val d = ctx.getDrawable(R.drawable.hql_widget_preview)!!
-        assertEquals(WidgetShots.WIDE_W * d.intrinsicHeight, WidgetShots.WIDE_H * d.intrinsicWidth)
+        assertEquals(WidgetShots.WIDE_W * d.intrinsicHeight, WidgetShots.PREVIEW_H * d.intrinsicWidth)
         // La disposición: solo esa imagen, en todo el hueco y encajada sin recortar, sea el hueco que sea.
         val v = android.widget.RemoteViews(ctx.packageName, R.layout.hql_widget_preview).apply(ctx, FrameLayout(ctx))
         val img = (v as android.view.ViewGroup).getChildAt(0) as android.widget.ImageView

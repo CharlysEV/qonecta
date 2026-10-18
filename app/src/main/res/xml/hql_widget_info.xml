@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    headqlink: widget «HeadQLink». 4x2 por defecto (targetCell* en Android 12+; minWidth/minHeight antes) y como mínimo
-    2x2 (minResize*), redimensionable. Sin actualizaciones periódicas (updatePeriodMillis 0): lo repinta WidgetUpdater
+    headqlink: widget «HeadQLink». 4x3 por defecto (targetCell* en Android 12+; minWidth/minHeight antes) y como mínimo
+    2x2 (minResize*), redimensionable. One UI no hace caso a targetCell*: lo coloca por minWidth/minHeight redondeados a
+    sus celdas (~80 dp de ancho con 5 columnas, ~110 de alto), y con 250x110 dp salía de 3x2 (18-10). 312 dp de ancho son 4
+    columnas con la cuadrícula de 5 y con la de 4 (los 4x2 de Samsung); 265 dp de alto, 3 filas, y es lo que necesita la
+    fila de órdenes al coche (LinkGlance.CAR_MIN_DP). Sin actualizaciones periódicas (updatePeriodMillis 0): lo repinta WidgetUpdater
     cuando cambia algo. Vista previa: la imagen del widget de verdad a 4x2 (hql_widget_preview, por idioma), como
     previewImage (antes de Android 12) y, encajada entera en el hueco que haya, como previewLayout (hql_widget_preview):
     con la disposición de verdad, el diálogo de Samsung «¿Quieres añadirlo a la pantalla Inicio?» la recortaba a la
@@ -11,15 +14,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:description="@string/hql_w_description"
     android:initialLayout="@layout/hql_widget_wide"
-    android:minWidth="250dp"
-    android:minHeight="110dp"
+    android:minWidth="312dp"
+    android:minHeight="265dp"
     android:minResizeWidth="110dp"
     android:minResizeHeight="110dp"
     android:previewImage="@drawable/hql_widget_preview"
     android:previewLayout="@layout/hql_widget_preview"
     android:resizeMode="horizontal|vertical"
     android:targetCellWidth="4"
-    android:targetCellHeight="2"
+    android:targetCellHeight="3"
     android:updatePeriodMillis="0"
     android:widgetCategory="home_screen"
     tools:targetApi="31" />
