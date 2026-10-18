@@ -1240,8 +1240,16 @@ final class RoutePlanner {
      */
     private void guessFromMaps(CarSensors.Snapshot s) {
         routeCardIfLate();
-        if (!new Config(ctx).mapsPlanner()) return;
+        boolean readMaps = new Config(ctx).mapsPlanner();
         MapsNavListener.Info mi = MapsNavListener.ongoing();
+        // Tras un reinicio de la app a mitad de viaje: el viaje de antes, si Maps sigue con la misma ruta (también sin
+        // «Leer Maps»: solo usa la longitud de la ruta de su notificación).
+        if (!readMaps) {
+            boolean routing = MapsNavListener.routing(mi);
+            if (guessAsked && (!routing || mi.startedMs != askedNavMs)) guessAsked = false;
+            if (!guessAsked && routing) retakeTrip(mi);
+            return;
+        }
         // Sin ruta (o con la notificación de 0 km que deja Maps al acabar o quitarla): la siguiente navegación se lee.
         if (!MapsNavListener.routing(mi)) {
             readWantedMs = 0;
@@ -1260,7 +1268,6 @@ final class RoutePlanner {
             guessAsked = false;
             guessRejected.clear();
         }
-        // Tras un reinicio de la app a mitad de viaje: el viaje de antes, si Maps sigue con la misma ruta.
         if (!guessAsked && retakeTrip(mi)) return;
         // Tan cerca no hay nada que planificar.
         if (km < DestGuess.MIN_ROAD_KM) return;
