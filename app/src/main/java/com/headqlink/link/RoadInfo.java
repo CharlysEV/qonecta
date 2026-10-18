@@ -135,10 +135,14 @@ final class RoadInfo {
         return r == null ? null : roadTrace(r, s.lat, s.lon, s.headingDeg);
     }
 
-    /** El trazado de la carretera por delante (RoadAhead) si llega a ROAD_MIN_KM; si no, null (por el rumbo). */
+    /**
+     * El trazado de la carretera por delante (RoadAhead) si llega a ROAD_SHORT_KM; si no, null (por el rumbo). Uno corto
+     * (acaba en un cruce que no se sabe resolver) vale hasta donde llega: más allá, por el rumbo (nearestAhead). Antes se
+     * tiraba si no llegaba a 1,2 km, y en la ciudad el rumbo avisaba de radares de las calles de al lado (18-10, A-4).
+     */
     static Trace roadTrace(RoadAhead r, double lat, double lon, double heading) {
         Trace t = r.ahead(lat, lon, heading, AHEAD_M + 100);
-        return t == null || t.km[t.km.length - 1] < ROAD_MIN_KM ? null : t;
+        return t == null || t.km[t.km.length - 1] < ROAD_SHORT_KM ? null : t;
     }
 
     /** Cada segundo, con la posición de ese momento: radares, sol y lo último que se sepa de la vía. */
@@ -227,7 +231,7 @@ final class RoadInfo {
     }
 
     /** Un trazado de la carretera más corto que esto (km: un hueco en los datos o el final de la vía) no vale: por el rumbo. */
-    static final double ROAD_MIN_KM = 1.2;
+    static final double ROAD_SHORT_KM = 0.15;
 
     /** Carreteras de alrededor (RoadAhead): ROADS_RADIUS_M a la redonda, de nuevo al alejarse ROADS_RELOAD_M. */
     static final double ROADS_RADIUS_M = 2500;
@@ -499,6 +503,8 @@ final class RoadInfo {
     static final double TRACE_ON_M = 40;
     /** Un radar es de la ruta si está a menos de esto de su trazado (lo dibujan junto a la carretera, no encima). */
     static final double TRACE_CAM_M = 25;
+    /** Trazado corto: lo que tiene que quedar por detrás de su final un radar para buscarlo por el rumbo. */
+    static final double TRACE_SHORT_MARGIN_M = 100;
 
     /**
      * El trazado de la ruta del planificador (con detalle: RoutePlanner.Plan.traceLat…) y por dónde va el coche en él.
@@ -593,18 +599,25 @@ final class RoadInfo {
 
     /**
      * Puro: el radar más cercano por delante: {metros, índice en cams}, o null. Con trazado y el coche en él (a menos de
-     * TRACE_ON_M), por la ruta; si no, por el rumbo (aheadOnRoad).
+     * TRACE_ON_M), por la ruta; si no, por el rumbo (aheadOnRoad). Con un trazado que acaba antes de AHEAD_M (el de la
+     * carretera hasta un cruce): hasta su final, solo los radares que están en él; más allá, por el rumbo.
      */
     static double[] nearestAhead(List<double[]> cams, double lat, double lon, double heading, boolean onewayRoad, Trace trace) {
         double[] on = trace == null ? null : onTrace(trace, lat, lon);
         boolean byTrace = on != null && on[2] <= TRACE_ON_M;
         if (on != null && byTrace) trace.seg = (int) on[0];
+        double endAhead = byTrace ? (trace.km[trace.km.length - 1] - on[1]) * 1000 : Double.NaN;
+        boolean shortTrace = byTrace && endAhead < AHEAD_M - TRACE_SHORT_MARGIN_M;
         double best = -1;
         int idx = -1;
         for (int i = 0; i < cams.size(); i++) {
             double[] c = cams.get(i);
             double a = byTrace ? aheadOnTrace(trace, (int) on[0], on[1], c[0], c[1], c[3])
                     : aheadOnRoad(lat, lon, heading, c[0], c[1], c[3], onewayRoad);
+            if (a < 0 && shortTrace) {
+                double r = aheadOnRoad(lat, lon, heading, c[0], c[1], c[3], onewayRoad);
+                if (r > endAhead + TRACE_SHORT_MARGIN_M) a = r;
+            }
             if (a >= 0 && (best < 0 || a < best)) {
                 best = a;
                 idx = i;

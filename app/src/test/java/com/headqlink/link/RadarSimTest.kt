@@ -137,20 +137,27 @@ class RadarSimTest {
             val road = if (trace == null && roads != null) RoadInfo.roadTrace(roads, lat, lon, heading) else null
             val got = RoadInfo.nearestAhead(cams, lat, lon, heading, r.motorway[seg], trace ?: road)
             // Depuración: con RADAR_DEBUG = id de un radar, por dónde va el trazado de la carretera cerca de él.
-            val dbg = System.getenv("RADAR_DEBUG")?.toLongOrNull()
-            if (dbg != null && roads != null) {
+            val dbgIds = System.getenv("RADAR_DEBUG")?.split(",")?.mapNotNull { it.trim().toLongOrNull() } ?: emptyList()
+            for (dbg in dbgIds) if (roads != null) {
                 val c = cams.firstOrNull { it[4].toLong() == dbg }
                 if (c != null) {
                     val d = RoadInfo.dist(lat, lon, c[0], c[1])
-                    if (d in 30.0..900.0 && t % 3 == 0) {
-                        val line = if (road == null) "sin trazado (por el rumbo)" else {
+                    if (d in 30.0..900.0) {
+                        val line = if (road == null) {
+                            // Por qué no hay trazado: ninguna vía principal a mano (una calle) o una demasiado corta.
+                            val raw = roads.ahead(lat, lon, heading, RoadInfo.AHEAD_M + 100.0)
+                            if (raw == null) "sin trazado: ninguna vía principal a menos de 30 m con el rumbo (por el rumbo)"
+                            else String.format("sin trazado: el de la vía solo llega a %.2f km (por el rumbo)", raw.km.last())
+                        } else {
                             var dc = Double.MAX_VALUE
                             for (i in 0 until road.lat.size - 1) dc = minOf(dc, RoadInfo.toSegment(road, i, c[0], c[1])[0])
                             var off = 0.0
                             for (i in road.lat.indices) off = maxOf(off, place(r, road.lat[i], road.lon[i]).dist)
-                            String.format("trazado %.2f km, el radar a %.0f m de él, el trazado se aparta hasta %.0f m de la ruta", road.km.last(), dc, off)
+                            val on = RoadInfo.onTrace(road, lat, lon)
+                            String.format("trazado %.2f km (coche a %.0f m de él, quedan %.0f m), el radar a %.0f m de él, el trazado se aparta hasta %.0f m de la ruta",
+                                road.km.last(), on?.get(2) ?: -1.0, if (on == null) -1.0 else (road.km.last() - on[1]) * 1000, dc, off)
                         }
-                        System.getenv("OUT")?.let { File(it + ".dbg").appendText(String.format("t=%d a %.0f m del radar: %s\n", t, d, line)) }
+                        System.getenv("OUT")?.let { File(it + ".dbg").appendText(String.format("%d t=%d a %.0f m del radar: %s\n", dbg, t, d, line)) }
                     }
                 }
             }
