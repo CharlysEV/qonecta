@@ -44,6 +44,15 @@ final class ChargeSession {
     static final double SLOW_BELOW_PCT = 80;
     /** Sin datos nuevos de la nube en esto, o más larga que esto: se da por terminada. */
     static final long STALE_MS = 30 * 60_000L;
+    /**
+     * Carga lenta (CA, en casa): dura horas y, sin la app abierta, se sigue con la comprobación de cada 15 min
+     * (ChargeCheckJob), que Android puede retrasar con el móvil quieto: se da por terminada sin datos en 3 h o a las 16 h.
+     */
+    static final long STALE_AC_MS = 3 * 3600_000L;
+    static final long MAX_AC_MS = 16 * 3600_000L;
+    /** Ritmo de una carga lenta: con lecturas cada 15 min, en la última hora y media (al menos 10 min entre dos). */
+    static final long RATE_WINDOW_AC_MS = 90 * 60_000L;
+    static final long RATE_MIN_AC_MS = 10 * 60_000L;
     static final long MAX_MS = 3 * 3600_000L;
     /** El ritmo real se mide en esta ventana, con al menos RATE_MIN_MS entre la primera y la última lectura. */
     static final long RATE_WINDOW_MS = 10 * 60_000L;
@@ -79,6 +88,8 @@ final class ChargeSession {
     /** Lo que dice el coche que le falta (a su tope), min; NaN sin dato. */
     double carRemainMin = Double.NaN;
     long endMs;
+    /** La vio empezada la comprobación de fondo (sin la app): la hora de inicio es la primera lectura, no la de enchufar. */
+    boolean seenLate;
     double endSoc = Double.NaN;
     boolean readyFired;
     boolean slowFired;
@@ -153,7 +164,7 @@ final class ChargeSession {
             }
         }
         long lastData = last == null ? startMs : last.atMs;
-        if (!plugged || completed || nowMs - lastData > STALE_MS || nowMs - startMs > MAX_MS) {
+        if (!plugged || completed || nowMs - lastData > (dc ? STALE_MS : STALE_AC_MS) || nowMs - startMs > (dc ? MAX_MS : MAX_AC_MS)) {
             ended = true;
             endMs = last == null ? nowMs : last.atMs;
             endSoc = last == null ? startSoc : last.soc;
@@ -194,8 +205,10 @@ final class ChargeSession {
         Sample l = last();
         if (l == null) return Double.NaN;
         Sample ref = null;
+        long window = dc ? RATE_WINDOW_MS : RATE_WINDOW_AC_MS;
+        long min = dc ? RATE_MIN_MS : RATE_MIN_AC_MS;
         for (Sample s : samples) {
-            if (s.atMs >= l.atMs - RATE_WINDOW_MS && l.atMs - s.atMs >= RATE_MIN_MS) {
+            if (s.atMs >= l.atMs - window && l.atMs - s.atMs >= min) {
                 ref = s;
                 break;
             }
@@ -231,8 +244,19 @@ final class ChargeSession {
         Sample l = last();
         if (l == null) return Double.NaN;
         double m = !Double.isNaN(targetPct) ? minutesTo(targetPct) : carRemainMin;
+        // Carga lenta sin lo que dice el coche: al ritmo de ahora hasta el 100 %.
+        if (Double.isNaN(m) && !dc && Double.isNaN(targetPct)) {
+            double ph = pctPerHour();
+            if (!Double.isNaN(ph) && ph > 0.1) m = Math.max(0, 100 - l.soc) / ph * 60;
+        }
         if (Double.isNaN(m)) return Double.NaN;
         return l.atMs + m * 60_000;
+    }
+
+    /** % que sube cada hora al ritmo de ahora (carga lenta), o NaN si aún no se sabe. */
+    synchronized double pctPerHour() {
+        double kw = rateKw();
+        return Double.isNaN(kw) || capacityKwh <= 0 ? Double.NaN : kw / capacityKwh * 100;
     }
 
     /** kWh cargados hasta ahora (por el %). */
@@ -246,7 +270,7 @@ final class ChargeSession {
         try {
             JSONObject o = new JSONObject().put("start", startMs).put("startSoc", startSoc).put("dc", dc).put("cap", capacityKwh)
                     .put("peak", carPeakKw).put("volts", carVolts).put("end", endMs).put("endSoc", nan(endSoc))
-                    .put("target", nan(targetPct)).put("ready", readyFired).put("slow", slowFired);
+                    .put("target", nan(targetPct)).put("ready", readyFired).put("slow", slowFired).put("late", seenLate);
             if (charger != null) {
                 o.put("charger", new JSONObject().put("name", charger.name == null ? "" : charger.name).put("net", charger.network)
                         .put("kw", charger.maxKw).put("v", charger.maxVolts).put("src", charger.source).put("lat", nan(charger.lat))
@@ -282,6 +306,7 @@ final class ChargeSession {
         s.targetPct = o.optDouble("target", Double.NaN);
         s.readyFired = o.optBoolean("ready");
         s.slowFired = o.optBoolean("slow");
+        s.seenLate = o.optBoolean("late");
         s.ended = true;
         JSONArray a = o.optJSONArray("samples");
         if (a != null) {

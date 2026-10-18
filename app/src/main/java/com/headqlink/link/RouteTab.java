@@ -1494,6 +1494,7 @@ final class RouteTab implements CarScreen {
     private TextView liveSkip;
     private TextView liveWarn;
     private ChargeCurve liveCurve;
+    private TextView liveLegend;
     private TextView liveShow;
     /** La carga para la que se ha pulsado «Ver ruta» (no se vuelve a tapar la ruta hasta la siguiente). */
     private ChargeSession liveHiddenFor;
@@ -1541,6 +1542,7 @@ final class RouteTab implements CarScreen {
         LinearLayout bottom = CarKit.row(ctx);
         bottom.setGravity(Gravity.CENTER_VERTICAL);
         TextView legend = CarStyle.text(ctx, Str.get(R.string.hql_live_legend), 18, CarKit.FAINT);
+        liveLegend = legend;
         bottom.addView(legend, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         TextView hide = CarKit.pill(ctx, Str.get(R.string.hql_live_hide), false);
         hide.setOnClickListener(v -> {
@@ -1573,9 +1575,14 @@ final class RouteTab implements CarScreen {
             liveWhen.setText(Str.get(R.string.hql_live_ready_title));
             liveWhen.setTextColor(CarKit.GREEN);
         } else {
-            liveWhen.setText(capital(ChargeWatch.when(s)));
+            // Carga lenta: además, cuánto sube cada hora.
+            String w = capital(ChargeWatch.when(s));
+            double ph = s.dc ? Double.NaN : s.pctPerHour();
+            if (!Double.isNaN(ph)) w = (w.isEmpty() ? "" : w + " · ") + Str.get(R.string.hql_live_pace, ph);
+            liveWhen.setText(w);
             liveWhen.setTextColor(CarKit.TEXT);
         }
+        liveLegend.setText(Str.get(s.dc ? R.string.hql_live_legend : R.string.hql_live_legend_ac));
         boolean next = !Double.isNaN(s.nextArrivePct) && !s.nextName.isEmpty();
         liveNext.setText(next ? Str.get(R.string.hql_live_next, s.nextName, s.nextArrivePct) : "");
         liveNext.setVisibility(next ? View.VISIBLE : View.GONE);

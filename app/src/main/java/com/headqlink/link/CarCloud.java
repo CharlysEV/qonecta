@@ -241,6 +241,8 @@ final class CarCloud {
         Thread t = new Thread(() -> loop(gen), "carcloud");
         t.setDaemon(true);
         t.start();
+        // Con cuenta (recién puesta, también): la comprobación de cargas de cada 15 min sin la app abierta.
+        if (!"robolectric".equals(android.os.Build.FINGERPRINT)) ChargeCheckJob.schedule(app);
     }
 
     /** Para el sondeo (CarUi.stop: se acaba el modo extendido o el servicio). */

@@ -1117,4 +1117,10 @@
     <string name="hql_mate_k_charging">Laden</string>
     <string name="hql_mate_k_plug">Ingeplugd</string>
     <string name="hql_mate_picker_note">Leapmotor Mate: status en bediening van de auto staan onder Auto › Status en Bediening, niet hier.</string>
+    <!-- Carga en directo sin la app abierta y carga lenta (18-10). -->
+    <string name="hql_live_legend_ac">Doorgetrokken: echte % · gestippeld: in het huidige tempo</string>
+    <string name="hql_live_pace">%1$.0f %%/h</string>
+    <string name="hql_live_ended_title">Laden klaar</string>
+    <string name="hql_live_ended_text">%1$.0f %% → %2$.0f %% · +%3$.1f kWh in %4$s</string>
+    <string name="hql_live_seen_late">gezien vanaf %1$s</string>
 </resources>

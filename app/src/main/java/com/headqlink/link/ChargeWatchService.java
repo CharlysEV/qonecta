@@ -34,6 +34,7 @@ public class ChargeWatchService extends Service {
         }
         if (!running) {
             running = true;
+            ChargeWatch.serviceRunning = true;
             CarCloud.acquire(this, "charge");
             CarCloud.setChargeWatch(true);
             thread = new Thread(this::loop, "hql-charge");
@@ -66,6 +67,7 @@ public class ChargeWatchService extends Service {
     @Override
     public void onDestroy() {
         running = false;
+        ChargeWatch.serviceRunning = false;
         CarCloud.setChargeWatch(false);
         CarCloud.release("charge");
         getSystemService(NotificationManager.class).cancel(ChargeWatch.NOTIF_ID);

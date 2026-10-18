@@ -1121,4 +1121,10 @@
     <string name="hql_mate_k_charging">充电中</string>
     <string name="hql_mate_k_plug">已插枪</string>
     <string name="hql_mate_picker_note">Leapmotor Mate：车辆状态和控制在“车辆 › 状态”和“控制”中，不在这里。</string>
+    <!-- Carga en directo sin la app abierta y carga lenta (18-10). -->
+    <string name="hql_live_legend_ac">实线：实际电量 · 虚线：按当前速度</string>
+    <string name="hql_live_pace">%1$.0f %%/小时</string>
+    <string name="hql_live_ended_title">充电结束</string>
+    <string name="hql_live_ended_text">%1$.0f %% → %2$.0f %% · +%3$.1f kWh，用时 %4$s</string>
+    <string name="hql_live_seen_late">自 %1$s 起记录</string>
 </resources>

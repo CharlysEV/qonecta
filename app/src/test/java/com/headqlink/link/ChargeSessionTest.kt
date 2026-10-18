@@ -128,4 +128,79 @@ class ChargeSessionTest {
         assertEquals(200, ChargeLog.read(json).size)
         assertTrue(ChargeLog.read("roto").isEmpty())
     }
+
+    /** Carga lenta en casa (CA, 7 kW, 81,9 kWh): lecturas cada 15 min, como la comprobación de fondo. */
+    private fun home(soc0: Double = 40.0) = ChargeSession(0, soc0, false, null, 81.9, 180.0, 800.0)
+
+    @Test
+    fun aSlowHomeChargeLastsHoursAndItsPaceIsPercentPerHour() {
+        val s = home()
+        // 7 kW en 81,9 kWh: ~8,5 % a la hora; 8 h de carga, sin cortarse a las 3 h como una rápida.
+        var soc = 40.0
+        var t = 0L
+        while (t <= 6 * 60 * min) {
+            assertTrue("a los ${t / min} min", s.observe(t, soc, 7.0, true, false, Double.NaN, t).isEmpty())
+            t += 15 * min
+            soc += 8.5 / 4
+        }
+        assertFalse(s.ended)
+        assertEquals(8.5, s.pctPerHour(), 0.3)
+        // Sin objetivo ni lo que dice el coche: llena al ritmo de ahora.
+        val l = s.last()!!
+        val hours = (s.readyAtMs() - l.atMs) / 3_600_000.0
+        assertEquals((100 - l.soc) / 8.5, hours, 0.2)
+        // Sin datos en 3 h: terminada; con datos, a las 16 h.
+        val q = home()
+        q.observe(0, 40.0, 7.0, true, false, Double.NaN, 0)
+        assertTrue(q.observe(0, 40.0, 7.0, true, false, Double.NaN, 2 * 60 * min).isEmpty())
+        assertEquals(listOf(ChargeSession.Event.ENDED), q.observe(0, 40.0, 7.0, true, false, Double.NaN, 3 * 60 * min + min))
+        // Una lenta nunca avisa de «carga lenta» (lo es por ser de alterna).
+        assertFalse(s.slowFired)
+    }
+
+    @Test
+    fun seenLateSurvivesTheJson() {
+        val s = home()
+        s.seenLate = true
+        s.observe(0, 40.0, 7.0, true, false, Double.NaN, 0)
+        assertTrue(ChargeSession.fromJson(s.toJson()).seenLate)
+        assertFalse(ChargeSession.fromJson(home().toJson()).seenLate)
+    }
+
+    @Test
+    fun theSlowChartAxis() {
+        val h = 3_600_000L
+        // Al ritmo de ahora; sin él, lo que dice el coche; sin nada, una hora; como mucho 16 h.
+        assertEquals(4 * h, ChargeCurve.SlowAxis.endMs(0, 60.0, 100.0, 10.0, Double.NaN))
+        assertEquals(90 * min, ChargeCurve.SlowAxis.endMs(0, 60.0, 100.0, Double.NaN, 90.0))
+        assertEquals(h, ChargeCurve.SlowAxis.endMs(0, 60.0, 100.0, Double.NaN, Double.NaN))
+        assertEquals(16 * h, ChargeCurve.SlowAxis.endMs(0, 10.0, 100.0, 1.0, Double.NaN))
+        assertEquals(0L, ChargeCurve.SlowAxis.endMs(0, 100.0, 100.0, 10.0, Double.NaN))
+        assertEquals(h, ChargeCurve.SlowAxis.stepMs(5 * h))
+        assertEquals(2 * h, ChargeCurve.SlowAxis.stepMs(9 * h))
+        assertEquals(4 * h, ChargeCurve.SlowAxis.stepMs(15 * h))
+        // La primera marca, en punto.
+        val t0 = 1_760_000_000_000L + 17 * min
+        val first = ChargeCurve.SlowAxis.firstTick(t0, h)
+        assertTrue(first >= t0 && first - t0 < h)
+        assertEquals(0L, (first + java.util.TimeZone.getDefault().getOffset(first)) % h)
+    }
+
+    @Test
+    fun aChargeStartsOnlyWithFreshDataAndCharging() {
+        val ctx = org.robolectric.RuntimeEnvironment.getApplication()
+        fun snap(charging: Boolean, ageMin: Long): CarCloud.Snapshot {
+            val at = java.time.Instant.ofEpochMilli(System.currentTimeMillis() - ageMin * min).toString()
+            val d = JSONObject().put("soc", 55).put("chargeState", if (charging) 1 else 0).put("acInputSlowCharge", 1)
+                .put("collectTime", at)
+            return CarCloud.Snapshot(CarCloud.State.OK, LeapStatus.parse(d), System.currentTimeMillis(), 0, 81.9, "", 0, false)
+        }
+        assertTrue(ChargeWatch.mayStart(ctx, snap(true, 2)))
+        assertFalse(ChargeWatch.mayStart(ctx, snap(false, 2)))
+        // El dato de un coche dormido (de hace más de 30 min) no empieza nada.
+        assertFalse(ChargeWatch.mayStart(ctx, snap(true, 45)))
+        val s = ChargeWatch.newSession(snap(true, 2), null)
+        assertFalse(s.dc)
+        assertEquals(55.0, s.startSoc, 1e-9)
+    }
 }

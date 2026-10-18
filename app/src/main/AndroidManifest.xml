@@ -734,6 +734,12 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <!-- headqlink: carga en directo sin la app abierta (cada 15 min, una lectura de la nube de Leapmotor). -->
+        <service
+            android:name="com.headqlink.link.ChargeCheckJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <service
             android:name="com.headqlink.link.LinkService"
             android:exported="false"

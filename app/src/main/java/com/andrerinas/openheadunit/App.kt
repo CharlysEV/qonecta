@@ -145,6 +145,8 @@ class App : Application(), Application.ActivityLifecycleCallbacks {
         com.headqlink.link.ExitReasons.start(this)
         com.headqlink.link.LiveLog.resume(this)
         com.headqlink.link.AccessibilityGuard.checkLater(this, "al arrancar la app")
+        // Carga en directo aunque no se abra la app: la comprobación de cada 15 min (solo con cuenta de Leapmotor).
+        com.headqlink.link.ChargeCheckJob.schedule(this)
 
         // Root support
         component.suExecutor.register()

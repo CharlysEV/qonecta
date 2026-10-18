@@ -1123,4 +1123,10 @@
     <string name="hql_mate_k_charging">Cargando</string>
     <string name="hql_mate_k_plug">Enchufado</string>
     <string name="hql_mate_picker_note">Leapmotor Mate: el estado y los mandos del coche van en Coche › Estado y Mandos, no aquí.</string>
+    <!-- Carga en directo sin la app abierta y carga lenta (18-10). -->
+    <string name="hql_live_legend_ac">Llena: el % real · discontinua: al ritmo de ahora</string>
+    <string name="hql_live_pace">%1$.0f %%/h</string>
+    <string name="hql_live_ended_title">Carga terminada</string>
+    <string name="hql_live_ended_text">%1$.0f %% → %2$.0f %% · +%3$.1f kWh en %4$s</string>
+    <string name="hql_live_seen_late">vista desde las %1$s</string>
 </resources>
