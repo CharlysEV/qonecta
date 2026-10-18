@@ -227,6 +227,10 @@ final class RoutePlanner {
     private static volatile Place manual;
     /** Paradas intermedias del viaje elegido aquí (como mucho SavedPlaces.MAX_VIA) y si vuelve a la salida. */
     private static volatile List<Place> vias = new ArrayList<>();
+    /** Para guardar el viaje en curso (TripMemory): el contexto de la app y lo último guardado de Maps. */
+    private static volatile Context memCtx;
+    private static volatile int rememberedTotalM = -1;
+    private static volatile boolean rememberedGuessed;
     private static volatile boolean roundTrip;
     /**
      * El destino lo ha deducido la app de la navegación de Google Maps (DestGuess), no lo ha elegido nadie: se quita si
@@ -342,6 +346,7 @@ final class RoutePlanner {
         nextGuessChecked = false;
         if (pl != null && (!v.isEmpty() || round)) L.i("ruta: viaje con " + v.size() + " paradas" + (round ? ", ida y vuelta" : ""));
         manual = pl;
+        rememberTrip(pl, v, roundTrip);
         RoutePlanner r = instance;
         if (r != null) {
             // Una ruta ya terminada (llegada o «Terminar ruta») sigue esperando el dato del coche para cerrar sus cuentas.
@@ -359,6 +364,54 @@ final class RoutePlanner {
                 }
             }, "route-now").start();
         }
+    }
+
+    /** Guarda el viaje en curso (o lo borra, sin destino) para retomarlo si la app se reinicia a mitad (TripMemory). */
+    private static void rememberTrip(Place pl, List<Place> v, boolean round) {
+        Context c = memCtx;
+        if (c == null || DemoMode.active()) return;
+        if (pl == null) {
+            if (rememberedTotalM != -2) TripMemory.clear(c);
+            rememberedTotalM = -2;
+            return;
+        }
+        TripMemory.Saved t = new TripMemory.Saved();
+        t.dest = pl;
+        t.vias.addAll(v);
+        t.round = round;
+        t.guessed = guessed;
+        t.guessChecked = guessChecked;
+        MapsNavListener.Info mi = MapsNavListener.ongoing();
+        t.mapsTotalM = MapsNavListener.routing(mi) ? mi.totalM : -1;
+        t.atMs = System.currentTimeMillis();
+        rememberedTotalM = t.mapsTotalM;
+        rememberedGuessed = t.guessed;
+        TripMemory.save(c, t);
+    }
+
+    /**
+     * Tras un reinicio de la app con Google Maps aún navegando: si es la ruta del viaje guardado (la misma longitud,
+     * guardado hace menos de 12 h), se retoma tal cual (destino, paradas, ida y vuelta) sin leer Maps ni preguntar. Si
+     * Maps lleva otra ruta, ese viaje ya no vale y se borra.
+     */
+    private boolean retakeTrip(MapsNavListener.Info mi) {
+        TripMemory.Saved t = TripMemory.load(ctx);
+        if (t == null) return false;
+        if (!TripMemory.matches(t, System.currentTimeMillis(), mi.totalM)) {
+            TripMemory.clear(ctx);
+            rememberedTotalM = -2;
+            L.i("ruta: el viaje guardado no es el de Google Maps (otra ruta o de hace mucho): lo olvido");
+            return false;
+        }
+        guessAsked = true;
+        askedNavMs = mi.startedMs;
+        askedTotalM = mi.totalM;
+        nextGuess = t.guessed;
+        nextGuessChecked = t.guessChecked;
+        L.i("ruta: retomo el viaje de antes del reinicio (" + t.vias.size() + " paradas" + (t.round ? ", ida y vuelta" : "")
+                + "): Google Maps sigue con la misma ruta");
+        setTrip(t.dest, t.vias, t.round);
+        return true;
     }
 
     /** Busca lugares por texto, primero cerca de lat/lon (llamar fuera del hilo principal). */
@@ -410,6 +463,7 @@ final class RoutePlanner {
 
     static synchronized RoutePlanner start(Context ctx) {
         if (instance == null) {
+            memCtx = ctx.getApplicationContext();
             instance = new RoutePlanner(ctx);
             instance.running = true;
             if (!instance.demo) new Thread(instance::loop, "route-planner").start();
@@ -562,6 +616,14 @@ final class RoutePlanner {
                 guessed = true;
                 guessChecked = true;
                 L.i("ruta: Google Maps ya guía con las paradas: la ruta vuelve a ir unida a Maps (si se quita allí, se quita aquí)");
+            }
+        }
+        // El viaje guardado, al día con la ruta de Maps (empezó a navegar después, o la cambió al añadir las paradas).
+        if (m != null && !demo) {
+            MapsNavListener.Info mi = MapsNavListener.ongoing();
+            int total = MapsNavListener.routing(mi) ? mi.totalM : -1;
+            if (total > 0 && (rememberedTotalM <= 0 || !MapsNavListener.sameRoute(rememberedTotalM, total) || rememberedGuessed != guessed)) {
+                rememberTrip(m, vias, roundTrip);
             }
         }
         // Destino deducido y Maps ya no navega (llegada, o la ruta cancelada): fuera, sin preguntar nada. Junto a una parada
@@ -1198,6 +1260,8 @@ final class RoutePlanner {
             guessAsked = false;
             guessRejected.clear();
         }
+        // Tras un reinicio de la app a mitad de viaje: el viaje de antes, si Maps sigue con la misma ruta.
+        if (!guessAsked && retakeTrip(mi)) return;
         // Tan cerca no hay nada que planificar.
         if (km < DestGuess.MIN_ROAD_KM) return;
         // Al entrar: unos segundos para que Android Auto enseñe Maps.
