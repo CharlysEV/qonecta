@@ -94,6 +94,13 @@ final class RoutePlanner {
         volatile double mapsRatio = 1;
         /** Sin alturas (los servicios no respondían): la ruta es llana, sin cuestas (RoutePlanner.elevations). */
         boolean flatElevation;
+        /**
+         * El trazado con detalle (un punto cada TRACE_STEP_M como poco; lat, lon y km), para lo que necesita la forma de la
+         * carretera: los radares de la ruta (RoadInfo). lat/lon de arriba van cada 200 m o más y en las curvas se salen.
+         */
+        double[] traceLat = new double[0];
+        double[] traceLon = new double[0];
+        double[] traceKm = new double[0];
         double destTemp = Double.NaN;
         double destWind = Double.NaN;
         double destRain = Double.NaN;
@@ -2161,6 +2168,7 @@ final class RoutePlanner {
         // Metros y segundos de cada tramo entre puntos: los de todos los tramos del viaje, seguidos.
         double[][] ann = annotations(route, coords);
         double[] dist = ann[0];
+        trace(p, coords, dist);
         double[] dur = ann[1];
         double totalM = route.getDouble("distance");
         // Maps ya guía esta ruta: su proporción de km desde el principio (luego se sigue al día con cada vuelta).
@@ -2949,6 +2957,38 @@ final class RoutePlanner {
             }
         }
         return best;
+    }
+
+    /** Separación mínima entre puntos del trazado con detalle (m). */
+    static final double TRACE_STEP_M = 25;
+
+    /** El trazado con detalle del plan (Plan.traceLat…): los puntos de OSRM, dejando uno cada TRACE_STEP_M como poco. */
+    static void trace(Plan p, JSONArray coords, double[] dist) throws org.json.JSONException {
+        int n = coords.length();
+        double[] la = new double[n];
+        double[] lo = new double[n];
+        double[] km = new double[n];
+        int k = 0;
+        double acc = 0;
+        double since = 0;
+        for (int i = 0; i < n; i++) {
+            if (i > 0) {
+                double d = i - 1 < dist.length ? dist[i - 1] : 0;
+                acc += d;
+                since += d;
+            }
+            if (i == 0 || i == n - 1 || since >= TRACE_STEP_M) {
+                JSONArray c = coords.getJSONArray(i);
+                la[k] = c.getDouble(1);
+                lo[k] = c.getDouble(0);
+                km[k] = acc / 1000;
+                k++;
+                since = 0;
+            }
+        }
+        p.traceLat = java.util.Arrays.copyOf(la, k);
+        p.traceLon = java.util.Arrays.copyOf(lo, k);
+        p.traceKm = java.util.Arrays.copyOf(km, k);
     }
 
     /** Puro: diferencia entre dos rumbos (grados, de −180 a 180). */

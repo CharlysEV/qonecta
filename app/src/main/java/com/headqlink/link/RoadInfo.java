@@ -94,6 +94,25 @@ final class RoadInfo {
         return demo ? DemoMode.road() : state;
     }
 
+    private RoutePlanner.Plan tracePlan;
+    private Trace traceNow;
+
+    /** El trazado de la ruta del planificador, si hay (el mismo mientras sea la misma ruta: guarda por dónde va el coche). */
+    private Trace trace() {
+        RoutePlanner r = RoutePlanner.get();
+        RoutePlanner.Plan p = r == null ? null : r.plan();
+        if (p == null || p.traceLat.length < 2) {
+            tracePlan = null;
+            traceNow = null;
+            return null;
+        }
+        if (p != tracePlan) {
+            tracePlan = p;
+            traceNow = new Trace(p.traceLat, p.traceLon, p.traceKm);
+        }
+        return traceNow;
+    }
+
     /** Cada segundo, con la posición de ese momento: radares, sol y lo último que se sepa de la vía. */
     private void loop() {
         while (running) {
@@ -177,13 +196,11 @@ final class RoadInfo {
         double[] nearest = null;
         if (s.speedKmh > 5) {
             synchronized (cameras) {
-                for (double[] c : cameras) {
-                    double ahead = aheadOnRoad(s.lat, s.lon, s.headingDeg, c[0], c[1], c[3], roadOneway);
-                    if (ahead >= 0 && (st.cameraM < 0 || ahead < st.cameraM)) {
-                        st.cameraM = ahead;
-                        st.cameraLimit = (int) c[2];
-                        nearest = c;
-                    }
+                double[] got = nearestAhead(cameras, s.lat, s.lon, s.headingDeg, roadOneway, trace());
+                if (got != null) {
+                    nearest = cameras.get((int) got[1]);
+                    st.cameraM = got[0];
+                    st.cameraLimit = (int) nearest[2];
                 }
             }
         }
@@ -262,6 +279,22 @@ final class RoadInfo {
                 + "rel(bn.c)[\"type\"=\"enforcement\"]->.r;.r out body;(node(r.r);- node.c;);out skel;", lat, lon);
         JSONArray els = new JSONObject(Http.overpass(q))
                 .getJSONArray("elements");
+        int[] stats = new int[2];
+        List<double[]> list = parseCameras(els, stats);
+        int withDir = stats[0];
+        int fromRel = stats[1];
+        synchronized (cameras) {
+            cameras.clear();
+            cameras.addAll(list);
+        }
+        L.i("vía: " + list.size() + " radares en 15 km (" + withDir + " con sentido conocido, " + fromRel + " por su relación de control)");
+    }
+
+    /**
+     * Puro: los radares de la respuesta de OpenStreetMap ({lat, lon, límite o −1, sentido en grados o NaN, id}); stats
+     * recibe cuántos tienen sentido y cuántos lo sacan de su relación de control.
+     */
+    static List<double[]> parseCameras(JSONArray els, int[] stats) throws org.json.JSONException {
         List<JSONObject> nodes = new ArrayList<>();
         List<JSONObject> ways = new ArrayList<>();
         List<JSONObject> rels = new ArrayList<>();
@@ -310,13 +343,11 @@ final class RoadInfo {
                 if (!Double.isNaN(dir)) fromRel++;
             }
             if (!Double.isNaN(dir)) withDir++;
-            list.add(new double[]{la, lo, t != null ? parseLimit(t.optString("maxspeed")) : -1, dir});
+            list.add(new double[]{la, lo, t != null ? parseLimit(t.optString("maxspeed")) : -1, dir, e.optLong("id")});
         }
-        synchronized (cameras) {
-            cameras.clear();
-            cameras.addAll(list);
-        }
-        L.i("vía: " + list.size() + " radares en 15 km (" + withDir + " con sentido conocido, " + fromRel + " por su relación de control)");
+        stats[0] = withDir;
+        stats[1] = fromRel;
+        return list;
     }
 
     /**
@@ -380,6 +411,126 @@ final class RoadInfo {
 
     /** Hasta dónde se mira y cuánto puede apartarse un radar de la línea de la marcha (la vía hace curvas). */
     static final double AHEAD_M = 1500;
+
+    // ------------------------------------------------------------------ radares por la ruta
+
+    /** Con ruta, el coche va por ella si está a menos de esto de su trazado. */
+    static final double TRACE_ON_M = 40;
+    /** Un radar es de la ruta si está a menos de esto de su trazado (lo dibujan junto a la carretera, no encima). */
+    static final double TRACE_CAM_M = 25;
+
+    /**
+     * El trazado de la ruta del planificador (con detalle: RoutePlanner.Plan.traceLat…) y por dónde va el coche en él.
+     * Con él, los radares se buscan por la carretera de la ruta, con sus curvas: en línea recta, en una curva no se veía
+     * el radar de la propia carretera hasta tenerlo encima (52–499 m en vez de ~700) y en recta valía el de una vía
+     * paralela a 64–290 m (18-10, RadarSimTest con siete recorridos reales).
+     */
+    static final class Trace {
+        final double[] lat;
+        final double[] lon;
+        final double[] km;
+        /** El tramo en el que iba el coche la última vez (para buscar desde ahí). */
+        int seg = -1;
+
+        Trace(double[] lat, double[] lon, double[] km) {
+            this.lat = lat;
+            this.lon = lon;
+            this.km = km;
+        }
+    }
+
+    /**
+     * Puro: dónde queda un punto respecto al tramo i del trazado: {distancia (m), km del punto proyectado, lado (m, + a
+     * la derecha del sentido de la ruta)}.
+     */
+    static double[] toSegment(Trace t, int i, double la, double lo) {
+        double kx = 111_320.0 * Math.cos(Math.toRadians(la));
+        double ky = 111_320.0;
+        double ax = (t.lon[i] - lo) * kx;
+        double ay = (t.lat[i] - la) * ky;
+        double bx = (t.lon[i + 1] - lo) * kx;
+        double by = (t.lat[i + 1] - la) * ky;
+        double dx = bx - ax;
+        double dy = by - ay;
+        double l2 = dx * dx + dy * dy;
+        double f = l2 > 0 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / l2)) : 0;
+        double px = ax + f * dx;
+        double py = ay + f * dy;
+        double d = Math.sqrt(px * px + py * py);
+        double cross = dx * (-ay) - dy * (-ax);
+        return new double[]{d, t.km[i] + (t.km[i + 1] - t.km[i]) * f, cross > 0 ? -d : d};
+    }
+
+    /**
+     * Puro: por dónde va el coche en el trazado: {tramo, km, distancia (m)}, buscando cerca del último tramo (o en todo,
+     * la primera vez); null si el trazado está vacío.
+     */
+    static double[] onTrace(Trace t, double la, double lo) {
+        int n = t.lat.length;
+        if (n < 2) return null;
+        int from = t.seg < 0 ? 0 : Math.max(0, t.seg - 40);
+        int to = t.seg < 0 ? n - 1 : Math.min(n - 1, t.seg + 400);
+        double[] best = null;
+        int bestSeg = -1;
+        for (int i = from; i < to; i++) {
+            double[] g = toSegment(t, i, la, lo);
+            if (best == null || g[0] < best[0]) {
+                best = g;
+                bestSeg = i;
+            }
+        }
+        if (best == null) return null;
+        return new double[]{bestSeg, best[1], best[0]};
+    }
+
+    /**
+     * Puro: metros por la ruta hasta el radar si está junto a su trazado (TRACE_CAM_M) por delante del coche (hasta
+     * AHEAD_M), y vale para el sentido de la marcha allí; −1 si no. Sin sentido conocido, uno claramente a la izquierda
+     * (más de 12 m) es de la calzada de enfrente.
+     */
+    static double aheadOnTrace(Trace t, int seg, double carKm, double camLat, double camLon, double camDir) {
+        // El tramo más cercano al radar por delante (no el primero a menos de TRACE_CAM_M: en una curva, el final del tramo
+        // anterior también queda cerca y adelantaba el aviso unos 20 m).
+        double[] near = null;
+        int nearSeg = -1;
+        for (int i = Math.max(0, seg); i < t.lat.length - 1; i++) {
+            if ((t.km[i] - carKm) * 1000 > AHEAD_M) break;
+            double[] g = toSegment(t, i, camLat, camLon);
+            if (near == null || g[0] < near[0]) {
+                near = g;
+                nearSeg = i;
+            }
+        }
+        if (near == null || near[0] > TRACE_CAM_M) return -1;
+        double along = (near[1] - carKm) * 1000;
+        if (along < 0 || along > AHEAD_M) return -1;
+        double brg = bearing(t.lat[nearSeg], t.lon[nearSeg], t.lat[nearSeg + 1], t.lon[nearSeg + 1]);
+        if (!Double.isNaN(camDir) && Math.abs(((camDir - brg) + 540) % 360 - 180) > 60) return -1;
+        if (Double.isNaN(camDir) && -near[2] > 12) return -1;
+        return along;
+    }
+
+    /**
+     * Puro: el radar más cercano por delante: {metros, índice en cams}, o null. Con trazado y el coche en él (a menos de
+     * TRACE_ON_M), por la ruta; si no, por el rumbo (aheadOnRoad).
+     */
+    static double[] nearestAhead(List<double[]> cams, double lat, double lon, double heading, boolean onewayRoad, Trace trace) {
+        double[] on = trace == null ? null : onTrace(trace, lat, lon);
+        boolean byTrace = on != null && on[2] <= TRACE_ON_M;
+        if (on != null && byTrace) trace.seg = (int) on[0];
+        double best = -1;
+        int idx = -1;
+        for (int i = 0; i < cams.size(); i++) {
+            double[] c = cams.get(i);
+            double a = byTrace ? aheadOnTrace(trace, (int) on[0], on[1], c[0], c[1], c[3])
+                    : aheadOnRoad(lat, lon, heading, c[0], c[1], c[3], onewayRoad);
+            if (a >= 0 && (best < 0 || a < best)) {
+                best = a;
+                idx = i;
+            }
+        }
+        return idx < 0 ? null : new double[]{best, idx};
+    }
 
     /**
      * Puro: metros hasta el radar si está delante, en nuestra vía y para nuestro sentido; -1 si no. «En nuestra vía»: a
