@@ -95,7 +95,8 @@ class RadarSimTest {
     private class Alert(val t: Int, val cam: Long, val m: Double, val over: Boolean, val kmh: Double)
 
     /** Recorre la ruta a su velocidad × factor, un punto por segundo; devuelve los avisos. */
-    private fun drive(r: Route, cams: List<DoubleArray>, factor: Double, overBy: Double = 0.0, withRoute: Boolean = false): List<Alert> {
+    private fun drive(r: Route, cams: List<DoubleArray>, factor: Double, overBy: Double = 0.0, withRoute: Boolean = false,
+                      roads: RoadAhead? = null): List<Alert> {
         val voice = RadarVoice()
         // Con ruta: el trazado con detalle, como lo guarda el planificador (un punto cada 25 m como poco).
         val trace = if (!withRoute) null else {
@@ -132,7 +133,27 @@ class RadarSimTest {
             lon += side * sin(rr) / (111_320.0 * cos(Math.toRadians(lat)))
             val heading = (brg + noise(t + 3, 3.0) + 360) % 360
             var kmh = v * 3.6
-            val got = RoadInfo.nearestAhead(cams, lat, lon, heading, r.motorway[seg], trace)
+            // Sin ruta y con las carreteras de alrededor: por la carretera por la que se va (RoadInfo.traceOrRoad).
+            val road = if (trace == null && roads != null) RoadInfo.roadTrace(roads, lat, lon, heading) else null
+            val got = RoadInfo.nearestAhead(cams, lat, lon, heading, r.motorway[seg], trace ?: road)
+            // Depuración: con RADAR_DEBUG = id de un radar, por dónde va el trazado de la carretera cerca de él.
+            val dbg = System.getenv("RADAR_DEBUG")?.toLongOrNull()
+            if (dbg != null && roads != null) {
+                val c = cams.firstOrNull { it[4].toLong() == dbg }
+                if (c != null) {
+                    val d = RoadInfo.dist(lat, lon, c[0], c[1])
+                    if (d in 30.0..900.0 && t % 3 == 0) {
+                        val line = if (road == null) "sin trazado (por el rumbo)" else {
+                            var dc = Double.MAX_VALUE
+                            for (i in 0 until road.lat.size - 1) dc = minOf(dc, RoadInfo.toSegment(road, i, c[0], c[1])[0])
+                            var off = 0.0
+                            for (i in road.lat.indices) off = maxOf(off, place(r, road.lat[i], road.lon[i]).dist)
+                            String.format("trazado %.2f km, el radar a %.0f m de él, el trazado se aparta hasta %.0f m de la ruta", road.km.last(), dc, off)
+                        }
+                        System.getenv("OUT")?.let { File(it + ".dbg").appendText(String.format("t=%d a %.0f m del radar: %s\n", t, d, line)) }
+                    }
+                }
+            }
             val best = got?.get(0) ?: -1.0
             val bestCam = got?.let { cams[it[1].toInt()] }
             if (overBy > 0 && bestCam != null && bestCam[2] > 0) kmh = bestCam[2] + overBy
@@ -196,7 +217,12 @@ class RadarSimTest {
             }
             ours.sortBy { where[it[4].toLong()] }
             val withRoute = System.getenv("RADAR_ROUTE") == "1"
-            val alerts = drive(r, cams, 1.0, withRoute = withRoute)
+            val rdf = File(dir, "roads_$k.json")
+            val roads = if (System.getenv("RADAR_ROADS") == "1") {
+                if (!rdf.exists()) continue
+                RoadAhead(RoadAhead.parse(JSONObject(rdf.readText()).getJSONArray("elements")))
+            } else null
+            val alerts = drive(r, cams, 1.0, withRoute = withRoute, roads = roads)
             val said = alerts.filter { !it.over }.associateBy { it.cam }
             val oursIds = ours.map { it[4].toLong() }.toSet()
             rep.append("\n== ${r.name}: ${cams.size} radares en la zona, ${ours.size} en la ruta y nuestro sentido, ${opposite.size} del otro sentido, ${near.size} dudosos (a 20–60 m)\n")
@@ -221,7 +247,7 @@ class RadarSimTest {
                     if (g.side >= 0) "a la derecha" else "a la izquierda", if (c[3].isNaN()) "?" else c[3].toInt().toString() + "°"))
             }
             // Pasando a 15 km/h por encima del límite de cada radar: el «vas a…» de los que tienen límite.
-            val fast = drive(r, cams, 1.0, overBy = 15.0, withRoute = withRoute).filter { it.over && it.cam in oursIds }.map { it.cam }.toSet()
+            val fast = drive(r, cams, 1.0, overBy = 15.0, withRoute = withRoute, roads = roads).filter { it.over && it.cam in oursIds }.map { it.cam }.toSet()
             rep.append(String.format("  a 15 km/h por encima del límite: «vas a…» en %d de %d radares con límite\n", fast.size,
                 ours.count { it[2] > 0 }))
             wrongAll += wrong.count { it.cam !in nearIds }

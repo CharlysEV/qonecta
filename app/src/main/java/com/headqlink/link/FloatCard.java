@@ -121,11 +121,15 @@ final class FloatCard extends LinearLayout {
         return true;
     }
 
-    /** ¿Guía Google Maps? Lo dice Android Auto (su estado de navegación) o la notificación de Maps en el móvil. */
+    /**
+     * ¿Guía Google Maps? Lo dice Android Auto (su estado de navegación) o la notificación de Maps en el móvil mientras
+     * siga puesta: con current(), que caduca a los 2 min sin cambios, la tarjeta se iba con el coche parado (un atasco, un
+     * semáforo largo; 18-10).
+     */
     static boolean navigating() {
         if (DemoMode.active()) return true;
         NavTap.Info nav = NavTap.getInfo();
-        return (nav != null && nav.active) || MapsNavListener.current() != null;
+        return (nav != null && nav.active) || MapsNavListener.ongoing() != null;
     }
 
     private void paintBackground() {

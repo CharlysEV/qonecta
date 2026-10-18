@@ -113,6 +113,34 @@ final class RoadInfo {
         return traceNow;
     }
 
+    /** ¿Va el coche por la ruta del planificador? */
+    private boolean onPlanRoute(CarSensors.Snapshot s) {
+        Trace plan = trace();
+        if (plan == null) return false;
+        double[] on = onTrace(plan, s.lat, s.lon);
+        return on != null && on[2] <= TRACE_ON_M;
+    }
+
+    /**
+     * Por dónde buscar los radares: la ruta del planificador si el coche va por ella; si no (sin ruta o fuera de ella),
+     * la carretera por la que va (RoadAhead), hacia delante; si tampoco se sabe, null (por el rumbo).
+     */
+    private Trace traceOrRoad(CarSensors.Snapshot s) {
+        Trace plan = trace();
+        if (plan != null) {
+            double[] on = onTrace(plan, s.lat, s.lon);
+            if (on != null && on[2] <= TRACE_ON_M) return plan;
+        }
+        RoadAhead r = roads;
+        return r == null ? null : roadTrace(r, s.lat, s.lon, s.headingDeg);
+    }
+
+    /** El trazado de la carretera por delante (RoadAhead) si llega a ROAD_MIN_KM; si no, null (por el rumbo). */
+    static Trace roadTrace(RoadAhead r, double lat, double lon, double heading) {
+        Trace t = r.ahead(lat, lon, heading, AHEAD_M + 100);
+        return t == null || t.km[t.km.length - 1] < ROAD_MIN_KM ? null : t;
+    }
+
     /** Cada segundo, con la posición de ese momento: radares, sol y lo último que se sepa de la vía. */
     private void loop() {
         while (running) {
@@ -160,6 +188,22 @@ final class RoadInfo {
                         + CAM_RETRY_MS / 1000 + " s");
             }
         }
+        // Las carreteras de alrededor, para los radares sin ruta (RoadAhead): al empezar y cada ROADS_RELOAD_M. Con la ruta
+        // del planificador (y el coche en ella) no hacen falta: no se gastan datos en ellas.
+        if (!onPlanRoute(s) && shouldLoadRoads(roadsLat, roadsLon, s.lat, s.lon, now - roadsMs, roadsFailed)) {
+            roadsMs = now;
+            try {
+                loadRoads(s.lat, s.lon);
+                roadsLat = s.lat;
+                roadsLon = s.lon;
+                roadsFailed = false;
+            } catch (Http.OverpassPausedException e) {
+                roadsFailed = true;
+            } catch (Exception e) {
+                roadsFailed = true;
+                L.w("vía: carreteras de alrededor sin cargar (" + Http.safeError(e) + ")");
+            }
+        }
         // Overpass pide moderación: como mucho una consulta cada 8 s y cada 250 m.
         if ((Double.isNaN(limitLat) || dist(s.lat, s.lon, limitLat, limitLon) > 250) && now - limitMs > 8000) {
             limitMs = now;
@@ -168,6 +212,44 @@ final class RoadInfo {
             updateLimit(s);
         }
         if (camError != null) throw camError;
+    }
+
+    /**
+     * Puro: los elementos de una respuesta de Overpass; si avisa de un error de ejecución (se le acabó el tiempo o la
+     * memoria), la respuesta viene a medias: error, y se reintenta (18-10: faltaba un tramo de la A-2 y el trazado se cortaba
+     * justo antes de un radar).
+     */
+    static JSONArray elements(String json) throws org.json.JSONException {
+        JSONObject o = new JSONObject(json);
+        String remark = o.optString("remark");
+        if (remark.contains("runtime error")) throw new IllegalStateException("Overpass a medias: " + remark.substring(0, Math.min(60, remark.length())));
+        return o.getJSONArray("elements");
+    }
+
+    /** Un trazado de la carretera más corto que esto (km: un hueco en los datos o el final de la vía) no vale: por el rumbo. */
+    static final double ROAD_MIN_KM = 1.2;
+
+    /** Carreteras de alrededor (RoadAhead): ROADS_RADIUS_M a la redonda, de nuevo al alejarse ROADS_RELOAD_M. */
+    static final double ROADS_RADIUS_M = 2500;
+    static final double ROADS_RELOAD_M = 2000;
+    private volatile RoadAhead roads;
+    private double roadsLat = Double.NaN;
+    private double roadsLon = Double.NaN;
+    private long roadsMs;
+    private boolean roadsFailed;
+
+    /** Puro: ¿toca cargar las carreteras de alrededor? (como los radares, pero cada ROADS_RELOAD_M y 30 s como poco). */
+    static boolean shouldLoadRoads(double lat0, double lon0, double lat, double lon, long sinceLastMs, boolean failed) {
+        boolean far = Double.isNaN(lat0) || dist(lat, lon, lat0, lon0) > ROADS_RELOAD_M;
+        return far && sinceLastMs > (failed ? CAM_RETRY_MS : 30_000);
+    }
+
+    private void loadRoads(double lat, double lon) throws Exception {
+        String q = String.format(Locale.US, "[out:json][timeout:25];way(around:%.0f,%.5f,%.5f)[\"highway\"~\"^(%s)$\"];out body geom;",
+                ROADS_RADIUS_M, lat, lon, RoadAhead.CLASSES);
+        RoadAhead r = new RoadAhead(RoadAhead.parse(elements(Http.overpass(q))));
+        roads = r;
+        L.i("vía: " + r.size() + " carreteras alrededor (radares sin ruta)");
     }
 
     /** Radares: se cargan 15 km a la redonda y se vuelven a cargar a los RELOAD_M (como mucho, cada RELOAD_MS). */
@@ -196,7 +278,7 @@ final class RoadInfo {
         double[] nearest = null;
         if (s.speedKmh > 5) {
             synchronized (cameras) {
-                double[] got = nearestAhead(cameras, s.lat, s.lon, s.headingDeg, roadOneway, trace());
+                double[] got = nearestAhead(cameras, s.lat, s.lon, s.headingDeg, roadOneway, traceOrRoad(s));
                 if (got != null) {
                     nearest = cameras.get((int) got[1]);
                     st.cameraM = got[0];
@@ -277,8 +359,7 @@ final class RoadInfo {
         String q = String.format(Locale.US, "[out:json][timeout:25];node[\"highway\"=\"speed_camera\"](around:15000,%.5f,%.5f)->.c;"
                 + ".c out body;way(bn.c)[\"highway\"];out tags geom;"
                 + "rel(bn.c)[\"type\"=\"enforcement\"]->.r;.r out body;(node(r.r);- node.c;);out skel;", lat, lon);
-        JSONArray els = new JSONObject(Http.overpass(q))
-                .getJSONArray("elements");
+        JSONArray els = elements(Http.overpass(q));
         int[] stats = new int[2];
         List<double[]> list = parseCameras(els, stats);
         int withDir = stats[0];
