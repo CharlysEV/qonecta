@@ -700,6 +700,11 @@
     <string name="hql_route_ended_title">Fahrt beendet</string>
     <string name="hql_route_ended_text">Erwartet %1$.1f kWh · real %2$.1f kWh · %3$.0f km</string>
     <string name="hql_route_ended_generator">Erwartet %1$.1f kWh · %2$.0f km (der Generator hat geladen: nicht gemessen)</string>
+    <string name="hql_arrival_pct">Geplant %1$.0f %% (%2$.1f kWh) · tatsächlich %3$.0f %% (%4$.1f kWh)</string>
+    <string name="hql_arrival_kwh">Geplant %1$.1f kWh · tatsächlich %2$.1f kWh</string>
+    <string name="hql_km_per_pct">%1$.1f km pro 1 %%</string>
+    <string name="hql_route_arrival_summary">Bei Ankunft: %1$s</string>
+    <string name="hql_trip_notice_route_summary">Route: %1$s</string>
     <string name="hql_route_arrival_generator">Bei Ankunft: erwartet %1$.1f kWh · der Generator hat unterwegs geladen (nicht gemessen)</string>
     <string name="hql_route_car_avg">Ø Fahrzeug: %1$.1f kWh/100</string>
     <string name="hql_route_flat_ahead">Der Rest ist fast flach</string>

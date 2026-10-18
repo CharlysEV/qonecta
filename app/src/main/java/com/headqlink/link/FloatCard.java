@@ -114,7 +114,8 @@ final class FloatCard extends LinearLayout {
             icon.set(Icon.FLAG, CarKit.ACCENT);
             title.setText(Str.get(R.string.hql_float_dest, cp.arrivalPct));
             NavTap.Info nav = DemoMode.navInfo();
-            sub.setText(nav != null && nav.eta != null ? Str.get(R.string.hql_drive_arrival) + " " + nav.eta
+            sub.setText(cp.speedCap > 0 ? Str.get(R.string.hql_float_at_speed, cp.speedCap)
+                    : nav != null && nav.eta != null ? Str.get(R.string.hql_drive_arrival) + " " + nav.eta
                     : Str.get(R.string.hql_float_no_stop));
         }
         return true;

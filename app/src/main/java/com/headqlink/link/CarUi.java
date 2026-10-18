@@ -137,7 +137,10 @@ final class CarUi {
         alertSeen = true;
         renderAlert();
     };
-    private final RoutePlanner.ChargeAlertListener chargeAlert = (title, text, kind) -> main.post(() -> showAlert(title, text, kind));
+    private final RoutePlanner.ChargeAlertListener chargeAlert = (title, text, kind) -> main.post(() -> {
+        if (kind == RoutePlanner.ALERT_ENDED) showTripEnded(title, text);
+        else showAlert(title, text, kind);
+    });
     // Destino de Google Maps y sus preguntas: tarjeta flotante encima de AA (el panel no se despliega: AA no se recoloca).
     private LinearLayout guessCard;
     private static final int GUESS_W = 480;
@@ -1758,7 +1761,14 @@ final class CarUi {
             guessText.setText(slow != null && slow.rescue
                     ? Str.get(R.string.hql_guess_auto_nocharger_speed, dist, slow.capKmh, Str.get(R.string.hql_tab_route))
                     : Str.get(R.string.hql_guess_auto_nocharger, dist, Str.get(R.string.hql_tab_route)));
-            guessPill(Str.get(R.string.hql_tab_route), true, () -> {
+            if (slow != null && slow.rescue) {
+                int cap = slow.capKmh;
+                guessPill(Str.get(R.string.hql_speed_go, cap), true, () -> {
+                    clearGuess();
+                    RoutePlanner.setSpeedCap(cap);
+                });
+            }
+            guessPill(Str.get(R.string.hql_tab_route), slow == null || !slow.rescue, () -> {
                 clearGuess();
                 CarHubScreen.selectTab(0);
                 open("car");
@@ -1779,7 +1789,27 @@ final class CarUi {
         guessCard.setBackground(CarStyle.round(CarTheme.alertBg(ok), 24));
         guessTitle.setTextColor(ok ? CarKit.GREEN : CarKit.AMBER);
         guessTitle.setText(Str.get(R.string.hql_guess_title, name));
-        if (!ok) {
+        // Yendo más despacio no hace falta parar (SpeedAdvice): se dice primero y se puede elegir (18-10: 5 min de carga a
+        // los 31 km de un viaje de 92 que a 100 km/h se hacía sin parar y tardando lo mismo).
+        RoutePlanner rp = RoutePlanner.get();
+        ChargePlanner.Result cp = rp == null ? null : rp.lastChargePlan();
+        SpeedAdvice slow = cp == null ? null : cp.speed;
+        boolean noStopSlower = !ok && slow != null && !slow.rescue && slow.stopsAfter == 0;
+        if (noStopSlower) {
+            guessCard.setBackground(CarStyle.round(CarTheme.alertBg(true), 24));
+            guessTitle.setTextColor(CarKit.GREEN);
+            guessText.setText(Str.get(R.string.hql_guess_auto_speed, dist, slow.capKmh, DriveTab.duration(Math.round(slow.extraDriveMin * 60)),
+                    first == null ? "" : first));
+            int cap = slow.capKmh;
+            guessPill(Str.get(R.string.hql_guess_speed_btn, cap), true, () -> {
+                clearGuess();
+                RoutePlanner.setSpeedCap(cap);
+            });
+            guessPill(Str.get(R.string.hql_guess_stops_add), false, () -> {
+                clearGuess();
+                RoutePlanner.addStopsToMaps(ctx);
+            });
+        } else if (!ok) {
             guessText.setText(Str.plural(R.plurals.hql_guess_auto_stops, stops, dist, stops, first == null ? "" : first));
             guessPill(Str.get(R.string.hql_guess_stops_add), true, () -> {
                 clearGuess();
@@ -1805,6 +1835,32 @@ final class CarUi {
         if (!replaying) {
             main.removeCallbacks(guessExpire);
             main.postDelayed(guessExpire, ok ? ALERT_SHOW_MS : 2 * 60_000L);
+        }
+        renderAlert();
+    }
+
+    /** Lo que se espera a que el conductor toque la tarjeta de «Viaje terminado» antes de quitarla. */
+    static final long TRIP_ENDED_MS = 5 * 60_000L;
+
+    /**
+     * Viaje terminado, con sus cuentas (lo previsto y lo real, los km y los km por cada punto de batería): tarjeta flotante
+     * encima de AA, en verde, hasta que se toque «Vale» (como mucho TRIP_ENDED_MS). En el panel salía 20 s y, recogido, no
+     * se veía (17-10).
+     */
+    private void showTripEnded(String title, String text) {
+        if (guessCard == null) return;
+        guessReplay = () -> showTripEnded(title, text);
+        guessKind = "viaje terminado";
+        guessBtns.removeAllViews();
+        guessCard.setBackground(CarStyle.round(CarTheme.alertBg(true), 24));
+        guessTitle.setTextColor(CarKit.GREEN);
+        guessTitle.setText(title);
+        guessText.setText(text);
+        guessPill(Str.get(R.string.hql_trip_ended_ok), true, this::clearGuess);
+        guessPending = true;
+        if (!replaying) {
+            main.removeCallbacks(guessExpire);
+            main.postDelayed(guessExpire, TRIP_ENDED_MS);
         }
         renderAlert();
     }

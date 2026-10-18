@@ -102,4 +102,24 @@ class IdeasOctoberTest {
         assertFalse(TripNotice.text(s, Double.NaN, Double.NaN, Double.NaN)!!.contains("kWh"))
         assertNull(TripNotice.text(SessionSummary.TripStats(3.0, 1, 1.0, 30.0, 0, 0, 0), 30.0, Double.NaN, Double.NaN))
     }
+
+    /**
+     * Al llegar (18-10, idea de un usuario): los % previsto y real con sus kWh, los km y cuántos km por cada punto de
+     * batería. Sin %, los kWh; con menos de un punto de bajada, sin los km por punto.
+     */
+    @Test
+    fun arrivalSummaryWithPercentKwhAndKmPerPoint() {
+        Str.init(org.robolectric.RuntimeEnvironment.getApplication())
+        val t = RoutePlanner.arrivalSummary(4.2, 3.6, 25.0, 27.0, 41.0, 8.0).replace(',', '.')
+        assertTrue(t, t.contains("25 %") && t.contains("4.2 kWh") && t.contains("27 %") && t.contains("3.6 kWh"))
+        assertTrue(t, t.contains("41 km") && t.contains("5.1 km"))
+        val noPct = RoutePlanner.arrivalSummary(4.2, 3.6, Double.NaN, Double.NaN, 12.0, Double.NaN)
+        assertFalse(noPct, noPct.contains("%"))
+        val tiny = RoutePlanner.arrivalSummary(0.4, 0.3, 60.0, 61.0, 2.0, 0.5)
+        assertFalse(tiny, tiny.contains("1 %") && tiny.contains("km por"))
+        // En el resumen del móvil, la misma línea.
+        val s = SessionSummary.TripStats(75.0, 3, 70.0, 29.6, 2, 0, 1)
+        val n = TripNotice.text(s, 38.4, doubleArrayOf(4.2, 3.6, 41.0, 25.0, 27.0, 8.0))!!.replace(',', '.')
+        assertTrue(n, n.contains("27 %") && n.contains("5.1 km"))
+    }
 }

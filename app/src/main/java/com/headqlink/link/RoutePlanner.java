@@ -136,6 +136,11 @@ final class RoutePlanner {
         /** Lo previsto y lo real al llegar (kWh); NaN hasta saberlo. */
         volatile double arrivalPredictedKwh = Double.NaN;
         volatile double arrivalRealKwh = Double.NaN;
+        /** Al llegar: % previsto y real de batería, km hechos y lo que bajó la batería (puntos); NaN hasta saberlo. */
+        volatile double arrivalPredictedPct = Double.NaN;
+        volatile double arrivalRealPct = Double.NaN;
+        volatile double arrivalKm = Double.NaN;
+        volatile double arrivalDropPct = Double.NaN;
         boolean arrivalDone;
         // Viaje con paradas intermedias o de ida y vuelta: los puntos tras la salida, en orden (las paradas, el destino y,
         // de ida y vuelta, la vuelta a la salida), el km de la ruta en el que está cada uno y cuál es el destino (-1 si ya
@@ -319,6 +324,8 @@ final class RoutePlanner {
      * SavedPlaces.MAX_VIA) y si vuelve a la salida. La ruta se calcula enseguida.
      */
     static void setTrip(Place pl, List<Place> via, boolean round) {
+        // Otro viaje: sin el límite de velocidad del anterior.
+        speedCapKmh = 0;
         if (DemoMode.active()) {
             DemoMode.setPlace(pl);
             return;
@@ -835,6 +842,12 @@ final class RoutePlanner {
      */
     static double matchScore(double routeM, double googleM, int roadHits) {
         return Math.abs(routeM - googleM) / Math.max(1, googleM) - 0.02 * roadHits;
+    }
+
+    /** El gasto acumulado de la ruta sin pasar de cap km/h desde fromKm (SpeedAdvice); con cap 0 o sin tiempos, el de la ruta. */
+    static double[] capped(Plan p, int cap, double fromKm) {
+        if (cap <= 0 || p.segS == null || p.segS.length != p.n || p.elev == null || p.headwind == null || p.temp == null) return p.kwhCum;
+        return SpeedAdvice.cappedKwhCum(p, cap, fromKm, null);
     }
 
     /**
@@ -1368,6 +1381,8 @@ final class RoutePlanner {
     /** Tipos de aviso: el plan ha cambiado o la carga es lenta (ámbar); ya puedes seguir (verde). */
     static final int ALERT_WARN = 0;
     static final int ALERT_READY = 1;
+    /** Viaje terminado (con sus cuentas): tarjeta flotante encima de AA hasta que se toque (en el panel se perdía, 17-10). */
+    static final int ALERT_ENDED = 2;
 
     interface ChargeAlertListener {
         void onChargeAlert(String title, String text, int kind);
@@ -1498,7 +1513,9 @@ final class RoutePlanner {
             int prog = Math.min(pl.progress, pl.n - 1);
             double f = demo ? DemoMode.planTrend() : trend.factor();
             double mr = pl.mapsRatio;
-            String key = settings + "/" + prog + "/" + Math.round(soc * 2) + "/" + Math.round(f * 100) + "/" + Math.round(mr * 100) + "/" + charging;
+            int cap = speedCap(pl);
+            String key = settings + "/" + prog + "/" + Math.round(soc * 2) + "/" + Math.round(f * 100) + "/" + Math.round(mr * 100) + "/" + charging
+                    + "/v" + cap;
             if (key.equals(chargeKey)) return charge;
             chargeKey = key;
             ChargePlanner.Settings s = planSettings(c, capKwh);
@@ -1513,12 +1530,15 @@ final class RoutePlanner {
             if (same) for (ChargePlanner.Stop st : charge.stops) keep.add(st.charger);
             double from = pl.km[prog];
             // Lo que falta, con la tendencia del viaje y los km de Google Maps (si guía y cuenta otros).
-            ChargePlanner.Result r = ChargePlanner.plan(pl.km, ChargePlanner.scaled(pl.km, pl.kwhCum, from, f * mr), from, soc, list, s, keep);
+            // Con la velocidad elegida por el conductor («A 100 km/h, sin parar»), el gasto de esa velocidad en los tramos más rápidos.
+            double[] base = capped(pl, cap, from);
+            ChargePlanner.Result r = ChargePlanner.plan(pl.km, ChargePlanner.scaled(pl.km, base, from, f * mr), from, soc, list, s, keep);
             r.trend = f;
             r.mapsRatio = mr;
+            r.speedCap = base == pl.kwhCum ? 0 : cap;
             // Si yendo más despacio sale mejor (SpeedAdvice). Lo que cuestan las paradas lo calcula RouteTab al enseñarlo,
             // con el precio de ese momento.
-            r.speed = SpeedAdvice.best(pl, r, list, s);
+            r.speed = r.speedCap > 0 ? null : SpeedAdvice.best(pl, r, list, s);
             logSpeed(r.speed);
             // Cargando (en una parada del plan o en otra), el plan cambia sin avisar: lo ha decidido el conductor.
             ChargePlanner.Change change = same && !charging ? ChargePlanner.change(charge, r) : ChargePlanner.Change.NONE;
@@ -1725,7 +1745,7 @@ final class RoutePlanner {
         set.favorites = ChargerMarks.favorites(all, ChargerMarks.parse(c.chargerMarks()));
         List<Charger> list = new ArrayList<>();
         for (Charger ch : all) if (Math.abs(ch.kmAlong - here) > ChargePlanner.HERE_KM) list.add(ch);
-        double[] kwh = ChargePlanner.scaled(p.km, p.kwhCum, here, f);
+        double[] kwh = ChargePlanner.scaled(p.km, capped(p, speedCap(p), here), here, f);
         double ready = ChargePlanner.readyPct(p.km, kwh, here, 0, list, set, ahead);
         if (Double.isNaN(ready)) {
             s.setTarget(Double.NaN, Double.NaN, "");
@@ -1984,10 +2004,30 @@ final class RoutePlanner {
         if (r != null) r.finishOnStop();
     }
 
-    /** Lo medido al terminar la última ruta desde sinceMs (hora de pared): {previsto, real, km}, o null. */
+    /**
+     * Lo medido al terminar la última ruta desde sinceMs (hora de pared): {previsto kWh, real kWh, km, % previsto, % real,
+     * lo que bajó la batería (puntos)}, o null.
+     */
     static double[] lastArrival(long sinceMs) {
         double[] a = lastArrival;
-        return a != null && a[3] >= sinceMs ? new double[]{a[0], a[1], a[2]} : null;
+        return a != null && a[3] >= sinceMs ? new double[]{a[0], a[1], a[2], a[4], a[5], a[6]} : null;
+    }
+
+    /**
+     * Puro: el resumen de la llegada en una línea: «Previsto 25 % (4,2 kWh) · real 27 % (3,6 kWh) · 12 km · 5,1 km por
+     * cada 1 %» (18-10, idea de un usuario: los kWh junto a los % y cuántos km se hacen por cada punto de batería). Sin %,
+     * solo los kWh; sin bajada de al menos un punto, sin los km por punto.
+     */
+    static String arrivalSummary(double predKwh, double realKwh, double predPct, double realPct, double km, double dropPct) {
+        StringBuilder b = new StringBuilder();
+        if (!Double.isNaN(predPct) && !Double.isNaN(realPct)) {
+            b.append(Str.get(R.string.hql_arrival_pct, Math.max(0, predPct), predKwh, realPct, realKwh));
+        } else {
+            b.append(Str.get(R.string.hql_arrival_kwh, predKwh, realKwh));
+        }
+        if (km > 0) b.append(String.format(Locale.getDefault(), " · %.0f km", km));
+        if (km > 0 && dropPct >= 1) b.append(" · ").append(Str.get(R.string.hql_km_per_pct, km / dropPct));
+        return b.toString();
     }
 
     /** Las cuentas del viaje: lo previsto para lo hecho frente a lo que bajó la batería, y la tarjeta en el coche. */
@@ -2002,6 +2042,13 @@ final class RoutePlanner {
         boolean generator = !Double.isNaN(p.startFuel) && !Double.isNaN(st.fuelLiters) && p.startFuel - st.fuelLiters > 0.05;
         p.arrivalPredictedKwh = predicted;
         p.arrivalRealKwh = generator ? Double.NaN : real;
+        double predPct = p.startSoc - predicted / p.startCap * 100;
+        double realPct = st.socBest();
+        double drop = p.startSoc - realPct;
+        p.arrivalPredictedPct = predPct;
+        p.arrivalRealPct = generator ? Double.NaN : realPct;
+        p.arrivalKm = km;
+        p.arrivalDropPct = generator ? Double.NaN : drop;
         boolean usable = !generator && RouteCalibration.usable(predicted, real, km);
         Config c = new Config(ctx);
         String note = "";
@@ -2013,12 +2060,12 @@ final class RoutePlanner {
         }
         L.i(String.format(Locale.US, "ruta: llegada: previsto %.2f kWh, real %s (nube Leapmotor, %.0f km)%s", predicted,
                 generator ? "sin medir (el generador del REEV cargó)" : String.format(Locale.US, "%.2f kWh", real), km, note));
-        lastArrival = new double[]{predicted, p.arrivalRealKwh, km, System.currentTimeMillis()};
+        lastArrival = new double[]{predicted, p.arrivalRealKwh, km, System.currentTimeMillis(), predPct, p.arrivalRealPct, p.arrivalDropPct};
         ChargeAlertListener l = chargeAlerts;
         if (l != null) {
             l.onChargeAlert(Str.get(R.string.hql_route_ended_title), generator
                     ? Str.get(R.string.hql_route_ended_generator, predicted, km)
-                    : Str.get(R.string.hql_route_ended_text, predicted, real, km), ALERT_READY);
+                    : arrivalSummary(predicted, real, predPct, realPct, km, drop), ALERT_ENDED);
         }
     }
 
@@ -2989,6 +3036,35 @@ final class RoutePlanner {
         p.traceLat = java.util.Arrays.copyOf(la, k);
         p.traceLon = java.util.Arrays.copyOf(lo, k);
         p.traceKm = java.util.Arrays.copyOf(km, k);
+    }
+
+    /**
+     * Velocidad máxima que ha elegido el conductor para esta ruta (km/h; 0: la de la ruta): «A 100 km/h, sin parar». El
+     * plan de carga se hace con ella; si va más rápido, la tendencia del viaje lo nota y el plan vuelve a poner paradas
+     * (con su aviso). Vale para el destino speedCapFor; otro viaje la quita.
+     */
+    private static volatile int speedCapKmh;
+    private static volatile String speedCapFor;
+
+    /** La velocidad máxima elegida para este plan (km/h), o 0. */
+    static int speedCap(Plan p) {
+        int c = speedCapKmh;
+        return c > 0 && p != null && p.destination != null && p.destination.equals(speedCapFor) ? c : 0;
+    }
+
+    /** El conductor elige ir como mucho a kmh (0: quitarlo) en la ruta de ahora: el plan de carga se rehace con ella. */
+    static void setSpeedCap(int kmh) {
+        RoutePlanner r = get();
+        Plan p = r == null ? null : r.plan();
+        speedCapKmh = p == null ? 0 : Math.max(0, kmh);
+        speedCapFor = p == null ? null : p.destination;
+        L.i(kmh > 0 ? "ruta: el conductor elige ir a " + kmh + " km/h como mucho (plan de carga con esa velocidad)"
+                : "ruta: el conductor quita el límite de velocidad del plan");
+        if (r != null) {
+            synchronized (r.chargeLock) {
+                r.chargeKey = "";
+            }
+        }
     }
 
     /** Puro: diferencia entre dos rumbos (grados, de −180 a 180). */

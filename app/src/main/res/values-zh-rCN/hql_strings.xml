@@ -699,6 +699,11 @@
     <string name="hql_route_ended_title">行程结束</string>
     <string name="hql_route_ended_text">预计 %1$.1f kWh · 实际 %2$.1f kWh · %3$.0f km</string>
     <string name="hql_route_ended_generator">预计 %1$.1f kWh · %2$.0f km（增程器充电：未测量）</string>
+    <string name="hql_arrival_pct">预计 %1$.0f %%（%2$.1f kWh）· 实际 %3$.0f %%（%4$.1f kWh）</string>
+    <string name="hql_arrival_kwh">预计 %1$.1f kWh · 实际 %2$.1f kWh</string>
+    <string name="hql_km_per_pct">每 1 %% 行驶 %1$.1f km</string>
+    <string name="hql_route_arrival_summary">到达时：%1$s</string>
+    <string name="hql_trip_notice_route_summary">路线：%1$s</string>
     <string name="hql_route_arrival_generator">到达时：预计 %1$.1f kWh · 途中发电机充过电（未计量）</string>
     <string name="hql_route_car_avg">车辆平均：%1$.1f kWh/100</string>
     <string name="hql_route_flat_ahead">剩余路段基本平坦</string>

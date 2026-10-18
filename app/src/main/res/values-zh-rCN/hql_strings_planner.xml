@@ -68,12 +68,19 @@
     <string name="hql_guess_auto_text">已从 Google Maps 读取并完成规划（剩余 %1$s）：到达时电量 %2$s %%。</string>
     <string name="hql_guess_auto_nocharger">已从 Google Maps 读取并完成规划（剩余 %1$s），但按你的筛选条件，某段路程内没有可到达的充电站：请查看“%2$s”标签。</string>
     <string name="hql_guess_auto_nocharger_speed">已从 Google Maps 读取并完成规划（剩余 %1$s），但按你的筛选条件，某段路程内没有可到达的充电站。以 %2$d km/h 行驶就能到达：请查看“%3$s”标签。</string>
+    <string name="hql_guess_auto_speed">已从 Google Maps 读取并完成规划（剩余 %1$s）。以 %2$d km/h 行驶可不停车到达（多开 %3$s）；否则需要充电（第一站：%4$s）。</string>
+    <string name="hql_guess_speed_btn">%1$d km/h，不停车</string>
+    <string name="hql_speed_go">以 %1$d km/h 行驶</string>
+    <string name="hql_speed_capped">按最高 %1$d km/h 规划：开得更快时会重新加入充电站。</string>
+    <string name="hql_speed_uncap">取消</string>
+    <string name="hql_float_at_speed">%1$d km/h · 不停车</string>
     <string name="hql_guess_ok">正确</string>
     <string name="hql_guess_not">不是这个</string>
     <string name="hql_guess_ask_title">你要去哪里？</string>
     <string name="hql_guess_ask_text">Google Maps 正在导航（%1$s）。请为充电计划选择目的地：</string>
     <string name="hql_guess_search">搜索</string>
     <string name="hql_guess_close">关闭</string>
+    <string name="hql_trip_ended_ok">好的</string>
     <plurals name="hql_guess_auto_stops">
         <item quantity="other">已从 Google Maps 读取并完成规划（剩余 %1$s）。需要停车充电 %2$d 次（第一站：%3$s）。添加后，我会结束 Google Maps 当前的路线，改用经过这些站点的规划路线。</item>
     </plurals>

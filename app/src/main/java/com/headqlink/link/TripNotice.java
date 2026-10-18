@@ -25,6 +25,13 @@ final class TripNotice {
 
     /** Puro: el texto del aviso (líneas), o null si no toca. */
     static String text(SessionSummary.TripStats s, double peakC, double routePredictedKwh, double routeRealKwh) {
+        return text(s, peakC, new double[]{routePredictedKwh, routeRealKwh, Double.NaN, Double.NaN, Double.NaN, Double.NaN});
+    }
+
+    /** arrival: lo de RoutePlanner.lastArrival ({kWh previsto, real, km, % previsto, % real, puntos que bajó}). */
+    static String text(SessionSummary.TripStats s, double peakC, double[] arrival) {
+        double routePredictedKwh = arrival[0];
+        double routeRealKwh = arrival[1];
         if (s == null || s.getVideoMinutes() < MIN_MINUTES) return null;
         StringBuilder b = new StringBuilder();
         b.append(Str.get(R.string.hql_trip_notice_fps, s.getFps())).append(" · ")
@@ -34,7 +41,8 @@ final class TripNotice {
             b.append('\n').append(Str.get(R.string.hql_trip_notice_heat, Math.max(0, s.getThermalMax()), Double.isNaN(peakC) ? 0.0 : peakC));
         }
         if (!Double.isNaN(routePredictedKwh) && !Double.isNaN(routeRealKwh)) {
-            b.append('\n').append(Str.get(R.string.hql_trip_notice_route, routePredictedKwh, routeRealKwh));
+            b.append('\n').append(Str.get(R.string.hql_trip_notice_route_summary, RoutePlanner.arrivalSummary(routePredictedKwh, routeRealKwh,
+                    arrival[3], arrival[4], arrival[2], arrival[5])));
         }
         return b.toString();
     }
@@ -42,16 +50,11 @@ final class TripNotice {
     static void show(Context c, Config cfg, SessionSummary.TripStats s) {
         try {
             if (s == null || !cfg.tripNotice() || !Config.isAa(cfg.mode())) return;
-            double predicted = Double.NaN;
-            double real = Double.NaN;
             // Lo de la ruta terminada en este viaje (también si se quitó, o si la sesión acaba justo al llegar).
             RoutePlanner.finishNow();
             double[] a = RoutePlanner.lastArrival(System.currentTimeMillis() - Math.round((s.getMinutes() + 5) * 60_000));
-            if (a != null) {
-                predicted = a[0];
-                real = a[1];
-            }
-            String text = text(s, ThermalGuard.tripPeakC(), predicted, real);
+            if (a == null) a = new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN};
+            String text = text(s, ThermalGuard.tripPeakC(), a);
             if (text == null) return;
             NotificationManager nm = c.getSystemService(NotificationManager.class);
             if (nm == null) return;

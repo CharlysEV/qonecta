@@ -108,6 +108,8 @@ final class ChargePlanner {
         double carVolts = 400;
         /** Si yendo más despacio sale mejor (SpeedAdvice), o null. */
         SpeedAdvice speed;
+        /** Velocidad máxima con la que se ha hecho (km/h; el conductor eligió ir más despacio), o 0. */
+        int speedCap;
 
         Result(Outcome outcome, List<Stop> stops, double arrivalPct, double[] km, double[] kwhCum, double fromKm, double socNow,
                double capacityKwh) {

@@ -701,6 +701,11 @@
     <string name="hql_route_ended_title">Trajet terminé</string>
     <string name="hql_route_ended_text">Prévu %1$.1f kWh · réel %2$.1f kWh · %3$.0f km</string>
     <string name="hql_route_ended_generator">Prévu %1$.1f kWh · %2$.0f km (le générateur a chargé : non mesuré)</string>
+    <string name="hql_arrival_pct">Prévu %1$.0f %% (%2$.1f kWh) · réel %3$.0f %% (%4$.1f kWh)</string>
+    <string name="hql_arrival_kwh">Prévu %1$.1f kWh · réel %2$.1f kWh</string>
+    <string name="hql_km_per_pct">%1$.1f km par 1 %%</string>
+    <string name="hql_route_arrival_summary">À l\'arrivée : %1$s</string>
+    <string name="hql_trip_notice_route_summary">trajet : %1$s</string>
     <string name="hql_route_arrival_generator">À l\'arrivée : prévu %1$.1f kWh · le générateur a rechargé en route (non mesuré)</string>
     <string name="hql_route_car_avg">Moyenne de la voiture : %1$.1f kWh/100</string>
     <string name="hql_route_flat_ahead">La suite est presque plate</string>

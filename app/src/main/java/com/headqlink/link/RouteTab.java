@@ -2247,13 +2247,37 @@ final class RouteTab implements CarScreen {
         chargePlan = planner.chargePlan(soc, capKwh, realSoc, reev(), charging);
     }
 
-    /** El consejo de velocidad (SpeedAdvice) debajo del resumen del plan, si lo hay. */
+    /**
+     * El consejo de velocidad (SpeedAdvice) debajo del resumen del plan, si lo hay, con su botón para hacer el plan a esa
+     * velocidad si quita paradas o hace llegar. Con una velocidad elegida, eso y el botón para quitarla.
+     */
     private void addSpeedAdvice(SpeedAdvice a) {
+        int cap = chargePlan != null ? chargePlan.speedCap : 0;
+        if (cap > 0) {
+            TextView v = hint(Str.get(R.string.hql_speed_capped, cap));
+            v.setTextColor(CarKit.GREEN);
+            chargers.addView(v);
+            speedPill(Str.get(R.string.hql_speed_uncap), 0);
+            return;
+        }
         String t = speedText(a);
         if (t == null) return;
         TextView v = hint(t);
         v.setTextColor(a.rescue ? CarKit.AMBER : CarKit.GREEN);
         chargers.addView(v);
+        if (a.rescue || a.stopsAfter < a.stopsBefore) speedPill(Str.get(R.string.hql_speed_go, a.capKmh), a.capKmh);
+    }
+
+    private void speedPill(String text, int kmh) {
+        LinearLayout row = CarKit.row(ctx);
+        row.setPadding(0, 4, 0, 8);
+        TextView b = CarStyle.pill(ctx, text);
+        b.setOnClickListener(v -> {
+            RoutePlanner.setSpeedCap(kmh);
+            tick();
+        });
+        row.addView(b);
+        chargers.addView(row);
     }
 
     /** El texto del consejo de velocidad, o null. */
@@ -2282,6 +2306,8 @@ final class RouteTab implements CarScreen {
             TextView t = hint(Str.get(R.string.hql_plan_none, cp.arrivalPct));
             t.setTextColor(CarKit.GREEN);
             chargers.addView(t);
+            // Sin paradas gracias a la velocidad elegida: se dice, con el botón para quitarla.
+            if (cp.speedCap > 0) addSpeedAdvice(null);
             addReplanNote(cp);
             addLegs(p, cp);
             addDestChargers(p, cp);
@@ -2575,7 +2601,8 @@ final class RouteTab implements CarScreen {
         if (!Double.isNaN(pl.arrivalPredictedKwh)) {
             return Double.isNaN(pl.arrivalRealKwh)
                     ? Str.get(R.string.hql_route_arrival_generator, pl.arrivalPredictedKwh)
-                    : Str.get(R.string.hql_route_arrival_compare, pl.arrivalPredictedKwh, pl.arrivalRealKwh);
+                    : Str.get(R.string.hql_route_arrival_summary, RoutePlanner.arrivalSummary(pl.arrivalPredictedKwh, pl.arrivalRealKwh,
+                    pl.arrivalPredictedPct, pl.arrivalRealPct, pl.arrivalKm, pl.arrivalDropPct));
         }
         double up = 0;
         double down = 0;

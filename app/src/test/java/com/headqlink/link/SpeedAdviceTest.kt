@@ -4,6 +4,7 @@ import android.app.Application
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,6 +53,26 @@ class SpeedAdviceTest {
         val late = SpeedAdvice.cappedKwhCum(p, 110.0, 150.0, null)
         assertEquals(p.kwhCum[150], late[150], 1e-9)
         assertTrue(late[200] < p.kwhCum[200])
+    }
+
+    /**
+     * «A 110 km/h, sin parar» (18-10): con la velocidad elegida, el plan de carga se hace con el gasto a esa velocidad
+     * (RoutePlanner.capped) y la parada desaparece; sin elegir nada, el de la ruta.
+     */
+    @Test
+    fun theChosenSpeedRemovesTheStop() {
+        val p = route(200, 130.0)
+        p.destination = "Destino"
+        val list = listOf(charger(100.0, 150.0))
+        val s = settings()
+        val soc = p.kwhCum[200] / 67.0 * 100 + s.arriveMinPct - 2
+        assertSame(p.kwhCum, RoutePlanner.capped(p, 0, 0.0))
+        val capped = ChargePlanner.plan(p.km, RoutePlanner.capped(p, 110, 0.0), 0.0, soc, list, s)
+        assertEquals(ChargePlanner.Outcome.NO_STOPS, capped.outcome)
+        assertTrue(capped.arrivalPct >= s.arriveMinPct)
+        // Sin los tiempos por tramo no se puede: el de la ruta.
+        p.segS = null
+        assertSame(p.kwhCum, RoutePlanner.capped(p, 110, 0.0))
     }
 
     @Test

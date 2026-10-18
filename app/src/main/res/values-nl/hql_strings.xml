@@ -700,6 +700,11 @@
     <string name="hql_route_ended_title">Rit beëindigd</string>
     <string name="hql_route_ended_text">Verwacht %1$.1f kWh · werkelijk %2$.1f kWh · %3$.0f km</string>
     <string name="hql_route_ended_generator">Verwacht %1$.1f kWh · %2$.0f km (de generator laadde: niet gemeten)</string>
+    <string name="hql_arrival_pct">Verwacht %1$.0f %% (%2$.1f kWh) · werkelijk %3$.0f %% (%4$.1f kWh)</string>
+    <string name="hql_arrival_kwh">Verwacht %1$.1f kWh · werkelijk %2$.1f kWh</string>
+    <string name="hql_km_per_pct">%1$.1f km per 1 %%</string>
+    <string name="hql_route_arrival_summary">Bij aankomst: %1$s</string>
+    <string name="hql_trip_notice_route_summary">route: %1$s</string>
     <string name="hql_route_arrival_generator">Bij aankomst: verwacht %1$.1f kWh · de generator heeft onderweg bijgeladen (niet gemeten)</string>
     <string name="hql_route_car_avg">Autogemiddelde: %1$.1f kWh/100</string>
     <string name="hql_route_flat_ahead">De rest is bijna vlak</string>
