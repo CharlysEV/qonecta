@@ -834,6 +834,47 @@ final class AaPassthroughSource implements VideoSource {
         return out;
     }
 
+    /**
+     * Un toque dura al menos esto hasta Android Auto. Por Wi-Fi, el coche manda el pulsar y el soltar por separado, pero
+     * un pico de la radio los junta y llegan a la vez (18-10: 4 de 10 toques con 0-16 ms entre los dos); un toque tan
+     * corto Android Auto a veces no lo da por bueno. El soltar se retrasa hasta MIN_TAP_MS y lo que venga detrás, también,
+     * en orden.
+     */
+    static final long MIN_TAP_MS = 50;
+    private android.os.HandlerThread touchThread;
+    private Handler touchHandler;
+    /** Hora (uptime) del último DOWN de un dedo solo y del último envío programado (para no desordenar). */
+    private long tapDownAt;
+    private long lastTouchAt;
+
+    /** Puro: cuándo mandar un toque (uptime): a su hora, nunca antes del anterior y, un UP, no antes de MIN_TAP_MS. */
+    static long touchSendAt(long now, long lastAt, boolean up, long downAt) {
+        long at = Math.max(now, lastAt);
+        if (up && downAt > 0) at = Math.max(at, downAt + MIN_TAP_MS);
+        return at;
+    }
+
+    /** Manda el toque a AA a su hora (con la marca de tiempo del momento del envío). */
+    private void sendTouch(Input.TouchEvent.PointerAction pa, int index, java.util.List<Triple<Integer, Integer, Integer>> pts) {
+        long now = SystemClock.uptimeMillis();
+        boolean down = pa == Input.TouchEvent.PointerAction.TOUCH_ACTION_DOWN;
+        boolean up = pa == Input.TouchEvent.PointerAction.TOUCH_ACTION_UP;
+        long at = touchSendAt(now, lastTouchAt, up, down ? 0 : tapDownAt);
+        if (down) tapDownAt = at;
+        if (up) tapDownAt = 0;
+        lastTouchAt = at;
+        if (at <= now) {
+            comm().send(new TouchEvent(SystemClock.elapsedRealtime(), pa, index, pts));
+            return;
+        }
+        if (touchHandler == null) {
+            touchThread = new android.os.HandlerThread("aa-touch");
+            touchThread.start();
+            touchHandler = new Handler(touchThread.getLooper());
+        }
+        touchHandler.postAtTime(() -> comm().send(new TouchEvent(SystemClock.elapsedRealtime(), pa, index, pts)), at);
+    }
+
     /** Dedos ahora mismo en contacto con AA (id del coche -> x, y en AA), en orden de llegada. */
     private final java.util.LinkedHashMap<Integer, int[]> aaDown = new java.util.LinkedHashMap<>();
 
@@ -922,7 +963,7 @@ final class AaPassthroughSource implements VideoSource {
                     + p0.getSecond() + "," + p0.getThird() + " (" + w + "x" + h + ")");
         }
         PerfTrace.touch("aa_touch", changedAction, p0.getSecond(), p0.getThird());
-        comm().send(new TouchEvent(SystemClock.elapsedRealtime(), pa, index, pts));
+        sendTouch(pa, index, pts);
     }
 
     @Override
@@ -954,6 +995,11 @@ final class AaPassthroughSource implements VideoSource {
 
     @Override
     public void stop() {
+        if (touchThread != null) {
+            touchThread.quitSafely();
+            touchThread = null;
+            touchHandler = null;
+        }
         main.removeCallbacks(heldRelaunch);
         relaunchHeld = false;
         if (active == this) active = null;

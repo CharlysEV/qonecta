@@ -316,8 +316,8 @@ final class VideoPipeline {
                 if (prof.adaptiveBitrate()) {
                     abrBps = vp.bitrate;
                     abrInitial = vp.bitrate;
-                    abrMin = prof.minBitrate;
-                    abrMax = prof.maxBitrate;
+                    abrMin = prof.minBitrateFor(carFps);
+                    abrMax = prof.maxBitrateFor(carFps);
                 }
             }
             if (prof.followsCar) {

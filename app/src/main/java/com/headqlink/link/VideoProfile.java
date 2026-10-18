@@ -26,10 +26,12 @@ import java.util.Locale;
  * - Básico: reenvío directo del vídeo de AA con freno, a 30 fps y 720p (no recodifica).
  * - Muy bajo: "último frame" a 20 fps fijos, 720p y 2,5 Mbps (lo mínimo para el enlace y la batería).
  * - Máximo (cable): lo mejor que da el enlace, pensado para el cable USB. Los fps que pide el coche (60 por cable, 30
- *   por Wi-Fi) también para Android Auto, siempre a resolución completa (sin empezar a 720p), 12 Mbit/s de partida por
- *   cable (8 por Wi-Fi) y adaptable 5-16, H.264 High sin B-frames (más calidad por bit; Baseline si se elige en
- *   Avanzado), SPS que pide al coche mostrar cada fotograma al descodificarlo, y el codificador con baja latencia y
- *   relojes al máximo. Calienta más: la protección térmica sigue bajando fps y bitrate si hace falta.
+ *   por Wi-Fi) también para Android Auto, siempre a resolución completa (sin empezar a 720p), H.264 High sin B-frames
+ *   (más calidad por bit; Baseline si se elige en Avanzado), SPS que pide al coche mostrar cada fotograma al
+ *   descodificarlo, y el codificador con baja latencia y relojes al máximo. Por cable, 12 Mbit/s de partida y adaptable
+ *   5-16; por Wi-Fi, lo que pide el coche (5,08 en el C10) y adaptable 4-8: en el viaje del 18-10 por Wi-Fi Direct subía
+ *   a 16 y la radio daba 20-29 picos de más de 50 ms por minuto (5-14 con el perfil Coche), cada uno un salto del mapa.
+ *   Calienta más: la protección térmica sigue bajando fps y bitrate si hace falta.
  * El recomendado se elige según lo que declara el codificador por hardware del móvil y su RAM (recommend).
  */
 final class VideoProfile {
@@ -43,9 +45,12 @@ final class VideoProfile {
     static final String[] ALL = {CAR, BEST, MAX, HIGH, MEDIUM, BASIC, LOW};
     /** Máximo: bitrate de partida por cable (el coche pide 50 fps o más) y por Wi-Fi, y el margen adaptable. */
     static final int BEST_CABLE_BPS = 12_000_000;
-    static final int BEST_WIFI_BPS = 8_000_000;
+    static final int BEST_WIFI_BPS = 5_000_000;
     static final int BEST_MIN_BPS = 5_000_000;
     static final int BEST_MAX_BPS = 16_000_000;
+    /** Máximo por Wi-Fi: el margen adaptable (más estrecho: la radio con el coche no da para 16 Mbit/s sin saltos). */
+    static final int BEST_WIFI_MIN_BPS = 4_000_000;
+    static final int BEST_WIFI_MAX_BPS = 8_000_000;
     /** Coche: fps y bitrate si el coche no manda VIDEO_ARGS (como el C10). */
     static final int CAR_DEFAULT_FPS = 30;
     static final int CAR_DEFAULT_BPS = 5_000_000;
@@ -172,6 +177,21 @@ final class VideoProfile {
         }
         if (bitrate > 0) return bitrate;
         return videoW <= 1280 ? 5_000_000 : 8_000_000;
+    }
+
+    /** Bitrate mínimo del adaptable con los fps que pide el coche (Máximo por Wi-Fi: BEST_WIFI_MIN_BPS). */
+    int minBitrateFor(int carFps) {
+        return best() && byWifi(carFps) ? BEST_WIFI_MIN_BPS : minBitrate;
+    }
+
+    /** Bitrate máximo del adaptable con los fps que pide el coche (Máximo por Wi-Fi: BEST_WIFI_MAX_BPS). */
+    int maxBitrateFor(int carFps) {
+        return best() && byWifi(carFps) ? BEST_WIFI_MAX_BPS : maxBitrate;
+    }
+
+    /** Puro: ¿por Wi-Fi? El coche pide menos de 50 fps (el C10, 30 por Wi-Fi y 60 por cable); sin VIDEO_ARGS, cable. */
+    static boolean byWifi(int carFps) {
+        return carFps > 0 && carFps < 50;
     }
 
     /** Perfil por su id; uno desconocido (de una versión vieja o mal escrito) es Coche. */

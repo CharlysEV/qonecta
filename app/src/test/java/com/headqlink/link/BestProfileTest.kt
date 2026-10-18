@@ -20,7 +20,18 @@ class BestProfileTest {
         assertEquals(30, p.fpsFor(30))
         assertEquals(60, p.fpsFor(0))
         assertEquals(VideoProfile.BEST_CABLE_BPS, p.startBitrate(5_080_320, 60, 1920))
-        assertEquals(VideoProfile.BEST_WIFI_BPS, p.startBitrate(5_080_320, 30, 1920))
+        // Por Wi-Fi, lo que pide el coche (5,08 en el C10) y adaptable 4-8 Mbit/s; por cable, 5-16 (18-10: subía a 16
+        // por Wi-Fi Direct y el mapa iba a saltos).
+        assertEquals(5_080_320, p.startBitrate(5_080_320, 30, 1920))
+        assertEquals(VideoProfile.BEST_WIFI_BPS, p.startBitrate(0, 30, 1920))
+        assertEquals(4_000_000, p.minBitrateFor(30))
+        assertEquals(8_000_000, p.maxBitrateFor(30))
+        assertEquals(VideoProfile.BEST_MIN_BPS, p.minBitrateFor(60))
+        assertEquals(VideoProfile.BEST_MAX_BPS, p.maxBitrateFor(60))
+        assertEquals(VideoProfile.BEST_MAX_BPS, p.maxBitrateFor(0))
+        // Los demás perfiles, igual por Wi-Fi y por cable.
+        val high = VideoProfile.of(VideoProfile.HIGH)
+        assertEquals(high.maxBitrate, high.maxBitrateFor(30))
         assertTrue(p.adaptiveBitrate())
         assertEquals("high", p.h264())
         // Siempre a resolución completa (la protección térmica no la baja a 720p).

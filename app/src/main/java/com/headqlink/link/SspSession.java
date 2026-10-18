@@ -686,8 +686,8 @@ final class SspSession {
                 vp.bitrate = prof.startBitrate(carBitrate, carFps, videoW);
                 if (prof.adaptiveBitrate()) {
                     abrBps = vp.bitrate;
-                    abrMin = prof.minBitrate;
-                    abrMax = prof.maxBitrate;
+                    abrMin = prof.minBitrateFor(carFps);
+                    abrMax = prof.maxBitrateFor(carFps);
                 }
             }
             source.setLinkGate(new GlFrameRelay.Gate() {
