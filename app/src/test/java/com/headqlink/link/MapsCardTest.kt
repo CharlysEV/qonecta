@@ -82,6 +82,19 @@ class MapsCardTest {
         assertFalse(MapsCard.cardOpen(navigating))
     }
 
+    /** 18-10: un aeropuerto (sin código postal): el nombre partido tras un guion va seguido y la valoración no entra. */
+    @Test
+    fun aSplitNameWithoutPostcodeStopsAtTheRating() {
+        val airport = listOf(
+            l("Aeropuerto de Málaga -", 330, 160, 640, 205),
+            l("Costa del Sol", 330, 210, 520, 250),
+            l("4,1 *(34k+)·", 330, 255, 520, 295),
+            l("5 h y 21 min · 536 km", 400, 420, 700, 460),
+        )
+        assertEquals("Aeropuerto de Málaga - Costa del Sol", MapsCard.address(airport))
+        assertEquals("Aeropuerto de Málaga - Costa del Sol", MapsCard.placeLabel(airport))
+    }
+
     @Test
     fun aPlaceNameOnTopIsKeptAndTheMapLabelsAreNot() {
         val withName = listOf(
@@ -216,7 +229,8 @@ class MapsCardTest {
             l("Añadir parada", 615, 805, 820, 845),
         )
         assertEquals(
-            listOf("Calle Inventada, 2, 12345 Pueblo", "Punto de carga Iberdrola, Pueblo", "Punto de carga, Iberdrola, 2,4 ★(5)"),
+            // La última, sin la valoración (18-10: también entraba en el nombre que se enseña).
+            listOf("Calle Inventada, 2, 12345 Pueblo", "Punto de carga Iberdrola, Pueblo", "Punto de carga, Iberdrola"),
             MapsCard.addressQueries(charger))
     }
 

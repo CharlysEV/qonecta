@@ -36,10 +36,11 @@ final class MapsReader {
     static final long FIRST_WAIT_MS = 2500;
     static final long RETRY_MS = 2000;
     /**
-     * Unos 15 s en total: Maps puede tapar el recuadro con un aviso («Hora de apertura»: el sitio está cerrado) hasta que
-     * el conductor decide; no se pulsa nada por él, y si no aparece a tiempo, no se toca nada.
+     * Unos 45 s en total (mientras Maps siga navegando): Maps puede tapar el recuadro con un aviso («Hora de apertura»: el
+     * sitio está cerrado) hasta que el conductor decide o se acaba su cuenta atrás. Con 15 s no daba tiempo (18-10, de
+     * madrugada: 2 de 20 destinos se quedaban sin leer). No se pulsa nada por él; si no aparece a tiempo, no se toca nada.
      */
-    static final int RETRIES = 7;
+    static final int RETRIES = 21;
     /** Tras tocar el icono: miradas a la tarjeta (la primera a CARD_ANIM_MS, las demás cada CARD_LOOK_MS). */
     static final int CARD_LOOKS = 5;
     static final long CARD_LOOK_MS = 600;
@@ -108,10 +109,12 @@ final class MapsReader {
         // 1) El recuadro del tiempo y los km (cuando Maps ya está en la vista de navegación).
         AaPassthroughSource src = null;
         MapsCard.Line eta = null;
-        int[] icon = null;
+        // Dónde tocar, del más fiable al menos: {x, y, 0 por la forma del icono | 1 el cuarto de la fila}.
+        List<int[]> cands = new ArrayList<>();
+        int rowCount = 0;
         int seen = 0;
         int etaNoIcon = 0;
-        for (int i = 0; i < RETRIES && icon == null; i++) {
+        for (int i = 0; i < RETRIES && cands.isEmpty(); i++) {
             if (i > 0) SystemClock.sleep(RETRY_MS);
             if (!stillOk.getAsBoolean()) {
                 L.i("Maps: dejo de buscar la tarjeta (Maps ya no navega o Android Auto no está en pantalla)");
@@ -134,40 +137,69 @@ final class MapsReader {
                 // El icono de la ruta (abre la tarjeta con el destino), por la imagen: no tiene texto.
                 int[] px = new int[w * h];
                 shot.getPixels(px, 0, w, 0, 0, w, h);
-                icon = MapsCard.routeIcon(px, w, h, eta, MapsCard.kmLine(lines, eta));
+                MapsCard.Line km = MapsCard.kmLine(lines, eta);
+                // Por su forma (esté donde esté y haya los botones que haya) y, de reserva, el cuarto de la fila.
+                int[] byShape = MapsCard.routeIconByShape(px, w, h, eta, km);
+                int[] byPlace = MapsCard.routeIcon(px, w, h, eta, km);
+                if (byShape != null) cands.add(new int[]{byShape[0], byShape[1], 0});
+                if (byPlace != null && (byShape == null || Math.abs(byPlace[0] - byShape[0]) > Math.max(6, eta.h() / 2))) {
+                    cands.add(new int[]{byPlace[0], byPlace[1], 1});
+                }
+                rowCount = MapsCard.rowIcons(px, w, h, eta, km).size();
                 lastShot(ctx, shot, "maps-lector.png");
-                if (icon == null) {
+                if (cands.isEmpty()) {
                     etaNoIcon++;
                 }
             }
-            if (icon == null) hold = false;
+            if (cands.isEmpty()) hold = false;
             shot.recycle();
         }
-        if (icon == null || src == null) {
+        if (cands.isEmpty() || src == null) {
             L.i(String.format(java.util.Locale.US, "Maps: no veo el icono de la ruta tras %d intentos (en %d vi el recuadro sin el "
                     + "icono; última copia con %d líneas): no toco nada", RETRIES, etaNoIcon, seen));
             return new MapsCard.Read(new ArrayList<>(), null);
         }
-        // 2) Tocar el icono de la ruta y leer la tarjeta.
-        float[] p = src.aaToCar(icon[0], icon[1]);
-        L.i(String.format(java.util.Locale.US, "Maps: recuadro (%d,%d)-(%d,%d), icono de la ruta en (%d,%d) de la imagen -> coche (%.0f,%.0f)",
-                eta.left, eta.top, eta.right, eta.bottom, icon[0], icon[1], p[0], p[1]));
-        src.tapCar(p[0], p[1]);
+        // 2) Tocar el icono de la ruta y leer la tarjeta. Si se abre otra cosa (otro botón), un «atrás» y, de vuelta en la
+        // navegación, el siguiente sitio donde tocar.
         List<String> address = new ArrayList<>();
         String label = null;
         boolean opened = false;
-        for (int i = 0; i < CARD_LOOKS && address.isEmpty(); i++) {
-            SystemClock.sleep(i == 0 ? CARD_ANIM_MS : CARD_LOOK_MS);
-            Bitmap card = capture(src);
-            if (card == null) continue;
-            List<MapsCard.Line> cardLines = ocr(rec, card);
-            opened |= MapsCard.cardEta(cardLines) != null;
-            address = MapsCard.addressQueries(cardLines);
-            if (!address.isEmpty()) label = MapsCard.placeLabel(cardLines);
-            // Sin leer en la última mirada: la imagen, en el móvil (como maps-lector.png), para ver luego por qué (18-10: una
-            // tarjeta de solo «Zaragoza» no se reconoció). No va al log.
-            if (address.isEmpty() && i == CARD_LOOKS - 1) lastShot(ctx, card, "maps-tarjeta.png");
-            card.recycle();
+        for (int k = 0; k < cands.size() && !opened; k++) {
+            int[] icon = cands.get(k);
+            float[] p = src.aaToCar(icon[0], icon[1]);
+            L.i(String.format(java.util.Locale.US, "Maps: recuadro (%d,%d)-(%d,%d), icono de la ruta (%s) en (%d,%d) de la imagen -> coche "
+                            + "(%.0f,%.0f)", eta.left, eta.top, eta.right, eta.bottom, icon[2] == 0 ? "por su forma" : "el cuarto de la fila",
+                    icon[0], icon[1], p[0], p[1]));
+            src.tapCar(p[0], p[1]);
+            for (int i = 0; i < CARD_LOOKS && address.isEmpty(); i++) {
+                SystemClock.sleep(i == 0 ? CARD_ANIM_MS : CARD_LOOK_MS);
+                Bitmap card = capture(src);
+                if (card == null) continue;
+                List<MapsCard.Line> cardLines = ocr(rec, card);
+                opened |= MapsCard.cardEta(cardLines) != null;
+                address = MapsCard.addressQueries(cardLines);
+                if (!address.isEmpty()) label = MapsCard.placeLabel(cardLines);
+                // Sin leer en la última mirada: la imagen, en el móvil (como maps-lector.png), para ver luego por qué (18-10: una
+                // tarjeta de solo «Zaragoza» no se reconoció). No va al log.
+                if (address.isEmpty() && i == CARD_LOOKS - 1) lastShot(ctx, card, "maps-tarjeta.png");
+                card.recycle();
+            }
+            if (opened) break;
+            // No es la tarjeta del destino. ¿Sigue la vista de navegación tal cual (el recuadro en su sitio y los mismos
+            // botones)? Entonces el toque no abrió nada. Si no, se abrió otra cosa: un «atrás» (solo entonces: en la vista
+            // de navegación, «atrás» puede quitarla) y se comprueba que se vuelve a ella.
+            if (!navView(src, rec, eta, rowCount)) {
+                L.i("Maps: el toque abrió otra cosa: «atrás» y miro");
+                AaPassthroughSource.carKey(ctx, KeyEvent.KEYCODE_BACK);
+                SystemClock.sleep(CARD_ANIM_MS);
+                if (!navView(src, rec, eta, rowCount)) {
+                    SystemClock.sleep(CARD_LOOK_MS);
+                    if (!navView(src, rec, eta, rowCount)) {
+                        L.w("Maps: tras «atrás» no veo la navegación: no toco más");
+                        break;
+                    }
+                }
+            }
         }
         // 3) Cerrarla con un «atrás» (si se abrió) y comprobarlo. Nunca un segundo: si el primero ya la cerró y la copia
         // llegó tarde, el segundo quitaría la navegación de Maps (pasó en el coche).
@@ -186,6 +218,26 @@ final class MapsReader {
         L.i(String.format(java.util.Locale.US, "Maps: tarjeta %s, destino %s · %d ms", opened ? "abierta y cerrada" : "no abierta",
                 address.isEmpty() ? "no leído" : "leído (" + address.size() + " búsquedas)", SystemClock.elapsedRealtime() - t0));
         return new MapsCard.Read(address, label);
+    }
+
+    /** ¿Se ve la vista de navegación como antes de tocar? (el recuadro del tiempo y los km en su sitio y la misma fila de botones). */
+    private static boolean navView(AaPassthroughSource src, TextRecognizer rec, MapsCard.Line was, int rowCount) throws Exception {
+        Bitmap b = capture(src);
+        if (b == null) return false;
+        try {
+            List<MapsCard.Line> lines = ocr(rec, b);
+            int w = b.getWidth();
+            int h = b.getHeight();
+            MapsCard.Line eta = MapsCard.etaBox(lines, h);
+            if (eta == null || Math.abs(eta.top - was.top) > Math.max(8, was.h()) || Math.abs(eta.left - was.left) > Math.max(8, was.h())) {
+                return false;
+            }
+            int[] px = new int[w * h];
+            b.getPixels(px, 0, w, 0, 0, w, h);
+            return MapsCard.rowIcons(px, w, h, eta, MapsCard.kmLine(lines, eta)).size() == rowCount;
+        } finally {
+            b.recycle();
+        }
     }
 
     /**
@@ -236,6 +288,8 @@ final class MapsReader {
                             x = MapsCard.cancelIcon(px, w, h, eta, km);
                             if (x == null) icons = MapsCard.rowIcons(px, w, h, eta, km).size();
                         }
+                        // La última que no sirvió, en el móvil (no va al log), para ver luego por qué.
+                        if (x == null && look == X_LOOKS - 1) lastShot(ctx, shot, "maps-x.png");
                         shot.recycle();
                         // Para saber por qué: sin el recuadro del tiempo y los km (Maps enseñaba otra cosa) o sin los botones.
                         if (x == null) L.i("Maps: no veo la X de su navegación (copia " + (look + 1) + " de " + X_LOOKS + "; "

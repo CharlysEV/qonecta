@@ -128,15 +128,36 @@ final class MapsCard {
 
     /** Puro: los centros de los iconos de la fila de botones del recuadro, de izquierda a derecha (ver routeIcon). */
     static List<int[]> rowIcons(int[] argb, int w, int h, Line eta, Line km) {
+        RowScan r = scanRow(argb, w, h, eta, km);
         List<int[]> out = new ArrayList<>();
-        if (argb == null || eta == null || km == null || argb.length < w * h) return out;
+        if (r == null) return out;
+        for (int[] g : r.groups) out.add(new int[]{g[2], g[3]});
+        return rowRhythm(out, r.lh);
+    }
+
+    /** Lo visto en la fila de botones: cada grupo de columnas con icono {desde, hasta, centro x, centro y} y el fondo. */
+    private static final class RowScan {
+        final List<int[]> groups = new ArrayList<>();
+        int lh;
+        int y0;
+        int y1;
+        int bg;
+        int bgL;
+    }
+
+    private static RowScan scanRow(int[] argb, int w, int h, Line eta, Line km) {
+        RowScan out = new RowScan();
+        if (argb == null || eta == null || km == null || argb.length < w * h) return null;
         int lh = Math.max(8, Math.max(eta.h(), km.h()));
         // La franja de los botones, sin llegar al borde de abajo del recuadro (debajo ya es mapa, con sus calles).
         int y0 = Math.min(h - 1, km.bottom + lh * 4 / 10);
         int y1 = Math.min(h - 1, km.bottom + lh * 19 / 10);
         int x0 = Math.max(0, eta.left - lh);
         int x1 = Math.min(w - 1, eta.left + lh * 18);
-        if (y1 - y0 < lh || x1 - x0 < lh * 4) return out;
+        if (y1 - y0 < lh || x1 - x0 < lh * 4) return null;
+        out.lh = lh;
+        out.y0 = y0;
+        out.y1 = y1;
         // Fondo: el color (cuantizado) más repetido en la franja, en buena parte del recuadro. Solo al principio no: de
         // noche la X lleva su propio fondo gris, que se tomaba por el del recuadro; el recuadro «acababa» tras la X y solo
         // se veía ese botón (16-10: se pulsaba la X, o con los cuatro botones exigidos no se pulsaba nada).
@@ -156,6 +177,8 @@ final class MapsCard {
             }
         }
         int bgL = luma(bg);
+        out.bg = bg;
+        out.bgL = bgL;
         // Por columnas: cuántos píxeles de icono y cuántos del fondo.
         int bands = y1 - y0 + 1;
         int panelEnd = x1;
@@ -192,11 +215,11 @@ final class MapsCard {
                 last = x;
             } else if (start >= 0 && (x > panelEnd || x - last > lh / 3)) {
                 int[] c = iconCenter(argb, w, y0, y1, start, last, bg, bgL);
-                if (last - start >= lh / 3 && c != null) out.add(c);
+                if (last - start >= lh / 3 && c != null) out.groups.add(new int[]{start, last, c[0], c[1]});
                 start = -1;
             }
         }
-        return rowRhythm(out, lh);
+        return out;
     }
 
     /**
@@ -221,6 +244,272 @@ final class MapsCard {
 
     /** Botones de la fila del recuadro de navegación de Maps. */
     static final int ROW_MAX = 4;
+
+    // ------------------------------------------------------------------ el icono de la ruta por su forma
+
+    /** Lado de la rejilla en la que se compara la forma de un icono. */
+    static final int GRID = 16;
+
+    /** Un icono de la fila: dónde tocarlo y su forma (GRID × GRID, cuánto de cada celda es icono, de 0 a 1). */
+    static final class Icon {
+        final int cx;
+        final int cy;
+        final float[] shape;
+
+        Icon(int cx, int cy, float[] shape) {
+            this.cx = cx;
+            this.cy = cy;
+            this.shape = shape;
+        }
+    }
+
+    /**
+     * Puro: los iconos de la fila de botones con su forma, de izquierda a derecha: todos los del recuadro, sin el tope de
+     * ROW_MAX ni el ritmo (Maps ya ha sacado un quinto, «…», y puede mover o cambiar los demás).
+     */
+    static List<Icon> rowShapes(int[] argb, int w, int h, Line eta, Line km) {
+        List<Icon> out = new ArrayList<>();
+        RowScan r = scanRow(argb, w, h, eta, km);
+        if (r == null) return out;
+        for (int[] g : r.groups) {
+            float[] sh = shapeOf(argb, w, h, g[0], g[1], g[3], r.lh, r.bg, r.bgL);
+            if (sh != null) out.add(new Icon(g[2], g[3], sh));
+        }
+        return out;
+    }
+
+    /**
+     * Puro: la forma de un icono (columnas xs–xe, centro vertical cy): sus píxeles (los que contrastan con el fondo del
+     * recuadro) recortados a su caja, en un cuadrado centrado y llevados a GRID × GRID. Igual de día (oscuro sobre claro)
+     * que de noche, y a cualquier tamaño (pantalla del coche, partida, otra resolución). null si no hay icono.
+     */
+    static float[] shapeOf(int[] argb, int w, int h, int xs, int xe, int cy, int lh, int bg, int bgL) {
+        xs = Math.max(0, xs);
+        xe = Math.min(w - 1, xe);
+        int yLo = Math.max(0, cy - lh * 6 / 5);
+        int yHi = Math.min(h - 1, cy + lh * 6 / 5);
+        if (xe < xs || cy < yLo || cy > yHi) return null;
+        int[] rows = new int[yHi - yLo + 1];
+        for (int y = yLo; y <= yHi; y++) {
+            for (int x = xs; x <= xe; x++) if (iconPixel(argb[y * w + x], bg, bgL)) rows[y - yLo]++;
+        }
+        // Las filas del icono: desde el centro hacia arriba y hacia abajo, con huecos de hasta lh/4 (el punto del icono de
+        // la ruta va suelto).
+        int maxGap = Math.max(1, lh / 4);
+        int c = cy - yLo;
+        int top = -1;
+        int bot = -1;
+        for (int d = 0; d <= maxGap && top < 0; d++) {
+            if (c - d >= 0 && rows[c - d] > 0) top = bot = c - d;
+            else if (c + d < rows.length && rows[c + d] > 0) top = bot = c + d;
+        }
+        if (top < 0) return null;
+        for (int y = top - 1, gap = 0; y >= 0 && gap <= maxGap; y--) {
+            if (rows[y] > 0) {
+                top = y;
+                gap = 0;
+            } else {
+                gap++;
+            }
+        }
+        for (int y = bot + 1, gap = 0; y < rows.length && gap <= maxGap; y++) {
+            if (rows[y] > 0) {
+                bot = y;
+                gap = 0;
+            } else {
+                gap++;
+            }
+        }
+        top += yLo;
+        bot += yLo;
+        int left = Integer.MAX_VALUE;
+        int right = -1;
+        int n = 0;
+        for (int y = top; y <= bot; y++) {
+            for (int x = xs; x <= xe; x++) {
+                if (iconPixel(argb[y * w + x], bg, bgL)) {
+                    left = Math.min(left, x);
+                    right = Math.max(right, x);
+                    n++;
+                }
+            }
+        }
+        if (n < 4 || right < left) return null;
+        int bw = right - left + 1;
+        int bh = bot - top + 1;
+        int side = Math.max(bw, bh);
+        int sx = left - (side - bw) / 2;
+        int sy = top - (side - bh) / 2;
+        float[] out = new float[GRID * GRID];
+        for (int gy = 0; gy < GRID; gy++) {
+            int py0 = sy + gy * side / GRID;
+            int py1 = Math.max(py0 + 1, sy + (gy + 1) * side / GRID);
+            for (int gx = 0; gx < GRID; gx++) {
+                int px0 = sx + gx * side / GRID;
+                int px1 = Math.max(px0 + 1, sx + (gx + 1) * side / GRID);
+                int on = 0;
+                int all = 0;
+                for (int y = py0; y < py1; y++) {
+                    for (int x = px0; x < px1; x++) {
+                        all++;
+                        if (y >= top && y <= bot && x >= left && x <= right && iconPixel(argb[y * w + x], bg, bgL)) on++;
+                    }
+                }
+                out[gy * GRID + gx] = all == 0 ? 0 : on / (float) all;
+            }
+        }
+        return out;
+    }
+
+    private static boolean iconPixel(int c, int bg, int bgL) {
+        return !near(c, bg, 28) && Math.abs(luma(c) - bgL) > 90;
+    }
+
+    /** Puro: cuánto se parecen dos formas (0 a 1): coseno de las dos, suavizadas una celda (tolera que se muevan un poco). */
+    static double similarity(float[] a, float[] b) {
+        float[] sa = blur(a);
+        float[] sb = blur(b);
+        double ab = 0;
+        double aa = 0;
+        double bb = 0;
+        for (int i = 0; i < sa.length; i++) {
+            ab += sa[i] * sb[i];
+            aa += sa[i] * sa[i];
+            bb += sb[i] * sb[i];
+        }
+        return aa == 0 || bb == 0 ? 0 : ab / Math.sqrt(aa * bb);
+    }
+
+    private static float[] blur(float[] a) {
+        float[] o = new float[a.length];
+        for (int y = 0; y < GRID; y++) {
+            for (int x = 0; x < GRID; x++) {
+                float s = 0;
+                int k = 0;
+                for (int dy = -1; dy <= 1; dy++) {
+                    for (int dx = -1; dx <= 1; dx++) {
+                        int yy = y + dy;
+                        int xx = x + dx;
+                        if (yy < 0 || xx < 0 || yy >= GRID || xx >= GRID) continue;
+                        s += a[yy * GRID + xx] * (dx == 0 && dy == 0 ? 2 : 1);
+                        k += dx == 0 && dy == 0 ? 2 : 1;
+                    }
+                }
+                o[y * GRID + x] = s / k;
+            }
+        }
+        return o;
+    }
+
+    /**
+     * Las formas de los botones del recuadro de navegación, sacadas de capturas de Maps en Android Auto (18-10): de noche
+     * en el coche virtual, la de un C10 con pantalla partida y cinco botones (con «…») y la de un vídeo de esa pantalla
+     * (borrosa y pequeña). De día salen iguales (se mira el contraste, no el color). Solo la forma (16 × 16), sin nada del
+     * mapa.
+     */
+    private static final String[][] SHAPES = {
+            {"route", "0055000000000000/05ff703500000000/0affa3fffa000000/05ff7055af700000/003300000fa00000/000000005f800000/"
+                    + "003afffffd200000/03ffa75552035500/0dd2000000afffd2/8f50000005fffff8/df0000000afc07ff/8f20000008fc27ff/"
+                    + "5f70000003fffff8/0af7000000affff2/00affcaaa22dff50/0005aaaaa5028300"},
+            {"route", "008f000000000000/08ff804884000000/08ff80bfff400000/00b800000bb00000/000000000bf00000/00048888ff800000/"
+                    + "008ffffff8000000/08fb40000008ff80/0ff00000008ffff8/8f80000000bfffff/ff80000000ffb8ff/ff80000000fffbff/"
+                    + "0fb0000000bfffff/08fb4000004ffff4/008ffffff804ff40/0000888880000400"},
+            {"route", "00f0000000000000/00f0000000000000/ffff00ff00000000/ffff00ffff000000/00f00000ff000000/00000000ff000000/"
+                    + "000fffffff000000/ffff00000000f000/fff0000000fffff0/fff0000000fffff0/ff000000fffffff0/ff000000ffff0ff0/"
+                    + "ff00000000fffff0/fff0000000fffff0/00ffffff000fff00/0000ffff00000000"},
+            {"x", "4b000000000004b0/ffb0000000004ff8/bffb00000008ffb0/0bffb000004ffb00/00bffb0008fff400/000bffb4bfff0000/"
+                    + "0000bffffff00000/00000bffff400000/000008ffff000000/00004fffffb00000/0004fff4bffb0000/008fff400bffb000/"
+                    + "04fff40000bffb00/4fff4000000bffb0/fff400000000bff8/4f40000000000bb0"},
+            {"fork", "000b80000003f300/00aff500002dfd20/0affff8003dfffd2/8fdffff50ffdfffa/0a0fa580085af582/00000000000df000/"
+                    + "0000d500003fb000/0000dd0000af5000/000058032df80000/000000bfdfd00000/0000008ffd200000/0000000df0000000/"
+                    + "0000000af0000000/0000000af0000000/0000000af0000000/00000008d0000000"},
+            {"plus", "000005ffff500000/0003cfdaadfd3000/005fc300003cf500/05f7000000007f50/0da0000750000ad0/8f20000a800002f5/"
+                    + "fa00000a800000aa/fa00aaaffaaa00aa/fa00ffffffff00aa/fa00000cd00000aa/ad00000a800000d7/3f50000a800005f2/"
+                    + "08d2000330002d80/00ad50000005da00/000afc7557cfa000/00003adffda30000"},
+            {"dots", "0000000000000000/0000000000000000/0000000000000000/0000000000000000/0000000000000000/0000000000000000/"
+                    + "0880000884000484/ffff008fff000fff/ffff008fff000fff/8fff004ffb000ffb/0000000000000000/0000000000000000/"
+                    + "0000000000000000/0000000000000000/0000000000000000/0000000000000000"},
+    };
+    private static float[][] shapes;
+
+    /** Lo que se exige para tomar un icono por el de la ruta: parecido mínimo y ventaja sobre el botón más parecido que no lo es. */
+    static final double ROUTE_MIN = 0.82;
+    static final double ROUTE_MARGIN = 0.12;
+
+    private static synchronized float[][] knownShapes() {
+        if (shapes == null) {
+            float[][] s = new float[SHAPES.length][];
+            for (int i = 0; i < SHAPES.length; i++) s[i] = shapeFrom(SHAPES[i][1]);
+            shapes = s;
+        }
+        return shapes;
+    }
+
+    /** Puro: {parecido con la ruta, parecido con el botón más parecido que no es la ruta}. */
+    static double[] routeScore(float[] shape) {
+        float[][] k = knownShapes();
+        double route = 0;
+        double other = 0;
+        for (int i = 0; i < k.length; i++) {
+            double s = similarity(shape, k[i]);
+            if ("route".equals(SHAPES[i][0])) route = Math.max(route, s);
+            else other = Math.max(other, s);
+        }
+        return new double[]{route, other};
+    }
+
+    /** Puro: ¿es el icono de la ruta? (por su forma: ROUTE_MIN y ROUTE_MARGIN). */
+    static boolean isRoute(float[] shape) {
+        double[] s = routeScore(shape);
+        return s[0] >= ROUTE_MIN && s[0] - s[1] >= ROUTE_MARGIN;
+    }
+
+    /**
+     * Puro: dónde tocar el icono de la ruta, por su forma (el camino con el globo del destino), esté donde esté en la fila
+     * y haya los botones que haya; si ninguno se parece lo bastante, null.
+     */
+    static int[] routeIconByShape(int[] argb, int w, int h, Line eta, Line km) {
+        Icon best = null;
+        double bestScore = 0;
+        for (Icon ic : rowShapes(argb, w, h, eta, km)) {
+            double[] s = routeScore(ic.shape);
+            if (s[0] >= ROUTE_MIN && s[0] - s[1] >= ROUTE_MARGIN && s[0] > bestScore) {
+                best = ic;
+                bestScore = s[0];
+            }
+        }
+        return best == null ? null : new int[]{best.cx, best.cy};
+    }
+
+    /**
+     * Puro: dónde tocar para abrir la tarjeta del destino, de la más fiable a la menos: por la forma del icono y, si no se
+     * reconoce, el cuarto de la fila (si es otro sitio). Vacía si no hay nada que tocar.
+     */
+    static List<int[]> routeCandidates(int[] argb, int w, int h, Line eta, Line km) {
+        List<int[]> out = new ArrayList<>();
+        int[] byShape = routeIconByShape(argb, w, h, eta, km);
+        if (byShape != null) out.add(byShape);
+        int[] byPlace = routeIcon(argb, w, h, eta, km);
+        if (byPlace != null && (byShape == null || Math.abs(byPlace[0] - byShape[0]) > Math.max(6, eta.h() / 2))) out.add(byPlace);
+        return out;
+    }
+
+    /** Puro: una forma en texto (GRID filas de GRID cifras hexadecimales, 0 vacío y f lleno), para guardarla. */
+    static String shapeText(float[] shape) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < shape.length; i++) {
+            b.append(Character.forDigit(Math.round(shape[i] * 15), 16));
+            if (i % GRID == GRID - 1 && i < shape.length - 1) b.append('/');
+        }
+        return b.toString();
+    }
+
+    static float[] shapeFrom(String text) {
+        String t = text.replace("/", "");
+        float[] out = new float[GRID * GRID];
+        for (int i = 0; i < out.length && i < t.length(); i++) out[i] = Character.digit(t.charAt(i), 16) / 15f;
+        return out;
+    }
 
     /** El centro de un icono: en horizontal, el de sus columnas; en vertical, la media de sus filas con píxeles de icono. */
     private static int[] iconCenter(int[] argb, int w, int y0, int y1, int start, int end, int bg, int bgL) {
@@ -282,13 +571,20 @@ final class MapsCard {
         Collections.sort(above, (a, b) -> Integer.compare(a.top, b.top));
         List<String> parts = new ArrayList<>();
         for (Line l : above) {
-            if (NOT_ADDRESS.matcher(l.text).matches()) break;
+            // Hasta lo de aparcar o la valoración, el horario o el precio (18-10: «Aeropuerto de Málaga…, 4,1 *(34k+)»).
+            if (NOT_ADDRESS.matcher(l.text).matches() || NOT_PLACE.matcher(l.text).find()) break;
             if (l.text.length() < 2) continue;
             parts.add(l.text);
             if (parts.size() == 3) break;
         }
         if (parts.isEmpty()) return null;
-        String a = String.join(", ", parts);
+        // Un nombre partido en dos líneas tras un guion («Aeropuerto de Málaga -» / «Costa del Sol») va seguido.
+        StringBuilder b = new StringBuilder();
+        for (String t : parts) {
+            if (b.length() > 0) b.append(b.toString().matches("(?s).*[-–]\\s*$") ? " " : ", ");
+            b.append(t.trim());
+        }
+        String a = b.toString();
         // Un destino de verdad tiene letras (no solo «P» o un número suelto).
         return a.matches("(?s).*\\p{L}{3}.*") ? a : null;
     }
