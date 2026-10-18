@@ -59,7 +59,7 @@ final class MapsCard {
      */
     static final Pattern TIME = Pattern.compile("(?i)\\d\\s*min|\\d\\s*h(?![\\p{L}&&[^ye]])");
     /** Una distancia: «36 km», «1,7 km», «850 m», «12 mi». */
-    static final Pattern DIST = Pattern.compile("(?i)(^|[^\\p{L}\\d])\\d{1,4}([.,]\\d+)?\\s*(km|mi)\\b");
+    static final Pattern DIST = Pattern.compile("(?i)(^|[^\\p{L}\\d])\\d{1,4}([.,]\\d+)?\\s*(km|mi|m)\\b");
     /** Lo fácil que es aparcar y otras líneas de la tarjeta que no son el destino (en los idiomas de la app). */
     private static final Pattern NOT_ADDRESS = Pattern.compile("(?i)^(?:\\W{0,3}P\\W{0,3}\\s+)?(f[aá]cil|moderado|dif[ií]cil|easy|medium|moderate|"
             + "hard|difficult|facile|moderato|difficile|mod[eé]r[eé]|einfach|mittel|schwer|makkelijk|gemiddeld|moeilijk|"
@@ -90,6 +90,20 @@ final class MapsCard {
             if (dist && (best == null || l.cy() > best.cy())) best = l;
         }
         return best;
+    }
+
+    /** Una distancia con su unidad: «80 km», «1,7 km», «850 m», «12 mi» (no «51 min»). */
+    private static final Pattern DIST_ANY = Pattern.compile("(?i)(?<![\\p{L}\\d])(\\d{1,4}(?:[.,]\\d+)?)\\s*(km|mi|m)\\b");
+
+    /** Puro: los km del recuadro de navegación («51 min · 80 km · 1:46» o en dos líneas), o NaN. */
+    static double boxKm(List<Line> lines, Line eta) {
+        Line km = kmLine(lines, eta);
+        if (km == null) return Double.NaN;
+        java.util.regex.Matcher m = DIST_ANY.matcher(km.text);
+        if (!m.find()) return Double.NaN;
+        double v = Double.parseDouble(m.group(1).replace(',', '.'));
+        String u = m.group(2).toLowerCase(java.util.Locale.ROOT);
+        return u.equals("km") ? v : u.equals("mi") ? v * 1.609344 : v / 1000;
     }
 
     /** Puro: la línea de los km del recuadro (la misma que eta si van juntos, o la de justo debajo). */

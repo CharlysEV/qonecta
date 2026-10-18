@@ -77,7 +77,7 @@ final class NavApps {
                 dest[0], dest[1]) + (o == null ? "&dir_action=navigate" : String.format(Locale.US, "&origin=%.6f,%.6f", o.lat, o.lon))
                 + (wp.length() > 0 ? "&waypoints=" + Uri.encode(wp.toString()) : "");
         if (start(ctx, url, MAPS, "Google Maps")) {
-            RoutePlanner.mapsNavigatesTo(dest[0], dest[1], route.size() - 1);
+            RoutePlanner.mapsNavigatesTo(dest[0], dest[1], route.subList(0, route.size() - 1));
             L.i("ruta: Google Maps con " + (route.size() - 1) + " paradas por el camino");
         }
     }

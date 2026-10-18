@@ -594,7 +594,10 @@ final class RoutePlanner {
         boolean replan = false;
         if (p != null && dest.equals(p.destination)) {
             // La misma ruta: se rehace solo si nos hemos salido del trazado o Google ha cambiado la suya (un desvío, un atasco).
-            if (origin == null) updateMapsRatio(p, dest);
+            if (origin == null) {
+                updateMapsRatio(p, dest);
+                maybeReadMapsBox(p);
+            }
             String why = origin == null ? replanReason(p, s, nav, dest) : null;
             long t = SystemClock.elapsedRealtime();
             if (why == null || t - lastReplanMs < REPLAN_GAP_MS) return;
@@ -947,12 +950,94 @@ final class RoutePlanner {
 
     /** NavApps: Google Maps navega a lat, lon con stops paradas intermedias. */
     static void mapsNavigatesTo(double lat, double lon, int stops) {
+        mapsNavigatesTo(lat, lon, new ArrayList<>());
+        mapsStops = Math.max(0, stops);
+    }
+
+    /** NavApps: Google Maps navega a lat, lon pasando por waypoints ({lat, lon, …}, en orden). */
+    static void mapsNavigatesTo(double lat, double lon, List<double[]> waypoints) {
         RoutePlanner r = get();
         Plan p = r == null ? null : r.plan();
         boolean dest = p != null && distanceKm(lat, lon, p.destLat, p.destLon) < 0.5;
         mapsEnd = dest ? null : new double[]{lat, lon};
-        mapsStops = Math.max(0, stops);
+        mapsStops = waypoints.size();
+        mapsWaypoints = new ArrayList<>(waypoints);
+        boxKm = Double.NaN;
         mapsSentAtMs = SystemClock.elapsedRealtime();
+    }
+
+    /** Las paradas que se le mandaron a Maps ({lat, lon, …}), en orden. */
+    private static volatile List<double[]> mapsWaypoints = new ArrayList<>();
+    /**
+     * Lo último que dijo el recuadro de Maps (km hasta su próxima parada), cuándo (reloj de arranque), en qué km de la
+     * ruta iba el coche entonces y con qué plan.
+     */
+    private static volatile double boxKm = Double.NaN;
+    private static volatile long boxAtMs;
+    private static volatile double boxAtRouteKm;
+    private static volatile Plan boxPlan;
+    private static volatile long boxAskedMs;
+    /** Cada cuánto se lee el recuadro y hasta cuándo vale lo leído. */
+    static final long BOX_EVERY_MS = 120_000;
+    static final long BOX_FRESH_MS = 6 * 60_000;
+    private double boxLoggedRatio = Double.NaN;
+
+    /**
+     * Con Maps guiando con las paradas que se le mandaron, lee su recuadro cada BOX_EVERY_MS (sin tocar nada): sus km hasta
+     * la próxima parada son los de verdad (18-10: la estimación con la proporción de toda la ruta fallaba hasta 8 km).
+     */
+    private void maybeReadMapsBox(Plan p) {
+        long t = SystemClock.elapsedRealtime();
+        if (mapsWaypoints.isEmpty() || t - boxAskedMs < BOX_EVERY_MS || !MapsNavListener.routing()) return;
+        AaPassthroughSource src = AaPassthroughSource.current();
+        if (src == null || !src.aaOnScreen()) return;
+        boxAskedMs = t;
+        double atKm = p.km[Math.min(Math.max(0, p.progress), p.n - 1)];
+        MapsReader.readBox(ctx, km -> {
+            if (Double.isNaN(km)) return;
+            boxKm = km;
+            boxAtMs = SystemClock.elapsedRealtime();
+            boxAtRouteKm = atKm;
+            boxPlan = p;
+        });
+    }
+
+    /**
+     * Puro: {hasta qué km de la ruta, km de Maps por km de la ruta} para el tramo hasta la próxima parada de Maps, o null:
+     * la primera de waypointKm por delante de fromKm (a más de 300 m), con los km del recuadro menos lo hecho desde que se
+     * leyó. Solo si el tramo mide 2 km o más y la proporción es creíble (0,85–1,3).
+     */
+    static double[] nearSegment(double[] waypointKm, double fromKm, double boxKm, double boxAtRouteKm) {
+        if (Double.isNaN(boxKm)) return null;
+        double until = Double.NaN;
+        for (double k : waypointKm) {
+            if (!Double.isNaN(k) && k > fromKm + 0.3) {
+                until = k;
+                break;
+            }
+        }
+        if (Double.isNaN(until)) return null;
+        double ours = until - fromKm;
+        double maps = boxKm - Math.max(0, fromKm - boxAtRouteKm);
+        if (ours < 2 || maps <= 0) return null;
+        double r = maps / ours;
+        return r >= 0.85 && r <= 1.3 ? new double[]{until, r} : null;
+    }
+
+    /** El tramo hasta la próxima parada de Maps con lo que dijo su recuadro (nearSegment), si es de este plan y reciente. */
+    private double[] nearSegment(Plan p, double fromKm) {
+        if (boxPlan != p || SystemClock.elapsedRealtime() - boxAtMs > BOX_FRESH_MS) return null;
+        List<double[]> wps = mapsWaypoints;
+        double[] wk = new double[wps.size()];
+        for (int i = 0; i < wk.length; i++) wk[i] = kmNear(p, wps.get(i)[0], wps.get(i)[1], 3.0);
+        double[] near = nearSegment(wk, fromKm, boxKm, boxAtRouteKm);
+        double r = near == null ? Double.NaN : near[1];
+        if (near != null && (Double.isNaN(boxLoggedRatio) || Math.abs(r - boxLoggedRatio) >= 0.02)) {
+            boxLoggedRatio = r;
+            L.i(String.format(Locale.US, "Maps: su recuadro dice %.1f km a la próxima parada y el plan %.1f: ese tramo, ×%.2f",
+                    boxKm - Math.max(0, fromKm - boxAtRouteKm), near[0] - fromKm, r));
+        }
+        return near;
     }
 
     /** ¿Lleva paradas la navegación de Maps que se le mandó? (su hora de llegada es la de la próxima). */
@@ -1514,8 +1599,10 @@ final class RoutePlanner {
             double f = demo ? DemoMode.planTrend() : trend.factor();
             double mr = pl.mapsRatio;
             int cap = speedCap(pl);
+            double from0 = pl.km[prog];
+            double[] near = testOrigin() == null ? nearSegment(pl, from0) : null;
             String key = settings + "/" + prog + "/" + Math.round(soc * 2) + "/" + Math.round(f * 100) + "/" + Math.round(mr * 100) + "/" + charging
-                    + "/v" + cap;
+                    + "/v" + cap + (near == null ? "" : "/n" + Math.round(near[1] * 100) + "@" + Math.round(near[0]));
             if (key.equals(chargeKey)) return charge;
             chargeKey = key;
             ChargePlanner.Settings s = planSettings(c, capKwh);
@@ -1532,9 +1619,16 @@ final class RoutePlanner {
             // Lo que falta, con la tendencia del viaje y los km de Google Maps (si guía y cuenta otros).
             // Con la velocidad elegida por el conductor («A 100 km/h, sin parar»), el gasto de esa velocidad en los tramos más rápidos.
             double[] base = capped(pl, cap, from);
-            ChargePlanner.Result r = ChargePlanner.plan(pl.km, ChargePlanner.scaled(pl.km, base, from, f * mr), from, soc, list, s, keep);
+            // Hasta la próxima parada de Maps, con los km de su recuadro; lo demás, con la proporción de toda la ruta.
+            double[] kwh = near == null ? ChargePlanner.scaled(pl.km, base, from, f * mr)
+                    : ChargePlanner.scaledTwo(pl.km, base, from, f * near[1], near[0], f * mr);
+            ChargePlanner.Result r = ChargePlanner.plan(pl.km, kwh, from, soc, list, s, keep);
             r.trend = f;
             r.mapsRatio = mr;
+            if (near != null) {
+                r.nearUntilKm = near[0];
+                r.nearRatio = near[1];
+            }
             r.speedCap = base == pl.kwhCum ? 0 : cap;
             // Si yendo más despacio sale mejor (SpeedAdvice). Lo que cuestan las paradas lo calcula RouteTab al enseñarlo,
             // con el precio de ese momento.

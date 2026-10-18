@@ -241,6 +241,37 @@ final class MapsReader {
     }
 
     /**
+     * Los km que dice el recuadro de navegación de Maps (con paradas, hasta la próxima), sin tocar nada: una copia de la
+     * imagen y el lector de texto. done recibe los km o NaN (no se ve AA o el recuadro). Uno a la vez con lo demás.
+     */
+    static void readBox(Context ctx, java.util.function.DoubleConsumer done) {
+        if (busy) return;
+        busy = true;
+        new Thread(() -> {
+            double km = Double.NaN;
+            TextRecognizer rec = null;
+            try {
+                AaPassthroughSource src = AaPassthroughSource.current();
+                if (src != null && src.aaOnScreen()) {
+                    rec = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+                    Bitmap shot = capture(src);
+                    if (shot != null) {
+                        List<MapsCard.Line> lines = ocr(rec, shot);
+                        km = MapsCard.boxKm(lines, MapsCard.etaBox(lines, shot.getHeight()));
+                        shot.recycle();
+                    }
+                }
+            } catch (Exception | LinkageError e) {
+                L.w("Maps: lectura del recuadro: " + e.getClass().getSimpleName());
+            } finally {
+                if (rec != null) rec.close();
+                busy = false;
+            }
+            done.accept(km);
+        }, "maps-box").start();
+    }
+
+    /**
      * Quita la navegación que tenga Google Maps tocando la X de su recuadro (para mandarle después la del plan, con las
      * paradas de carga). Fuera del hilo principal; then se llama siempre al acabar (se haya podido o no).
      */

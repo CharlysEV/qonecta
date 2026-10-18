@@ -110,6 +110,12 @@ final class ChargePlanner {
         SpeedAdvice speed;
         /** Velocidad máxima con la que se ha hecho (km/h; el conductor eligió ir más despacio), o 0. */
         int speedCap;
+        /**
+         * Hasta la próxima parada de Google Maps (nearUntilKm, km de la ruta), los km de Maps por cada km de la ruta según
+         * su recuadro (RoutePlanner.nearSegment), más exacto que mapsRatio; NaN sin él.
+         */
+        double nearRatio = Double.NaN;
+        double nearUntilKm = Double.NaN;
 
         Result(Outcome outcome, List<Stop> stops, double arrivalPct, double[] km, double[] kwhCum, double fromKm, double socNow,
                double capacityKwh) {
@@ -133,12 +139,21 @@ final class ChargePlanner {
 
         /** Km hasta la parada (desde donde se calculó) como los cuenta Google Maps. */
         double kmTo(Stop st) {
-            return Math.max(0, st.km - fromKm) * mapsRatio;
+            return Math.max(0, kmMark(st.km) - fromKm);
         }
 
-        /** El km del viaje en el que queda x (km de la ruta), con lo que falta contado como Google Maps. */
+        /**
+         * El km del viaje en el que queda x (km de la ruta), con lo que falta contado como Google Maps: hasta su próxima
+         * parada con lo que dice su recuadro (nearRatio) y lo demás con la proporción de toda la ruta (mapsRatio).
+         */
         double kmMark(double x) {
-            return x <= fromKm ? x : fromKm + (x - fromKm) * mapsRatio;
+            if (x <= fromKm) return x;
+            if (!Double.isNaN(nearRatio) && nearUntilKm > fromKm) {
+                double a = Math.min(x, nearUntilKm) - fromKm;
+                double b = Math.max(0, x - nearUntilKm);
+                return fromKm + a * nearRatio + b * mapsRatio;
+            }
+            return fromKm + (x - fromKm) * mapsRatio;
         }
 
         /** % de batería en el km x de la ruta según el plan (con las cargas). */
@@ -322,6 +337,23 @@ final class ChargePlanner {
     }
 
     /** La energía acumulada con lo que falta desde fromKm escalado por la tendencia (lo ya hecho no cambia). */
+    /**
+     * Como scaled, con un factor hasta untilKm (fNear: hasta la próxima parada de Google Maps, con los km de su recuadro) y
+     * otro desde allí (fFar). Sin fNear, scaled con fFar.
+     */
+    static double[] scaledTwo(double[] km, double[] kwhCum, double fromKm, double fNear, double untilKm, double fFar) {
+        if (Double.isNaN(fNear) || !(untilKm > fromKm)) return scaled(km, kwhCum, fromKm, fFar);
+        double base = kwhAt(km, kwhCum, fromKm);
+        double atUntil = kwhAt(km, kwhCum, untilKm);
+        double[] out = new double[kwhCum.length];
+        for (int i = 0; i < out.length; i++) {
+            if (km[i] <= fromKm) out[i] = kwhCum[i];
+            else if (km[i] <= untilKm) out[i] = base + (kwhCum[i] - base) * fNear;
+            else out[i] = base + (atUntil - base) * fNear + (kwhCum[i] - atUntil) * fFar;
+        }
+        return out;
+    }
+
     static double[] scaled(double[] km, double[] kwhCum, double fromKm, double trend) {
         if (Math.abs(trend - 1) < 1e-9) return kwhCum;
         double base = kwhAt(km, kwhCum, fromKm);
