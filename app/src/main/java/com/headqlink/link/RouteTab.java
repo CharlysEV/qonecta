@@ -2577,6 +2577,12 @@ final class RouteTab implements CarScreen {
         return reev() && !Double.isNaN(a) ? Math.max(Math.min(soc, REEV_FLOOR_PCT), a) : a;
     }
 
+    /** «23,7 kWh»: el % por la capacidad de la batería (la de la nube con dato real, como Coche › Estado); null sin ella. */
+    private String kwhText(double pct) {
+        if (Double.isNaN(pct) || !(capKwh > 0)) return null;
+        return String.format(Locale.getDefault(), "%.1f kWh", Math.max(0, pct) / 100 * capKwh);
+    }
+
     /** REEV: por debajo de este % arranca el generador y la batería ya no baja (lo pone la gasolina). */
     static final double REEV_FLOOR_PCT = 20;
 
@@ -3109,11 +3115,15 @@ final class RouteTab implements CarScreen {
         tmp.set(cx - rad, cy - rad, cx + rad, cy + rad);
         int col = Double.isNaN(arr) ? CarKit.MUTED : levelColor(arr);
         CarKit.ring(cv, tmp, 135, 270, Double.isNaN(arr) ? 0 : (float) Math.max(0, arr) / 100f, 18, CarKit.SURFACE_TOP, col, p);
+        // Los kWh con los que se llega (19-10, idea de una usuaria): dentro del aro, debajo del %; con la tarjeta estrecha
+        // no caben, van en la línea del estado.
+        String arrKwh = arr >= 0 ? kwhText(arr) : null;
         if (Double.isNaN(arr)) {
             CarKit.text(cv, "—", cx, cy + 16, 50, CarKit.MUTED, CarKit.REGULAR, p, Paint.Align.CENTER);
         } else {
             CarKit.number(cv, String.format(Locale.getDefault(), "%.0f", Math.max(0, arr)), "%", cx, cy + (small ? 14 : 18),
                     small ? 44 : 56, col, CarKit.REGULAR, p, Paint.Align.CENTER);
+            if (!small && arrKwh != null) CarKit.text(cv, arrKwh, cx, cy + 50, 20, CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.CENTER);
         }
         CarKit.text(cv, Str.get(R.string.hql_route_on_arrival), cx, cy + rad - 6, small ? 17 : 19, CarKit.FAINT, CarKit.MEDIUM, p,
                 Paint.Align.CENTER);
@@ -3128,8 +3138,18 @@ final class RouteTab implements CarScreen {
             CarKit.text(cv, CarKit.ellipsize(src, r.right - tx - lw - 12, p), tx + lw + 12, r.top + 18, 19,
                     realSoc ? CarKit.ACCENT : CarKit.FAINT, CarKit.MEDIUM, p, Paint.Align.LEFT);
         }
-        CarKit.number(cv, Double.isNaN(soc) ? "—" : String.format(Locale.getDefault(), "%.0f", soc), "%", tx, r.top + 70, 50, CarKit.TEXT,
-                CarKit.REGULAR, p, Paint.Align.LEFT);
+        float nw = CarKit.number(cv, Double.isNaN(soc) ? "—" : String.format(Locale.getDefault(), "%.0f", soc), "%", tx, r.top + 70, 50,
+                CarKit.TEXT, CarKit.REGULAR, p, Paint.Align.LEFT);
+        // Los kWh que tiene ahora la batería, al lado del % (con la tarjeta estrecha no caben: debajo).
+        String nowKwh = Double.isNaN(soc) ? null : kwhText(soc);
+        if (nowKwh != null && small) {
+            CarKit.text(cv, nowKwh, tx, r.top + 100, 20, CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.LEFT);
+        } else if (nowKwh != null) {
+            p.setTypeface(CarKit.MEDIUM);
+            p.setTextSize(22);
+            CarKit.text(cv, CarKit.ellipsize(nowKwh, r.right - tx - nw - 14, p), tx + nw + 14, r.top + 70, 22, CarKit.DIM, CarKit.MEDIUM, p,
+                    Paint.Align.LEFT);
+        }
         String st;
         int sc;
         if (Double.isNaN(soc)) {
@@ -3154,6 +3174,7 @@ final class RouteTab implements CarScreen {
             st = Str.get(R.string.hql_route_battery_ok);
             sc = CarKit.GREEN;
         }
+        if (small && arrKwh != null && !st.isEmpty()) st = st + " · " + arrKwh;
         statusPara.color(sc);
         // Con los botones ±5 debajo, dos líneas como mucho (la tercera caía encima de ellos).
         statusPara.maxLines(socControls.getVisibility() == View.VISIBLE ? 2 : 3);
