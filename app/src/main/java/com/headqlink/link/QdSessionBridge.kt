@@ -1,7 +1,14 @@
 package com.headqlink.link
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.media.AudioManager
+import android.net.wifi.WifiManager
 import android.os.PowerManager
 import android.os.SystemClock
+import androidx.core.content.ContextCompat
 import dev.qdauto.core.discovery.CarAnnouncement
 import dev.qdauto.core.session.CloseReason
 import dev.qdauto.core.session.KeyframeReason
@@ -125,6 +132,10 @@ internal class QdSessionBridge(
 
     @Volatile
     private var monitorRunning = false
+
+    /** Cuándo acabó Android su última búsqueda de redes Wi-Fi (elapsedRealtime; 0: ninguna vista). */
+    @Volatile
+    private var lastWifiScanAt = 0L
     private val localIface: String by lazy {
         val socket = session.socket ?: return@lazy USB_IFACE
         try {
@@ -190,6 +201,29 @@ internal class QdSessionBridge(
         ctx.getSystemService(PowerManager::class.java)?.isInteractive != false
     } catch (_: RuntimeException) {
         true
+    }
+
+    private fun isAudioPlaying(): Boolean = try {
+        ctx.getSystemService(AudioManager::class.java)?.isMusicActive == true
+    } catch (_: RuntimeException) {
+        false
+    }
+
+    /**
+     * Mientras dura la sesión por Wi-Fi: cuándo acaba Android cada búsqueda de redes Wi-Fi (para el resumen de la radio;
+     * mientras busca, la radio deja un momento el canal del coche). Solo la hora: ni redes ni resultados.
+     */
+    private fun watchWifiScans(): BroadcastReceiver? = try {
+        val r = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                lastWifiScanAt = SystemClock.elapsedRealtime()
+            }
+        }
+        ContextCompat.registerReceiver(ctx, r, IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION), ContextCompat.RECEIVER_NOT_EXPORTED)
+        r
+    } catch (e: RuntimeException) {
+        L.w("radio: no puedo ver las búsquedas de redes Wi-Fi (${e.javaClass.simpleName})")
+        null
     }
 
     // ---------------------------------------------------------------- eventos del núcleo (hilo qd-sN-events)
@@ -413,11 +447,15 @@ internal class QdSessionBridge(
                 L.w("traza: sin estado del socket (librería hqlnet no disponible)")
             }
             var last = SystemClock.elapsedRealtime()
-            // Por Wi-Fi (hay socket): un resumen de la radio cada minuto (RadioMinute), con la pantalla del móvil.
+            // Por Wi-Fi (hay socket): un resumen de la radio cada minuto (RadioMinute), con la pantalla del móvil, el audio,
+            // la hora de cada pico y las búsquedas de redes Wi-Fi de Android.
             val radio = RadioMinute()
             var radioStart = last
             var radioMinute = 0
             var ticks = 0
+            val scans = if (session.socket != null) watchWifiScans() else null
+            if (scans != null) radio.watchScans()
+            var seenScanAt = lastWifiScanAt
             try {
                 // Cada 100 ms (antes 50: el doble de despertares y de lecturas de TCP_INFO para lo mismo).
                 while (monitorRunning && !port.closed) {
@@ -428,9 +466,17 @@ internal class QdSessionBridge(
                     val net = port.monitorSample()
                     net?.let { PerfTrace.net(it) }
                     if (net != null && session.socket != null) {
-                        radio.add(net[1] / 1000, net[4].toLong(), net[0])
+                        radio.add(now - radioStart, net[1] / 1000, net[4].toLong(), net[0])
                         LabControl.noteRtt(net[1] / 1000)
-                        if (++ticks % 10 == 0) radio.screen(isInteractive())
+                        val scanAt = lastWifiScanAt
+                        if (scanAt != seenScanAt) {
+                            seenScanAt = scanAt
+                            radio.wifiScan(scanAt - radioStart)
+                        }
+                        if (++ticks % 10 == 0) {
+                            radio.screen(isInteractive())
+                            radio.audio(isAudioPlaying())
+                        }
                         if (now - radioStart >= 60_000) {
                             radioMinute++
                             if (!radio.isEmpty()) L.i(radio.line(radioMinute))
@@ -443,6 +489,13 @@ internal class QdSessionBridge(
                     logStats(force = false)
                 }
             } catch (_: InterruptedException) {
+            } finally {
+                scans?.let {
+                    try {
+                        ctx.unregisterReceiver(it)
+                    } catch (_: RuntimeException) {
+                    }
+                }
             }
         }, "net-monitor")
         t.priority = Thread.MAX_PRIORITY
