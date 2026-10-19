@@ -35,8 +35,11 @@ final class DgtTraffic {
     static final long RETRY_MS = 2 * 60_000L;
     /** Distancia máxima al trazado para que una incidencia sea de la ruta (las coordenadas de la DGT van al eje). */
     static final double ON_ROUTE_M = 120;
-    /** Las importantes avisan con tarjeta y voz a esta distancia (y una sola vez cada una). */
-    static final double ALERT_KM = 2.5;
+    /**
+     * Las importantes avisan con tarjeta y voz a esta distancia (y una sola vez cada una). Antes 2,5 km: a esa distancia,
+     * al llegar ya se había olvidado el aviso (19-10).
+     */
+    static final double ALERT_KM = 1.0;
 
     /** Tipos, de más a menos importante (con varios en una situación, manda el primero). */
     enum Kind { ACCIDENT, VEHICLE_STOPPED, OBJECT, ROCKFALL, FIRE, FLOOD, HAZARD, ROAD_CLOSED, CONGESTION, ROADWORKS, LANE_CLOSED, SPEED, SURFACE, OTHER }
