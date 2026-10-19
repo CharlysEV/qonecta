@@ -240,6 +240,12 @@ android {
             excludes += "META-INF/ASL2.0"
             excludes += "META-INF/*.kotlin_module"
         }
+        // Qonecta+: las librerías nativas comprimidas en el APK (Android las saca al instalar). Con el lector de texto
+        // dentro (18 MB de .so de ML Kit) el APK pasaba de 32 a 51 MB; así se queda en ~28, a cambio de ~38 MB más en el
+        // móvil una vez instalado.
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 
     lint {
@@ -311,9 +317,10 @@ dependencies {
     implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
     implementation("androidx.startup:startup-runtime:1.1.1")
     implementation("com.google.android.gms:play-services-nearby:19.3.0")
-    // Qonecta+: el destino de Google Maps leído de su tarjeta en Android Auto (MapsReader). El de Play Services: el
-    // modelo lo descarga Google Play (no engorda el APK).
-    implementation("com.google.android.gms:play-services-mlkit-text-recognition:19.0.1")
+    // Qonecta+: el destino de Google Maps leído de su tarjeta en Android Auto (MapsReader). Con el modelo dentro del APK:
+    // el de Play Services (módulo que baja Google Play) reinicia la app a la fuerza si Play lo ha actualizado al cargarlo
+    // («Module config changed, forcing restart», 19-10: en pleno viaje, al leer la tarjeta).
+    implementation("com.google.mlkit:text-recognition:16.0.1")
     // ViewModel and LiveData
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     kapt("androidx.lifecycle:lifecycle-compiler:2.6.2")
