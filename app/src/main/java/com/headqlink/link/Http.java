@@ -35,13 +35,15 @@ final class Http {
     }
 
     /**
-     * Servidores públicos de Overpass (OpenStreetMap): el principal y dos espejos. El principal se satura a ratos (504,
-     * 429) y algún espejo cae (500): entonces se repite la consulta en el siguiente.
+     * Servidores públicos de Overpass (OpenStreetMap): el principal y tres espejos. El principal se satura a ratos (504,
+     * 429) y algún espejo cae (500): entonces se repite la consulta en el siguiente. 19-10: 35 veces sin respuesta de los
+     * tres primeros en un día; kumi, el último (sus datos van con meses de retraso, pero carreteras y radares cambian poco).
      */
     static final String[] OVERPASS = {
             "https://overpass-api.de/api/interpreter",
             "https://overpass.private.coffee/api/interpreter",
             "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
+            "https://overpass.kumi.systems/api/interpreter",
     };
 
     /**
@@ -100,7 +102,7 @@ final class Http {
 
     /**
      * Consulta a Overpass, probando los espejos si uno falla. quick: lo que va con la conducción (límite de la vía,
-     * radares): tiempos cortos y sin repetir en el mismo servidor. Si los tres fallan, Overpass queda en pausa un rato.
+     * radares): tiempos cortos y sin repetir en el mismo servidor. Si fallan todos, Overpass queda en pausa un rato.
      */
     static String overpass(String query, boolean quick) throws Exception {
         long now = android.os.SystemClock.elapsedRealtime();

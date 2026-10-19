@@ -1150,6 +1150,11 @@ final class RoutePlanner {
     static final double MAPS_RATIO_MAX = 1.25;
     /** Cambios menores que este no se aplican: el plan de carga no se rehace por décimas. */
     static final double MAPS_RATIO_STEP = 0.015;
+    /**
+     * Lo que bailan los km entre lecturas (Maps los da a saltos y el avance del plan va por tramos): con poco por delante,
+     * el cambio mínimo es mayor. 19-10: con 13-14 km por delante pasaba de ×0,97 a ×0,99 y vuelta cada pocos segundos.
+     */
+    static final double MAPS_RATIO_NOISE_KM = 0.5;
 
     /**
      * Puro: km de Google Maps por cada km del plan en lo que falta (oursKm y googleKm), a partir del anterior (prev). 17-10:
@@ -1161,7 +1166,8 @@ final class RoutePlanner {
         double r = googleKm / oursKm;
         if (r < MAPS_RATIO_MIN || r > MAPS_RATIO_MAX) return 1;
         r = Math.round(r * 100) / 100.0;
-        return Math.abs(r - prev) < MAPS_RATIO_STEP ? prev : r;
+        double step = Math.max(MAPS_RATIO_STEP, MAPS_RATIO_NOISE_KM / oursKm);
+        return Math.abs(r - prev) < step ? prev : r;
     }
 
     /**

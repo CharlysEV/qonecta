@@ -22,6 +22,16 @@ class MapsRatioTest {
         assertEquals(1.08, RoutePlanner.mapsRatio(700.0, 760.0, 1.08), 1e-9)
     }
 
+    /** 19-10: con 13-14 km por delante pasaba de ×0,97 a ×0,99 y vuelta cada pocos segundos. */
+    @Test
+    fun withLittleAheadItDoesNotSwing() {
+        // 14 km: hace falta más de un 3,6 % (0,5 km) para cambiar.
+        assertEquals(0.97, RoutePlanner.mapsRatio(14.4, 14.25, 0.97), 1e-9)
+        assertEquals(0.99, RoutePlanner.mapsRatio(13.6, 13.0, 0.99), 1e-9)
+        // Un cambio de verdad, sí.
+        assertEquals(1.1, RoutePlanner.mapsRatio(14.0, 15.4, 0.97), 1e-9)
+    }
+
     @Test
     fun mapsGoingSomewhereElseIsNotUsed() {
         assertEquals(1.0, RoutePlanner.mapsRatio(771.0, 1100.0, 1.08), 1e-9)
