@@ -393,6 +393,13 @@ final class Config {
         sp.edit().putString(BT_AUTO_NAME, s == null ? "" : s.trim()).apply();
     }
 
+    /** El marcador de la imagen arriba a la derecha de la pantalla del coche (VideoHud): de serie, encendido. */
+    static final String VIDEO_HUD = "video_hud";
+
+    boolean videoHud() {
+        return sp.getBoolean(VIDEO_HUD, true);
+    }
+
     /** Panel propio que se oculta solo con AA en pantalla (vuelve al tocar el borde izquierdo). */
     static final String PANEL_AUTOHIDE = "panel_autohide";
 
@@ -559,6 +566,15 @@ final class Config {
 
     void setChargerMinKw(int kw) {
         sp.edit().putInt("charger_min_kw", ChargerFilter.snapMinKw(kw)).apply();
+    }
+
+    /** Voltaje del filtro de cargadores (ChargerFilter.VOLTS_*: 0 cualquiera, 800 o 400). */
+    int chargerVolts() {
+        return ChargerFilter.snapVolts(sp.getInt("charger_volts", 0));
+    }
+
+    void setChargerVolts(int v) {
+        sp.edit().putInt("charger_volts", ChargerFilter.snapVolts(v)).apply();
     }
 
     /** Con potencia mínima, incluir también los cargadores sin potencia confirmada en OpenStreetMap (la mayoría). */

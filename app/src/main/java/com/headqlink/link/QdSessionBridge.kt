@@ -451,6 +451,7 @@ internal class QdSessionBridge(
             // la hora de cada pico y las búsquedas de redes Wi-Fi de Android.
             val radio = RadioMinute()
             var radioStart = last
+            VideoHud.reset()
             var radioMinute = 0
             var ticks = 0
             val scans = if (session.socket != null) watchWifiScans() else null
@@ -467,7 +468,7 @@ internal class QdSessionBridge(
                     net?.let { PerfTrace.net(it) }
                     if (net != null && session.socket != null) {
                         radio.add(now - radioStart, net[1] / 1000, net[4].toLong(), net[0])
-                        LabControl.noteRtt(net[1] / 1000)
+                        VideoHud.noteRtt(net[1] / 1000)
                         val scanAt = lastWifiScanAt
                         if (scanAt != seenScanAt) {
                             seenScanAt = scanAt
@@ -723,7 +724,7 @@ internal class QdSessionBridge(
         if (force && w.fps == 0.0 && w.dropped == 0) return
         val line = w.line()
         L.i(line)
-        LabControl.noteTx(w.fps, w.kbps)
+        VideoHud.noteTx(w.fps, w.kbps)
         CarTrace.note("VIDEO", "$line · cabecera ${port.headerText()}")
         hub.takeStats(port)?.forEach { L.i("  $it") }
         hub.setStatus(port, line)

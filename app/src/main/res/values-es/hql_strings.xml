@@ -228,6 +228,9 @@
     <string name="hql_profile_basic_detail">720p a 30 fps, sin recodificar (lo más ligero para el móvil)</string>
     <string name="hql_keep_screen_on">Mantener la pantalla del móvil encendida (más calor y batería; si no, se apaga como siempre y la proyección sigue)</string>
     <string name="hql_thermal_mode">Protección térmica</string>
+    <string name="hql_video_hud">Marcador de la imagen</string>
+    <string name="hql_video_hud_note">Arriba a la derecha de la pantalla del coche: temperatura de la batería, calor, fps, Mbit/s y, por Wi-Fi, el retardo del enlace (rtt)</string>
+    <string name="hql_hud_heat">calor</string>
     <string name="hql_thermal_normal">Normal (recomendada)</string>
     <string name="hql_thermal_soft">Suave · solo baja el bitrate; nunca por debajo de 30 fps salvo en estado crítico</string>
     <string name="hql_thermal_off">Apagada · solo se registra</string>
@@ -740,6 +743,9 @@
     <string name="hql_charger_filter">Filtrar</string>
     <string name="hql_charger_filter_title">Cargadores que te sirven</string>
     <string name="hql_charger_min_power">Potencia mínima</string>
+    <string name="hql_charger_volts">Voltaje</string>
+    <string name="hql_charger_volts_800">800 V</string>
+    <string name="hql_charger_volts_400">400–500 V</string>
     <string name="hql_charger_any">Cualquiera</string>
     <string name="hql_charger_networks">Redes</string>
     <string name="hql_charger_all_networks">Todas</string>
@@ -784,8 +790,8 @@
     <string name="hql_route_guide_waze">Guiar con Waze</string>
     <string name="hql_nav_app">Navegar con</string>
     <string name="hql_charger_kw_unknown">potencia sin confirmar</string>
-    <string name="hql_charger_unknown_include">Incluir los que no dicen su potencia</string>
-    <string name="hql_charger_unknown_exclude">Solo con potencia confirmada</string>
+    <string name="hql_charger_unknown_include">Incluir los que no dicen potencia o voltaje</string>
+    <string name="hql_charger_unknown_exclude">Solo con datos confirmados</string>
     <string name="hql_charger_unknown_note">En España, los cargadores salen del registro oficial de la DGT, con la potencia y el voltaje de cada uno. Fuera, de OpenStreetMap, donde la mayoría no dicen su potencia: Tesla, Ionity, Zunder, Fastned, Electra y Atlante cuentan con su potencia típica (≈); los demás, solo si los incluyes, y el plan prefiere los confirmados.</string>
     <string name="hql_chargers_list_title">Cargadores en ruta</string>
     <string name="hql_chargers_list_filtered">Los del filtro</string>

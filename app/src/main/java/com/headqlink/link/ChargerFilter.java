@@ -17,7 +17,15 @@ import java.util.Set;
  */
 final class ChargerFilter {
     /** Potencias mínimas que se pueden elegir (kW; 0 = cualquiera). */
-    static final int[] MIN_KW_CHOICES = {0, 22, 50, 100, 150};
+    static final int[] MIN_KW_CHOICES = {0, 22, 50, 100, 150, 200, 300};
+    /**
+     * Voltaje que se puede elegir (20-10): cualquiera, 800 V (de continua y de ChargePlanner.HIGH_VOLTS o más) o
+     * 400–500 V (de continua, por debajo). En España, el que declara cada conector en el registro de la DGT.
+     */
+    static final int VOLTS_ANY = 0;
+    static final int VOLTS_800 = 800;
+    static final int VOLTS_400 = 400;
+    static final int[] VOLTS_CHOICES = {VOLTS_ANY, VOLTS_800, VOLTS_400};
     /** Clave de los cargadores de una red que no está en la lista. */
     static final String OTHER = "other";
 
@@ -201,12 +209,32 @@ final class ChargerFilter {
      * confirmar) solo si includeUnknown, y nunca los de solo alterna si piden más de lo que dan.
      */
     static boolean accepts(RoutePlanner.Charger c, int minKw, Set<String> networks, boolean includeUnknown) {
+        return accepts(c, minKw, VOLTS_ANY, networks, includeUnknown);
+    }
+
+    /** Lo mismo con voltaje (VOLTS_*): sin voltaje conocido, solo si includeUnknown; los de solo alterna, nunca. */
+    static boolean accepts(RoutePlanner.Charger c, int minKw, int volts, Set<String> networks, boolean includeUnknown) {
         boolean netOk = networks == null || networks.isEmpty()
                 || networks.contains(c.network == null || c.network.isEmpty() ? OTHER : c.network);
         if (!netOk) return false;
+        if (!voltsOk(c.acOnly, c.maxVolts, volts, includeUnknown)) return false;
         if (minKw <= 0) return true;
         if (c.kwSource == KW_TAGGED || c.kwSource == KW_NETWORK || c.acOnly) return c.maxKw >= minKw;
         return includeUnknown;
+    }
+
+    /** Puro: ¿pasa el voltaje elegido? acOnly: solo alterna; maxVolts 0: no se sabe. */
+    static boolean voltsOk(boolean acOnly, double maxVolts, int volts, boolean includeUnknown) {
+        if (volts != VOLTS_800 && volts != VOLTS_400) return true;
+        if (acOnly) return false;
+        if (!(maxVolts > 0)) return includeUnknown;
+        boolean high = maxVolts >= ChargePlanner.HIGH_VOLTS;
+        return volts == VOLTS_800 ? high : !high;
+    }
+
+    /** Voltaje guardado, a una elección de VOLTS_CHOICES. */
+    static int snapVolts(int v) {
+        return v == VOLTS_800 || v == VOLTS_400 ? v : VOLTS_ANY;
     }
 
     static boolean accepts(double maxKw, String network, int minKw, Set<String> networks) {

@@ -23,6 +23,38 @@ class ChargerFilterTest {
     }
 
     @Test
+    fun acceptsByVoltage() {
+        // 20-10: 800 V = de continua y de 700 V o más declarados; 400-500 V, por debajo; los de solo alterna, nunca.
+        fun charger(kw: Double, volts: Double, ac: Boolean = false) = RoutePlanner.Charger().apply {
+            network = ChargerFilter.OTHER
+            maxKw = kw
+            maxVolts = volts
+            acOnly = ac
+            kwSource = ChargerFilter.KW_TAGGED
+        }
+        val none = emptySet<String>()
+        val ionity = charger(350.0, 920.0)
+        val zunder400 = charger(180.0, 500.0)
+        val unknown = charger(50.0, 0.0)
+        val ac = charger(22.0, 400.0, ac = true)
+        assertTrue(ChargerFilter.accepts(ionity, 0, ChargerFilter.VOLTS_800, none, false))
+        assertFalse(ChargerFilter.accepts(zunder400, 0, ChargerFilter.VOLTS_800, none, true))
+        assertTrue(ChargerFilter.accepts(zunder400, 0, ChargerFilter.VOLTS_400, none, false))
+        assertFalse(ChargerFilter.accepts(ionity, 0, ChargerFilter.VOLTS_400, none, true))
+        // Sin voltaje conocido: con «incluir los que no lo dicen», sí; si no, no.
+        assertTrue(ChargerFilter.accepts(unknown, 0, ChargerFilter.VOLTS_800, none, true))
+        assertFalse(ChargerFilter.accepts(unknown, 0, ChargerFilter.VOLTS_800, none, false))
+        assertFalse(ChargerFilter.accepts(ac, 0, ChargerFilter.VOLTS_400, none, true))
+        // Cualquiera: todos, también los de alterna.
+        assertTrue(ChargerFilter.accepts(ac, 0, ChargerFilter.VOLTS_ANY, none, false))
+        // Junto con la potencia: un 800 V de 150 kW no pasa con 200 kW mínimo.
+        assertFalse(ChargerFilter.accepts(charger(150.0, 800.0), 200, ChargerFilter.VOLTS_800, none, true))
+        assertTrue(ChargerFilter.accepts(charger(300.0, 800.0), 200, ChargerFilter.VOLTS_800, none, false))
+        assertEquals(ChargerFilter.VOLTS_ANY, ChargerFilter.snapVolts(650))
+        assertEquals(ChargerFilter.VOLTS_800, ChargerFilter.snapVolts(800))
+    }
+
+    @Test
     fun acceptsByPowerAndNetwork() {
         val none = emptySet<String>()
         assertTrue(ChargerFilter.accepts(22.0, "other", 0, none))
@@ -51,7 +83,9 @@ class ChargerFilterTest {
         assertEquals(setOf("tesla", "zunder"), ChargerFilter.parseNetworks(" tesla, zunder ,"))
         assertTrue(ChargerFilter.parseNetworks("").isEmpty())
         assertEquals(50, ChargerFilter.snapMinKw(60))
-        assertEquals(150, ChargerFilter.snapMinKw(400))
+        // 20-10: también 200 y 300 kW.
+        assertEquals(300, ChargerFilter.snapMinKw(400))
+        assertEquals(200, ChargerFilter.snapMinKw(220))
         assertEquals(0, ChargerFilter.snapMinKw(-5))
         assertEquals("Endesa X", ChargerFilter.label("endesa"))
     }

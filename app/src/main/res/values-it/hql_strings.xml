@@ -228,6 +228,9 @@
     <string name="hql_profile_basic_detail">720p a 30 fps, senza ricodifica (il più leggero per il telefono)</string>
     <string name="hql_keep_screen_on">Mantieni acceso lo schermo del telefono (più calore e batteria; altrimenti si spegne come sempre e la proiezione continua)</string>
     <string name="hql_thermal_mode">Protezione dal calore</string>
+    <string name="hql_video_hud">Indicatore dell\'immagine</string>
+    <string name="hql_video_hud_note">In alto a destra sullo schermo dell\'auto: temperatura della batteria, calore, fps, Mbit/s e, via Wi-Fi, il ritardo del collegamento (rtt)</string>
+    <string name="hql_hud_heat">calore</string>
     <string name="hql_thermal_normal">Normale (consigliata)</string>
     <string name="hql_thermal_soft">Leggera · abbassa solo il bitrate; mai sotto i 30 fps, salvo stato critico</string>
     <string name="hql_thermal_off">Disattivata · solo annotata nel log</string>
@@ -740,6 +743,9 @@
     <string name="hql_charger_filter">Filtra</string>
     <string name="hql_charger_filter_title">Colonnine adatte a te</string>
     <string name="hql_charger_min_power">Potenza minima</string>
+    <string name="hql_charger_volts">Tensione</string>
+    <string name="hql_charger_volts_800">800 V</string>
+    <string name="hql_charger_volts_400">400–500 V</string>
     <string name="hql_charger_any">Qualsiasi</string>
     <string name="hql_charger_networks">Operatori</string>
     <string name="hql_charger_all_networks">Tutti</string>
@@ -784,8 +790,8 @@
     <string name="hql_route_guide_waze">Naviga con Waze</string>
     <string name="hql_nav_app">Navigare con</string>
     <string name="hql_charger_kw_unknown">potenza non confermata</string>
-    <string name="hql_charger_unknown_include">Includi quelle senza potenza</string>
-    <string name="hql_charger_unknown_exclude">Solo con potenza confermata</string>
+    <string name="hql_charger_unknown_include">Includi quelle senza potenza o tensione</string>
+    <string name="hql_charger_unknown_exclude">Solo dati confermati</string>
     <string name="hql_charger_unknown_note">In Spagna le colonnine vengono dal registro ufficiale della DGT, con potenza e tensione di ognuna. Altrove da OpenStreetMap, dove la maggior parte non indica la potenza: Tesla, Ionity, Zunder, Fastned, Electra e Atlante contano con la potenza tipica (≈); le altre solo se le includi, e il piano preferisce quelle confermate.</string>
     <string name="hql_chargers_list_title">Colonnine sul percorso</string>
     <string name="hql_chargers_list_filtered">Quelle del filtro</string>

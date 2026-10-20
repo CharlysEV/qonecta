@@ -228,6 +228,9 @@
     <string name="hql_profile_basic_detail">720p op 30 fps, zonder hercoderen (het lichtst voor de telefoon)</string>
     <string name="hql_keep_screen_on">Telefoonscherm aan houden (meer warmte en batterijverbruik; anders gaat het zoals gewoonlijk uit en loopt de projectie door)</string>
     <string name="hql_thermal_mode">Warmtebeveiliging</string>
+    <string name="hql_video_hud">Beeldindicator</string>
+    <string name="hql_video_hud_note">Rechtsboven op het autoscherm: accutemperatuur, warmte, fps, Mbit/s en, via wifi, de vertraging van de verbinding (rtt)</string>
+    <string name="hql_hud_heat">warmte</string>
     <string name="hql_thermal_normal">Normaal (aanbevolen)</string>
     <string name="hql_thermal_soft">Mild · verlaagt alleen de bitrate; nooit onder 30 fps, behalve als de telefoon ‘kritiek’ is</string>
     <string name="hql_thermal_off">Uit · wordt alleen gelogd</string>
@@ -739,6 +742,9 @@
     <string name="hql_charger_filter">Filteren</string>
     <string name="hql_charger_filter_title">Laadpalen die bij je passen</string>
     <string name="hql_charger_min_power">Minimaal vermogen</string>
+    <string name="hql_charger_volts">Spanning</string>
+    <string name="hql_charger_volts_800">800 V</string>
+    <string name="hql_charger_volts_400">400–500 V</string>
     <string name="hql_charger_any">Alle</string>
     <string name="hql_charger_networks">Netwerken</string>
     <string name="hql_charger_all_networks">Alle</string>
@@ -783,8 +789,8 @@
     <string name="hql_route_guide_waze">Navigeren met Waze</string>
     <string name="hql_nav_app">Navigeren met</string>
     <string name="hql_charger_kw_unknown">vermogen onbevestigd</string>
-    <string name="hql_charger_unknown_include">Ook zonder vermogen</string>
-    <string name="hql_charger_unknown_exclude">Alleen bevestigd vermogen</string>
+    <string name="hql_charger_unknown_include">Ook zonder vermogen of spanning</string>
+    <string name="hql_charger_unknown_exclude">Alleen bevestigde gegevens</string>
     <string name="hql_charger_unknown_note">In Spanje komen de laadpalen uit het officiële register van de DGT, met het vermogen en de spanning van elke laadpaal. Elders uit OpenStreetMap, waar de meeste hun vermogen niet vermelden: Tesla, Ionity, Zunder, Fastned, Electra en Atlante tellen met hun gebruikelijke vermogen (≈); de rest alleen als je ze meeneemt, en het plan geeft de voorkeur aan bevestigde.</string>
     <string name="hql_chargers_list_title">Laadpalen langs de route</string>
     <string name="hql_chargers_list_filtered">Gefilterd</string>

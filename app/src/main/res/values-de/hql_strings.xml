@@ -228,6 +228,9 @@
     <string name="hql_profile_basic_detail">720p mit 30 fps, ohne Neukodierung (am schonendsten fürs Handy)</string>
     <string name="hql_keep_screen_on">Handy-Bildschirm anlassen (mehr Hitze und Akkuverbrauch; sonst geht er wie gewohnt aus und die Übertragung läuft weiter)</string>
     <string name="hql_thermal_mode">Hitzeschutz</string>
+    <string name="hql_video_hud">Bildanzeige</string>
+    <string name="hql_video_hud_note">Oben rechts auf dem Autodisplay: Akkutemperatur, Wärme, fps, Mbit/s und über WLAN die Verzögerung der Verbindung (rtt)</string>
+    <string name="hql_hud_heat">Wärme</string>
     <string name="hql_thermal_normal">Normal (empfohlen)</string>
     <string name="hql_thermal_soft">Sanft · senkt nur die Bitrate; nie unter 30 fps, außer das Handy ist kritisch heiß</string>
     <string name="hql_thermal_off">Aus · wird nur protokolliert</string>
@@ -739,6 +742,9 @@
     <string name="hql_charger_filter">Filter</string>
     <string name="hql_charger_filter_title">Passende Ladestationen</string>
     <string name="hql_charger_min_power">Mindestleistung</string>
+    <string name="hql_charger_volts">Spannung</string>
+    <string name="hql_charger_volts_800">800 V</string>
+    <string name="hql_charger_volts_400">400–500 V</string>
     <string name="hql_charger_any">Beliebig</string>
     <string name="hql_charger_networks">Ladenetze</string>
     <string name="hql_charger_all_networks">Alle</string>
@@ -783,8 +789,8 @@
     <string name="hql_route_guide_waze">Mit Waze navigieren</string>
     <string name="hql_nav_app">Navigieren mit</string>
     <string name="hql_charger_kw_unknown">Leistung unbestätigt</string>
-    <string name="hql_charger_unknown_include">Auch ohne Leistungsangabe</string>
-    <string name="hql_charger_unknown_exclude">Nur bestätigte Leistung</string>
+    <string name="hql_charger_unknown_include">Auch ohne Leistungs- oder Spannungsangabe</string>
+    <string name="hql_charger_unknown_exclude">Nur bestätigte Angaben</string>
     <string name="hql_charger_unknown_note">In Spanien stammen die Ladestationen aus dem offiziellen Register der DGT, mit Leistung und Spannung jeder Station. Sonst aus OpenStreetMap, wo die meisten ihre Leistung nicht nennen: Tesla, Ionity, Zunder, Fastned, Electra und Atlante zählen mit ihrer typischen Leistung (≈); die anderen nur, wenn du sie einschließt, und der Plan bevorzugt die bestätigten.</string>
     <string name="hql_chargers_list_title">Ladestationen an der Route</string>
     <string name="hql_chargers_list_filtered">Gefiltert</string>

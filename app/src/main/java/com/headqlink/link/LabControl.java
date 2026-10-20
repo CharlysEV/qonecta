@@ -23,13 +23,6 @@ final class LabControl {
     static volatile int maxKbps;
     /** Salto a 60 fps al tocar: null, lo del perfil; si no, forzado. */
     static volatile Boolean touchBoost;
-    /** Marcador en la esquina del coche. */
-    static volatile boolean hud;
-
-    private static volatile double txFps = -1;
-    private static volatile double txKbps = -1;
-    private static volatile int rttLast = -1;
-    private static volatile int rttMax = -1;
 
     private LabControl() {
     }
@@ -38,32 +31,14 @@ final class LabControl {
         return com.andrerinas.openheadunit.BuildConfig.LAB;
     }
 
-    /** Lo enviado en la última ventana de 5 s (QdSessionBridge.logStats). */
-    static void noteTx(double fps, double kbps) {
-        txFps = fps;
-        txKbps = kbps;
-    }
-
-    /** Un rtt del enlace por Wi-Fi (cada 100 ms); el marcador enseña el último y el máximo desde que se pintó. */
-    static void noteRtt(int ms) {
-        rttLast = ms;
-        if (ms > rttMax) rttMax = ms;
-    }
-
-    /** El texto del marcador: «41 °C · calor 1 · 30 fps · 1,2 Mbit/s · rtt 5/61 ms · tope 30 fps». */
+    /**
+     * El texto del marcador (VideoHud) y, en la variante de pruebas, lo que Claude tenga forzado: «41 °C · calor 1 ·
+     * 30 fps · 1,2 Mbit/s · rtt 5/61 ms · tope 30 fps».
+     */
     static String hudText(Context ctx) {
-        StringBuilder b = new StringBuilder();
-        double t = ThermalGuard.batteryTempC(ctx);
-        if (!Double.isNaN(t)) b.append(Math.round(t)).append(" °C");
-        int heat = ThermalGuard.status();
-        if (heat >= 0) b.append(b.length() > 0 ? " · " : "").append("calor ").append(heat);
-        if (txFps >= 0) b.append(String.format(Locale.getDefault(), " · %.0f fps · %.1f Mbit/s", txFps, txKbps / 1000));
-        int max = rttMax;
-        rttMax = rttLast;
-        if (rttLast >= 0) b.append(" · rtt ").append(rttLast).append('/').append(max).append(" ms");
-        String o = overrides();
-        if (!o.isEmpty()) b.append(" · ").append(o);
-        return b.toString();
+        String t = VideoHud.text(ctx);
+        String o = enabled() ? overrides() : "";
+        return o.isEmpty() ? t : t.isEmpty() ? o : t + " · " + o;
     }
 
     /** Lo que Claude tiene forzado ahora («tope 30 fps, máx. 6 Mbit/s, sin salto a 60»), o "". */
@@ -91,7 +66,7 @@ final class LabControl {
         String done;
         switch (cmd) {
             case "estado":
-                return "variante de pruebas · " + hudText(ctx) + (hud ? " · marcador encendido" : "");
+                return "variante de pruebas · " + hudText(ctx) + (new Config(ctx).videoHud() ? " · marcador encendido" : "");
             case "msg":
                 if (arg.isEmpty()) return "no: falta el texto";
                 L.i("laboratorio: mensaje en el coche");
@@ -129,11 +104,13 @@ final class LabControl {
                     done = "on".equals(a) ? "modo noche forzado" : "modo día forzado";
                 }
                 break;
-            case "hud":
-                hud = "on".equals(a);
-                CarUi.labHud(hud);
-                L.i("laboratorio: marcador " + (hud ? "encendido" : "apagado"));
-                return "marcador " + (hud ? "encendido" : "apagado");
+            case "hud": {
+                boolean on = "on".equals(a);
+                new Config(ctx).putBool(Config.VIDEO_HUD, on);
+                CarUi.refreshHud();
+                L.i("laboratorio: marcador " + (on ? "encendido" : "apagado"));
+                return "marcador " + (on ? "encendido" : "apagado");
+            }
             case "perfil": {
                 boolean known = false;
                 for (String id : VideoProfile.ALL) if (id.equals(a)) known = true;

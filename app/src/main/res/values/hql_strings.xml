@@ -228,6 +228,9 @@
     <string name="hql_profile_basic_detail">720p at 30 fps, not re-encoded (the lightest for the phone)</string>
     <string name="hql_keep_screen_on">Keep the phone screen on (more heat and battery; otherwise it turns off as usual and projection continues)</string>
     <string name="hql_thermal_mode">Heat protection</string>
+    <string name="hql_video_hud">Picture readout</string>
+    <string name="hql_video_hud_note">Top right of the car screen: battery temperature, heat, fps, Mbit/s and, over Wi-Fi, the link delay (rtt)</string>
+    <string name="hql_hud_heat">heat</string>
     <string name="hql_thermal_normal">Normal (recommended)</string>
     <string name="hql_thermal_soft">Gentle · only lowers the bitrate; never below 30 fps unless the phone is critical</string>
     <string name="hql_thermal_off">Off · only logged</string>
@@ -739,6 +742,9 @@
     <string name="hql_charger_filter">Filter</string>
     <string name="hql_charger_filter_title">Chargers that suit you</string>
     <string name="hql_charger_min_power">Minimum power</string>
+    <string name="hql_charger_volts">Voltage</string>
+    <string name="hql_charger_volts_800">800 V</string>
+    <string name="hql_charger_volts_400">400–500 V</string>
     <string name="hql_charger_any">Any</string>
     <string name="hql_charger_networks">Networks</string>
     <string name="hql_charger_all_networks">All</string>
@@ -783,8 +789,8 @@
     <string name="hql_route_guide_waze">Navigate with Waze</string>
     <string name="hql_nav_app">Navigate with</string>
     <string name="hql_charger_kw_unknown">power not confirmed</string>
-    <string name="hql_charger_unknown_include">Include those without power data</string>
-    <string name="hql_charger_unknown_exclude">Only confirmed power</string>
+    <string name="hql_charger_unknown_include">Include those without power or voltage data</string>
+    <string name="hql_charger_unknown_exclude">Only confirmed data</string>
     <string name="hql_charger_unknown_note">In Spain, chargers come from the official DGT registry, with the power and voltage of each one. Elsewhere they come from OpenStreetMap, where most do not state their power: Tesla, Ionity, Zunder, Fastned, Electra and Atlante count with their typical power (≈); the rest, only if you include them, and the plan prefers the confirmed ones.</string>
     <string name="hql_chargers_list_title">Chargers on the route</string>
     <string name="hql_chargers_list_filtered">Filtered</string>

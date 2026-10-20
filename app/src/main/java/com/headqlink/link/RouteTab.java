@@ -52,6 +52,8 @@ final class RouteTab implements CarScreen {
     private LinearLayout chargers;
     /** Filtro de los cargadores (ChargerFilter): potencia mínima y redes; y su resumen junto al botón. */
     private int chargerMinKw;
+    /** Voltaje del filtro (ChargerFilter.VOLTS_*). */
+    private int chargerVolts;
     private java.util.Set<String> chargerNets = new java.util.LinkedHashSet<>();
     /** Con potencia mínima, también los cargadores sin potencia confirmada (Config.chargerIncludeUnknown). */
     private boolean chargerUnknown = true;
@@ -242,6 +244,7 @@ final class RouteTab implements CarScreen {
         CarKit.Card ch = CarKit.add(right, new CarKit.Card(ctx, Str.get(R.string.hql_route_chargers), null), 1f, 0);
         Config cfg0 = new Config(ctx);
         chargerMinKw = cfg0.chargerMinKw();
+        chargerVolts = cfg0.chargerVolts();
         chargerUnknown = cfg0.chargerIncludeUnknown();
         chargerNets = ChargerFilter.parseNetworks(cfg0.chargerNetworks());
         LinearLayout chCol = CarKit.col(ctx);
@@ -819,7 +822,7 @@ final class RouteTab implements CarScreen {
         updateLive();
         if (have) {
             updateChargePlan();
-            int key = ((System.identityHashCode(plan) * 31 + plan.progress / 10) * 31 + chargerMinKw * 7 + chargerNets.hashCode()) * 31
+            int key = ((System.identityHashCode(plan) * 31 + plan.progress / 10) * 31 + chargerMinKw * 7 + chargerVolts * 13 + chargerNets.hashCode()) * 31
                     + System.identityHashCode(chargePlan) + plan.chargerVersion * 131;
             if (key != shownChargersFor) {
                 shownChargersFor = key;
@@ -1604,16 +1607,22 @@ final class RouteTab implements CarScreen {
         return t;
     }
 
+    /** «800 V» o «400–500 V». */
+    private static String voltsLabel(int v) {
+        return Str.get(v == ChargerFilter.VOLTS_800 ? R.string.hql_charger_volts_800 : R.string.hql_charger_volts_400);
+    }
+
     /** El cargador pasa el filtro elegido. */
     private boolean wanted(RoutePlanner.Charger c) {
-        return ChargerFilter.accepts(c, chargerMinKw, chargerNets, chargerUnknown)
+        return ChargerFilter.accepts(c, chargerMinKw, chargerVolts, chargerNets, chargerUnknown)
                 && (marks.isEmpty() || ChargerMarks.kindOf(marks, c) != ChargerMarks.BAN);
     }
 
-    /** «Todos los cargadores» o «≥ 100 kW · Tesla, Zunder». */
+    /** «Todos los cargadores» o «≥ 100 kW · 800 V · Tesla, Zunder». */
     private void updateFilterSummary() {
         StringBuilder b = new StringBuilder();
         if (chargerMinKw > 0) b.append(Str.get(R.string.hql_charger_summary_kw, chargerMinKw));
+        if (chargerVolts != ChargerFilter.VOLTS_ANY) b.append(b.length() > 0 ? " · " : "").append(voltsLabel(chargerVolts));
         if (!chargerNets.isEmpty()) {
             StringBuilder n = new StringBuilder();
             for (String k : chargerNets) {
@@ -1630,6 +1639,7 @@ final class RouteTab implements CarScreen {
     private void filterChanged() {
         Config c = new Config(ctx);
         c.setChargerMinKw(chargerMinKw);
+        c.setChargerVolts(chargerVolts);
         c.setChargerNetworks(ChargerFilter.formatNetworks(chargerNets));
         updateFilterSummary();
         shownChargersFor = -1;
@@ -2051,9 +2061,24 @@ final class RouteTab implements CarScreen {
                     build[0].run();
                 }), chipParams());
             }
-            body.addView(kw);
-            // Casi ningún cargador de OpenStreetMap dice su potencia: con potencia mínima, ¿se cuentan esos también?
-            if (chargerMinKw > 0) {
+            // Siete potencias: en un panel estrecho (pantalla partida) se desliza en vez de cortarse.
+            android.widget.HorizontalScrollView kwScroll = new android.widget.HorizontalScrollView(ctx);
+            kwScroll.setHorizontalScrollBarEnabled(false);
+            kwScroll.addView(kw);
+            body.addView(kwScroll);
+            // Voltaje (20-10): 800 V o 400-500 V, el que declara cada cargador (en España, el registro de la DGT).
+            body.addView(section(Str.get(R.string.hql_charger_volts)));
+            LinearLayout vrow = CarKit.row(ctx);
+            for (int v : ChargerFilter.VOLTS_CHOICES) {
+                vrow.addView(chip(v == ChargerFilter.VOLTS_ANY ? Str.get(R.string.hql_charger_any) : voltsLabel(v), chargerVolts == v, () -> {
+                    chargerVolts = v;
+                    filterChanged();
+                    build[0].run();
+                }), chipParams());
+            }
+            body.addView(vrow);
+            // Casi ningún cargador de OpenStreetMap dice su potencia ni su voltaje: con un mínimo, ¿se cuentan esos también?
+            if (chargerMinKw > 0 || chargerVolts != ChargerFilter.VOLTS_ANY) {
                 Config ic = new Config(ctx);
                 LinearLayout un = CarKit.row(ctx);
                 un.addView(chip(Str.get(R.string.hql_charger_unknown_include), ic.chargerIncludeUnknown(), () -> {
@@ -2477,6 +2502,7 @@ final class RouteTab implements CarScreen {
             TextView clearF = CarKit.pill(ctx, Str.get(R.string.hql_charger_clear_filters), false);
             clearF.setOnClickListener(v -> {
                 chargerMinKw = 0;
+                chargerVolts = ChargerFilter.VOLTS_ANY;
                 chargerNets.clear();
                 filterChanged();
             });

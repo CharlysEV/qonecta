@@ -1982,7 +1982,7 @@ final class RoutePlanner {
             String nets = c.chargerNetworks();
             String marks = c.chargerMarks();
             boolean food = c.planPreferFood();
-            String settings = minKw + "/" + nets + "/" + c.chargerIncludeUnknown() + "/" + c.planArrivePct() + "/" + c.planMaxPct() + "/" + Math.round(capKwh * 10)
+            String settings = minKw + "/" + c.chargerVolts() + "V/" + nets + "/" + c.chargerIncludeUnknown() + "/" + c.planArrivePct() + "/" + c.planMaxPct() + "/" + Math.round(capKwh * 10)
                     + (realSoc ? "/real" : "/indicado") + "/c" + pl.chargerVersion + "/curva" + c.learnedChargeCurve() + "/m" + marks.hashCode() + (food ? "/f" + FoodNearby.version : "");
             int prog = Math.min(pl.progress, pl.n - 1);
             double f = demo ? DemoMode.planTrend() : trend.factor();
@@ -2104,7 +2104,7 @@ final class RoutePlanner {
         java.util.Set<String> want = ChargerFilter.parseNetworks(c.chargerNetworks());
         List<Charger> list = new ArrayList<>();
         for (Charger ch : pl.chargers) {
-            if (ChargerFilter.accepts(ch, c.chargerMinKw(), want, c.chargerIncludeUnknown())) list.add(ch);
+            if (ChargerFilter.accepts(ch, c.chargerMinKw(), c.chargerVolts(), want, c.chargerIncludeUnknown())) list.add(ch);
         }
         return ChargerMarks.withoutBanned(list, ChargerMarks.parse(c.chargerMarks()));
     }
@@ -2226,7 +2226,7 @@ final class RoutePlanner {
         double f = (demo ? DemoMode.planTrend() : trend.factor()) * p.mapsRatio;
         int ahead = 0;
         if (before != null) for (ChargePlanner.Stop st : before.stops) if (st.km > here + ChargePlanner.HERE_KM) ahead++;
-        String key = System.identityHashCode(p) + "/" + p.chargerVersion + "/" + c.chargerMinKw() + "/" + c.chargerNetworks() + "/"
+        String key = System.identityHashCode(p) + "/" + p.chargerVersion + "/" + c.chargerMinKw() + "/" + c.chargerVolts() + "V/" + c.chargerNetworks() + "/"
                 + c.chargerIncludeUnknown() + "/" + c.planArrivePct() + "/" + c.planMaxPct() + "/" + Math.round(f * 100) + "/" + prog + "/"
                 + ahead + "/" + c.chargerMarks().hashCode();
         if (key.equals(sessionKey)) return;

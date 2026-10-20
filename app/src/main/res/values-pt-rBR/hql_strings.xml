@@ -228,6 +228,9 @@
     <string name="hql_profile_basic_detail">720p a 30 fps, sem recodificação (o mais leve para o celular)</string>
     <string name="hql_keep_screen_on">Manter a tela do celular ligada (mais calor e bateria; caso contrário, ela desliga como sempre e a projeção continua)</string>
     <string name="hql_thermal_mode">Proteção térmica</string>
+    <string name="hql_video_hud">Indicador da imagem</string>
+    <string name="hql_video_hud_note">No canto superior direito da tela do carro: temperatura da bateria, calor, fps, Mbit/s e, por Wi-Fi, o atraso da conexão (rtt)</string>
+    <string name="hql_hud_heat">calor</string>
     <string name="hql_thermal_normal">Normal (recomendada)</string>
     <string name="hql_thermal_soft">Suave · só baixa a taxa de bits; nunca abaixo de 30 fps, salvo em estado crítico</string>
     <string name="hql_thermal_off">Desligada · só é registrada</string>
@@ -740,6 +743,9 @@
     <string name="hql_charger_filter">Filtrar</string>
     <string name="hql_charger_filter_title">Carregadores que servem para você</string>
     <string name="hql_charger_min_power">Potência mínima</string>
+    <string name="hql_charger_volts">Tensão</string>
+    <string name="hql_charger_volts_800">800 V</string>
+    <string name="hql_charger_volts_400">400–500 V</string>
     <string name="hql_charger_any">Qualquer</string>
     <string name="hql_charger_networks">Redes</string>
     <string name="hql_charger_all_networks">Todas</string>
@@ -784,8 +790,8 @@
     <string name="hql_route_guide_waze">Navegar com o Waze</string>
     <string name="hql_nav_app">Navegar com</string>
     <string name="hql_charger_kw_unknown">potência sem confirmar</string>
-    <string name="hql_charger_unknown_include">Incluir os que não informam a potência</string>
-    <string name="hql_charger_unknown_exclude">Só com potência confirmada</string>
+    <string name="hql_charger_unknown_include">Incluir os que não informam potência ou tensão</string>
+    <string name="hql_charger_unknown_exclude">Só com dados confirmados</string>
     <string name="hql_charger_unknown_note">Na Espanha, os carregadores vêm do registro oficial da DGT, com a potência e a tensão de cada um. Fora, do OpenStreetMap, onde a maioria não informa a potência: Tesla, Ionity, Zunder, Fastned, Electra e Atlante contam com a potência típica (≈); os demais, só se você os incluir, e o plano prefere os confirmados.</string>
     <string name="hql_chargers_list_title">Carregadores na rota</string>
     <string name="hql_chargers_list_filtered">Os do filtro</string>

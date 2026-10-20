@@ -313,11 +313,11 @@ final class CarUi {
         }
         main.removeCallbacks(hideCableHint);
         cableHint = null;
-        // El marcador de la variante de pruebas, también: se vuelve a crear en la interfaz nueva.
-        main.removeCallbacks(labHudTick);
-        labHudView = null;
-        labHudRect = null;
-        if (LabControl.hud) main.post(labHudTick);
+        // El marcador de la imagen, también: se vuelve a crear en la interfaz nueva.
+        main.removeCallbacks(hudTick);
+        hudView = null;
+        hudRect = null;
+        main.post(hudTick);
         pres.setContentView(buildRoot(pres.getContext()));
         open(name);
         if (wasHidden && "aa".equals(name)) setHidden(true);
@@ -507,7 +507,11 @@ final class CarUi {
     private final Runnable aaGamePing = new Runnable() {
         @Override
         public void run() {
-            if (!aaPausedForGame) return;
+            // Solo la interfaz en uso (si no, este ping es de una interfaz vieja y ya no hay nada que pausar).
+            if (!aaPausedForGame || current != CarUi.this) {
+                aaPausedForGame = false;
+                return;
+            }
             com.andrerinas.openheadunit.connection.CommManager cm = com.andrerinas.openheadunit.App.Companion.provide(ctx).getCommManager();
             if (cm.isConnected()) {
                 if (cm.getTransportGeneration() != aaGameGen) {
@@ -1003,7 +1007,7 @@ final class CarUi {
             listenNight();
             RadioPlayer.addListener(radioChanged);
             current = this;
-            if (LabControl.hud) main.post(labHudTick);
+            main.post(hudTick);
             // Sección Coche: viajes, ruta y datos de la vía, mientras dure el modo ampliado (y los datos reales del coche
             // de la cuenta de Leapmotor, si está configurada: CarCloud).
             CarCloud.acquire(ctx, "ui");
@@ -1085,7 +1089,11 @@ final class CarUi {
             main.removeCallbacks(alertSeenTask);
             main.removeCallbacks(guessExpire);
             main.removeCallbacks(hideCableHint);
-            main.removeCallbacks(labHudTick);
+            main.removeCallbacks(hudTick);
+            // 20-10: el ping del juego seguía vivo en la interfaz vieja y, en la sesión siguiente, al ver otra conexión
+            // de AA le quitaba el vídeo (Android Auto quieto y sin toques, sin ningún juego abierto).
+            main.removeCallbacks(aaGamePing);
+            aaPausedForGame = false;
             stopPanelSlide();
             main.removeCallbacks(railTick);
             main.removeCallbacks(floatTick);
@@ -1393,7 +1401,7 @@ final class CarUi {
     /** Manda al relay los trozos que hay ahora (si han cambiado). */
     private void pushRects() {
         java.util.List<int[]> l = new java.util.ArrayList<>();
-        for (int[] r : new int[][]{panelRect, floatRect, guessRect, infoRect, labHudRect}) if (r != null) l.add(r);
+        for (int[] r : new int[][]{panelRect, floatRect, guessRect, infoRect, hudRect}) if (r != null) l.add(r);
         int[][] now = l.isEmpty() ? null : l.toArray(new int[0][]);
         if (java.util.Arrays.deepEquals(now, sentRects)) return;
         sentRects = now;
@@ -1960,65 +1968,68 @@ final class CarUi {
         return p;
     }
 
-    // ------------------------------------------------------------------ variante de pruebas: el marcador de Claude
+    // ------------------------------------------------------------------ el marcador de la imagen
 
     /** Ancho fijo del marcador (px del lienzo): el trozo que pinta el relay no cambia cada vez que cambia el texto. */
-    private static final int LAB_HUD_W = 660;
-    private TextView labHudView;
-    private int[] labHudRect;
+    private static final int HUD_W = 660;
+    private TextView hudView;
+    private int[] hudRect;
     /**
-     * Variante de pruebas: el marcador de la esquina de arriba a la derecha (LabControl.hudText: temperatura, calor, fps,
-     * bitrate, radio y lo que Claude tenga forzado), cada 2 s mientras esté encendido. Encima de AA lo pinta el relay
-     * (labHudRect); sus toques siguen yendo a AA.
+     * El marcador de la esquina de arriba a la derecha (VideoHud, y en la variante de pruebas lo que Claude tenga
+     * forzado: LabControl.hudText), cada 2 s mientras esté encendido (Ajustes › Imagen; de serie, sí). Encima de AA lo
+     * pinta el relay (hudRect); sus toques siguen yendo a AA.
      */
-    private final Runnable labHudTick = new Runnable() {
+    private final Runnable hudTick = new Runnable() {
         @Override
         public void run() {
             main.removeCallbacks(this);
-            if (!LabControl.hud || root == null) {
-                if (labHudView != null) labHudView.setVisibility(View.GONE);
-                if (labHudRect != null) {
-                    labHudRect = null;
+            String text = root == null || !new Config(ctx).videoHud() ? "" : LabControl.hudText(ctx);
+            if (text.isEmpty()) {
+                if (hudView != null) hudView.setVisibility(View.GONE);
+                if (hudRect != null) {
+                    hudRect = null;
                     pushRects();
                 }
+                // Aún sin cifras (la sesión empieza): se vuelve a mirar; apagado, no.
+                if (root != null && new Config(ctx).videoHud()) main.postDelayed(this, 2000);
                 return;
             }
-            if (labHudView == null) {
+            if (hudView == null) {
                 TextView t = CarStyle.text(root.getContext(), "", 17, 0xFFFFFFFF);
                 t.setPadding(14, 6, 14, 6);
                 t.setSingleLine(true);
                 t.setEllipsize(android.text.TextUtils.TruncateAt.END);
                 t.setGravity(Gravity.CENTER);
                 t.setBackground(CarStyle.round(0xCC000000, 14));
-                root.addView(t, new FrameLayout.LayoutParams(LAB_HUD_W, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT));
-                labHudView = t;
+                root.addView(t, new FrameLayout.LayoutParams(HUD_W, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT));
+                hudView = t;
             }
-            labHudView.setText(LabControl.hudText(ctx));
-            labHudView.measure(View.MeasureSpec.makeMeasureSpec(LAB_HUD_W, View.MeasureSpec.EXACTLY),
+            hudView.setText(text);
+            hudView.measure(View.MeasureSpec.makeMeasureSpec(HUD_W, View.MeasureSpec.EXACTLY),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            int x = Math.max(0, width - LAB_HUD_W - 12);
+            int x = Math.max(0, width - HUD_W - 12);
             int y = 8;
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) labHudView.getLayoutParams();
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) hudView.getLayoutParams();
             if (lp.leftMargin != x || lp.topMargin != y) {
                 lp.leftMargin = x;
                 lp.topMargin = y;
-                labHudView.setLayoutParams(lp);
+                hudView.setLayoutParams(lp);
             }
-            labHudView.setVisibility(View.VISIBLE);
-            labHudView.bringToFront();
-            int[] r = {x, y, LAB_HUD_W, labHudView.getMeasuredHeight()};
-            if (!java.util.Arrays.equals(r, labHudRect)) {
-                labHudRect = r;
+            hudView.setVisibility(View.VISIBLE);
+            hudView.bringToFront();
+            int[] r = {x, y, HUD_W, hudView.getMeasuredHeight()};
+            if (!java.util.Arrays.equals(r, hudRect)) {
+                hudRect = r;
                 pushRects();
             }
             main.postDelayed(this, 2000);
         }
     };
 
-    /** Variante de pruebas: enciende o apaga el marcador (LabControl, orden «hud»). */
-    static void labHud(boolean on) {
+    /** El marcador se enciende o se apaga (Ajustes › Imagen, o la orden «hud» de la variante de pruebas). */
+    static void refreshHud() {
         CarUi ui = current;
-        if (ui != null) ui.main.post(ui.labHudTick);
+        if (ui != null) ui.main.post(ui.hudTick);
     }
 
     // ------------------------------------------------------------------ aviso del cable (juegos, TV y vídeos por Wi-Fi)
@@ -2155,7 +2166,7 @@ final class CarUi {
         int areaW = aaShown ? aaRegW : width;
         int x = Math.max(0, areaX + (areaW - w) / 2);
         // Con el marcador de la variante de pruebas arriba a la derecha, el cartel justo debajo (no se pisan).
-        int[] hud = labHudRect;
+        int[] hud = hudRect;
         int y = hud != null ? hud[1] + hud[3] + 8 : 16;
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) videoInfo.getLayoutParams();
         lp.leftMargin = x;

@@ -228,6 +228,9 @@
     <string name="hql_profile_basic_detail">720p 30 fps，不重新编码（对手机负担最小）</string>
     <string name="hql_keep_screen_on">保持手机屏幕常亮（更耗电、更发热；关闭时屏幕照常熄灭，投屏继续）</string>
     <string name="hql_thermal_mode">过热保护</string>
+    <string name="hql_video_hud">画面指示</string>
+    <string name="hql_video_hud_note">车机屏幕右上角：电池温度、发热等级、fps、Mbit/s，以及 Wi-Fi 下的连接延迟（rtt）</string>
+    <string name="hql_hud_heat">发热</string>
     <string name="hql_thermal_normal">标准（推荐）</string>
     <string name="hql_thermal_soft">温和 · 只降低码率；除非手机进入“危急”状态，否则不低于 30 fps</string>
     <string name="hql_thermal_off">关闭 · 仅记录</string>
@@ -738,6 +741,9 @@
     <string name="hql_charger_filter">筛选</string>
     <string name="hql_charger_filter_title">适合你的充电桩</string>
     <string name="hql_charger_min_power">最低功率</string>
+    <string name="hql_charger_volts">电压</string>
+    <string name="hql_charger_volts_800">800 V</string>
+    <string name="hql_charger_volts_400">400–500 V</string>
     <string name="hql_charger_any">不限</string>
     <string name="hql_charger_networks">运营商</string>
     <string name="hql_charger_all_networks">全部</string>
@@ -782,8 +788,8 @@
     <string name="hql_route_guide_waze">用 Waze 导航</string>
     <string name="hql_nav_app">导航应用</string>
     <string name="hql_charger_kw_unknown">功率未确认</string>
-    <string name="hql_charger_unknown_include">包括无功率数据的充电桩</string>
-    <string name="hql_charger_unknown_exclude">仅限已确认功率</string>
+    <string name="hql_charger_unknown_include">包括无功率或电压数据的充电桩</string>
+    <string name="hql_charger_unknown_exclude">仅限已确认数据</string>
     <string name="hql_charger_unknown_note">在西班牙，充电桩来自官方 DGT 登记册，包含每个充电桩的功率和电压。在其他地区，数据来自 OpenStreetMap，大多数未标注功率：Tesla、Ionity、Zunder、Fastned、Electra 和 Atlante 按其典型功率计算（≈）；其余的只有在你选择包括时才计入，并且计划会优先选择已确认功率的充电桩。</string>
     <string name="hql_chargers_list_title">路线上的充电桩</string>
     <string name="hql_chargers_list_filtered">已筛选</string>

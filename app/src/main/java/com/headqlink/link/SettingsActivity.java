@@ -178,6 +178,11 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
         row(Str.get(R.string.hql_fluidity), () -> Str.get(cfg.fluidity() == VideoProfile.FLUID_60 ? R.string.hql_fluidity_60 : R.string.hql_fluidity_30))
                 .setOnClickListener(v -> pickFluidity());
         row(Str.get(R.string.hql_thermal_mode), () -> thermalLabel(cfg.thermalMode())).setOnClickListener(v -> pickThermal());
+        switchRow(Str.get(R.string.hql_video_hud), () -> Str.get(R.string.hql_video_hud_note), cfg::videoHud, on -> {
+            cfg.putBool(Config.VIDEO_HUD, on);
+            L.i("marcador de la imagen: " + (on ? "encendido" : "apagado"));
+            CarUi.refreshHud();
+        });
     }
 
     private void buildCarScreen() {
