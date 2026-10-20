@@ -143,6 +143,17 @@ class DrivingFixesTest {
         assertFalse(RoutePlanner.googleDisagrees(50.0, 45.0))
         assertTrue(RoutePlanner.googleDisagrees(60.0, 45.0))
         assertFalse(RoutePlanner.googleDisagrees(10.0, 8.0))
+        // 20-10: la ruta propia salió de 82,1 km y la de Google de 72,6 (×1,13). Mientras Google siga por su camino, no
+        // ha cambiado de ruta (antes recalculaba cada 35 s y el avance se quedaba en el km 0)…
+        val r0 = 82.1 / 72.6
+        assertFalse(RoutePlanner.googleChangedRoute(82.0, 72.6, r0))
+        assertFalse(RoutePlanner.googleChangedRoute(41.0, 36.0, r0))
+        // …y si Google cambia de camino (de repente faltan 20 km más), sí.
+        assertTrue(RoutePlanner.googleChangedRoute(41.0, 56.0, r0))
+        // Sin proporción, como antes.
+        assertTrue(RoutePlanner.googleChangedRoute(82.0, 72.6, Double.NaN))
+        // Y lo que se enseña, con los km de Maps (×0,88 ya vale).
+        assertEquals(0.88, RoutePlanner.mapsRatio(82.1, 72.6, 1.0), 1e-9)
     }
 
     @Test

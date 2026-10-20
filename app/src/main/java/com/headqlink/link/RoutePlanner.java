@@ -87,6 +87,13 @@ final class RoutePlanner {
          */
         boolean googleMatched;
         /**
+         * Al hacerla, los km de este plan por cada km de Google Maps hasta su final (NaN sin Google). La ruta propia puede
+         * salir más larga que la de Google y no encontrar otra mejor (20-10: 82 km frente a 72,6): el vigilante de «Google
+         * ha cambiado de ruta» compara con esta proporción, no con que coincidan (si no, recalculaba cada 35 s y el
+         * avance se quedaba en el km 0).
+         */
+        double googleRatio0 = Double.NaN;
+        /**
          * Km que cuenta Google Maps por cada km de este plan en lo que falta (mapsRatio): Maps puede ir por otra carretera
          * y, con las paradas añadidas, entra y sale de cada cargador. Multiplica el gasto de lo que falta y las distancias
          * que se enseñan. 1 mientras Maps no guíe esta ruta.
@@ -888,7 +895,7 @@ final class RoutePlanner {
         if (gl != null && !Double.isNaN(end)) {
             double google = gl.remainingM / 1000.0;
             double ours = end - p.km[Math.min(Math.max(0, p.progress), p.n - 1)];
-            if (googleDisagrees(ours, google)) {
+            if (googleChangedRoute(ours, google, p.googleRatio0)) {
                 if (googleGapSinceMs == 0) googleGapSinceMs = t;
                 if (t - googleGapSinceMs >= GOOGLE_GAP_MS) {
                     googleGapSinceMs = 0;
@@ -1145,8 +1152,11 @@ final class RoutePlanner {
 
     /** Con menos de esto por delante (km), la proporción con Google Maps ya no se toca (cerca del final baila). */
     static final double MAPS_RATIO_MIN_KM = 10;
-    /** Fuera de esto, Maps no va por esta ruta (otro destino, o recalculando): no se usa. */
-    static final double MAPS_RATIO_MIN = 0.9;
+    /**
+     * Fuera de esto, Maps no va por esta ruta (otro destino, o recalculando): no se usa. 20-10: la ruta propia salió un
+     * 13 % más larga que la de Maps (0,88) y se enseñaban 82 km con Maps diciendo 72.
+     */
+    static final double MAPS_RATIO_MIN = 0.85;
     static final double MAPS_RATIO_MAX = 1.25;
     /** Cambios menores que este no se aplican: el plan de carga no se rehace por décimas. */
     static final double MAPS_RATIO_STEP = 0.015;
@@ -1191,6 +1201,15 @@ final class RoutePlanner {
         if (r == p.mapsRatio) return;
         p.mapsRatio = r;
         L.i(String.format(Locale.US, "ruta: Google Maps cuenta %.0f km y el plan %.0f: lo que falta, ×%.2f (km y gasto)", google, ours, r));
+    }
+
+    /**
+     * Puro: ¿ha cambiado Google de ruta? Lo que falta según el plan frente a lo que falta según Google por la proporción
+     * que ya había al hacer el plan (planRatio; NaN: que coincidan). Si la ruta propia salió un 13 % más larga, sigue
+     * siéndolo mientras Google no cambie de camino.
+     */
+    static boolean googleChangedRoute(double oursKm, double googleKm, double planRatio) {
+        return googleDisagrees(oursKm, Double.isNaN(planRatio) || !(planRatio > 0) ? googleKm : googleKm * planRatio);
     }
 
     /** Puro: ¿lo que falta según Google y según el plan es demasiado distinto? */
@@ -2422,6 +2441,7 @@ final class RoutePlanner {
         double totalM = route.getDouble("distance");
         // Maps ya guía esta ruta: su proporción de km desde el principio (luego se sigue al día con cada vuelta).
         if (p.googleMatched) p.mapsRatio = mapsRatio(totalM / 1000, googleM / 1000, 1);
+        if (googleM > 0 && !p.googleMismatch) p.googleRatio0 = totalM / googleM;
         p.totalSeconds = Math.round(route.getDouble("duration"));
         double stepM = Math.max(200, totalM / 400);
 
