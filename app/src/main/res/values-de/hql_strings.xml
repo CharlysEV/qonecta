@@ -474,6 +474,16 @@
     <string name="hql_req_gaccuracy">Google-Standortgenauigkeit</string>
     <string name="hql_req_gaccuracy_why">Aktiviert. Für Android Auto sucht Google alle paar Sekunden nach WLAN-Netzen, und jede Suche unterbricht kurz das Bild über Wi-Fi Direct und Hotspot (Sprünge und träge Berührungen). Ausgeschaltet läuft es flüssiger. GPS funktioniert weiter wie bisher: Maps, die Route und die Blitzer brauchen sie nicht; nur in Garagen oder Gebäuden dauert die Ortung etwas länger.</string>
     <string name="hql_req_gaccuracy_ok">Aus: Android sucht während der Fahrt nicht nach WLAN-Netzen. GPS funktioniert wie bisher.</string>
+    <string name="hql_star_badge">★ TOP-NEUHEIT ★</string>
+    <string name="hql_star_title">Weniger WLAN-Aussetzer</string>
+    <string name="hql_star_body">Wir haben herausgefunden: Mit eingeschalteter «Google-Standortgenauigkeit» sucht Google alle 9 Sekunden nach WLAN-Netzen, während du Android Auto nutzt. Jede Suche unterbricht kurz die Verbindung zum Auto: Bildsprünge und träge Berührungen, vor allem mit Hotspot.\n\nSchaltest du sie aus, hört das Handy mit diesen Suchen auf. In unseren Tests verschwanden die Aussetzer, die sie verursachten.</string>
+    <string name="hql_star_gps">GPS funktioniert weiter wie bisher: Maps, die Route und die Blitzer brauchen sie nicht. Nur in Garagen oder Gebäuden dauert die Ortung etwas länger.</string>
+    <string name="hql_star_state_on">Sie ist gerade eingeschaltet</string>
+    <string name="hql_star_state_off">Sie ist schon aus ✓</string>
+    <string name="hql_star_turn_off">Jetzt ausschalten</string>
+    <string name="hql_star_later">Später</string>
+    <string name="hql_star_great">Perfekt!</string>
+    <string name="hql_star_also">Du findest sie auch unter «Voraussetzungen prüfen», als optional.</string>
     <string name="hql_req_port_title">Port 18463</string>
     <string name="hql_req_port_busy">Belegt: QDLink (oder eine andere App) ist offen, und das Fahrzeug findet Qonecta+ nicht. Beenden erzwingen.</string>
     <string name="hql_req_qdlink_why">Installiert: vor dem Verbinden schließen (belegt Port 18463). App-Info › Beenden erzwingen. Steckst du das Autokabel ein, kann Android es QDLink geben: Qonecta+ und „Immer“ wählen.</string>

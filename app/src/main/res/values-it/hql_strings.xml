@@ -475,6 +475,16 @@
     <string name="hql_req_gaccuracy">Precisione della posizione di Google</string>
     <string name="hql_req_gaccuracy_why">Attiva. Per Android Auto, Google cerca reti Wi-Fi ogni pochi secondi e ogni ricerca interrompe per un attimo l\'immagine via Wi-Fi Direct e hotspot (salti e tocchi lenti). Disattivandola è più fluido. Il GPS continua a funzionare uguale: Maps, il percorso e gli autovelox non ne hanno bisogno; impiega solo un po\' di più a localizzarti in garage o edifici.</string>
     <string name="hql_req_gaccuracy_ok">Disattivata: Android non cerca reti Wi-Fi mentre guidi. Il GPS funziona uguale.</string>
+    <string name="hql_star_badge">★ NOVITÀ STELLA ★</string>
+    <string name="hql_star_title">Meno interruzioni via Wi-Fi</string>
+    <string name="hql_star_body">Abbiamo scoperto che, con «Precisione della posizione di Google» attiva, Google cerca reti Wi-Fi ogni 9 secondi mentre usi Android Auto. Ogni ricerca interrompe per un attimo il collegamento con l\'auto: salti dell\'immagine e tocchi lenti, soprattutto con hotspot.\n\nSe la disattivi, il telefono smette di fare queste ricerche. Nei nostri test, le interruzioni che causavano sono sparite.</string>
+    <string name="hql_star_gps">Il GPS continua a funzionare uguale: Maps, il percorso e gli autovelox non ne hanno bisogno. Impiega solo un po\' di più a localizzarti in garage o edifici.</string>
+    <string name="hql_star_state_on">Ora è attiva</string>
+    <string name="hql_star_state_off">È già disattivata ✓</string>
+    <string name="hql_star_turn_off">Disattivala ora</string>
+    <string name="hql_star_later">Più tardi</string>
+    <string name="hql_star_great">Perfetto!</string>
+    <string name="hql_star_also">La trovi anche in Verifica requisiti, come facoltativa.</string>
     <string name="hql_req_port_title">Porta 18463</string>
     <string name="hql_req_port_busy">Occupata: QDLink (o un\'altra app) è aperta e l\'auto non trova Qonecta+. Forzane l\'interruzione.</string>
     <string name="hql_req_qdlink_why">Installata: chiudila prima di connetterti (occupa la porta 18463). Info app › Forza interruzione. Se colleghi il cavo dell\'auto, Android può darlo a QDLink: scegli Qonecta+ e «Sempre».</string>

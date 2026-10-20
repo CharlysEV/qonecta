@@ -603,7 +603,7 @@ final class Checklist {
             case GOOGLE_ACCURACY:
                 // Opcional: el botón también sirve para volver a activarla.
                 return new Row(Str.get(R.string.hql_req_gaccuracy), Str.get(ok ? R.string.hql_req_gaccuracy_ok : R.string.hql_req_gaccuracy_why))
-                        .action(Str.get(R.string.hql_open), this::openGoogleAccuracy);
+                        .action(Str.get(R.string.hql_open), () -> openGoogleAccuracy(act));
             case HOTSPOT_BAND:
                 return new Row(Str.get(R.string.hql_req_band), Str.get(R.string.hql_req_band_why))
                         .action(Str.get(R.string.hql_open), () -> HotspotWatcher.openSettings(act));
@@ -888,7 +888,7 @@ final class Checklist {
     }
 
     /** La pantalla de Google de la precisión de la ubicación; si no está (sin Google), los ajustes de ubicación. */
-    private void openGoogleAccuracy() {
+    static void openGoogleAccuracy(android.app.Activity act) {
         L.i("requisitos: abro la precisión de la ubicación de Google");
         try {
             act.startActivity(new Intent("com.google.android.gms.location.settings.LOCATION_ACCURACY"));

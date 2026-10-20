@@ -473,6 +473,16 @@
     <string name="hql_req_gaccuracy">Google 位置信息精确度</string>
     <string name="hql_req_gaccuracy_why">已开启。为 Android Auto，Google 每隔几秒搜索一次 Wi-Fi 网络，每次搜索都会让通过 Wi-Fi Direct 和热点传输的画面短暂中断（跳帧、触控迟缓）。关闭后会更流畅。GPS 照常工作：地图、路线和测速摄像头都不需要它，只是在车库或建筑物内定位会稍慢。</string>
     <string name="hql_req_gaccuracy_ok">已关闭：驾驶时 Android 不会搜索 Wi-Fi 网络。GPS 照常工作。</string>
+    <string name="hql_star_badge">★ 重磅新功能 ★</string>
+    <string name="hql_star_title">更少的 Wi-Fi 断连</string>
+    <string name="hql_star_body">我们发现，开启「Google 位置信息精确度」时，在使用 Android Auto 期间 Google 每 9 秒搜索一次 Wi-Fi 网络。每次搜索都会让与车机的连接短暂中断：画面跳帧、触控迟缓，热点模式下尤其明显。\n\n关闭后，手机就不再进行这些搜索。在我们的测试中，由此造成的断连都消失了。</string>
+    <string name="hql_star_gps">GPS 照常工作：地图、路线和测速摄像头都不需要它。只是在车库或建筑物内定位会稍慢。</string>
+    <string name="hql_star_state_on">当前为开启状态</string>
+    <string name="hql_star_state_off">你已经关闭了 ✓</string>
+    <string name="hql_star_turn_off">立即关闭</string>
+    <string name="hql_star_later">稍后</string>
+    <string name="hql_star_great">太好了！</string>
+    <string name="hql_star_also">在「条件检查」中也能找到（可选）。</string>
     <string name="hql_req_port_title">端口 18463</string>
     <string name="hql_req_port_busy">被占用：QDLink（或其他应用）已打开，车辆找不到 Qonecta+。请强行停止它。</string>
     <string name="hql_req_qdlink_why">已安装：连接前请关闭它（它会占用端口 18463）。应用信息 › 强行停止。如果插入车辆数据线，Android 可能会交给 QDLink 处理：请选择 Qonecta+ 和“始终”。</string>

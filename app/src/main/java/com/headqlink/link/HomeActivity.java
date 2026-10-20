@@ -91,9 +91,13 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         toggle = findViewById(R.id.hql_home_toggle);
         ((TextView) findViewById(R.id.hql_home_version)).setText(Ui.appVersionLabel(this));
         updateRow = findViewById(R.id.hql_home_update);
-        // Novedades de la versión recién instalada (solo la primera vez que arranca).
-        UpdateCheck.whatsNew(this, r -> {
-            if (r != null && !isFinishing()) showReleaseNotes(Str.get(R.string.hql_whats_new_title, r.version), r, false);
+        // La novedad estrella (una vez) y, al cerrarla, las novedades de la versión recién instalada (la primera vez que
+        // arranca).
+        StarFeature.show(this, () -> {
+            if (isFinishing()) return;
+            UpdateCheck.whatsNew(this, r -> {
+                if (r != null && !isFinishing()) showReleaseNotes(Str.get(R.string.hql_whats_new_title, r.version), r, false);
+            });
         });
         View menu = findViewById(R.id.hql_home_menu);
         menu.setOnClickListener(v -> showMenu(menu));

@@ -475,6 +475,16 @@
     <string name="hql_req_gaccuracy">Précision de la localisation Google</string>
     <string name="hql_req_gaccuracy_why">Activée. Pour Android Auto, Google recherche des réseaux Wi-Fi toutes les quelques secondes, et chaque recherche coupe brièvement l\'image en Wi-Fi Direct et en point d\'accès (sauts et touches lentes). Désactivée, c\'est plus fluide. Le GPS fonctionne toujours pareil : Maps, l\'itinéraire et les radars n\'en ont pas besoin ; il met seulement un peu plus de temps à vous situer dans les garages ou les bâtiments.</string>
     <string name="hql_req_gaccuracy_ok">Désactivée : Android ne recherche pas de réseaux Wi-Fi pendant que vous conduisez. Le GPS fonctionne pareil.</string>
+    <string name="hql_star_badge">★ NOUVEAUTÉ PHARE ★</string>
+    <string name="hql_star_title">Moins de coupures en Wi-Fi</string>
+    <string name="hql_star_body">Nous avons découvert qu\'avec «Précision de la localisation Google» activée, Google recherche des réseaux Wi-Fi toutes les 9 secondes pendant que vous utilisez Android Auto. Chaque recherche coupe un instant la liaison avec la voiture : sauts d\'image et touches lentes, surtout en point d\'accès.\n\nSi vous la désactivez, le téléphone arrête ces recherches. Dans nos tests, les coupures qu\'elles causaient ont disparu.</string>
+    <string name="hql_star_gps">Le GPS fonctionne toujours pareil : Maps, l\'itinéraire et les radars n\'en ont pas besoin. Il met seulement un peu plus de temps à vous situer dans les garages ou les bâtiments.</string>
+    <string name="hql_star_state_on">Elle est activée en ce moment</string>
+    <string name="hql_star_state_off">Elle est déjà désactivée ✓</string>
+    <string name="hql_star_turn_off">La désactiver maintenant</string>
+    <string name="hql_star_later">Plus tard</string>
+    <string name="hql_star_great">Parfait !</string>
+    <string name="hql_star_also">Vous la retrouvez aussi dans Vérification des prérequis, en option.</string>
     <string name="hql_req_port_title">Port 18463</string>
     <string name="hql_req_port_busy">Occupé : QDLink ou une autre appli l\'utilise, et la voiture ne trouve pas Qonecta+. Forcez son arrêt.</string>
     <string name="hql_req_qdlink_why">Installé : fermez-le avant de vous connecter (il occupe le port 18463). Infos sur l\'appli › Forcer l\'arrêt. Si vous branchez le câble de la voiture, Android peut le donner à QDLink : choisissez Qonecta+ et « Toujours ».</string>

@@ -475,6 +475,16 @@
     <string name="hql_req_gaccuracy">Precisão da localização Google</string>
     <string name="hql_req_gaccuracy_why">Ativada. Para o Android Auto, a Google procura redes Wi-Fi de poucos em poucos segundos, e cada procura interrompe por instantes a imagem por Wi-Fi Direct e hotspot (saltos e toques lentos). Desativada, fica mais fluido. O GPS continua a funcionar igual: o Maps, o percurso e os radares não precisam dela; só demora um pouco mais a localizá-lo em garagens ou edifícios.</string>
     <string name="hql_req_gaccuracy_ok">Desativada: o Android não procura redes Wi-Fi enquanto conduz. O GPS funciona igual.</string>
+    <string name="hql_star_badge">★ NOVIDADE ESTRELA ★</string>
+    <string name="hql_star_title">Menos cortes por Wi-Fi</string>
+    <string name="hql_star_body">Descobrimos que, com «Precisão da localização Google» ativada, a Google procura redes Wi-Fi a cada 9 segundos enquanto usa o Android Auto. Cada procura corta por instantes a ligação ao carro: saltos na imagem e toques lentos, sobretudo com hotspot.\n\nSe a desativar, o telemóvel deixa de fazer essas procuras. Nos nossos testes, os cortes que causavam desapareceram.</string>
+    <string name="hql_star_gps">O GPS continua a funcionar igual: o Maps, o percurso e os radares não precisam dela. Só demora um pouco mais a localizá-lo em garagens ou edifícios.</string>
+    <string name="hql_star_state_on">Agora está ativada</string>
+    <string name="hql_star_state_off">Já a tem desativada ✓</string>
+    <string name="hql_star_turn_off">Desativar agora</string>
+    <string name="hql_star_later">Mais tarde</string>
+    <string name="hql_star_great">Perfeito!</string>
+    <string name="hql_star_also">Também está em Verificação, como opcional.</string>
     <string name="hql_req_port_title">Porta 18463</string>
     <string name="hql_req_port_busy">Ocupada: o QDLink (ou outra aplicação) está aberto e o carro não encontra o Qonecta+. Force a paragem.</string>
     <string name="hql_req_qdlink_why">Instalado: feche-o antes de ligar (ocupa a porta 18463). Info. da aplicação › Forçar paragem. Se ligar o cabo do carro, o Android pode entregá-lo ao QDLink: escolha Qonecta+ e «Sempre».</string>

@@ -475,6 +475,16 @@
     <string name="hql_req_gaccuracy">Precisión de la ubicación de Google</string>
     <string name="hql_req_gaccuracy_why">Activada. Para Android Auto, Google busca redes Wi-Fi cada pocos segundos, y cada búsqueda corta un momento la imagen por Wi-Fi Direct y zona Wi-Fi (saltos y toques que tardan). Si la apagas, va más fluido. El GPS sigue funcionando igual: Maps, la ruta y los radares no la necesitan; solo tarda algo más en situarte dentro de garajes o edificios.</string>
     <string name="hql_req_gaccuracy_ok">Apagada: Android no busca redes Wi-Fi mientras conduces. El GPS funciona igual.</string>
+    <string name="hql_star_badge">★ NOVEDAD ESTRELLA ★</string>
+    <string name="hql_star_title">Menos cortes por Wi-Fi</string>
+    <string name="hql_star_body">Hemos descubierto que, con «Precisión de la ubicación de Google» activada, Google busca redes Wi-Fi cada 9 segundos mientras usas Android Auto. Cada búsqueda corta un momento la conexión con el coche: saltos de la imagen y toques que tardan, sobre todo con zona Wi-Fi.\n\nSi la apagas, el móvil deja de hacer esas búsquedas. En nuestras pruebas, los cortes que causaban desaparecieron.</string>
+    <string name="hql_star_gps">El GPS sigue funcionando igual: Maps, la ruta y los radares no la necesitan. Solo tarda algo más en situarte dentro de garajes o edificios.</string>
+    <string name="hql_star_state_on">Ahora la tienes activada</string>
+    <string name="hql_star_state_off">Ya la tienes apagada ✓</string>
+    <string name="hql_star_turn_off">Apagarla ahora</string>
+    <string name="hql_star_later">Más tarde</string>
+    <string name="hql_star_great">¡Perfecto!</string>
+    <string name="hql_star_also">También está en Comprobación, como opcional.</string>
     <string name="hql_req_port_title">Puerto 18463</string>
     <string name="hql_req_port_busy">Ocupado: QDLink (u otra app) está abierta y el coche no encuentra a Qonecta+. Fuerza su detención.</string>
     <string name="hql_req_qdlink_why">Instalada: ciérrala antes de conectar (ocupa el puerto 18463). Info. de la app › Forzar detención. Si enchufas el cable del coche, Android puede dárselo a QDLink: elige Qonecta+ y «Siempre».</string>

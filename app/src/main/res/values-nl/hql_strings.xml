@@ -474,6 +474,16 @@
     <string name="hql_req_gaccuracy">Google-locatienauwkeurigheid</string>
     <string name="hql_req_gaccuracy_why">Aan. Voor Android Auto zoekt Google om de paar seconden naar wifinetwerken, en elke zoekactie onderbreekt het beeld via Wi-Fi Direct en hotspot even (sprongen en trage aanrakingen). Uitgeschakeld loopt het vloeiender. De gps blijft hetzelfde werken: Maps, de route en de flitspalen hebben het niet nodig; alleen in garages of gebouwen duurt het iets langer om je te vinden.</string>
     <string name="hql_req_gaccuracy_ok">Uit: Android zoekt niet naar wifinetwerken terwijl je rijdt. De gps werkt hetzelfde.</string>
+    <string name="hql_star_badge">★ TOPNIEUWS ★</string>
+    <string name="hql_star_title">Minder haperingen via wifi</string>
+    <string name="hql_star_body">We ontdekten dat Google met «Google-locatienauwkeurigheid» aan elke 9 seconden naar wifinetwerken zoekt terwijl je Android Auto gebruikt. Elke zoekactie onderbreekt even de verbinding met de auto: beeldsprongen en trage aanrakingen, vooral met hotspot.\n\nZet je het uit, dan stopt de telefoon met die zoekacties. In onze tests verdwenen de haperingen die ze veroorzaakten.</string>
+    <string name="hql_star_gps">De gps blijft hetzelfde werken: Maps, de route en de flitspalen hebben het niet nodig. Alleen in garages of gebouwen duurt het iets langer om je te vinden.</string>
+    <string name="hql_star_state_on">Het staat nu aan</string>
+    <string name="hql_star_state_off">Het staat al uit ✓</string>
+    <string name="hql_star_turn_off">Nu uitzetten</string>
+    <string name="hql_star_later">Later</string>
+    <string name="hql_star_great">Perfect!</string>
+    <string name="hql_star_also">Je vindt het ook bij Controle van vereisten, als optioneel.</string>
     <string name="hql_req_port_title">Poort 18463</string>
     <string name="hql_req_port_busy">Bezet: QDLink (of een andere app) staat open en de auto vindt Qonecta+ niet. Stop die app met ‘Gedwongen stoppen’.</string>
     <string name="hql_req_qdlink_why">Geïnstalleerd: sluit het vóór het verbinden (het bezet poort 18463). App-info › Gedwongen stoppen. Steek je de autokabel in, dan kan Android hem aan QDLink geven: kies Qonecta+ en „Altijd”.</string>
