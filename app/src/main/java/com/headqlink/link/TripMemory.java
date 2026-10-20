@@ -21,6 +21,10 @@ import java.util.List;
  */
 final class TripMemory {
     static final long MAX_AGE_MS = 12 * 3600_000L;
+    /** Rutas más cortas que esto (m) no se retoman: no hace falta y, tan cortas, dos navegaciones distintas miden casi igual. */
+    static final int MIN_ROUTE_M = 3000;
+    /** Margen para «la misma ruta» (m), o el 3 %. Antes 1 km (el de MapsNavListener.sameRoute), demasiado para una corta. */
+    static final int SAME_ROUTE_M = 300;
     private static final String PREFS = "hql_trip";
     private static final String K_TRIP = "trip";
 
@@ -76,13 +80,14 @@ final class TripMemory {
     }
 
     /**
-     * ¿Es el viaje que lleva Google Maps ahora? Guardado hace menos de MAX_AGE_MS y Maps navegando la misma ruta (la
-     * misma longitud total, con el margen de MapsNavListener.sameRoute).
+     * ¿Es el viaje que lleva Google Maps ahora? Guardado hace menos de MAX_AGE_MS y Maps navegando la misma ruta: de más
+     * de MIN_ROUTE_M y la misma longitud total (SAME_ROUTE_M o el 3 %). 20-10: un viaje cerrado sin terminar se retomó
+     * horas después en otra navegación de 1 km al mismo sitio (con el margen de 1 km, «la misma»).
      */
     static boolean matches(Saved s, long nowMs, int mapsTotalM) {
-        if (s == null || s.dest == null || s.mapsTotalM <= 0 || mapsTotalM <= 0) return false;
+        if (s == null || s.dest == null || s.mapsTotalM < MIN_ROUTE_M || mapsTotalM < MIN_ROUTE_M) return false;
         if (nowMs - s.atMs > MAX_AGE_MS || nowMs < s.atMs) return false;
-        return MapsNavListener.sameRoute(s.mapsTotalM, mapsTotalM);
+        return Math.abs(s.mapsTotalM - mapsTotalM) <= Math.max(SAME_ROUTE_M, 0.03 * Math.max(s.mapsTotalM, mapsTotalM));
     }
 
     private static JSONObject place(RoutePlanner.Place p) throws JSONException {

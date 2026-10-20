@@ -72,6 +72,11 @@ class TripMemoryTest {
         assertTrue(TripMemory.matches(t, now, 251_500))
         // Otra ruta: otro viaje.
         assertFalse(TripMemory.matches(t, now, 120_000))
+        // 20-10: tan corta no se retoma (otra navegación de 1 km al mismo sitio parecía «la misma» con el margen de 1 km).
+        assertFalse(TripMemory.matches(trip(totalM = 1_200), now, 1_000))
+        // Margen de 300 m o el 3 %: 10 km y 10,2, la misma; 10 km y 10,5, otra.
+        assertTrue(TripMemory.matches(trip(totalM = 10_000), now, 10_200))
+        assertFalse(TripMemory.matches(trip(totalM = 10_000), now, 10_500))
         // Maps sin longitud, o el viaje se guardó sin Maps navegando.
         assertFalse(TripMemory.matches(t, now, -1))
         assertFalse(TripMemory.matches(trip(totalM = -1), now, 250_000))

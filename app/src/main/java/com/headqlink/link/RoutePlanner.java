@@ -423,8 +423,30 @@ final class RoutePlanner {
         nextGuessChecked = t.guessChecked;
         L.i("ruta: retomo el viaje de antes del reinicio (" + t.vias.size() + " paradas" + (t.round ? ", ida y vuelta" : "")
                 + "): Google Maps sigue con la misma ruta");
+        retaken = true;
         setTrip(t.dest, t.vias, t.round);
         return true;
+    }
+
+    /** El plan que viene es el del viaje retomado: si no cuadra con Google, se olvida (checkRetaken). */
+    private volatile boolean retaken;
+
+    /**
+     * El primer plan del viaje retomado: si no cuadra con Google (más de 2 km y del 25 %), ese viaje no era este (o su
+     * destino quedó mal situado): se olvida y se vuelve a leer la tarjeta de Maps.
+     */
+    private void checkRetaken(Plan np, String dest) {
+        retaken = false;
+        Google gl = google(dest);
+        if (np.multi() || gl == null || gl.remainingM <= 0 || !farFromGoogle(np.totalKm, gl.remainingM / 1000.0)) return;
+        L.i(String.format(Locale.US, "ruta: el viaje retomado no cuadra con Google Maps (plan %.1f km, Google %.1f): lo olvido y leo su "
+                + "tarjeta", np.totalKm, gl.remainingM / 1000.0));
+        TripMemory.clear(ctx);
+        rememberedTotalM = -2;
+        manual = null;
+        plan = null;
+        status = noRoute();
+        guessAsked = false;
     }
 
     /** Busca lugares por texto, primero cerca de lat/lon (llamar fuera del hilo principal). */
@@ -750,6 +772,7 @@ final class RoutePlanner {
             failedDestination = null;
             status = "";
             if (replan) afterReplan(np, dest, s);
+            else if (retaken) checkRetaken(np, dest);
             // Sin el nombre del destino: el log se exporta y no lleva ubicaciones (qdauto §7.5).
             L.i(String.format(Locale.US, "ruta: %.1f km · %.1f kWh estimados (%.1f por las cuestas; extra del coche %.1f kW y %.1f kWh al salir; "
                     + "corrección ×%.2f) · %d cargadores%s", np.totalKm, np.kwhCum[np.n - 1], np.gravCum[np.n - 1], np.overheadKw,
