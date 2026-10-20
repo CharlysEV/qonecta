@@ -33,6 +33,7 @@ final class PreviewShots {
 
     static final Shot[] ALL = {
             new Shot("coche_ruta", "car-0", 300, 1800),
+            new Shot("coche_ruta_recalculada", "car-0", 300, 1800, "recalculado"),
             new Shot("coche_conduccion", "car-1", 572, 1800),
             new Shot("coche_viajes", "car-2", 600, 1800),
             new Shot("coche_instrumentos", "car-3", 408.6, 1800),

@@ -127,7 +127,8 @@ final class DemoMode {
      * Ruta y Conducción vacías), "sin_viajes" (la pestaña Viajes sin viajes guardados), "sin_nube" (sin cuenta de
      * Leapmotor: todo estimado y Estado vacío), "cargando" (el coche cargando en un cargador rápido), "reev" (un C10
      * de autonomía extendida, con su depósito de gasolina) o "replan" (se gasta más de lo previsto: el plan de carga
-     * cambia y avisa) o "esperando_gps" (destino elegido y la ruta aún sin calcular: el móvil sin posición).
+     * cambia y avisa), "esperando_gps" (destino elegido y la ruta aún sin calcular: el móvil sin posición) o
+     * "recalculado" (el viaje lleva 48 km y se ha recalculado dos veces: la gráfica de Ruta, por tramos).
      */
     static void applyState(String state) {
         if (drive == null) return;
@@ -138,11 +139,38 @@ final class DemoMode {
         reev = "reev".equals(state);
         replan = "replan".equals(state);
         replanAsked = false;
+        RoutePlanner.Plan dp = plan;
+        if (dp != null) {
+            if ("recalculado".equals(state)) {
+                recalcHistory(dp);
+            } else {
+                dp.kmBase = 0;
+                dp.histKm = null;
+                dp.histElev = null;
+                dp.marks = new double[0];
+            }
+        }
         if ("cargando".equals(state)) {
             chargeT0Real = android.os.SystemClock.elapsedRealtime();
             // En las capturas (reloj quieto) se ve una carga de CHARGE_STILL_MIN con el dato de hace 40 s.
             chargeT0Ms = live ? nowMs() : nowMs() - Math.round(CHARGE_STILL_MIN * 60_000) - 40_000;
         }
+    }
+
+    /** «recalculado»: lo ya recorrido antes del plan de la demostración (48 km, recalculado a los 21,5 y a los 48). */
+    private static void recalcHistory(RoutePlanner.Plan dp) {
+        int n = 97;
+        double[] k = new double[n];
+        double[] e = new double[n];
+        double e0 = dp.elev != null && dp.elev.length > 0 ? dp.elev[0] : 600;
+        for (int i = 0; i < n; i++) {
+            k[i] = 48.0 * i / (n - 1);
+            e[i] = e0 - 60 + 45 * Math.sin(k[i] / 7.0) + k[i] * 1.2;
+        }
+        dp.kmBase = 48;
+        dp.histKm = k;
+        dp.histElev = e;
+        dp.marks = new double[]{21.5, 48};
     }
 
     /** Estados que mandan sobre los datos reales de la nube (si la cuenta está configurada): «cargando» y «sin_nube». */

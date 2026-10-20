@@ -2770,7 +2770,17 @@ final class RouteTab implements CarScreen {
     }
 
     private static float xFor(RoutePlanner.Plan pl, int i, RectF c) {
-        return (float) (c.left + pl.km[i] / Math.max(0.1, pl.totalKm) * c.width());
+        return xKm(pl, pl.km[i], c);
+    }
+
+    /** x del km km del plan, en el eje de todo el viaje (lo ya recorrido en planes anteriores, a la izquierda). */
+    private static float xKm(RoutePlanner.Plan pl, double km, RectF c) {
+        return (float) (c.left + (pl.kmBase + km) / Math.max(0.1, pl.kmBase + pl.totalKm) * c.width());
+    }
+
+    /** x del km km del viaje (no del plan). */
+    private static float xTrip(RoutePlanner.Plan pl, double tripKm, RectF c) {
+        return (float) (c.left + tripKm / Math.max(0.1, pl.kmBase + pl.totalKm) * c.width());
     }
 
     private float yFor(double e, RectF c) {
@@ -2787,6 +2797,13 @@ final class RouteTab implements CarScreen {
         for (double e : pl.elev) {
             lo = Math.min(lo, e);
             hi = Math.max(hi, e);
+        }
+        if (pl.histElev != null) {
+            for (double e : pl.histElev) {
+                if (Double.isNaN(e) || e == 0) continue;
+                lo = Math.min(lo, e);
+                hi = Math.max(hi, e);
+            }
         }
         double span = Math.max(60, hi - lo);
         minE = (float) Math.max(lo - span * 0.08, Math.min(0, lo));
@@ -2879,6 +2896,8 @@ final class RouteTab implements CarScreen {
         }
         p.setStrokeCap(Paint.Cap.BUTT);
         p.setStyle(Paint.Style.FILL);
+        // Lo recorrido con planes anteriores del mismo viaje (recálculos, reconexiones): su relieve, en gris.
+        history(cv, c, pl, p);
         // Lo ya recorrido, apagado.
         float xp = xFor(pl, prog, c);
         p.setColor(CarKit.alpha(CarKit.SURFACE, 0.5f));
@@ -2889,7 +2908,7 @@ final class RouteTab implements CarScreen {
         if (chargePlan != null) for (ChargePlanner.Stop st : chargePlan.stops) planStops.add(st.charger);
         for (RoutePlanner.Charger ch : pl.chargers) {
             if (!wanted(ch)) continue;
-            float x = (float) (c.left + ch.kmAlong / Math.max(0.1, pl.totalKm) * c.width());
+            float x = xKm(pl, ch.kmAlong, c);
             if (planStops.contains(ch)) {
                 // Parada del plan: anillo del acento alrededor del rayo.
                 p.setColor(CarKit.alpha(CarKit.ACCENT, 0.35f));
@@ -2917,7 +2936,7 @@ final class RouteTab implements CarScreen {
                     // Al pasar por una parada, la línea sube en vertical hasta lo cargado.
                     while (stop < cp.stops.size() && cp.stops.get(stop).km <= pl.km[i]) {
                         ChargePlanner.Stop st = cp.stops.get(stop++);
-                        float xs = (float) (c.left + st.km / Math.max(0.1, pl.totalKm) * c.width());
+                        float xs = xKm(pl, st.km, c);
                         socLine.lineTo(xs, (float) (c.bottom - Math.max(0, Math.min(100, st.arrivePct)) / 100 * c.height()));
                         socLine.lineTo(xs, (float) (c.bottom - Math.max(0, Math.min(100, st.departPct)) / 100 * c.height()));
                     }
@@ -2953,7 +2972,9 @@ final class RouteTab implements CarScreen {
         cv.drawCircle(xp, yp, 17, p);
         p.setColor(CarKit.ACCENT);
         cv.drawCircle(xp, yp, 9, p);
-        String here2 = Str.get(R.string.hql_here_km, here);
+        // Las líneas de recálculo (donde empezó cada tramo del viaje).
+        recalcMarks(cv, c, pl, p);
+        String here2 = Str.get(R.string.hql_here_km, pl.kmBase + here);
         p.setTypeface(CarKit.MEDIUM);
         p.setTextSize(20);
         float tw = p.measureText(here2) + 22;
@@ -2963,18 +2984,66 @@ final class RouteTab implements CarScreen {
         cv.drawRoundRect(tmp, 10, 10, p);
         CarKit.text(cv, here2, tmp.centerX(), tmp.bottom - 9, 20, CarKit.TEXT, CarKit.MEDIUM, p, Paint.Align.CENTER);
         // Km bajo el eje.
-        double stepKm = pl.totalKm > 300 ? 100 : pl.totalKm > 120 ? 50 : pl.totalKm > 40 ? 10 : 5;
+        double tripKm = pl.kmBase + pl.totalKm;
+        double stepKm = tripKm > 300 ? 100 : tripKm > 120 ? 50 : tripKm > 40 ? 10 : 5;
         p.setTypeface(CarKit.MEDIUM);
         p.setTextSize(18);
         // Sin pisar el «km» del final (18-10: «150» encima de «km» en una ruta de 151 km).
         float unitLeft = c.right - p.measureText("km") - 10;
-        for (double k = 0; k <= pl.totalKm + 0.1; k += stepKm) {
-            float x = (float) (c.left + k / pl.totalKm * c.width());
+        for (double k = 0; k <= tripKm + 0.1; k += stepKm) {
+            float x = xTrip(pl, k, c);
             String label = String.format(Locale.getDefault(), "%.0f", k);
             if (k > 0 && x + p.measureText(label) / 2 > unitLeft) break;
             CarKit.text(cv, label, x, c.bottom + 24, 18, CarKit.FAINT, CarKit.MEDIUM, p, k == 0 ? Paint.Align.LEFT : Paint.Align.CENTER);
         }
         CarKit.text(cv, "km", c.right, c.bottom + 24, 18, CarKit.FAINT, CarKit.MEDIUM, p, Paint.Align.RIGHT);
+    }
+
+    /** El relieve de lo recorrido con planes anteriores del mismo viaje (en gris, sin colores de pendiente). */
+    private void history(Canvas cv, RectF c, RoutePlanner.Plan pl, Paint p) {
+        double[] hk = pl.histKm;
+        double[] he = pl.histElev;
+        if (hk == null || he == null || hk.length < 2 || hk.length != he.length) return;
+        Path h = new Path();
+        Path ridge = new Path();
+        h.moveTo(xTrip(pl, hk[0], c), c.bottom);
+        boolean first = true;
+        for (int i = 0; i < hk.length; i++) {
+            float x = xTrip(pl, hk[i], c);
+            float y = Double.isNaN(he[i]) ? c.bottom : yFor(he[i], c);
+            h.lineTo(x, y);
+            if (first) ridge.moveTo(x, y);
+            else ridge.lineTo(x, y);
+            first = false;
+        }
+        h.lineTo(xTrip(pl, hk[hk.length - 1], c), c.bottom);
+        h.close();
+        p.setColor(CarKit.alpha(CarKit.MUTED, 0.28f));
+        cv.drawPath(h, p);
+        p.setStyle(Paint.Style.STROKE);
+        p.setStrokeWidth(3f);
+        p.setColor(CarKit.alpha(CarKit.MUTED, 0.8f));
+        cv.drawPath(ridge, p);
+        p.setStyle(Paint.Style.FILL);
+    }
+
+    /** Una línea vertical en cada km del viaje donde se recalculó, con «recalculado» abajo (si cabe). */
+    private void recalcMarks(Canvas cv, RectF c, RoutePlanner.Plan pl, Paint p) {
+        if (pl.marks == null || pl.marks.length == 0) return;
+        String label = Str.get(R.string.hql_route_recalc_mark);
+        p.setTypeface(CarKit.MEDIUM);
+        p.setTextSize(15);
+        float lw = p.measureText(label);
+        float lastLabelX = -1e9f;
+        for (double m : pl.marks) {
+            float x = xTrip(pl, m, c);
+            p.setColor(CarKit.alpha(CarKit.AMBER, 0.75f));
+            for (float y = c.top + 34; y < c.bottom; y += 14) cv.drawRect(x - 1, y, x + 1, Math.min(c.bottom, y + 8), p);
+            if (x - lastLabelX > lw + 14 && x + 6 + lw < c.right) {
+                CarKit.text(cv, label, x + 6, c.bottom - 44, 15, CarKit.AMBER, CarKit.MEDIUM, p, Paint.Align.LEFT);
+                lastLabelX = x;
+            }
+        }
     }
 
     /**
@@ -2992,19 +3061,22 @@ final class RouteTab implements CarScreen {
             v[j] = (b - a) / len * 100;
             max = Math.max(max, v[j]);
         }
-        float w = c.width() / SEGMENTS;
         double here = pl.km[prog];
         if (!Double.isNaN(avg)) averageLine(cv, c, avg, max, p);
         for (int j = 0; j < SEGMENTS; j++) {
             float h = (float) (Math.max(0, v[j]) / max * (c.height() - 20));
-            float x = c.left + j * w + 4;
+            // En el eje de todo el viaje: con planes anteriores, este plan ocupa solo su parte (a la derecha).
+            float x = xKm(pl, j * len, c) + 4;
+            float w = xKm(pl, (j + 1) * len, c) - xKm(pl, j * len, c);
             boolean past = (j + 1) * len <= here;
             int col = v[j] < 15 ? CarKit.GREEN : v[j] < 21 ? CarKit.ACCENT : v[j] < 27 ? CarKit.AMBER : CarKit.RED;
             p.setColor(CarKit.alpha(col, past ? 0.25f : 0.85f));
-            tmp.set(x, c.bottom - Math.max(4, h), x + w - 8, c.bottom);
+            tmp.set(x, c.bottom - Math.max(4, h), x + Math.max(2, w - 8), c.bottom);
             cv.drawRoundRect(tmp, 5, 5, p);
-            CarKit.text(cv, String.format(Locale.getDefault(), "%.0f", v[j]), x + (w - 8) / 2, tmp.top - 6, 17,
-                    past ? CarKit.MUTED : CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.CENTER);
+            if (w >= 30) {
+                CarKit.text(cv, String.format(Locale.getDefault(), "%.0f", v[j]), x + (w - 8) / 2, tmp.top - 6, 17,
+                        past ? CarKit.MUTED : CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.CENTER);
+            }
         }
     }
 

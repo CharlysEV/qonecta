@@ -626,6 +626,7 @@
     <string name="hql_energy_needed">Nécessaire</string>
     <string name="hql_expected_use">Conso prévue</string>
     <string name="hql_here_km">Vous · km %1$.0f</string>
+    <string name="hql_route_recalc_mark">recalculé</string>
     <string name="hql_legend_up">Montée</string>
     <string name="hql_legend_down">Descente</string>
     <string name="hql_legend_headwind">Vent de face</string>

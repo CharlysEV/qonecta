@@ -626,6 +626,7 @@
     <string name="hql_energy_needed">Necesitas</string>
     <string name="hql_expected_use">Consumo previsto</string>
     <string name="hql_here_km">Aquí · km %1$.0f</string>
+    <string name="hql_route_recalc_mark">recalculado</string>
     <string name="hql_legend_up">Subida</string>
     <string name="hql_legend_down">Bajada</string>
     <string name="hql_legend_headwind">Viento de cara</string>

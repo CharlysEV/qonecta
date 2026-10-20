@@ -624,6 +624,7 @@
     <string name="hql_energy_needed">所需电量</string>
     <string name="hql_expected_use">预计能耗</string>
     <string name="hql_here_km">你 · km %1$.0f</string>
+    <string name="hql_route_recalc_mark">已重新计算</string>
     <string name="hql_legend_up">上坡</string>
     <string name="hql_legend_down">下坡</string>
     <string name="hql_legend_headwind">逆风</string>

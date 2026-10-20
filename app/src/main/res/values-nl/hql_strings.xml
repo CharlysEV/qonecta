@@ -625,6 +625,7 @@
     <string name="hql_energy_needed">Nodig</string>
     <string name="hql_expected_use">Verwacht verbruik</string>
     <string name="hql_here_km">Hier · km %1$.0f</string>
+    <string name="hql_route_recalc_mark">herberekend</string>
     <string name="hql_legend_up">Stijging</string>
     <string name="hql_legend_down">Daling</string>
     <string name="hql_legend_headwind">Tegenwind</string>

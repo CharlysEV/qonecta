@@ -42,6 +42,11 @@ final class TripMemory {
         int mapsTotalM = -1;
         /** Hora (de pared) a la que se guardó. */
         long atMs;
+        /** Lo recorrido del viaje (RoutePlanner.TripCarry): km hechos, líneas de recálculo y relieve. */
+        double kmBase;
+        double[] marks = new double[0];
+        double[] histKm = new double[0];
+        double[] histElev = new double[0];
     }
 
     // ------------------------------------------------------------------ puro
@@ -53,6 +58,10 @@ final class TripMemory {
             JSONArray v = new JSONArray();
             for (RoutePlanner.Place p : s.vias) v.put(place(p));
             o.put("vias", v);
+            o.put("kmBase", s.kmBase);
+            o.put("marks", arr(s.marks));
+            o.put("histKm", arr(s.histKm));
+            o.put("histElev", arr(s.histElev));
             return o.toString();
         } catch (JSONException e) {
             return "";
@@ -73,6 +82,14 @@ final class TripMemory {
             s.guessChecked = o.optBoolean("checked");
             s.mapsTotalM = o.optInt("mapsTotalM", -1);
             s.atMs = o.optLong("at");
+            s.kmBase = o.optDouble("kmBase", 0);
+            s.marks = arr(o.optJSONArray("marks"));
+            s.histKm = arr(o.optJSONArray("histKm"));
+            s.histElev = arr(o.optJSONArray("histElev"));
+            if (s.histKm.length != s.histElev.length) {
+                s.histKm = new double[0];
+                s.histElev = new double[0];
+            }
             return s;
         } catch (JSONException e) {
             return null;
@@ -88,6 +105,19 @@ final class TripMemory {
         if (s == null || s.dest == null || s.mapsTotalM < MIN_ROUTE_M || mapsTotalM < MIN_ROUTE_M) return false;
         if (nowMs - s.atMs > MAX_AGE_MS || nowMs < s.atMs) return false;
         return Math.abs(s.mapsTotalM - mapsTotalM) <= Math.max(SAME_ROUTE_M, 0.03 * Math.max(s.mapsTotalM, mapsTotalM));
+    }
+
+    private static JSONArray arr(double[] a) throws JSONException {
+        JSONArray j = new JSONArray();
+        if (a != null) for (double d : a) j.put(Double.isNaN(d) ? 0 : Math.round(d * 1000) / 1000.0);
+        return j;
+    }
+
+    private static double[] arr(JSONArray j) {
+        if (j == null) return new double[0];
+        double[] a = new double[j.length()];
+        for (int i = 0; i < a.length; i++) a[i] = j.optDouble(i, 0);
+        return a;
     }
 
     private static JSONObject place(RoutePlanner.Place p) throws JSONException {

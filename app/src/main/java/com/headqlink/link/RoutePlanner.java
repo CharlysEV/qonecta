@@ -100,6 +100,16 @@ final class RoutePlanner {
          */
         volatile boolean doubt;
         /**
+         * Km del viaje ya hechos antes de este plan (recálculos y reconexiones de la misma ruta): la gráfica sigue desde el
+         * principio del viaje (20-10: cada recálculo la volvía a poner en el km 0).
+         */
+        double kmBase;
+        /** El relieve de lo ya recorrido en el viaje (km del viaje y altitud), o null. */
+        double[] histKm;
+        double[] histElev;
+        /** Km del viaje donde se recalculó o se volvió a planificar (líneas en la gráfica). */
+        double[] marks = new double[0];
+        /**
          * Km que cuenta Google Maps por cada km de este plan en lo que falta (mapsRatio): Maps puede ir por otra carretera
          * y, con las paradas añadidas, entra y sale de cada cargador. Multiplica el gasto de lo que falta y las distancias
          * que se enseñan. 1 mientras Maps no guíe esta ruta.
@@ -240,6 +250,20 @@ final class RoutePlanner {
     private static volatile Place manual;
     /** Paradas intermedias del viaje elegido aquí (como mucho SavedPlaces.MAX_VIA) y si vuelve a la salida. */
     private static volatile List<Place> vias = new ArrayList<>();
+
+    /** Lo recorrido del viaje en curso, para el plan siguiente de la misma ruta (recálculo o reconexión). */
+    static final class TripCarry {
+        String dest;
+        double kmBase;
+        double[] histKm = new double[0];
+        double[] histElev = new double[0];
+        double[] marks = new double[0];
+        long atMs;
+    }
+
+    /** Como mucho, tantos puntos del relieve de lo recorrido. */
+    static final int MAX_HIST = 400;
+    private static volatile TripCarry carry;
     /** Para guardar el viaje en curso (TripMemory): el contexto de la app y lo último guardado de Maps. */
     private static volatile Context memCtx;
     private static volatile int rememberedTotalM = -1;
@@ -359,6 +383,8 @@ final class RoutePlanner {
         nextGuessChecked = false;
         if (pl != null && (!v.isEmpty() || round)) L.i("ruta: viaje con " + v.size() + " paradas" + (round ? ", ida y vuelta" : ""));
         manual = pl;
+        TripCarry tc = carry;
+        if (pl == null || tc == null || !pl.name.equals(tc.dest)) carry = null;
         rememberTrip(pl, v, roundTrip);
         RoutePlanner r = instance;
         if (r != null) {
@@ -397,6 +423,13 @@ final class RoutePlanner {
         MapsNavListener.Info mi = MapsNavListener.ongoing();
         t.mapsTotalM = MapsNavListener.routing(mi) ? mi.totalM : -1;
         t.atMs = System.currentTimeMillis();
+        TripCarry tc = carry;
+        if (tc != null && pl.name.equals(tc.dest)) {
+            t.kmBase = tc.kmBase;
+            t.marks = tc.marks;
+            t.histKm = tc.histKm;
+            t.histElev = tc.histElev;
+        }
         rememberedTotalM = t.mapsTotalM;
         rememberedGuessed = t.guessed;
         TripMemory.save(c, t);
@@ -424,6 +457,16 @@ final class RoutePlanner {
         L.i("ruta: retomo el viaje de antes del reinicio (" + t.vias.size() + " paradas" + (t.round ? ", ida y vuelta" : "")
                 + "): Google Maps sigue con la misma ruta");
         retaken = true;
+        if (t.kmBase > 0) {
+            TripCarry tc = new TripCarry();
+            tc.dest = t.dest.name;
+            tc.kmBase = t.kmBase;
+            tc.marks = t.marks;
+            tc.histKm = t.histKm;
+            tc.histElev = t.histElev;
+            tc.atMs = System.currentTimeMillis();
+            carry = tc;
+        }
         setTrip(t.dest, t.vias, t.round);
         return true;
     }
@@ -520,6 +563,12 @@ final class RoutePlanner {
 
     static synchronized void stop() {
         if (instance == null) return;
+        Plan last = instance.plan;
+        if (last != null && !instance.demo && !testMode && last.arrivedAtMs == 0 && last.n >= 2) {
+            carry = carryFrom(last, last.destination);
+            Place m = manual;
+            if (m != null && m.name.equals(last.destination)) rememberTrip(m, vias, roundTrip);
+        }
         instance.finishOnStop();
         instance.running = false;
         CarSensors.stop();
@@ -672,21 +721,60 @@ final class RoutePlanner {
             } else {
                 // Junto al destino es la llegada (aparcado algo antes): las cuentas del viaje se cierran igual.
                 Plan cur = plan;
+                boolean arrivedNow = false;
                 if (cur != null && here != null && cur.arrivedAtMs == 0 && !Double.isNaN(cur.startSoc)) {
                     double toGo = cur.totalKm - cur.km[Math.min(cur.progress, cur.n - 1)];
                     if (arrived(toGo, straightToEndKm(cur, here[0], here[1]), false, true)) {
                         markArrived(cur, toGo, "Google Maps terminó la navegación junto al destino");
+                        arrivedNow = true;
                     }
                 }
-                L.i("ruta: Google Maps ha dejado de navegar: quito el destino que había deducido");
-                keptAtStopLogged = false;
-                guessAsked = false;
-                guessRejected.clear();
-                setManualDestination(null);
-                return;
+                // 20-10: al desconectar y volver, Android Auto arranca de cero y Maps deja de navegar un momento; el
+                // destino se quitaba y el viaje empezaba otra vez en el km 0. Al conectar, se espera a que Maps vuelva
+                // (MAPS_BACK_WAIT_MS: una parada corta); conectado de antes, MAPS_GONE_CONFIRM_MS.
+                long now = SystemClock.elapsedRealtime();
+                if (mapsGoneSinceMs == 0) {
+                    mapsGoneSinceMs = now;
+                    mapsGoneAtStart = now - startedMs < SESSION_START_GRACE_MS;
+                }
+                long wait = mapsGoneAtStart ? MAPS_BACK_WAIT_MS : MAPS_GONE_CONFIRM_MS;
+                boolean done = arrivedNow || (cur != null && cur.arrivedAtMs != 0);
+                if (!done && now - mapsGoneSinceMs < wait) {
+                    if (!mapsGoneLogged) {
+                        mapsGoneLogged = true;
+                        L.i(mapsGoneAtStart ? "ruta: Google Maps aún no navega tras conectar: sigo con el viaje hasta "
+                                + MAPS_BACK_WAIT_MS / 60_000 + " min por si vuelve con la ruta"
+                                : "ruta: Google Maps ha dejado de navegar: espero " + MAPS_GONE_CONFIRM_MS / 1000 + " s antes de quitar el destino");
+                    }
+                } else {
+                    L.i("ruta: Google Maps ha dejado de navegar: quito el destino que había deducido");
+                    mapsGoneSinceMs = 0;
+                    mapsGoneLogged = false;
+                    keptAtStopLogged = false;
+                    guessAsked = false;
+                    guessRejected.clear();
+                    setManualDestination(null);
+                    return;
+                }
             }
         } else {
             keptAtStopLogged = false;
+            if (mapsGoneSinceMs != 0 && guessed && !demo) {
+                // Maps vuelve a navegar: ¿la misma ruta (cuadra con lo que falta en el plan) o otra?
+                mapsGoneSinceMs = 0;
+                mapsGoneLogged = false;
+                Plan cur = plan;
+                Google gl = google(dest);
+                if (cur != null && gl != null && gl.remainingM > 0 && !cur.multi()
+                        && farFromGoogle(cur.totalKm - cur.km[Math.min(cur.progress, cur.n - 1)], gl.remainingM / 1000.0)) {
+                    L.i("ruta: Google Maps vuelve con otra ruta: quito el destino de antes y leo su tarjeta");
+                    guessAsked = false;
+                    guessRejected.clear();
+                    setManualDestination(null);
+                    return;
+                }
+                L.i("ruta: Google Maps vuelve a navegar con la misma ruta: sigo con el viaje");
+            }
         }
         boolean replan = false;
         if (p != null && dest.equals(p.destination)) {
@@ -768,6 +856,12 @@ final class RoutePlanner {
                     return;
                 }
             }
+            // El viaje sigue: lo recorrido con el plan de antes (recálculo, o volver a planificar la misma ruta) o en la sesión
+            // anterior (reconexión) pasa al nuevo, con una línea donde empieza.
+            if (p != null && dest.equals(p.destination) && p.arrivedAtMs == 0 && p.n >= 2) carry = carryFrom(p, dest);
+            TripCarry tc = carry;
+            if (tc != null && dest.equals(tc.dest) && System.currentTimeMillis() - tc.atMs < TripMemory.MAX_AGE_MS) attach(np, tc);
+            else carry = null;
             plan = np;
             failedDestination = null;
             status = "";
@@ -859,6 +953,16 @@ final class RoutePlanner {
     /** …durante esto. */
     static final long GOOGLE_GAP_MS = 30_000;
     private long lastReplanMs;
+    /** Al conectar, Maps puede tardar en volver a navegar: se sigue con el viaje hasta esto. */
+    static final long MAPS_BACK_WAIT_MS = 15 * 60_000L;
+    /** Conectado de antes, Maps sin navegar esto antes de quitar el destino deducido. */
+    static final long MAPS_GONE_CONFIRM_MS = 20_000L;
+    /** «Al conectar»: el planificador empezó hace menos de esto. */
+    static final long SESSION_START_GRACE_MS = 60_000L;
+    /** Desde cuándo Maps no navega con un destino deducido (0: navega), si fue al conectar, y si ya se dijo. */
+    private long mapsGoneSinceMs;
+    private boolean mapsGoneAtStart;
+    private boolean mapsGoneLogged;
     /** Freno: tantos recálculos seguidos que siguen sin cuadrar con Google… */
     static final int FAR_REPLANS = 3;
     /** …en este tiempo, y se prueba el otro sitio del destino o el plan pasa a dudoso. */
@@ -1254,6 +1358,54 @@ final class RoutePlanner {
      */
     static boolean googleChangedRoute(double oursKm, double googleKm, double planRatio) {
         return googleDisagrees(oursKm, Double.isNaN(planRatio) || !(planRatio > 0) ? googleKm : googleKm * planRatio);
+    }
+
+    /** Puro: lo recorrido del viaje hasta donde va p (con lo de antes), para el plan siguiente de la misma ruta. */
+    static TripCarry carryFrom(Plan p, String dest) {
+        TripCarry c = new TripCarry();
+        c.dest = dest;
+        c.atMs = System.currentTimeMillis();
+        int prog = Math.min(Math.max(0, p.progress), p.n - 1);
+        c.kmBase = p.kmBase + p.km[prog];
+        int old = p.histKm == null ? 0 : p.histKm.length;
+        double[] k = new double[old + prog + 1];
+        double[] e = new double[old + prog + 1];
+        if (old > 0) {
+            System.arraycopy(p.histKm, 0, k, 0, old);
+            System.arraycopy(p.histElev, 0, e, 0, old);
+        }
+        for (int i = 0; i <= prog; i++) {
+            k[old + i] = p.kmBase + p.km[i];
+            e[old + i] = p.elev != null && i < p.elev.length ? p.elev[i] : Double.NaN;
+        }
+        double[][] t = thin(k, e, MAX_HIST);
+        c.histKm = t[0];
+        c.histElev = t[1];
+        c.marks = p.marks == null ? new double[0] : p.marks.clone();
+        return c;
+    }
+
+    /** Puro: el plan nuevo de la misma ruta sigue el viaje (desde c.kmBase), con una línea donde empieza. */
+    static void attach(Plan np, TripCarry c) {
+        if (c == null || c.kmBase < 0.05) return;
+        np.kmBase = c.kmBase;
+        np.histKm = c.histKm;
+        np.histElev = c.histElev;
+        np.marks = java.util.Arrays.copyOf(c.marks, c.marks.length + 1);
+        np.marks[c.marks.length] = c.kmBase;
+    }
+
+    /** Puro: como mucho max puntos, repartidos (el primero y el último, siempre). */
+    static double[][] thin(double[] k, double[] e, int max) {
+        if (k.length <= max) return new double[][]{k, e};
+        double[] k2 = new double[max];
+        double[] e2 = new double[max];
+        for (int i = 0; i < max; i++) {
+            int j = (int) Math.round(i * (k.length - 1) / (double) (max - 1));
+            k2[i] = k[j];
+            e2[i] = e[j];
+        }
+        return new double[][]{k2, e2};
     }
 
     /** Puro: ¿el plan y Google discrepan de verdad en lo que falta? Más de 2 km y del 25 %. */
@@ -2251,6 +2403,7 @@ final class RoutePlanner {
     private void markArrived(Plan p, double toGo, String why) {
         if (p.arrivedAtMs != 0 || p.arrivalDone) return;
         p.arrivedAtMs = System.currentTimeMillis();
+        carry = null;
         p.endProgress = toGo <= ARRIVED_KM ? p.n - 1 : Math.min(p.progress, p.n - 1);
         L.i(String.format(Locale.US, "ruta: terminada (%s; quedaban %.2f km por la ruta)", why, toGo));
     }
