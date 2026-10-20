@@ -120,6 +120,22 @@ class LinkWidgetViewsTest {
     }
 
     @Test
+    fun theBigWidgetWithoutCarCommandsShowsTheRowDimmedInsteadOfAGap() {
+        // 20-10: un 4x4 sin las órdenes al coche activadas salía con un hueco en medio. Ahora, la fila atenuada y la
+        // invitación; tocar una orden abre el aviso que lleva a Datos del coche.
+        val v = view("apagado", LinkGlance.Size.WIDE_CAR)
+        assertEquals(View.VISIBLE, v.findViewById<View>(R.id.hql_w_car).visibility)
+        assertEquals("Coche · Toca para activar las órdenes", text(v, R.id.hql_w_car_status))
+        assertEquals(LinkWidgetViews.OFF_ALPHA, v.findViewById<View>(R.id.hql_w_car_row).alpha, 0.001f)
+        for (id in intArrayOf(R.id.hql_w_car_status, R.id.hql_w_car_lock, R.id.hql_w_car_unlock, R.id.hql_w_car_trunk,
+            R.id.hql_w_car_climate, R.id.hql_w_car_find, R.id.hql_w_car_voice)) {
+            assertTrue(v.findViewById<View>(id).hasOnClickListeners())
+        }
+        // En el 4x2, nada de la fila.
+        assertEquals(View.GONE, view("apagado", LinkGlance.Size.WIDE).findViewById<View>(R.id.hql_w_car).visibility)
+    }
+
+    @Test
     fun thePickerPreviewIsTheWholeWidgetFittedIntoAnySlot() {
         // El proveedor: la imagen del widget de verdad a 4x2 y una disposición que la encaja entera. Con la disposición de
         // verdad, el diálogo de Samsung «¿Quieres añadirlo a la pantalla Inicio?», más bajo que un 4x2, la recortaba a la

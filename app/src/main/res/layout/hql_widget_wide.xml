@@ -175,7 +175,7 @@
             style="@style/HQL.Widget.Segment"
             android:text="@string/hql_w_link_usb" />
     </LinearLayout>
-    <!-- Órdenes al coche (versión 4x3, con «Órdenes desde el widget» en Datos del coche): la última y los botones. -->
+    <!-- Órdenes al coche (versión 4x3): la última y los botones; sin «Órdenes desde el widget» en Datos del coche, atenuados. -->
     <LinearLayout
         android:id="@+id/hql_w_car"
         android:layout_width="match_parent"
@@ -195,6 +195,7 @@
             android:textSize="12sp" />
 
         <LinearLayout
+            android:id="@+id/hql_w_car_row"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:layout_marginTop="4dp"

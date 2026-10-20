@@ -61,6 +61,8 @@ final class WidgetShots {
         List<Shot> out = new ArrayList<>();
         for (String s : STATES) out.add(new Shot(s, LinkGlance.Size.WIDE, "4x2", WIDE_W, WIDE_H));
         for (String s : STATES) out.add(new Shot(s, LinkGlance.Size.COMPACT, "2x2", COMPACT_W, COMPACT_H));
+        // El 4x3 con la fila de órdenes al coche (atenuada si no están activadas).
+        out.add(new Shot("apagado", LinkGlance.Size.WIDE_CAR, "4x3", WIDE_W, PREVIEW_H));
         return out;
     }
 
@@ -165,14 +167,14 @@ final class WidgetShots {
 
     /**
      * La imagen de la vista previa (res/drawable-*nodpi/hql_widget_preview.png, que enseña también hql_widget_preview.xml):
-     * el widget de verdad, apagado, a 4x3 y a la densidad de ctx, sin fondo de pantalla ni margen (fuera de sus esquinas,
-     * transparente). La pinta WidgetRenderTest con -Ppreview.
+     * el widget de verdad, apagado, a 4x3 (con la fila de órdenes al coche, atenuada sin activarlas) y a la densidad de
+     * ctx, sin fondo de pantalla ni margen (fuera de sus esquinas, transparente). La pinta WidgetRenderTest con -Ppreview.
      */
     static Bitmap renderPreview(Context ctx) {
         float d = ctx.getResources().getDisplayMetrics().density;
         int w = Math.round(WIDE_W * d);
         int h = Math.round(PREVIEW_H * d);
-        RemoteViews rv = LinkWidgetViews.build(ctx, glance(ctx, "apagado"), LinkGlance.Size.WIDE);
+        RemoteViews rv = LinkWidgetViews.build(ctx, glance(ctx, "apagado"), LinkGlance.Size.WIDE_CAR);
         View v = rv.apply(ctx, new FrameLayout(ctx));
         v.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY));

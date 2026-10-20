@@ -176,6 +176,7 @@
     <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">Auto</string>
     <string name="hql_cw_ready">Pronto</string>
+    <string name="hql_cw_setup">Tocca per attivare i comandi</string>
     <string name="hql_cw_off">Attivalo in Dati dell\'auto</string>
     <string name="hql_cw_lock">Chiudi</string>
     <string name="hql_cw_unlock">Apri</string>

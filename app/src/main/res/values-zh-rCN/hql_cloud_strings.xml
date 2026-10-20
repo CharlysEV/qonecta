@@ -176,6 +176,7 @@
     <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">车辆</string>
     <string name="hql_cw_ready">就绪</string>
+    <string name="hql_cw_setup">点按以启用车辆指令</string>
     <string name="hql_cw_off">请在车辆数据中开启</string>
     <string name="hql_cw_lock">上锁</string>
     <string name="hql_cw_unlock">解锁</string>
