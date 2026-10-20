@@ -282,6 +282,10 @@ final class RouteTab implements CarScreen {
             previewChargers = false;
             root.postDelayed(() -> openChargerList(false), 300);
         }
+        if (previewFilter) {
+            previewFilter = false;
+            root.postDelayed(this::openChargerFilter, 300);
+        }
         String pq = previewQuery;
         if (pq != null) {
             previewQuery = null;
@@ -313,6 +317,8 @@ final class RouteTab implements CarScreen {
     static volatile String previewQuery;
     /** Vista previa (CarUi "car-0-…cargadores"): con la lista de cargadores de la ruta abierta. */
     static volatile boolean previewChargers;
+    /** Capturas: abrir el filtro de cargadores. */
+    static volatile boolean previewFilter;
 
     /**
      * Buscador a pantalla completa de la pestaña: la caja con lo escrito, el micrófono, los resultados (o los destinos

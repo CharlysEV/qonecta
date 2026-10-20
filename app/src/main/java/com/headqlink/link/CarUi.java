@@ -1293,6 +1293,8 @@ final class CarUi {
                 if (parts.length > 2 && parts[2].equals("buscar")) RouteTab.previewQuery = "electrolinera";
                 // "car-N-partida": con la pantalla partida (AA a la izquierda); "…-cargadores": con su lista abierta.
                 if (parts.length > 2 && parts[2].endsWith("cargadores")) RouteTab.previewChargers = true;
+                // "…-filtro": con el filtro de cargadores abierto.
+                if (parts.length > 2 && parts[2].endsWith("filtro")) RouteTab.previewFilter = true;
                 split = parts.length > 2 && parts[2].startsWith("partida");
                 splitAccepted = true;
                 open("car");

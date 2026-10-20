@@ -47,6 +47,8 @@ final class PreviewShots {
             new Shot("partida_ruta_esperando_gps", "car-0-partida", 30, 1500, "esperando_gps"),
             new Shot("coche_ruta_esperando_gps", "car-0", 30, 1500, "esperando_gps"),
             new Shot("coche_ruta_cargadores", "car-0-cargadores", 300, 2200),
+            new Shot("coche_ruta_filtro", "car-0-filtro", 300, 2200),
+            new Shot("partida_ruta_filtro", "car-0-partida-filtro", 300, 2200),
             new Shot("partida_conduccion", "car-1-partida", 572, 1800),
             new Shot("partida_viajes", "car-2-partida", 600, 1800),
             new Shot("partida_instrumentos", "car-3-partida", 408.6, 1800),
