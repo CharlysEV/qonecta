@@ -252,7 +252,7 @@ final class RoutePlanner {
     private static volatile List<Place> vias = new ArrayList<>();
 
     /** Lo recorrido del viaje en curso, para el plan siguiente de la misma ruta (recálculo o reconexión). */
-    static final class TripCarry {
+    static final class RouteCarry {
         String dest;
         double kmBase;
         double[] histKm = new double[0];
@@ -263,7 +263,7 @@ final class RoutePlanner {
 
     /** Como mucho, tantos puntos del relieve de lo recorrido. */
     static final int MAX_HIST = 400;
-    private static volatile TripCarry carry;
+    private static volatile RouteCarry carry;
     /** Para guardar el viaje en curso (TripMemory): el contexto de la app y lo último guardado de Maps. */
     private static volatile Context memCtx;
     private static volatile int rememberedTotalM = -1;
@@ -383,7 +383,7 @@ final class RoutePlanner {
         nextGuessChecked = false;
         if (pl != null && (!v.isEmpty() || round)) L.i("ruta: viaje con " + v.size() + " paradas" + (round ? ", ida y vuelta" : ""));
         manual = pl;
-        TripCarry tc = carry;
+        RouteCarry tc = carry;
         if (pl == null || tc == null || !pl.name.equals(tc.dest)) carry = null;
         rememberTrip(pl, v, roundTrip);
         RoutePlanner r = instance;
@@ -423,7 +423,7 @@ final class RoutePlanner {
         MapsNavListener.Info mi = MapsNavListener.ongoing();
         t.mapsTotalM = MapsNavListener.routing(mi) ? mi.totalM : -1;
         t.atMs = System.currentTimeMillis();
-        TripCarry tc = carry;
+        RouteCarry tc = carry;
         if (tc != null && pl.name.equals(tc.dest)) {
             t.kmBase = tc.kmBase;
             t.marks = tc.marks;
@@ -458,7 +458,7 @@ final class RoutePlanner {
                 + "): Google Maps sigue con la misma ruta");
         retaken = true;
         if (t.kmBase > 0) {
-            TripCarry tc = new TripCarry();
+            RouteCarry tc = new RouteCarry();
             tc.dest = t.dest.name;
             tc.kmBase = t.kmBase;
             tc.marks = t.marks;
@@ -859,7 +859,7 @@ final class RoutePlanner {
             // El viaje sigue: lo recorrido con el plan de antes (recálculo, o volver a planificar la misma ruta) o en la sesión
             // anterior (reconexión) pasa al nuevo, con una línea donde empieza.
             if (p != null && dest.equals(p.destination) && p.arrivedAtMs == 0 && p.n >= 2) carry = carryFrom(p, dest);
-            TripCarry tc = carry;
+            RouteCarry tc = carry;
             if (tc != null && dest.equals(tc.dest) && System.currentTimeMillis() - tc.atMs < TripMemory.MAX_AGE_MS) attach(np, tc);
             else carry = null;
             plan = np;
@@ -1361,8 +1361,8 @@ final class RoutePlanner {
     }
 
     /** Puro: lo recorrido del viaje hasta donde va p (con lo de antes), para el plan siguiente de la misma ruta. */
-    static TripCarry carryFrom(Plan p, String dest) {
-        TripCarry c = new TripCarry();
+    static RouteCarry carryFrom(Plan p, String dest) {
+        RouteCarry c = new RouteCarry();
         c.dest = dest;
         c.atMs = System.currentTimeMillis();
         int prog = Math.min(Math.max(0, p.progress), p.n - 1);
@@ -1386,7 +1386,7 @@ final class RoutePlanner {
     }
 
     /** Puro: el plan nuevo de la misma ruta sigue el viaje (desde c.kmBase), con una línea donde empieza. */
-    static void attach(Plan np, TripCarry c) {
+    static void attach(Plan np, RouteCarry c) {
         if (c == null || c.kmBase < 0.05) return;
         np.kmBase = c.kmBase;
         np.histKm = c.histKm;
