@@ -470,6 +470,9 @@
     <string name="hql_req_wifi_why">Wi-Fi Direct 需要开启 Wi-Fi（无需连接到网络）</string>
     <string name="hql_req_band">5 GHz 频段</string>
     <string name="hql_req_band_why">无法在此读取：请在热点设置中选择 5 GHz 并关闭自动关闭</string>
+    <string name="hql_req_gaccuracy">Google 位置信息精确度</string>
+    <string name="hql_req_gaccuracy_why">已开启。为 Android Auto，Google 每隔几秒搜索一次 Wi-Fi 网络，每次搜索都会让通过 Wi-Fi Direct 和热点传输的画面短暂中断（跳帧、触控迟缓）。关闭后会更流畅。GPS 照常工作：地图、路线和测速摄像头都不需要它，只是在车库或建筑物内定位会稍慢。</string>
+    <string name="hql_req_gaccuracy_ok">已关闭：驾驶时 Android 不会搜索 Wi-Fi 网络。GPS 照常工作。</string>
     <string name="hql_req_port_title">端口 18463</string>
     <string name="hql_req_port_busy">被占用：QDLink（或其他应用）已打开，车辆找不到 Qonecta+。请强行停止它。</string>
     <string name="hql_req_qdlink_why">已安装：连接前请关闭它（它会占用端口 18463）。应用信息 › 强行停止。如果插入车辆数据线，Android 可能会交给 QDLink 处理：请选择 Qonecta+ 和“始终”。</string>

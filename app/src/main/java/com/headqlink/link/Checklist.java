@@ -331,6 +331,7 @@ final class Checklist {
                 : PowerHelper.oemIntent(a) != null ? Requirements.Oem.OTHER : Requirements.Oem.NONE;
 
         s.qdlinkInstalled = installed(pm, QDLINK_PKG);
+        s.googleAccuracy = googleAccuracy(a);
         // En marcha manda lo que dijo el motor (al momento); parado, la última prueba.
         s.port = LinkState.running ? currentPort(false) : port;
         return s;
@@ -599,6 +600,10 @@ final class Checklist {
                 if (!ok) r.action(Str.get(R.string.hql_open), () -> HotspotWatcher.openSettings(act));
                 return r;
             }
+            case GOOGLE_ACCURACY:
+                // Opcional: el botón también sirve para volver a activarla.
+                return new Row(Str.get(R.string.hql_req_gaccuracy), Str.get(ok ? R.string.hql_req_gaccuracy_ok : R.string.hql_req_gaccuracy_why))
+                        .action(Str.get(R.string.hql_open), this::openGoogleAccuracy);
             case HOTSPOT_BAND:
                 return new Row(Str.get(R.string.hql_req_band), Str.get(R.string.hql_req_band_why))
                         .action(Str.get(R.string.hql_open), () -> HotspotWatcher.openSettings(act));
@@ -865,6 +870,37 @@ final class Checklist {
      * detalles exige el permiso OPEN_ACCESSIBILITY_DETAILS_SETTINGS (SecurityException al abrirla): se anota y se abre la
      * lista de servicios (ACTION_ACCESSIBILITY_SETTINGS), ahora y en las veces siguientes sin volver a intentarlo.
      */
+    /**
+     * «Precisión de la ubicación de Google»: 1 activada, 0 apagada, -1 no se sabe. Apagada, Android da por apagado el
+     * proveedor de ubicación por red (lo de Google); con la ubicación apagada del todo, o sin ese proveedor, no se sabe.
+     */
+    static int googleAccuracy(Context c) {
+        try {
+            android.location.LocationManager lm = (android.location.LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
+            if (lm == null || !lm.getAllProviders().contains(android.location.LocationManager.NETWORK_PROVIDER)) return -1;
+            boolean on = Build.VERSION.SDK_INT >= 28 ? lm.isLocationEnabled()
+                    : Settings.Secure.getInt(c.getContentResolver(), Settings.Secure.LOCATION_MODE, 0) != 0;
+            if (!on) return -1;
+            return lm.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER) ? 1 : 0;
+        } catch (RuntimeException e) {
+            return -1;
+        }
+    }
+
+    /** La pantalla de Google de la precisión de la ubicación; si no está (sin Google), los ajustes de ubicación. */
+    private void openGoogleAccuracy() {
+        L.i("requisitos: abro la precisión de la ubicación de Google");
+        try {
+            act.startActivity(new Intent("com.google.android.gms.location.settings.LOCATION_ACCURACY"));
+        } catch (RuntimeException e) {
+            try {
+                act.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            } catch (RuntimeException e2) {
+                L.w("requisitos: no se pudieron abrir los ajustes de ubicación: " + e2.getClass().getSimpleName());
+            }
+        }
+    }
+
     private void openAccessibility() {
         Config cfg = new Config(act);
         if (Build.VERSION.SDK_INT >= 33 && !cfg.getBool(A11Y_DETAILS_FAILS)) {

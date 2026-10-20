@@ -474,4 +474,19 @@ class RequirementsTest {
         val order = ids(eval { aaVersion = "17.8.1" })
         assertEquals(order.indexOf(Id.ANDROID_AUTO) + 1, order.indexOf(Id.AA_VERSION))
     }
+
+    @Test
+    fun googleAccuracyIsAnOptionalTipOnlyOverWifi() {
+        // 20-10: con la precisión de Google activada, Google busca redes Wi-Fi cada ~9 s y corta la imagen por Wi-Fi.
+        val on = item(eval { googleAccuracy = 1 }, Id.GOOGLE_ACCURACY)
+        assertEquals(Importance.OPTIONAL, on.importance)
+        assertEquals(Status.MISSING, on.status)
+        assertFalse(on.counts())
+        assertFalse(on.blocks())
+        assertEquals(Status.OK, item(eval { googleAccuracy = 0 }, Id.GOOGLE_ACCURACY).status)
+        assertEquals(Status.MISSING, item(eval { linkMode = Config.LINK_HOTSPOT; googleAccuracy = 1 }, Id.GOOGLE_ACCURACY).status)
+        // Por cable no importa; sin saberlo (sin Google, ubicación apagada), no sale.
+        assertFalse(ids(eval { linkMode = Config.LINK_USB; googleAccuracy = 1 }).contains(Id.GOOGLE_ACCURACY))
+        assertFalse(ids(eval { googleAccuracy = -1 }).contains(Id.GOOGLE_ACCURACY))
+    }
 }

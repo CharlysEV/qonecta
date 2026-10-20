@@ -58,7 +58,7 @@ final class P2pLink {
                 WifiP2pInfo info = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_INFO, WifiP2pInfo.class);
                 onInfo(info);
             } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(a)) {
-                if (!inGroup && !connecting) mgr.requestPeers(ch, list -> {
+                if (!inGroup && !connecting && !carSession) mgr.requestPeers(ch, list -> {
                     for (WifiP2pDevice d : list.getDeviceList()) {
                         if (d.deviceName != null && d.deviceName.startsWith(NAME_PREFIX)) {
                             L.i("P2P peer coche: " + d.deviceName + " " + HotspotRadio.Companion.maskMac(d.deviceAddress) + " status=" + d.status);
@@ -105,6 +105,7 @@ final class P2pLink {
     void start() {
         if (started) return;
         started = true;
+        groupNoted = false;
         mgr = (WifiP2pManager) ctx.getSystemService(Context.WIFI_P2P_SERVICE);
         ch = mgr.initialize(ctx, Looper.getMainLooper(), () -> L.w("P2P channel perdido"));
         IntentFilter f = new IntentFilter();
@@ -116,7 +117,7 @@ final class P2pLink {
             for (String s : services) {
                 if (s.contains(UPNP_MARK)) {
                     L.i("UPnP del coche " + device.deviceName + " " + HotspotRadio.Companion.maskMac(device.deviceAddress) + ": " + s);
-                    if (!inGroup) connect(device);
+                    connect(device);
                     return;
                 }
             }
@@ -182,14 +183,52 @@ final class P2pLink {
         mgr.discoverPeers(ch, listener("discoverPeers"));
     }
 
+    /**
+     * Pide unirse al grupo del coche, salvo que ya haya sesión con él o un grupo Wi-Fi Direct en marcha. 20-10, un
+     * Galaxy A52s (Android 14) con un T03: la sesión iba por p2p-wlan0-0 pero Android no decía que hubiera grupo, se
+     * pedía connect con el coche ya conectado y, medio segundo después, se caía surfaceflinger (el móvil recargaba el
+     * escritorio y todas las apps); otras veces se cortaba Android Auto o fallaba (reason=2) cada pocos segundos.
+     */
     private void connect(WifiP2pDevice d) {
-        if (connecting) return;
+        if (connecting || inGroup || carSession) return;
+        String iface = p2pInterfaceUp();
+        if (iface != null) {
+            if (!groupNoted) {
+                groupNoted = true;
+                L.i("P2P: ya hay un grupo Wi-Fi Direct en marcha (" + iface + "): no pido otra conexión al coche");
+            }
+            return;
+        }
         connecting = true;
         WifiP2pConfig cfg = new WifiP2pConfig();
         cfg.deviceAddress = d.deviceAddress;
         cfg.groupOwnerIntent = 0;
         L.i("P2P connect -> " + d.deviceName + " " + HotspotRadio.Companion.maskMac(d.deviceAddress));
         mgr.connect(ch, cfg, listener("connect"));
+    }
+
+    /** Ya dicho en el log que hay un grupo Wi-Fi Direct sin que Android lo cuente (una vez por arranque). */
+    private boolean groupNoted;
+
+    /** Puro: ¿es una interfaz de Wi-Fi Direct («p2p-wlan0-0», «p2p0»…)? */
+    static boolean isP2pInterface(String name) {
+        return name != null && name.startsWith("p2p");
+    }
+
+    /** Una interfaz de Wi-Fi Direct encendida y con dirección IPv4 (un grupo en marcha), o null. */
+    private static String p2pInterfaceUp() {
+        try {
+            java.util.Enumeration<java.net.NetworkInterface> all = java.net.NetworkInterface.getNetworkInterfaces();
+            if (all == null) return null;
+            for (java.net.NetworkInterface ni : java.util.Collections.list(all)) {
+                if (!isP2pInterface(ni.getName()) || !ni.isUp()) continue;
+                for (java.net.InetAddress a : java.util.Collections.list(ni.getInetAddresses())) {
+                    if (a instanceof java.net.Inet4Address) return ni.getName();
+                }
+            }
+        } catch (java.net.SocketException | RuntimeException ignored) {
+        }
+        return null;
     }
 
     private WifiP2pManager.ActionListener listener(String what) {
@@ -212,6 +251,7 @@ final class P2pLink {
         if (carSession == on) return;
         carSession = on;
         if (on && started && !inGroup) {
+            connecting = false;
             L.i("P2P: sesión con el coche sin grupo Wi-Fi Direct: dejo de buscar mientras dure");
             mgr.stopPeerDiscovery(ch, null);
             mgr.clearServiceRequests(ch, null);

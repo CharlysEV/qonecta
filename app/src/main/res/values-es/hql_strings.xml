@@ -472,6 +472,9 @@
     <string name="hql_req_wifi_why">Wi-Fi Direct necesita el Wi-Fi activado (no hace falta estar conectado a una red)</string>
     <string name="hql_req_band">Banda de 5 GHz</string>
     <string name="hql_req_band_why">No se puede leer desde aquí: en los ajustes de la zona Wi-Fi elige 5 GHz y quita el apagado automático</string>
+    <string name="hql_req_gaccuracy">Precisión de la ubicación de Google</string>
+    <string name="hql_req_gaccuracy_why">Activada. Para Android Auto, Google busca redes Wi-Fi cada pocos segundos, y cada búsqueda corta un momento la imagen por Wi-Fi Direct y zona Wi-Fi (saltos y toques que tardan). Si la apagas, va más fluido. El GPS sigue funcionando igual: Maps, la ruta y los radares no la necesitan; solo tarda algo más en situarte dentro de garajes o edificios.</string>
+    <string name="hql_req_gaccuracy_ok">Apagada: Android no busca redes Wi-Fi mientras conduces. El GPS funciona igual.</string>
     <string name="hql_req_port_title">Puerto 18463</string>
     <string name="hql_req_port_busy">Ocupado: QDLink (u otra app) está abierta y el coche no encuentra a Qonecta+. Fuerza su detención.</string>
     <string name="hql_req_qdlink_why">Instalada: ciérrala antes de conectar (ocupa el puerto 18463). Info. de la app › Forzar detención. Si enchufas el cable del coche, Android puede dárselo a QDLink: elige Qonecta+ y «Siempre».</string>

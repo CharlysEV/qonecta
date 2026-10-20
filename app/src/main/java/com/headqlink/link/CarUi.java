@@ -1138,6 +1138,20 @@ final class CarUi {
         main.post(() -> touchNow(action, x, y));
     }
 
+    /**
+     * Un toque a nuestra interfaz del coche. Si la presentación se está cerrando (ya sin ventana), se descarta: 19-10, un
+     * Galaxy A52s, NullPointerException en PhoneWindow.superDispatchTouchEvent y la app cerrada.
+     */
+    private void dispatchToPres(MotionEvent ev) {
+        Presentation p = pres;
+        if (p == null || !p.isShowing() || p.getWindow() == null || p.getWindow().peekDecorView() == null) return;
+        try {
+            p.dispatchTouchEvent(ev);
+        } catch (NullPointerException e) {
+            L.w("CarUi: toque descartado: la pantalla del coche se estaba cerrando");
+        }
+    }
+
     /** Un dedo, en el hilo principal: el MotionEvent y el gesto de desplegar el panel desde el borde. */
     private void touchNow(int action, float x, float y) {
         {
@@ -1165,7 +1179,7 @@ final class CarUi {
             }
             MotionEvent ev = MotionEvent.obtain(downTime, now, a, x, y, 0);
             ev.setSource(InputDevice.SOURCE_TOUCHSCREEN);
-            pres.dispatchTouchEvent(ev);
+            dispatchToPres(ev);
             ev.recycle();
         }
     }
@@ -1243,7 +1257,7 @@ final class CarUi {
             }
             MotionEvent ev = MotionEvent.obtain(downTime, now, a, n, props, coords, 0, 0, 1f, 1f, 0, 0,
                     InputDevice.SOURCE_TOUCHSCREEN, 0);
-            pres.dispatchTouchEvent(ev);
+            dispatchToPres(ev);
             ev.recycle();
             if (changedAction == 2) uiDown.remove(changed);
         });

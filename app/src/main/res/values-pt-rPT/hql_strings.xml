@@ -472,6 +472,9 @@
     <string name="hql_req_wifi_why">O Wi-Fi Direct precisa do Wi-Fi ligado (não é preciso estar ligado a uma rede)</string>
     <string name="hql_req_band">Banda de 5 GHz</string>
     <string name="hql_req_band_why">Não é possível ler daqui: nas definições do hotspot escolha 5 GHz e desative o desligar automático</string>
+    <string name="hql_req_gaccuracy">Precisão da localização Google</string>
+    <string name="hql_req_gaccuracy_why">Ativada. Para o Android Auto, a Google procura redes Wi-Fi de poucos em poucos segundos, e cada procura interrompe por instantes a imagem por Wi-Fi Direct e hotspot (saltos e toques lentos). Desativada, fica mais fluido. O GPS continua a funcionar igual: o Maps, o percurso e os radares não precisam dela; só demora um pouco mais a localizá-lo em garagens ou edifícios.</string>
+    <string name="hql_req_gaccuracy_ok">Desativada: o Android não procura redes Wi-Fi enquanto conduz. O GPS funciona igual.</string>
     <string name="hql_req_port_title">Porta 18463</string>
     <string name="hql_req_port_busy">Ocupada: o QDLink (ou outra aplicação) está aberto e o carro não encontra o Qonecta+. Force a paragem.</string>
     <string name="hql_req_qdlink_why">Instalado: feche-o antes de ligar (ocupa a porta 18463). Info. da aplicação › Forçar paragem. Se ligar o cabo do carro, o Android pode entregá-lo ao QDLink: escolha Qonecta+ e «Sempre».</string>

@@ -41,7 +41,7 @@ final class Requirements {
     enum Id {
         ANDROID_AUTO, AA_VERSION, AA_SERVER, ACCESSIBILITY, SERVER_MANUAL_OFFER, AA_DEVMODE, TARGET_APP,
         NEARBY_WIFI, WIFI_ON, HOTSPOT_OFF, HOTSPOT_ON, HOTSPOT_BAND, USB_CABLE,
-        QDLINK, NOTIFICATIONS, MICROPHONE, PHONE, BLUETOOTH, BATTERY, BATTERY_OEM, OVERLAY, MEDIA, BG_LOCATION
+        QDLINK, GOOGLE_ACCURACY, NOTIFICATIONS, MICROPHONE, PHONE, BLUETOOTH, BATTERY, BATTERY_OEM, OVERLAY, MEDIA, BG_LOCATION
     }
 
     /** INFO: solo informa (nunca cuenta en «Faltan N» ni bloquea). */
@@ -146,6 +146,11 @@ final class Requirements {
 
         boolean qdlinkInstalled;
         Port port = Port.FREE;
+        /**
+         * «Precisión de la ubicación de Google» (el proveedor de ubicación por red): 1 activada, 0 apagada, -1 no se sabe
+         * (sin ese proveedor, sin Google o con la ubicación apagada).
+         */
+        int googleAccuracy = -1;
     }
 
     static final class Item {
@@ -266,6 +271,12 @@ final class Requirements {
             out.add(new Item(Id.QDLINK, Importance.REQUIRED, Status.ERROR, Hint.PORT_BUSY));
         } else if (s.qdlinkInstalled) {
             out.add(new Item(Id.QDLINK, Importance.RECOMMENDED, Status.WARN, Hint.INSTALLED));
+        }
+        // Por Wi-Fi (Wi-Fi Direct o zona Wi-Fi), opcional: con la precisión de Google activada, Google busca redes Wi-Fi
+        // cada ~9 s para Android Auto y cada búsqueda (~3,5 s por todos los canales) corta la imagen (20-10: con ella
+        // apagada, 0 picos a 60 fps y 15 Mbit/s). El GPS no la necesita.
+        if (!usbLink && s.googleAccuracy >= 0) {
+            out.add(new Item(Id.GOOGLE_ACCURACY, Importance.OPTIONAL, s.googleAccuracy == 0 ? Status.OK : Status.MISSING, Hint.NONE));
         }
 
         // Permisos y segundo plano.
