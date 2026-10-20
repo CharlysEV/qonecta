@@ -39,6 +39,38 @@ class MapsCardTest {
 
     private fun l(text: String, left: Int, top: Int, right: Int, bottom: Int) = MapsCard.Line(text, left, top, right, bottom)
 
+    /**
+     * 20-10: tarjeta de un trayecto corto («3 min · 1,0 km», la línea estrecha) con el nombre en dos líneas, el tipo, la
+     * dirección en tres, el teléfono y «Características». El texto empieza 3 px a la izquierda de la franja de antes y
+     * no se leía nada. A la derecha, nombres del mapa. (Sitio inventado; la tarjeta real era otra.)
+     */
+    @Test
+    fun shortTripCardWithItsTextAtTheEdge() {
+        val lines = listOf(
+            l("Colegio Público Miguel de", 240, 150, 706, 192),
+            l("Cervantes", 240, 198, 360, 238),
+            l("Colegio público", 240, 290, 470, 322),
+            l("Calle Mayor, 12", 240, 330, 505, 362),
+            l("28001 Madrid", 240, 370, 455, 402),
+            l("Madrid", 240, 410, 345, 440),
+            l("910 00 00 00", 309, 482, 507, 518),
+            l("Características", 240, 568, 487, 604),
+            l("3 min · 1,0 km", 390, 656, 574, 684),
+            l("Añadir parada", 408, 728, 610, 764),
+            // El mapa, a la derecha de la tarjeta.
+            l("C. San Pedro", 1390, 240, 1500, 262),
+            l("Plaza Mayor", 1636, 330, 1745, 350),
+            l("Aparcamiento", 880, 650, 1010, 672),
+        )
+        val q = MapsCard.addressQueries(lines)
+        assertEquals("Calle Mayor, 12, 28001 Madrid", q[0])
+        assertEquals("Colegio Público Miguel de Cervantes, Madrid", q[1])
+        assertTrue(q.toString(), q.none { it.contains("San Pedro") || it.contains("Plaza Mayor") })
+        // Las del mapa no son de la tarjeta.
+        assertFalse(MapsCard.inCard(lines[10], lines[8]))
+        assertFalse(MapsCard.inCard(lines[12], lines[8]))
+    }
+
     /** Navegando: la indicación arriba, una burbuja «8 min más lento» en el mapa y el recuadro abajo. */
     private val navigating = listOf(
         l("40 m", 440, 50, 520, 95),

@@ -565,6 +565,18 @@ final class MapsCard {
     }
 
     /**
+     * Puro: ¿es una línea de la tarjeta abierta (y no un nombre del mapa de al lado)? Su centro, dentro de la franja de la
+     * línea «min · km» (1,3 veces su ancho a cada lado, más una altura de línea). Antes la línea entera tenía que caber en
+     * la franja sin margen: con un trayecto corto («3 min · 1,0 km», estrecha) el texto de la tarjeta, alineado a la
+     * izquierda, empezaba justo en su borde y se quedaba fuera entero (20-10: «destino no leído» con la tarjeta abierta).
+     * Los nombres del mapa empiezan a la derecha de la tarjeta: su centro queda fuera.
+     */
+    static boolean inCard(Line l, Line eta) {
+        int half = Math.round(eta.w() * 1.3f) + eta.h();
+        return Math.abs(l.cx() - eta.cx()) <= half;
+    }
+
+    /**
      * Puro: el destino escrito en la tarjeta abierta, en una línea («Calle Mayor, 1, Centro, 28001 Madrid»), o null. Las
      * líneas por encima de «min · km», dentro del ancho de la tarjeta (los nombres del mapa a su lado, fuera), de arriba
      * abajo, hasta la de aparcar; como mucho tres.
@@ -572,13 +584,10 @@ final class MapsCard {
     static String address(List<Line> lines) {
         Line eta = cardEta(lines);
         if (eta == null) return null;
-        int half = Math.round(eta.w() * 1.3f);
-        int minX = eta.cx() - half;
-        int maxX = eta.cx() + half;
         List<Line> above = new ArrayList<>();
         for (Line l : lines) {
             if (l == eta || l.bottom > eta.top + 2) continue;
-            if (l.left < minX || l.right > maxX) continue;
+            if (!inCard(l, eta)) continue;
             if (l.text.isEmpty() || TIME.matcher(l.text).find()) continue;
             above.add(l);
         }
@@ -621,13 +630,10 @@ final class MapsCard {
         List<String> out = new ArrayList<>();
         Line eta = cardEta(lines);
         if (eta == null) return out;
-        int half = Math.round(eta.w() * 1.3f);
-        int minX = eta.cx() - half;
-        int maxX = eta.cx() + half;
         List<Line> above = new ArrayList<>();
         for (Line l : lines) {
             if (l == eta || l.bottom > eta.top + 2) continue;
-            if (l.left < minX || l.right > maxX) continue;
+            if (!inCard(l, eta)) continue;
             if (l.text.length() < 2 || TIME.matcher(l.text).find()) continue;
             above.add(l);
         }
@@ -685,13 +691,10 @@ final class MapsCard {
     static String placeLabel(List<Line> lines) {
         Line eta = cardEta(lines);
         if (eta == null) return null;
-        int half = Math.round(eta.w() * 1.3f);
-        int minX = eta.cx() - half;
-        int maxX = eta.cx() + half;
         List<Line> above = new ArrayList<>();
         for (Line l : lines) {
             if (l == eta || l.bottom > eta.top + 2) continue;
-            if (l.left < minX || l.right > maxX) continue;
+            if (!inCard(l, eta)) continue;
             if (l.text.length() < 2 || TIME.matcher(l.text).find()) continue;
             above.add(l);
         }
