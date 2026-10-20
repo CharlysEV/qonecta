@@ -170,13 +170,26 @@ final class ChargePlanner {
 
         /**
          * Km (como los cuenta Google Maps) por cada punto de batería que cuesta lo que falta de ruta, según el plan (18-10,
-         * idea de una usuaria: en la tarjeta flotante, cuánto se hace con cada 1 %). NaN sin ruta por delante.
+         * idea de una usuaria: en la tarjeta flotante, cuánto se hace con cada 1 %). Con poco por delante (menos de 1 km o
+         * de medio punto), con el gasto medio de toda la ruta (20-10: con 600 m no salía nada). NaN si no se sabe.
          */
         double kmPerPctPlanned() {
             double end = km[km.length - 1];
             double left = kmMark(end) - fromKm;
             double pct = (kwhAt(km, kwhCum, end) - kwhAt(km, kwhCum, fromKm)) / capacityKwh * 100;
-            return left >= 1 && pct >= 0.5 ? left / pct : Double.NaN;
+            if (left >= 1 && pct >= 0.5) return left / pct;
+            return kmPerPctAverage(end - km[0], kwhCum[kwhCum.length - 1] - kwhCum[0], capacityKwh) * mapsRatio;
+        }
+
+        /**
+         * Puro: km por cada punto de batería con el gasto medio de una ruta de totalKm que cuesta totalKwh, o NaN si es
+         * demasiado corta (menos de 300 m) o el gasto no es creíble (fuera de 6–45 kWh/100 km: una cuesta abajo corta).
+         */
+        static double kmPerPctAverage(double totalKm, double totalKwh, double capacityKwh) {
+            if (!(totalKm >= 0.3) || !(capacityKwh > 0)) return Double.NaN;
+            double perKm = totalKwh / totalKm;
+            if (!(perKm >= 0.06 && perKm <= 0.45)) return Double.NaN;
+            return capacityKwh / 100 / perKm;
         }
 
         /** La primera parada que queda por delante, o null. */

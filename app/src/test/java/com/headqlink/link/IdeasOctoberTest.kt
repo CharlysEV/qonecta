@@ -119,6 +119,13 @@ class IdeasOctoberTest {
         assertEquals(3.33, r.kmPerPctPlanned(), 0.01)
         r.mapsRatio = 1.1
         assertEquals(3.67, r.kmPerPctPlanned(), 0.01)
+        // 20-10: un trayecto de 600 m (0,12 kWh, 20 kWh/100 km) con una batería de 81,9: con el gasto medio, 4,1 km por punto.
+        val short = ChargePlanner.Result(ChargePlanner.Outcome.NO_STOPS, emptyList(), 70.0, doubleArrayOf(0.0, 0.6),
+            doubleArrayOf(0.0, 0.12), 0.0, 75.0, 81.9)
+        assertEquals(4.1, short.kmPerPctPlanned(), 0.01)
+        // Una cuesta abajo corta (recupera) o 100 m: nada.
+        assertTrue(ChargePlanner.Result.kmPerPctAverage(0.6, -0.02, 81.9).isNaN())
+        assertTrue(ChargePlanner.Result.kmPerPctAverage(0.1, 0.02, 81.9).isNaN())
         val n = String.format(java.util.Locale.getDefault(), "%.1f", 4.8)
         assertEquals("$n km/%", FloatCard.kmPerPctText(4.8, 3.3))
         assertEquals("≈ $n km/%", FloatCard.kmPerPctText(Double.NaN, 4.8))
