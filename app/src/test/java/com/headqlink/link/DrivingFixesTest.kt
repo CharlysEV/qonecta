@@ -152,6 +152,21 @@ class DrivingFixesTest {
         assertTrue(RoutePlanner.googleChangedRoute(41.0, 56.0, r0))
         // Sin proporción, como antes.
         assertTrue(RoutePlanner.googleChangedRoute(82.0, 72.6, Double.NaN))
+        // 20-10: el plan seguía a 7,7 km con Google a 2,9 tras recalcular: no cuadra; 17,8 frente a 16,3, sí.
+        assertTrue(RoutePlanner.farFromGoogle(7.7, 2.9))
+        assertTrue(RoutePlanner.farFromGoogle(13.5, 8.5))
+        assertFalse(RoutePlanner.farFromGoogle(17.8, 16.3))
+        assertFalse(RoutePlanner.farFromGoogle(3.0, 1.5))
+        assertFalse(RoutePlanner.farFromGoogle(7.7, -1.0))
+        // El freno: tres recálculos sin cuadrar en 4 min (los de hace más, fuera).
+        val times = java.util.ArrayDeque<Long>()
+        times.addLast(0L); times.addLast(30_000L)
+        assertFalse(RoutePlanner.replanLoop(times, 30_000L))
+        times.addLast(60_000L)
+        assertTrue(RoutePlanner.replanLoop(times, 60_000L))
+        val old = java.util.ArrayDeque<Long>(listOf(0L, 30_000L, 300_000L))
+        assertFalse(RoutePlanner.replanLoop(old, 300_000L))
+        assertEquals(1, old.size)
         // Y lo que se enseña, con los km de Maps (×0,88 ya vale).
         assertEquals(0.88, RoutePlanner.mapsRatio(82.1, 72.6, 1.0), 1e-9)
     }

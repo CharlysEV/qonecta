@@ -101,7 +101,8 @@ final class RoadInfo {
     private Trace trace() {
         RoutePlanner r = RoutePlanner.get();
         RoutePlanner.Plan p = r == null ? null : r.plan();
-        if (p == null || p.traceLat.length < 2) {
+        // Con el plan dudoso (no cuadra con Google: su trazado puede ir por otra vía), por la carretera por la que se va.
+        if (p == null || p.traceLat.length < 2 || p.doubt) {
             tracePlan = null;
             traceNow = null;
             return null;

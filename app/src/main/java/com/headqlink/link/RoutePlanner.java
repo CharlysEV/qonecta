@@ -94,6 +94,12 @@ final class RoutePlanner {
          */
         double googleRatio0 = Double.NaN;
         /**
+         * El plan no cuadra con Google Maps y recalcular no lo arregla (20-10: recalculaba cada 30 s, el avance se quedaba
+         * en el km 0 y avisó de un radar de una vía paralela): ya no se rehace por salirse del trazado, «Faltan» son los km
+         * de Google y los radares se buscan por la carretera por la que se va.
+         */
+        volatile boolean doubt;
+        /**
          * Km que cuenta Google Maps por cada km de este plan en lo que falta (mapsRatio): Maps puede ir por otra carretera
          * y, con las paradas añadidas, entra y sale de cada cargador. Multiplica el gasto de lo que falta y las distancias
          * que se enseñan. 1 mientras Maps no guíe esta ruta.
@@ -667,11 +673,11 @@ final class RoutePlanner {
                 updateMapsRatio(p, dest);
                 maybeReadMapsBox(p);
             }
-            String why = origin == null ? replanReason(p, s, nav, dest) : null;
+            String why = origin == null && !p.doubt ? replanReason(p, s, nav, dest) : null;
             long t = SystemClock.elapsedRealtime();
             if (why == null || t - lastReplanMs < REPLAN_GAP_MS) return;
             lastReplanMs = t;
-            L.i("ruta: " + why + "; recalculo desde aquí");
+            L.i("ruta: " + why + "; recalculo desde aquí" + replanContext(p, s, dest));
             replan = true;
         }
         double oLat = origin != null ? origin.lat : s.lat;
@@ -743,6 +749,7 @@ final class RoutePlanner {
             plan = np;
             failedDestination = null;
             status = "";
+            if (replan) afterReplan(np, dest, s);
             // Sin el nombre del destino: el log se exporta y no lleva ubicaciones (qdauto §7.5).
             L.i(String.format(Locale.US, "ruta: %.1f km · %.1f kWh estimados (%.1f por las cuestas; extra del coche %.1f kW y %.1f kWh al salir; "
                     + "corrección ×%.2f) · %d cargadores%s", np.totalKm, np.kwhCum[np.n - 1], np.gravCum[np.n - 1], np.overheadKw,
@@ -829,6 +836,16 @@ final class RoutePlanner {
     /** …durante esto. */
     static final long GOOGLE_GAP_MS = 30_000;
     private long lastReplanMs;
+    /** Freno: tantos recálculos seguidos que siguen sin cuadrar con Google… */
+    static final int FAR_REPLANS = 3;
+    /** …en este tiempo, y se prueba el otro sitio del destino o el plan pasa a dudoso. */
+    static final long FAR_REPLANS_MS = 4 * 60_000L;
+    /** La hora de cada recálculo seguido que no cuadra con Google (de este destino). */
+    private final java.util.ArrayDeque<Long> farReplans = new java.util.ArrayDeque<>();
+    /** El destino leído de Maps según el otro buscador (o otro resultado), si lo sitúa a más de 1 km del elegido. */
+    private volatile Place destAlternative;
+    /** De qué destino es destAlternative (su nombre). */
+    private volatile String destAlternativeFor;
     private final OffRouteWatch offRoute = new OffRouteWatch();
     private long googleGapSinceMs;
 
@@ -1140,6 +1157,10 @@ final class RoutePlanner {
      * si no (Maps no navega, va a otro sitio o no acaba en el destino).
      */
     static double mapsRemainingKm(Plan p) {
+        if (p != null && p.doubt && mapsEnd == null) {
+            Google dg = google(p.destination);
+            return dg != null && dg.remainingM > 0 ? dg.remainingM / 1000.0 : Double.NaN;
+        }
         if (p == null || p.googleMismatch || mapsEnd != null || p.n < 2) return Double.NaN;
         Google gl = google(p.destination);
         if (gl == null || gl.remainingM <= 0) return Double.NaN;
@@ -1210,6 +1231,74 @@ final class RoutePlanner {
      */
     static boolean googleChangedRoute(double oursKm, double googleKm, double planRatio) {
         return googleDisagrees(oursKm, Double.isNaN(planRatio) || !(planRatio > 0) ? googleKm : googleKm * planRatio);
+    }
+
+    /** Puro: ¿el plan y Google discrepan de verdad en lo que falta? Más de 2 km y del 25 %. */
+    static boolean farFromGoogle(double oursKm, double googleKm) {
+        return googleKm > 0 && oursKm > 0 && Math.abs(oursKm - googleKm) > Math.max(2, 0.25 * googleKm);
+    }
+
+    /** Puro: con la hora de cada recálculo seguido sin cuadrar, ¿hay FAR_REPLANS en FAR_REPLANS_MS? Quita los viejos. */
+    static boolean replanLoop(java.util.Deque<Long> times, long now) {
+        while (!times.isEmpty() && now - times.peekFirst() > FAR_REPLANS_MS) times.pollFirst();
+        return times.size() >= FAR_REPLANS;
+    }
+
+    /** Para el registro, sin lugares: si el GPS va al día, el destino en línea recta y lo que falta según Google. */
+    private String replanContext(Plan p, CarSensors.Snapshot s, String dest) {
+        Google gl = google(dest);
+        double straight = Double.isNaN(s.lat) ? Double.NaN : RoadInfo.dist(s.lat, s.lon, p.destLat, p.destLon) / 1000.0;
+        return String.format(Locale.US, " (GPS %s · destino a %.1f km en línea recta%s)", s.gpsLive() ? "al día" : "sin señal", straight,
+                gl != null && gl.remainingM > 0 ? String.format(Locale.US, " · Google %.1f km", gl.remainingM / 1000.0) : "");
+    }
+
+    /**
+     * Tras recalcular: si el plan nuevo sigue sin cuadrar con Google, cuenta. A la FAR_REPLANS en FAR_REPLANS_MS, el destino
+     * puede ser otro sitio con la misma dirección: se prueba el del otro buscador; si tampoco cuadra, el plan pasa a dudoso.
+     */
+    private void afterReplan(Plan np, String dest, CarSensors.Snapshot s) {
+        Google gl = google(dest);
+        if (np.multi() || gl == null || gl.remainingM <= 0 || !farFromGoogle(np.totalKm, gl.remainingM / 1000.0)) {
+            farReplans.clear();
+            return;
+        }
+        double google = gl.remainingM / 1000.0;
+        long now = SystemClock.elapsedRealtime();
+        farReplans.addLast(now);
+        if (!replanLoop(farReplans, now)) return;
+        farReplans.clear();
+        Place alt = dest.equals(destAlternativeFor) ? destAlternative : null;
+        destAlternative = null;
+        destAlternativeFor = null;
+        if (alt != null && tryAlternative(np, alt, dest, s, google)) return;
+        np.doubt = true;
+        L.i(String.format(Locale.US, "ruta: %d recálculos seguidos sin cuadrar con Google Maps (plan %.1f km, Google %.1f): dejo de "
+                + "recalcular; «Faltan», los km de Google, y los radares, por la carretera por la que se va", FAR_REPLANS, np.totalKm, google));
+    }
+
+    /** El destino en el sitio alternativo, si desde aquí cuadra con Google: pasa a ser el del plan. */
+    private boolean tryAlternative(Plan np, Place alt, String dest, CarSensors.Snapshot s, double googleKm) {
+        try {
+            Plan ap = build(dest, s.lat, s.lon, alt.lat, alt.lon, null, null);
+            if (farFromGoogle(ap.totalKm, googleKm)) {
+                L.i(String.format(Locale.US, "ruta: el otro sitio del destino tampoco cuadra (%.1f km, Google %.1f)", ap.totalKm, googleKm));
+                return false;
+            }
+            double moved = RoadInfo.dist(np.destLat, np.destLon, alt.lat, alt.lon) / 1000.0;
+            Place m = manual;
+            if (m != null && dest.equals(m.name)) {
+                m.lat = alt.lat;
+                m.lon = alt.lon;
+            }
+            ap.builtAtMs = System.currentTimeMillis();
+            plan = ap;
+            L.i(String.format(Locale.US, "ruta: el destino era otro sitio con la misma dirección: paso al del otro buscador, a %.1f km del de "
+                    + "antes (%.1f km, Google %.1f)", moved, ap.totalKm, googleKm));
+            return true;
+        } catch (Exception e) {
+            L.w("ruta: el otro sitio del destino: " + Http.safeError(e));
+            return false;
+        }
     }
 
     /** Puro: ¿lo que falta según Google y según el plan es demasiado distinto? */
@@ -1422,14 +1511,32 @@ final class RoutePlanner {
     private Place locate(MapsCard.Read read, double lat, double lon, double km) {
         List<String> queries = read.queries;
         Place pl = null;
+        Place alt = null;
         for (int q = 0; q < queries.size() && pl == null; q++) {
             try {
                 List<Place> found = PlaceSearch.geocoder(ctx, queries.get(q), lat, lon);
-                if (found.isEmpty()) found = PlaceSearch.photon(queries.get(q), lat, lon);
+                boolean fromPhone = !found.isEmpty();
+                if (!fromPhone) found = PlaceSearch.photon(queries.get(q), lat, lon);
                 for (Place f : found) {
                     if (DestGuess.fitsDistance(RoadInfo.dist(lat, lon, f.lat, f.lon) / 1000.0, km)) {
                         pl = f;
                         break;
+                    }
+                }
+                // 20-10: el destino quedó unos 5 km lejos del de Google, a la misma distancia de la salida (17,8 km, cuadraba).
+                // Otro sitio para la misma búsqueda (otro resultado u otro buscador), por si luego no cuadra con Google.
+                if (pl != null) {
+                    List<Place> others = new ArrayList<>(found);
+                    if (fromPhone) {
+                        try {
+                            others.addAll(PlaceSearch.photon(queries.get(q), lat, lon));
+                        } catch (Exception ignored) {
+                        }
+                    }
+                    alt = alternativeTo(pl, others, lat, lon, km);
+                    if (alt != null) {
+                        L.i(String.format(Locale.US, "ruta: hay otro sitio para el destino de la tarjeta, a %.1f km del elegido: lo guardo "
+                                + "por si luego no cuadra con Google", RoadInfo.dist(pl.lat, pl.lon, alt.lat, alt.lon) / 1000.0));
                     }
                 }
                 L.i("ruta: búsqueda " + (q + 1) + " de " + queries.size() + " de la tarjeta de Maps: "
@@ -1442,7 +1549,18 @@ final class RoutePlanner {
             if (pl.detail == null || pl.detail.isEmpty()) pl.detail = pl.name;
             pl.name = read.label;
         }
+        destAlternative = pl == null ? null : alt;
+        destAlternativeFor = pl == null || alt == null ? null : pl.name;
         return pl;
+    }
+
+    /** Puro: de others, el primero que cuadra con los km de Maps desde (lat, lon) y está a más de 1 km de chosen; o null. */
+    static Place alternativeTo(Place chosen, List<Place> others, double lat, double lon, double km) {
+        for (Place o : others) {
+            if (o == chosen || RoadInfo.dist(chosen.lat, chosen.lon, o.lat, o.lon) < 1000) continue;
+            if (DestGuess.fitsDistance(RoadInfo.dist(lat, lon, o.lat, o.lon) / 1000.0, km)) return o;
+        }
+        return null;
     }
 
     /**
