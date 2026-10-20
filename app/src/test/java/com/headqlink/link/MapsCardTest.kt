@@ -47,9 +47,9 @@ class MapsCardTest {
     @Test
     fun shortTripCardWithItsTextAtTheEdge() {
         val lines = listOf(
-            l("Colegio Público Miguel de", 240, 150, 706, 192),
+            l("Biblioteca Municipal Miguel de", 240, 150, 706, 192),
             l("Cervantes", 240, 198, 360, 238),
-            l("Colegio público", 240, 290, 470, 322),
+            l("Biblioteca pública", 240, 290, 470, 322),
             l("Calle Mayor, 12", 240, 330, 505, 362),
             l("28001 Madrid", 240, 370, 455, 402),
             l("Madrid", 240, 410, 345, 440),
@@ -64,7 +64,7 @@ class MapsCardTest {
         )
         val q = MapsCard.addressQueries(lines)
         assertEquals("Calle Mayor, 12, 28001 Madrid", q[0])
-        assertEquals("Colegio Público Miguel de Cervantes, Madrid", q[1])
+        assertEquals("Biblioteca Municipal Miguel de Cervantes, Madrid", q[1])
         assertTrue(q.toString(), q.none { it.contains("San Pedro") || it.contains("Plaza Mayor") })
         // Las del mapa no son de la tarjeta.
         assertFalse(MapsCard.inCard(lines[10], lines[8]))
