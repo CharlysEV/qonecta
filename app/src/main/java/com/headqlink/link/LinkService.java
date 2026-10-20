@@ -739,6 +739,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
 
         @Override
         public void onCarConnected(String detail) {
+            P2pLink pl = p2p;
+            if (pl != null) pl.carSession(true);
             // Si el tamaño del coche (CAR_INFO) ya llegó, se conserva.
             LinkState.setCar(LinkState.Car.CONNECTED, LinkState.car == LinkState.Car.CONNECTED ? LinkState.carDetail : "");
             setStatus(Str.get(R.string.hql_car_connected));
@@ -754,6 +756,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         @Override
         public void onCarLost(String reason) {
             L.i("sesión con el coche terminada: " + reason);
+            P2pLink pl = p2p;
+            if (pl != null) pl.carSession(false);
             if (video != null && video.hasVideo() && cfg.qdKeepVideo()) {
                 // El vídeo y Android Auto siguen vivos esperando al coche (qdauto §6): sin reiniciar nada.
                 setStatus(Str.get(R.string.hql_reconnecting));
@@ -952,6 +956,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
 
     @Override
     public void onSessionConnected(SspSession s) {
+        P2pLink pl = p2p;
+        if (pl != null) pl.carSession(true);
         LinkState.setCar(LinkState.Car.CONNECTED, "");
         main.post(() -> apply(carConnectedNow()));
     }
@@ -959,6 +965,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
     @Override
     public synchronized void onSessionEnded(SspSession s) {
         if (session == s) session = null;
+        P2pLink pl = p2p;
+        if (pl != null) pl.carSession(false);
         setStatus(Str.get(R.string.hql_session_ended));
         LinkState.setCar(LinkState.Car.SEARCHING, "");
         // El motor original se lleva el vídeo con la sesión: AA pasa a la pausa en el acto (sin vídeo vivo).

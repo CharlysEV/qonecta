@@ -38,6 +38,12 @@ final class P2pLink {
     private WifiP2pManager mgr;
     private WifiP2pManager.Channel ch;
     private volatile boolean inGroup;
+    /**
+     * Hay sesión con el coche (por la vía que sea). 20-10, con la tablet por el Wi-Fi de casa y la app en Wi-Fi Direct: sin
+     * grupo, se buscaba el coche cada RETRY_MS durante toda la sesión (125 veces en media hora) y cada búsqueda sacaba la
+     * radio del canal: picos de hasta 1,7 s. Con sesión, no se busca.
+     */
+    private volatile boolean carSession;
     private boolean connecting;
     private boolean started;
     /** Lo último publicado en la fila «Red» (para {@link #republish}). */
@@ -69,7 +75,7 @@ final class P2pLink {
         @Override
         public void run() {
             if (!started) return;
-            if (!inGroup) {
+            if (!inGroup && !carSession) {
                 connecting = false;
                 discover();
             }
@@ -199,6 +205,17 @@ final class P2pLink {
                 if ("connect".equals(what)) connecting = false;
             }
         };
+    }
+
+    /** El coche se conecta (true) o se pierde (false). Con sesión no se busca, y lo que se estaba buscando se para. */
+    void carSession(boolean on) {
+        if (carSession == on) return;
+        carSession = on;
+        if (on && started && !inGroup) {
+            L.i("P2P: sesión con el coche sin grupo Wi-Fi Direct: dejo de buscar mientras dure");
+            mgr.stopPeerDiscovery(ch, null);
+            mgr.clearServiceRequests(ch, null);
+        }
     }
 
     void stop() {
