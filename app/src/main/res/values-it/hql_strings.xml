@@ -888,6 +888,12 @@
     <string name="hql_ins_ac">Ricarica AC</string>
     <string name="hql_ins_curve_help">Potenza (kW) mentre la batteria si riempie (%). La C10 rallenta la ricarica man mano: è normale.</string>
     <string name="hql_ins_drives">Percorsi</string>
+    <string name="hql_trips_export">Esporta viaggi</string>
+    <string name="hql_trips_export_text">Un file CSV con i tuoi %1$d viaggi salvati: data, orari, km, kWh, consumo, costo e %% di batteria alla partenza e all\'arrivo. Si apre con Excel, Fogli Google e simili.\n\nPuoi aggiungere il percorso di ogni viaggio (GPX, per le mappe). Contiene le tue posizioni: condividilo solo con chi vuoi.</string>
+    <string name="hql_trips_export_csv">Solo CSV</string>
+    <string name="hql_trips_export_gpx">CSV e percorsi</string>
+    <string name="hql_trips_export_failed">Esportazione non riuscita</string>
+    <string name="hql_trips_export_header" formatted="false">data|partenza|arrivo|km|minuti|kWh|kWh/100 km|fonte del consumo|costo (€)|% alla partenza|% all\'arrivo|salita (m)|discesa (m)|velocità max (km/h)|benzina (L)</string>
     <string name="hql_ins_no_drives">Ancora nessun percorso: qui si salvano i viaggi fatti con Qonecta+.</string>
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>
     <string name="hql_ins_max">max</string>

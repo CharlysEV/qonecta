@@ -887,6 +887,12 @@
     <string name="hql_ins_ac">AC-laden</string>
     <string name="hql_ins_curve_help">Vermogen (kW) terwijl de accu vol raakt (%). De C10 laadt trager naarmate hij voller is: dat is normaal.</string>
     <string name="hql_ins_drives">Routes</string>
+    <string name="hql_trips_export">Ritten exporteren</string>
+    <string name="hql_trips_export_text">Een CSV-bestand met je %1$d opgeslagen ritten: datum, tijden, km, kWh, verbruik, kosten en accu-%% bij vertrek en aankomst. Het opent in Excel, Google Spreadsheets en dergelijke.\n\nJe kunt de route van elke rit toevoegen (GPX, voor kaarten). Die bevat je locaties: deel hem alleen met wie je wilt.</string>
+    <string name="hql_trips_export_csv">Alleen CSV</string>
+    <string name="hql_trips_export_gpx">CSV en routes</string>
+    <string name="hql_trips_export_failed">Exporteren mislukt</string>
+    <string name="hql_trips_export_header" formatted="false">datum|vertrek|aankomst|km|minuten|kWh|kWh/100 km|bron van verbruik|kosten (€)|% bij vertrek|% bij aankomst|stijging (m)|daling (m)|max. snelheid (km/h)|benzine (L)</string>
     <string name="hql_ins_no_drives">Nog geen routes: ritten met Qonecta+ worden hier bewaard.</string>
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>
     <string name="hql_ins_max">max.</string>

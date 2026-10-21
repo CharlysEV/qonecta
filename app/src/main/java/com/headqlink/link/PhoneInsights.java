@@ -473,6 +473,7 @@ final class PhoneInsights {
         for (TripLog.Trip t : d.trips) if (t.track != null && t.track.length >= 2 && t.km >= 1) list.add(t);
         if (list.isEmpty()) {
             c.addView(note(Str.get(R.string.hql_ins_no_drives)));
+            if (!d.trips.isEmpty()) exportButton(c, d);
             addCard(c);
             return;
         }
@@ -508,7 +509,46 @@ final class PhoneInsights {
                     .putExtra(TripMapActivity.EXTRA_START, t.startMs)));
             c.addView(row);
         }
+        exportButton(c, d);
         addCard(c);
+    }
+
+    /** «Exportar viajes»: CSV con todos los viajes guardados y, si se quiere, sus recorridos en GPX (TripExport). */
+    private void exportButton(LinearLayout c, Data d) {
+        com.google.android.material.button.MaterialButton b = new com.google.android.material.button.MaterialButton(act, null,
+                com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        b.setText(Str.get(R.string.hql_trips_export));
+        b.setOnClickListener(v -> askExport(d));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(10);
+        c.addView(b, lp);
+    }
+
+    private void askExport(Data d) {
+        String[] names = new java.io.File(act.getExternalFilesDir(null), "trips").list((dir, n) -> n.endsWith(".json"));
+        int n = DemoMode.active() ? d.trips.size() : names == null ? 0 : names.length;
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(act)
+                .setTitle(Str.get(R.string.hql_trips_export))
+                .setMessage(Str.get(R.string.hql_trips_export_text, n))
+                .setPositiveButton(Str.get(R.string.hql_trips_export_csv), (x, w) -> runExport(d, false))
+                .setNeutralButton(Str.get(R.string.hql_trips_export_gpx), (x, w) -> runExport(d, true))
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void runExport(Data d, boolean tracks) {
+        new Thread(() -> {
+            try {
+                Intent share = TripExport.export(act, TripLog.recent(act, Integer.MAX_VALUE), d.history, tracks);
+                main.post(() -> {
+                    if (!act.isFinishing()) act.startActivity(share);
+                });
+            } catch (Exception e) {
+                L.w("viajes: no se pudo exportar: " + e.getClass().getSimpleName());
+                main.post(() -> android.widget.Toast.makeText(act, Str.get(R.string.hql_trips_export_failed),
+                        android.widget.Toast.LENGTH_LONG).show());
+            }
+        }, "hql-trips-export").start();
     }
 
     // ------------------------------------------------------------------ piezas

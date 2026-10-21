@@ -886,6 +886,12 @@
     <string name="hql_ins_ac">交流充电</string>
     <string name="hql_ins_curve_help">随电量（%）增加的功率（kW）。C10 电量越高充电越慢：这是正常的。</string>
     <string name="hql_ins_drives">驾驶记录</string>
+    <string name="hql_trips_export">导出行程</string>
+    <string name="hql_trips_export_text">一个 CSV 文件，包含你保存的 %1$d 次行程：日期、时间、公里、kWh、能耗、费用以及出发和到达时的电量 %%。可用 Excel、Google 表格等打开。\n\n你可以加入每次行程的路线（GPX，用于地图）。其中包含你的位置信息：只分享给你信任的人。</string>
+    <string name="hql_trips_export_csv">仅 CSV</string>
+    <string name="hql_trips_export_gpx">CSV 和路线</string>
+    <string name="hql_trips_export_failed">导出失败</string>
+    <string name="hql_trips_export_header" formatted="false">日期|出发|到达|公里|分钟|kWh|kWh/100 km|能耗来源|费用 (€)|出发时电量 %|到达时电量 %|爬升 (m)|下降 (m)|最高速度 (km/h)|汽油 (L)</string>
     <string name="hql_ins_no_drives">暂无驾驶记录：使用 Qonecta+ 的行程会保存在这里。</string>
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>
     <string name="hql_ins_max">最高</string>

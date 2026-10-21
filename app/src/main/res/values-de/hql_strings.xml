@@ -887,6 +887,12 @@
     <string name="hql_ins_ac">AC-Ladung</string>
     <string name="hql_ins_curve_help">Leistung (kW) während sich der Akku füllt (%). Der C10 lädt langsamer, je voller er ist: das ist normal.</string>
     <string name="hql_ins_drives">Strecken</string>
+    <string name="hql_trips_export">Fahrten exportieren</string>
+    <string name="hql_trips_export_text">Eine CSV-Datei mit deinen %1$d gespeicherten Fahrten: Datum, Uhrzeiten, km, kWh, Verbrauch, Kosten und Akku-%% bei Abfahrt und Ankunft. Sie lässt sich mit Excel, Google Tabellen und Ähnlichem öffnen.\n\nDu kannst die Strecke jeder Fahrt hinzufügen (GPX, für Karten). Sie enthält deine Standorte: teile sie nur mit Personen deiner Wahl.</string>
+    <string name="hql_trips_export_csv">Nur CSV</string>
+    <string name="hql_trips_export_gpx">CSV und Strecken</string>
+    <string name="hql_trips_export_failed">Export fehlgeschlagen</string>
+    <string name="hql_trips_export_header" formatted="false">Datum|Abfahrt|Ankunft|km|Minuten|kWh|kWh/100 km|Quelle des Verbrauchs|Kosten (€)|% bei Abfahrt|% bei Ankunft|Anstieg (m)|Gefälle (m)|Höchstgeschw. (km/h)|Benzin (L)</string>
     <string name="hql_ins_no_drives">Noch keine Strecken: hier werden Fahrten mit Qonecta+ gespeichert.</string>
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>
     <string name="hql_ins_max">max.</string>
