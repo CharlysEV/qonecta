@@ -1999,7 +1999,9 @@ final class CarUi {
         @Override
         public void run() {
             main.removeCallbacks(this);
-            String text = root == null || !new Config(ctx).videoHud() ? "" : LabControl.hudText(ctx);
+            // Solo sobre AA (sola o a la izquierda de la pantalla partida): en nuestra pantalla tapaba las pestañas de arriba
+            // (21-10, la sección Coche en Auto extendido).
+            String text = root == null || !aaVisible() || !new Config(ctx).videoHud() ? "" : LabControl.hudText(ctx);
             if (text.isEmpty()) {
                 if (hudView != null) hudView.setVisibility(View.GONE);
                 if (hudRect != null) {
@@ -2021,19 +2023,24 @@ final class CarUi {
                 hudView = t;
             }
             hudView.setText(text);
-            hudView.measure(View.MeasureSpec.makeMeasureSpec(HUD_W, View.MeasureSpec.EXACTLY),
+            // El borde derecho de AA: el de la pantalla, o con la pantalla partida, el de su mitad.
+            int railW = layoutPanelW();
+            int right = splitActive() ? railW + splitAaWidth(width, height, COMPACT_W, dpi) : width;
+            int hw = Math.max(200, Math.min(HUD_W, right - railW - 24));
+            hudView.measure(View.MeasureSpec.makeMeasureSpec(hw, View.MeasureSpec.EXACTLY),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-            int x = Math.max(0, width - HUD_W - 12);
+            int x = Math.max(0, right - hw - 12);
             int y = 8;
             FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) hudView.getLayoutParams();
-            if (lp.leftMargin != x || lp.topMargin != y) {
+            if (lp.leftMargin != x || lp.topMargin != y || lp.width != hw) {
                 lp.leftMargin = x;
                 lp.topMargin = y;
+                lp.width = hw;
                 hudView.setLayoutParams(lp);
             }
             hudView.setVisibility(View.VISIBLE);
             hudView.bringToFront();
-            int[] r = {x, y, HUD_W, hudView.getMeasuredHeight()};
+            int[] r = {x, y, hw, hudView.getMeasuredHeight()};
             if (!java.util.Arrays.equals(r, hudRect)) {
                 hudRect = r;
                 pushRects();
