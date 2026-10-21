@@ -181,8 +181,9 @@
     <string name="hql_cloud_sentry_confirm_on">Wächtermodus einschalten?</string>
     <string name="hql_cloud_sentry_confirm_off">Wächtermodus ausschalten?</string>
     <string name="hql_cloud_sentry_confirm_text">Der Befehl geht über die Leapmotor-Cloud mit deiner PIN an das Auto. Das kann einige Sekunden dauern (länger, wenn das Auto schläft).</string>
-    <string name="hql_cloud_sentry_done_on">Wächtermodus eingeschaltet (vom Auto bestätigt).</string>
-    <string name="hql_cloud_sentry_done_off">Wächtermodus ausgeschaltet (vom Auto bestätigt).</string>
+    <string name="hql_cloud_sentry_done_on">Wächtermodus an (laut Auto).</string>
+    <string name="hql_cloud_sentry_done_off">Wächtermodus aus (laut Auto).</string>
+    <string name="hql_cloud_sentry_unverified">Das Auto hat den Befehl erhalten, aber sein Status ist weiterhin «%1$s». Der Wächtermodus hat sich vielleicht nicht geändert: prüfe es in der Leapmotor-App.</string>
     <string name="hql_cloud_sentry_sent">Befehl gesendet; das Auto hat ihn noch nicht bestätigt (es schläft vielleicht).</string>
     <string name="hql_cloud_sentry_failed">Befehl konnte nicht gesendet werden: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>

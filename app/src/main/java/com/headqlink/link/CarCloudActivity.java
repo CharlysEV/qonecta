@@ -741,6 +741,10 @@ public class CarCloudActivity extends Activity {
     }
 
     /** Encender o apagar el modo centinela, tras confirmarlo; luego se lee el estado para ver cómo ha quedado. */
+    /** Lecturas del estado tras la orden del centinela, y cada cuánto (el coche tarda en subir el estado nuevo). */
+    private static final int SENTRY_CHECKS = 5;
+    private static final long SENTRY_CHECK_MS = 5000;
+
     private void confirmSentry(boolean on) {
         new MaterialAlertDialogBuilder(this)
                 .setTitle(on ? R.string.hql_cloud_sentry_confirm_on : R.string.hql_cloud_sentry_confirm_off)
@@ -750,13 +754,30 @@ public class CarCloudActivity extends Activity {
                     final LeapStatus[] after = new LeapStatus[1];
                     run(R.string.hql_cloud_sentry_failed, () -> {
                         ok[0] = CarCloudSession.setSentry(this, on);
-                        // El coche tarda un poco en subir el estado nuevo.
-                        SystemClock.sleep(4000);
-                        long t0 = SystemClock.elapsedRealtime();
-                        after[0] = CarCloudSession.readStatus(this);
-                        CarCloud.publish(this, after[0], SystemClock.elapsedRealtime() - t0);
-                    }, () -> showResult(Str.get(ok[0] ? (on ? R.string.hql_cloud_sentry_done_on : R.string.hql_cloud_sentry_done_off)
-                            : R.string.hql_cloud_sentry_sent), false));
+                        // 22-10: que el coche reciba la orden no quiere decir que el centinela cambie. Se lee su estado
+                        // (señal 3636) hasta SENTRY_CHECKS veces, y solo se da por hecho si el coche lo dice.
+                        for (int i = 0; i < SENTRY_CHECKS; i++) {
+                            SystemClock.sleep(SENTRY_CHECK_MS);
+                            long t0 = SystemClock.elapsedRealtime();
+                            after[0] = CarCloudSession.readStatus(this);
+                            CarCloud.publish(this, after[0], SystemClock.elapsedRealtime() - t0);
+                            if (after[0] != null && Boolean.valueOf(on).equals(after[0].sentry)) break;
+                        }
+                        Boolean now = after[0] == null ? null : after[0].sentry;
+                        L.i("nube Leapmotor: centinela pedido " + (on ? "encendido" : "apagado") + " · el coche "
+                                + (ok[0] ? "recibió la orden" : "no confirmó la orden") + " · su estado: "
+                                + (now == null ? "sin dato" : now ? "encendido" : "apagado"));
+                    }, () -> {
+                        Boolean now = after[0] == null ? null : after[0].sentry;
+                        if (Boolean.valueOf(on).equals(now)) {
+                            showResult(Str.get(on ? R.string.hql_cloud_sentry_done_on : R.string.hql_cloud_sentry_done_off), false);
+                        } else if (ok[0]) {
+                            showResult(Str.get(R.string.hql_cloud_sentry_unverified, Str.get(now == null ? R.string.hql_cloud_sentry_unknown
+                                    : now ? R.string.hql_cloud_sentry_state_on : R.string.hql_cloud_sentry_state_off)), true);
+                        } else {
+                            showResult(Str.get(R.string.hql_cloud_sentry_sent), false);
+                        }
+                    });
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();

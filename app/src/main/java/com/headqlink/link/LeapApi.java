@@ -475,7 +475,8 @@ final class LeapApi {
                         + "&operatePassword=" + LeapCrypto.encodeComponent(op)), "remote");
                 JSONObject d = res.optJSONObject("data");
                 String id = d == null ? "" : d.optString("remoteCtlId");
-                if (id.isEmpty()) return true;
+                // Sin número de orden no se puede preguntar si el coche la recibió: no se da por confirmada.
+                if (id.isEmpty()) return false;
                 long timeout = Math.max(1000, d.optLong("queryRemoteCtlResultTimeout", 30_000));
                 long interval = Math.max(250, d.optLong("queryInterval", 2000));
                 for (long waited = 0; waited <= timeout; waited += interval) {

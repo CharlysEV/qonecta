@@ -181,8 +181,9 @@
     <string name="hql_cloud_sentry_confirm_on">Attivare la modalità sentinella?</string>
     <string name="hql_cloud_sentry_confirm_off">Disattivare la modalità sentinella?</string>
     <string name="hql_cloud_sentry_confirm_text">Il comando arriva all\'auto tramite il cloud Leapmotor con il tuo PIN. Può richiedere qualche secondo (di più se l\'auto dorme).</string>
-    <string name="hql_cloud_sentry_done_on">Modalità sentinella attivata (confermato dall\'auto).</string>
-    <string name="hql_cloud_sentry_done_off">Modalità sentinella disattivata (confermato dall\'auto).</string>
+    <string name="hql_cloud_sentry_done_on">Modalità sentinella attiva (lo dice l\'auto).</string>
+    <string name="hql_cloud_sentry_done_off">Modalità sentinella spenta (lo dice l\'auto).</string>
+    <string name="hql_cloud_sentry_unverified">L\'auto ha ricevuto il comando, ma il suo stato è ancora «%1$s». La modalità sentinella potrebbe non essere cambiata: controlla nell\'app Leapmotor.</string>
     <string name="hql_cloud_sentry_sent">Comando inviato; l\'auto non l\'ha ancora confermato (potrebbe essere in standby).</string>
     <string name="hql_cloud_sentry_failed">Impossibile inviare il comando: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>
