@@ -142,6 +142,16 @@ final class TripExport {
         return f.format(new Date(startMs));
     }
 
+    /**
+     * Puro: el nombre sin repetir dentro del ZIP (dos viajes que empiezan en el mismo minuto: «… 08.52 (2)»). 21-10: con
+     * dos iguales, ZipException y no se exportaba nada.
+     */
+    static String unique(String n, java.util.Set<String> used) {
+        String out = n;
+        for (int i = 2; !used.add(out); i++) out = n + " (" + i + ")";
+        return out;
+    }
+
     private static String num(double v, int decimals, Locale loc) {
         if (Double.isNaN(v) || Double.isInfinite(v)) return "";
         return String.format(loc, "%." + decimals + "f", v);
@@ -195,9 +205,10 @@ final class TripExport {
                 z.putNextEntry(new ZipEntry("viajes.csv"));
                 z.write(csv.getBytes(StandardCharsets.UTF_8));
                 z.closeEntry();
+                java.util.Set<String> used = new java.util.HashSet<>();
                 for (TripLog.Trip t : trips) {
                     if (t.track == null || t.track.length < 2) continue;
-                    String n = name(t.startMs, tz);
+                    String n = unique(name(t.startMs, tz), used);
                     z.putNextEntry(new ZipEntry("recorridos/" + n + ".gpx"));
                     z.write(gpx(t, n).getBytes(StandardCharsets.UTF_8));
                     z.closeEntry();

@@ -61,4 +61,13 @@ class TripExportTest {
         assertTrue(g.contains("<trkpt lat=\"40.300000\" lon=\"-3.700000\"></trkpt>"))
         assertEquals("2026-10-21 08.52", TripExport.name(t.startMs, madrid))
     }
+
+    @Test
+    fun twoTripsInTheSameMinuteGetDifferentNames() {
+        val used = HashSet<String>()
+        assertEquals("2026-10-21 08.52", TripExport.unique("2026-10-21 08.52", used))
+        assertEquals("2026-10-21 08.52 (2)", TripExport.unique("2026-10-21 08.52", used))
+        assertEquals("2026-10-21 08.52 (3)", TripExport.unique("2026-10-21 08.52", used))
+        assertEquals("2026-10-21 09.10", TripExport.unique("2026-10-21 09.10", used))
+    }
 }
