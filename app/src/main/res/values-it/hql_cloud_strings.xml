@@ -22,6 +22,19 @@
     <string name="hql_cloud_power_out">in uscita dalla batteria</string>
     <string name="hql_cloud_power_in">in recupero</string>
     <string name="hql_cloud_power_parked">consumo ad auto ferma</string>
+    <string name="hql_parked_title">Con l\'auto parcheggiata</string>
+    <string name="hql_parked_none">Ancora nessun dato. L\'auto deve restare ferma almeno 2 h tra due viaggi fatti con l\'app, senza muoverla né caricarla.</string>
+    <string name="hql_parked_per_day" formatted="false">%/giorno</string>
+    <string name="hql_parked_kwh_month">kWh al mese</string>
+    <string name="hql_parked_cost_month">al mese</string>
+    <string name="hql_parked_typical">Normale per la tua auto: %1$s %%/giorno. Si ricava dalla %% di batteria che l\'auto indica alla fine di un viaggio e all\'inizio del successivo.</string>
+    <string name="hql_parked_row">%1$s · ferma %2$s · −%3$s %% (%4$s kWh)</string>
+    <string name="hql_parked_unusual">più del solito</string>
+    <string name="hql_parked_since">In sosta: −%1$s %% in %2$s</string>
+    <string name="hql_parked_high">alto</string>
+    <string name="hql_parked_notice_title">Consumo da ferma</string>
+    <string name="hql_parked_notice_text">In %1$s di sosta ha consumato %2$s kWh (%3$s %%). Il normale per la tua auto è %4$s %%/giorno. Modalità sentinella, clima programmato o qualcosa acceso?</string>
+    <string name="hql_parked_channel">Consumo da ferma</string>
     <string name="hql_cloud_batt_temp">Batteria %1$s</string>
     <string name="hql_cloud_thermal_on">gestione termica attiva</string>
     <string name="hql_cloud_in_battery">Nella batteria</string>

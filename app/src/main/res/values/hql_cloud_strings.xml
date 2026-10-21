@@ -22,6 +22,19 @@
     <string name="hql_cloud_power_out">leaving the battery</string>
     <string name="hql_cloud_power_in">regenerating</string>
     <string name="hql_cloud_power_parked">draw while parked</string>
+    <string name="hql_parked_title">With the car parked</string>
+    <string name="hql_parked_none">No data yet. The car needs to sit at least 2 h between two trips made with the app, without moving or charging.</string>
+    <string name="hql_parked_per_day" formatted="false">%/day</string>
+    <string name="hql_parked_kwh_month">kWh a month</string>
+    <string name="hql_parked_cost_month">a month</string>
+    <string name="hql_parked_typical">Normal for your car: %1$s %%/day. It comes from the battery %% the car reports at the end of one trip and at the start of the next.</string>
+    <string name="hql_parked_row">%1$s · parked %2$s · −%3$s %% (%4$s kWh)</string>
+    <string name="hql_parked_unusual">more than usual</string>
+    <string name="hql_parked_since">Parked: −%1$s %% in %2$s</string>
+    <string name="hql_parked_high">high</string>
+    <string name="hql_parked_notice_title">Battery use while parked</string>
+    <string name="hql_parked_notice_text">In %1$s parked it used %2$s kWh (%3$s %%). Normal for your car is %4$s %%/day. Sentry mode, scheduled climate or something left on?</string>
+    <string name="hql_parked_channel">Battery use while parked</string>
     <string name="hql_cloud_batt_temp">Battery %1$s</string>
     <string name="hql_cloud_thermal_on">thermal management on</string>
     <string name="hql_cloud_in_battery">In the battery</string>

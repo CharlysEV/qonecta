@@ -22,6 +22,19 @@
     <string name="hql_cloud_power_out">电池放电</string>
     <string name="hql_cloud_power_in">能量回收</string>
     <string name="hql_cloud_power_parked">驻车耗电</string>
+    <string name="hql_parked_title">停车时</string>
+    <string name="hql_parked_none">暂无数据。需要在两次使用本应用的行程之间停车至少 2 小时，期间不移动也不充电。</string>
+    <string name="hql_parked_per_day" formatted="false">%/天</string>
+    <string name="hql_parked_kwh_month">kWh/月</string>
+    <string name="hql_parked_cost_month">每月</string>
+    <string name="hql_parked_typical">你的车的正常水平：%1$s %%/天。根据车辆在一次行程结束时和下一次开始时报告的电量 %% 计算。</string>
+    <string name="hql_parked_row">%1$s · 停车 %2$s · −%3$s %% (%4$s kWh)</string>
+    <string name="hql_parked_unusual">高于正常</string>
+    <string name="hql_parked_since">停车：−%1$s %%（%2$s）</string>
+    <string name="hql_parked_high">偏高</string>
+    <string name="hql_parked_notice_title">停车耗电</string>
+    <string name="hql_parked_notice_text">停车 %1$s 期间耗电 %2$s kWh（%3$s %%）。你的车正常为 %4$s %%/天。是否开启了哨兵模式、预约空调或有设备未关闭？</string>
+    <string name="hql_parked_channel">停车耗电</string>
     <string name="hql_cloud_batt_temp">电池 %1$s</string>
     <string name="hql_cloud_thermal_on">热管理已开启</string>
     <string name="hql_cloud_in_battery">电池内电量</string>

@@ -141,6 +141,7 @@ final class PhoneInsights {
         col.removeAllViews();
         carCard(d);
         monthCard(d);
+        parkedCard(d);
         howCard(d);
         chargesCard(d);
         curveCard(d);
@@ -252,6 +253,44 @@ final class PhoneInsights {
                 : R.string.hql_ins_from_app));
         legend.setPadding(0, dp(6), 0, 0);
         c.addView(legend);
+        addCard(c);
+    }
+
+    /** Con el coche parado (ParkedDrain): media de 30 días, lo normal en este coche y los últimos aparcamientos. */
+    private void parkedCard(Data d) {
+        LinearLayout c = card(Str.get(R.string.hql_parked_title));
+        double cap = d.cloud != null && d.cloud.capacityKwh > 0 ? d.cloud.capacityKwh : CarSpec.current().usableKwh;
+        List<ParkedDrain.Park> parks = ParkedDrain.parks(d.trips, cap);
+        if (parks.isEmpty()) {
+            c.addView(note(Str.get(R.string.hql_parked_none)));
+            addCard(c);
+            return;
+        }
+        double typical = ParkedDrain.typicalPerDay(parks);
+        ParkedDrain.Summary s = ParkedDrain.summary(parks, System.currentTimeMillis() - 30L * 86_400_000L);
+        if (s.count == 0) s = ParkedDrain.summary(parks, 0);
+        double perDay = s.perDayPct();
+        double month = s.kwhPerMonth();
+        LinearLayout big = new LinearLayout(act);
+        big.addView(stat(Double.isNaN(perDay) ? "—" : fmt1(perDay), Str.get(R.string.hql_parked_per_day)), weight());
+        big.addView(stat(Double.isNaN(month) ? "—" : fmt1(month), Str.get(R.string.hql_parked_kwh_month)), weight());
+        big.addView(stat(Double.isNaN(month) ? "—" : Money.format(month * d.price), Str.get(R.string.hql_parked_cost_month)), weight());
+        c.addView(big);
+        TextView t = small(Str.get(R.string.hql_parked_typical, fmt1(typical)));
+        t.setPadding(0, dp(8), 0, dp(4));
+        c.addView(t);
+        int shown = 0;
+        for (ParkedDrain.Park p : parks) {
+            if (shown++ >= 5) break;
+            c.addView(divider());
+            boolean odd = ParkedDrain.unusual(p, typical);
+            String line = Str.get(R.string.hql_parked_row, day(p.fromMs) + " " + time(p.fromMs), duration(Math.round(p.hours() * 60)),
+                    fmt1(p.dropPct()), ParkedNotice.num(p.kwh(), 2));
+            TextView row = small(odd ? line + " · " + Str.get(R.string.hql_parked_unusual) : line);
+            if (odd) row.setTextColor(act.getColor(R.color.hql_warn));
+            row.setPadding(0, dp(8), 0, dp(8));
+            c.addView(row);
+        }
         addCard(c);
     }
 

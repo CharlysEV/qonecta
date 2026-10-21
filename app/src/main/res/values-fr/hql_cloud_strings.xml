@@ -22,6 +22,19 @@
     <string name="hql_cloud_power_out">fournie par la batterie</string>
     <string name="hql_cloud_power_in">en récupération</string>
     <string name="hql_cloud_power_parked">consommation à l\'arrêt</string>
+    <string name="hql_parked_title">Voiture garée</string>
+    <string name="hql_parked_none">Pas encore de données. La voiture doit rester au moins 2 h entre deux trajets faits avec l\'app, sans bouger ni charger.</string>
+    <string name="hql_parked_per_day" formatted="false">%/jour</string>
+    <string name="hql_parked_kwh_month">kWh par mois</string>
+    <string name="hql_parked_cost_month">par mois</string>
+    <string name="hql_parked_typical">Normal pour votre voiture : %1$s %%/jour. Calculé à partir du %% de batterie indiqué par la voiture à la fin d\'un trajet et au début du suivant.</string>
+    <string name="hql_parked_row">%1$s · garée %2$s · −%3$s %% (%4$s kWh)</string>
+    <string name="hql_parked_unusual">plus que d\'habitude</string>
+    <string name="hql_parked_since">Garée : −%1$s %% en %2$s</string>
+    <string name="hql_parked_high">élevé</string>
+    <string name="hql_parked_notice_title">Consommation à l\'arrêt</string>
+    <string name="hql_parked_notice_text">En %1$s garée, elle a consommé %2$s kWh (%3$s %%). La normale pour votre voiture est de %4$s %%/jour. Mode sentinelle, climatisation programmée ou quelque chose d\'allumé ?</string>
+    <string name="hql_parked_channel">Consommation à l\'arrêt</string>
     <string name="hql_cloud_batt_temp">Batterie %1$s</string>
     <string name="hql_cloud_thermal_on">gestion thermique active</string>
     <string name="hql_cloud_in_battery">Dans la batterie</string>

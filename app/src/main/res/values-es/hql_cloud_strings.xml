@@ -22,6 +22,19 @@
     <string name="hql_cloud_power_out">saliendo de la batería</string>
     <string name="hql_cloud_power_in">recuperando</string>
     <string name="hql_cloud_power_parked">consumo con el coche parado</string>
+    <string name="hql_parked_title">Con el coche parado</string>
+    <string name="hql_parked_none">Aún no hay datos. Hace falta dejar el coche al menos 2 h entre dos viajes hechos con la app, sin moverlo ni cargarlo.</string>
+    <string name="hql_parked_per_day" formatted="false">%/día</string>
+    <string name="hql_parked_kwh_month">kWh al mes</string>
+    <string name="hql_parked_cost_month">al mes</string>
+    <string name="hql_parked_typical">Lo normal en tu coche: %1$s %%/día. Sale del %% de batería que da el coche al acabar un viaje y al empezar el siguiente.</string>
+    <string name="hql_parked_row">%1$s · %2$s parado · −%3$s %% (%4$s kWh)</string>
+    <string name="hql_parked_unusual">más de lo normal</string>
+    <string name="hql_parked_since">Aparcado: −%1$s %% en %2$s</string>
+    <string name="hql_parked_high">alto</string>
+    <string name="hql_parked_notice_title">Gasto con el coche parado</string>
+    <string name="hql_parked_notice_text">En %1$s parado ha gastado %2$s kWh (%3$s %%). Lo normal en tu coche son %4$s %%/día. ¿Centinela, clima programado o algo encendido?</string>
+    <string name="hql_parked_channel">Gasto con el coche parado</string>
     <string name="hql_cloud_batt_temp">Batería %1$s</string>
     <string name="hql_cloud_thermal_on">gestión térmica activa</string>
     <string name="hql_cloud_in_battery">En la batería</string>

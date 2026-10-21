@@ -22,6 +22,19 @@
     <string name="hql_cloud_power_out">uit de accu</string>
     <string name="hql_cloud_power_in">terugwinning</string>
     <string name="hql_cloud_power_parked">verbruik bij stilstand</string>
+    <string name="hql_parked_title">Met de auto geparkeerd</string>
+    <string name="hql_parked_none">Nog geen gegevens. De auto moet tussen twee ritten met de app minstens 2 uur stilstaan, zonder te rijden of te laden.</string>
+    <string name="hql_parked_per_day" formatted="false">%/dag</string>
+    <string name="hql_parked_kwh_month">kWh per maand</string>
+    <string name="hql_parked_cost_month">per maand</string>
+    <string name="hql_parked_typical">Normaal voor je auto: %1$s %%/dag. Dit volgt uit het accu-%% dat de auto meldt aan het eind van een rit en aan het begin van de volgende.</string>
+    <string name="hql_parked_row">%1$s · %2$s geparkeerd · −%3$s %% (%4$s kWh)</string>
+    <string name="hql_parked_unusual">meer dan normaal</string>
+    <string name="hql_parked_since">Geparkeerd: −%1$s %% in %2$s</string>
+    <string name="hql_parked_high">hoog</string>
+    <string name="hql_parked_notice_title">Verbruik bij stilstand</string>
+    <string name="hql_parked_notice_text">In %1$s geparkeerd verbruikte hij %2$s kWh (%3$s %%). Normaal voor je auto is %4$s %%/dag. Schildwachtmodus, geplande klimaatregeling of iets aan laten staan?</string>
+    <string name="hql_parked_channel">Verbruik bij stilstand</string>
     <string name="hql_cloud_batt_temp">Accu %1$s</string>
     <string name="hql_cloud_thermal_on">thermisch beheer aan</string>
     <string name="hql_cloud_in_battery">In de accu</string>
