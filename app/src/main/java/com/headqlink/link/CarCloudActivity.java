@@ -752,6 +752,7 @@ public class CarCloudActivity extends Activity {
                 .setPositiveButton(on ? R.string.hql_cloud_sentry_on : R.string.hql_cloud_sentry_off, (d, w) -> {
                     final boolean[] ok = new boolean[1];
                     final LeapStatus[] after = new LeapStatus[1];
+                    final long sentAt = System.currentTimeMillis();
                     run(R.string.hql_cloud_sentry_failed, () -> {
                         ok[0] = CarCloudSession.setSentry(this, on);
                         // 22-10: que el coche reciba la orden no quiere decir que el centinela cambie. Se lee su estado
@@ -764,13 +765,21 @@ public class CarCloudActivity extends Activity {
                             if (after[0] != null && Boolean.valueOf(on).equals(after[0].sentry)) break;
                         }
                         Boolean now = after[0] == null ? null : after[0].sentry;
+                        long age = after[0] == null || after[0].carTimeMs <= 0 ? -1 : (System.currentTimeMillis() - after[0].carTimeMs) / 1000;
                         L.i("nube Leapmotor: centinela pedido " + (on ? "encendido" : "apagado") + " · el coche "
                                 + (ok[0] ? "recibió la orden" : "no confirmó la orden") + " · su estado: "
-                                + (now == null ? "sin dato" : now ? "encendido" : "apagado"));
+                                + (now == null ? "sin dato" : now ? "encendido" : "apagado")
+                                + (age < 0 ? "" : " · dato del coche de hace " + age + " s"));
                     }, () -> {
                         Boolean now = after[0] == null ? null : after[0].sentry;
+                        // ¿El estado leído es de después de la orden? Si no, el coche aún no ha subido el nuevo.
+                        boolean fresh = after[0] != null && after[0].carTimeMs >= sentAt - 5000;
                         if (Boolean.valueOf(on).equals(now)) {
                             showResult(Str.get(on ? R.string.hql_cloud_sentry_done_on : R.string.hql_cloud_sentry_done_off), false);
+                        } else if (ok[0] && !fresh) {
+                            long min = after[0] == null || after[0].carTimeMs <= 0 ? 0
+                                    : (System.currentTimeMillis() - after[0].carTimeMs) / 60_000;
+                            showResult(Str.get(R.string.hql_cloud_sentry_stale, (int) min), true);
                         } else if (ok[0]) {
                             showResult(Str.get(R.string.hql_cloud_sentry_unverified, Str.get(now == null ? R.string.hql_cloud_sentry_unknown
                                     : now ? R.string.hql_cloud_sentry_state_on : R.string.hql_cloud_sentry_state_off)), true);

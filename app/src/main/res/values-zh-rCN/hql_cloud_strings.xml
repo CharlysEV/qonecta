@@ -184,6 +184,7 @@
     <string name="hql_cloud_sentry_done_on">哨兵模式已开启（车辆确认）。</string>
     <string name="hql_cloud_sentry_done_off">哨兵模式已关闭（车辆确认）。</string>
     <string name="hql_cloud_sentry_unverified">车辆已收到指令，但状态仍为「%1$s」。哨兵模式可能没有改变：请在零跑 App 中确认。</string>
+    <string name="hql_cloud_sentry_stale">车辆已收到指令，但尚未上传状态（最后数据为 %1$d 分钟前）：不确定哨兵模式是否已改变。请稍后再读取。</string>
     <string name="hql_cloud_sentry_sent">指令已发送；车辆尚未确认（可能在休眠）。</string>
     <string name="hql_cloud_sentry_failed">无法发送指令：%1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37.3 kWh</string>

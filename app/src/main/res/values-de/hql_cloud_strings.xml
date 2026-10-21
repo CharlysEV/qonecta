@@ -184,6 +184,7 @@
     <string name="hql_cloud_sentry_done_on">Wächtermodus an (laut Auto).</string>
     <string name="hql_cloud_sentry_done_off">Wächtermodus aus (laut Auto).</string>
     <string name="hql_cloud_sentry_unverified">Das Auto hat den Befehl erhalten, aber sein Status ist weiterhin «%1$s». Der Wächtermodus hat sich vielleicht nicht geändert: prüfe es in der Leapmotor-App.</string>
+    <string name="hql_cloud_sentry_stale">Das Auto hat den Befehl erhalten, aber seinen Status noch nicht hochgeladen (letzte Daten vor %1$d min): Ob sich der Wächtermodus geändert hat, ist unbekannt. Lies ihn später noch einmal.</string>
     <string name="hql_cloud_sentry_sent">Befehl gesendet; das Auto hat ihn noch nicht bestätigt (es schläft vielleicht).</string>
     <string name="hql_cloud_sentry_failed">Befehl konnte nicht gesendet werden: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>

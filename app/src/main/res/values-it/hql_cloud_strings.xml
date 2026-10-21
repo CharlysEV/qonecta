@@ -184,6 +184,7 @@
     <string name="hql_cloud_sentry_done_on">Modalità sentinella attiva (lo dice l\'auto).</string>
     <string name="hql_cloud_sentry_done_off">Modalità sentinella spenta (lo dice l\'auto).</string>
     <string name="hql_cloud_sentry_unverified">L\'auto ha ricevuto il comando, ma il suo stato è ancora «%1$s». La modalità sentinella potrebbe non essere cambiata: controlla nell\'app Leapmotor.</string>
+    <string name="hql_cloud_sentry_stale">L\'auto ha ricevuto il comando, ma non ha ancora inviato il suo stato (ultimo dato di %1$d min fa): non si sa se la modalità sentinella è cambiata. Rileggilo tra poco.</string>
     <string name="hql_cloud_sentry_sent">Comando inviato; l\'auto non l\'ha ancora confermato (potrebbe essere in standby).</string>
     <string name="hql_cloud_sentry_failed">Impossibile inviare il comando: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>
