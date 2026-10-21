@@ -2411,15 +2411,18 @@ final class CarUi {
 
     private void open(String name) {
         String before = screenName;
-        // Pantalla partida: AA se queda en su mitad (cada cambio de ancho lo reinicia: 16-10). «Auto» lo deja donde está,
-        // junto a la última pantalla de al lado; para verlo entero se quita la pantalla partida con su botón.
+        // Pantalla partida: «Auto» quita la pantalla partida y enseña AA entero, como con su botón (21-10: antes no hacía
+        // nada y parecía que la app no respondía). Si la pantalla partida está pedida pero no se ve (se está en AA), AA se
+        // queda en su mitad, junto a la última pantalla de al lado.
         if (split && "aa".equals(name)) {
             if (splitActive()) {
-                L.i("CarUi: pantalla partida: Android Auto sigue en su mitad");
-                return;
+                L.i("CarUi: «Auto» con la pantalla partida: la quito y enseño Android Auto entero");
+                split = false;
+                main.post(this::aaForGame);
+            } else {
+                name = splitCapable(lastSplitScreen) ? lastSplitScreen : "car";
+                L.i("CarUi: pantalla partida: Android Auto en su mitad, junto a " + name);
             }
-            name = splitCapable(lastSplitScreen) ? lastSplitScreen : "car";
-            L.i("CarUi: pantalla partida: Android Auto en su mitad, junto a " + name);
         }
         if (themePending && pres != null) {
             // El cambio de día o noche que esperaba: la interfaz entera con los colores de ahora, ya en la pantalla nueva.
