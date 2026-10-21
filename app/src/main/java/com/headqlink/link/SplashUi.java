@@ -30,7 +30,9 @@ final class SplashUi {
 
     void start(Surface surface) {
         main.post(() -> {
-            vd = CarUi.createDisplay(ctx, "HeadQLink-splash", width, height, dpi, surface, 30);
+            // Sin frecuencia pedida: es una animación de carga de unos segundos y se libera en plena sesión (21-10: en un
+            // Galaxy A52s con Android 14, liberarla con frecuencia pedida tumbaba surfaceflinger).
+            vd = CarUi.createDisplay(ctx, "HeadQLink-splash", width, height, dpi, surface, 0);
             pres = new Presentation(ctx, vd.getDisplay(), android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen) {
                 @Override
                 protected void onCreate(Bundle b) {

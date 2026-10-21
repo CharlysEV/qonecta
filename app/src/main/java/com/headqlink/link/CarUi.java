@@ -949,14 +949,16 @@ final class CarUi {
     }
 
     /**
-     * Pantalla virtual para nuestra interfaz. Android 14+: a la frecuencia del vídeo, para que las
+     * Pantalla virtual para nuestra interfaz. Android 15+: a la frecuencia del vídeo, para que las
      * animaciones (juegos, desplazamientos) no se dibujen al ritmo del móvil (hasta 120 Hz) y se
-     * descarten la mitad de forma irregular.
+     * descarten la mitad de forma irregular. En Android 14 no: 21-10, en un Galaxy A52s (Android 14), al liberar una
+     * pantalla virtual con frecuencia pedida se caía surfaceflinger y el móvil recargaba el escritorio y todas las apps
+     * (al llegar la primera imagen de AA, con la de carga, y al desconectar).
      */
     static VirtualDisplay createDisplay(Context ctx, String name, int w, int h, int dpi, Surface surface, float hz) {
         DisplayManager dm = ctx.getSystemService(DisplayManager.class);
         int flags = DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY;
-        if (hz > 0 && android.os.Build.VERSION.SDK_INT >= 34) {
+        if (hz > 0 && requestRefreshRate(android.os.Build.VERSION.SDK_INT)) {
             try {
                 android.hardware.display.VirtualDisplayConfig cfg = new android.hardware.display.VirtualDisplayConfig.Builder(name, w, h, dpi)
                         .setSurface(surface).setFlags(flags).setRequestedRefreshRate(hz).build();
@@ -968,6 +970,11 @@ final class CarUi {
             }
         }
         return dm.createVirtualDisplay(name, w, h, dpi, surface, flags);
+    }
+
+    /** Puro: ¿se pide frecuencia a la pantalla virtual en este Android? Solo desde el 15 (ver createDisplay). */
+    static boolean requestRefreshRate(int sdk) {
+        return sdk >= 35;
     }
 
     /** Sin el dibujo propio con la pantalla del móvil apagada (vista previa). */
