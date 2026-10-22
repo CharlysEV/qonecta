@@ -69,8 +69,13 @@ final class FloatCard extends LinearLayout {
         // cabe, cortado. Con setSingleLine el ajuste de tamaño no funciona: maxLines 1.
         title.setMaxLines(1);
         title.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(title, CarStyle.textPx(19), CarStyle.textPx(27), 1,
-                android.util.TypedValue.COMPLEX_UNIT_PX);
+        // En el T03 (escala 0,6) el mínimo legible sube los dos tamaños a 27: con mínimo = máximo Android lanza una
+        // excepción y no se ve la interfaz (22-10). Entonces, tamaño fijo.
+        int minPx = CarStyle.textPx(19), maxPx = CarStyle.textPx(27);
+        if (maxPx > minPx) {
+            androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(title, minPx, maxPx, 1,
+                    android.util.TypedValue.COMPLEX_UNIT_PX);
+        }
         texts.addView(title, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         sub = CarStyle.text(c, "", 22, CarStyle.TEXT_DIM);
         sub.setSingleLine(true);
