@@ -31,6 +31,48 @@ class UpdateCheckTest {
     }
 
     @Test
+    fun notesSplitIntoStarsImprovementsAndFixes() {
+        val md = """## Qonecta+ 0.3.0
+
+### Nuevo
+- **Informe del mes:** tu mes en cifras.
+  - Aviso el día 1.
+  - Para compartir.
+- **Otra novedad:** con un texto
+  partido en dos líneas.
+
+### Mejorado
+- **T03:** los textos ya no se pisan.
+
+### Arreglado
+- **Modo extendido en el T03:** ya se abre.
+- Un arreglo sin título.
+
+## Aviso
+- Licencias.
+
+**SHA-256 del APK:** `abc`
+"""
+        val n = UpdateCheck.sections(md)
+        assertTrue(n.structured())
+        assertEquals(2, n.added.size)
+        assertEquals("Informe del mes", n.added[0].title)
+        assertEquals("tu mes en cifras.", n.added[0].body)
+        assertEquals(listOf("Aviso el día 1.", "Para compartir."), n.added[0].sub)
+        assertEquals("con un texto partido en dos líneas.", n.added[1].body)
+        assertEquals(1, n.improved.size)
+        assertEquals("T03", n.improved[0].title)
+        assertEquals(2, n.fixed.size)
+        assertEquals("", n.fixed[1].title)
+        assertEquals("Un arreglo sin título.", n.fixed[1].body)
+        // Sin la sección «Aviso» ni el SHA.
+        assertEquals("", n.other)
+        // «Cambiado» cuenta como mejora; unas notas sin apartados se enseñan como texto.
+        assertEquals("Fuera el centinela", UpdateCheck.sections("### Cambiado\n- **Fuera el centinela.** Texto.").improved[0].title.trimEnd('.'))
+        assertFalse(UpdateCheck.sections("Arreglos varios.\n- uno\n- dos").structured())
+    }
+
+    @Test
     fun tagsParseNumberByNumber() {
         assertEquals(listOf(0, 2, 33), UpdateCheck.parse("v0.2.33-qdauto")!!.toList())
         assertEquals(listOf(0, 2, 9), UpdateCheck.parse("0.2.9-qdauto")!!.toList())

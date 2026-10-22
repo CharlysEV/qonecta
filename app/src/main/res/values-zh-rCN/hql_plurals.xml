@@ -58,4 +58,13 @@
     <plurals name="hql_cloud_trips_car_total_fuel">
         <item quantity="other">车辆数据：%1$d 次行程 · %3$.1f kWh/100 · %4$.1f L/100</item>
     </plurals>
+    <plurals name="hql_notes_fixes">
+        <item quantity="other">🔧 %1$d 项修复</item>
+    </plurals>
+    <plurals name="hql_report_trips">
+        <item quantity="other">%1$d 次行程</item>
+    </plurals>
+    <plurals name="hql_report_trips_unit">
+        <item quantity="other">次行程</item>
+    </plurals>
 </resources>

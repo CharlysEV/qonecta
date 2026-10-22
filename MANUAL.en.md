@@ -378,7 +378,7 @@ version). That tells us whether the C10 supports it.
   battery, range, next stop) next to Android Auto, and it is fine while driving, with no notice. Android Auto keeps a bit more than half, just enough for
   Google Maps to pan and search. Each side takes its own touches. "Full screen" shows it alone again. It lasts while you
   stay connected to the car. The first time in each connection, a notice must be accepted: we recommend using it with
-  the car stopped, and you use it at your own risk.
+  the car stopped, and you use it at your own risk. Not on the T03: its screen is too narrow to split.
 - **"Car" section** (estimated from the phone's sensors and open services; with the Leapmotor account, also with real
   car data: see [Real car data](#real-car-data-leapmotor-account)):
   - "Route": destination, arrival, expected energy and consumption; the elevation profile coloured by slope (descents
@@ -517,6 +517,23 @@ congestiones 4`.
   after 15 s; if the Android Auto server may have been left on, you'll see "The Android Auto server is still on · Tap to
   turn it off": tap it with the phone unlocked.
 - Turn the hotspot off if you don't need it.
+
+### Monthly report
+
+Your month in figures, in the phone's "Trips" tab › "See the report". Use ‹ and › to move between months.
+
+- **At the top:** "Your October with the C10" with the km, average consumption (kWh/100 km), energy and money spent.
+  Each figure shows its change from the month before: green if it improves, amber if it gets worse.
+- **What you save** compared with a petrol car, using the petrol consumption and price from the trip settings.
+- **Charging:** how many charges, kWh at home and fast, the fastest one and what they cost (saved by live charging).
+- **With the car parked:** what the battery lost during the month.
+- **Highlights:** the most efficient trip, the longest one and the day with the most km.
+- **"Share":** an image with only the figures, no places or routes.
+- **On the 1st** (until the 7th) a notice arrives with the month that has just ended.
+
+Trips come from the car (Leapmotor account) if its history covers the whole month; otherwise, from the ones the app
+recorded. The cloud only keeps 35 days, so each month is saved as a summary on the phone. The first month has no
+comparison.
 
 ### Automatic connection: "Connect when the car's Bluetooth is detected"
 

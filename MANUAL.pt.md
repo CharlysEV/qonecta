@@ -397,7 +397,8 @@ admite.
   autonomia, próxima paragem) junto ao Android Auto, e serve em andamento, sem aviso. O Android Auto fica com um pouco mais de metade, o suficiente para o
   Google Maps se poder mover e pesquisar. Cada lado responde aos seus toques. «Ecrã inteiro» deixa-o sozinho outra vez.
   Dura enquanto estiver ligado ao carro. Da primeira vez em cada ligação aparece um aviso que é preciso aceitar:
-  recomenda-se usar com o carro parado, e a utilização é da sua responsabilidade.
+  recomenda-se usar com o carro parado, e a utilização é da sua responsabilidade. No T03 não existe: o ecrã é
+  demasiado estreito para o dividir.
 - **Secção «Carro»** (estimado com os sensores do telemóvel e serviços abertos; com a conta Leapmotor, também com dados
   reais do carro: ver [Dados reais do carro](#dados-reais-do-carro-conta-leapmotor)):
   - «Rota»: destino, chegada, energia e consumo previstos; o perfil de elevação colorido pela inclinação (a verde as
@@ -539,6 +540,22 @@ congestiones 4`.
   15 s; se o servidor do Android Auto puder ter ficado ligado, verá «O servidor do Android Auto continua ligado · Toque
   para o desligar»: toque nela com o telemóvel desbloqueado.
 - Desligue o hotspot se não precisar dele.
+
+### Relatório do mês
+
+O seu mês em números, no separador «Viagens» do telemóvel › «Ver o relatório». Com ‹ e › passa de um mês para outro.
+
+- **Em cima:** «O seu outubro com o C10» com os km, o consumo médio (kWh/100 km), a energia e o que gastou. Cada número
+  mostra a variação face ao mês anterior: a verde se melhora, a âmbar se piora.
+- **O que poupa** face a um carro a gasolina, com o consumo e o preço da gasolina das definições da viagem.
+- **Carregamentos:** quantos, os kWh em casa e rápidos, o mais rápido e quanto custaram (guardados pelo carregamento em direto).
+- **Com o carro parado:** o que a bateria perdeu no mês.
+- **Destaques:** a viagem mais eficiente, a mais longa e o dia com mais km.
+- **«Partilhar»:** uma imagem só com os números, sem locais nem percursos.
+- **No dia 1** (até ao dia 7) chega um aviso com o mês que acabou de terminar.
+
+As viagens são as do carro (conta Leapmotor) se o seu histórico cobrir o mês inteiro; se não, as que a app gravou. A
+nuvem só guarda 35 dias, por isso cada mês fica guardado em resumo no telemóvel. O primeiro mês aparece sem comparação.
 
 ### Ligação automática: «Ligar ao detetar o Bluetooth do carro»
 

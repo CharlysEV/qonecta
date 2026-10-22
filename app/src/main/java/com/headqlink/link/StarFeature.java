@@ -60,28 +60,13 @@ final class StarFeature {
     /** El cartel: la franja que brilla, el título, lo que pasa, lo del GPS y cómo la tienes ahora (state: 1, 0 o -1). */
     static View view(Context c, int state) {
         float dp = c.getResources().getDisplayMetrics().density;
-        int accent = ContextCompat.getColor(c, R.color.hql_accent);
         LinearLayout col = new LinearLayout(c);
         col.setOrientation(LinearLayout.VERTICAL);
         int pad = Math.round(22 * dp);
         col.setPadding(pad, pad, pad, Math.round(8 * dp));
 
-        TextView badge = new TextView(c);
-        badge.setText(Str.get(R.string.hql_star_badge));
-        badge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-        badge.setTypeface(Typeface.DEFAULT_BOLD);
-        badge.setLetterSpacing(0.12f);
-        badge.setGravity(Gravity.CENTER);
-        badge.setTextColor(0xFF06231F);
-        badge.setPadding(0, Math.round(12 * dp), 0, Math.round(12 * dp));
-        GradientDrawable glow = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
-                new int[]{0xFFFFD54F, accent, 0xFFFFD54F});
-        glow.setCornerRadius(14 * dp);
-        glow.setStroke(Math.round(2 * dp), 0xFFFFF3B0);
-        badge.setBackground(glow);
-        badge.setShadowLayer(10 * dp, 0, 0, 0xCCFFFFFF);
-        col.addView(badge, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        pulse(badge);
+        col.addView(badge(c, Str.get(R.string.hql_star_badge)),
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
         TextView title = new TextView(c);
         title.setText(Str.get(R.string.hql_star_title));
@@ -106,6 +91,27 @@ final class StarFeature {
         also.setPadding(0, Math.round(10 * dp), 0, 0);
         col.addView(also);
         return col;
+    }
+
+    /** La franja dorada que brilla y late (también la de las novedades de cada versión, ReleaseNotesView). */
+    static TextView badge(Context c, String s) {
+        float dp = c.getResources().getDisplayMetrics().density;
+        TextView badge = new TextView(c);
+        badge.setText(s);
+        badge.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+        badge.setTypeface(Typeface.DEFAULT_BOLD);
+        badge.setLetterSpacing(0.12f);
+        badge.setGravity(Gravity.CENTER);
+        badge.setTextColor(0xFF06231F);
+        badge.setPadding(0, Math.round(12 * dp), 0, Math.round(12 * dp));
+        GradientDrawable glow = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,
+                new int[]{0xFFFFD54F, ContextCompat.getColor(c, R.color.hql_accent), 0xFFFFD54F});
+        glow.setCornerRadius(14 * dp);
+        glow.setStroke(Math.round(2 * dp), 0xFFFFF3B0);
+        badge.setBackground(glow);
+        badge.setShadowLayer(10 * dp, 0, 0, 0xCCFFFFFF);
+        pulse(badge);
+        return badge;
     }
 
     private static TextView text(Context c, String s, int color, int sp) {

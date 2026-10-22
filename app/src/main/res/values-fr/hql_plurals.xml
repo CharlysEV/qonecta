@@ -96,4 +96,19 @@
         <item quantity="many">Données voiture : %1$d trajets · %3$.1f kWh/100 · %4$.1f L/100</item>
         <item quantity="other">Données voiture : %1$d trajets · %3$.1f kWh/100 · %4$.1f L/100</item>
     </plurals>
+    <plurals name="hql_notes_fixes">
+        <item quantity="one">🔧 %1$d correction</item>
+        <item quantity="many">🔧 %1$d corrections</item>
+        <item quantity="other">🔧 %1$d corrections</item>
+    </plurals>
+    <plurals name="hql_report_trips">
+        <item quantity="one">%1$d trajet</item>
+        <item quantity="many">%1$d trajets</item>
+        <item quantity="other">%1$d trajets</item>
+    </plurals>
+    <plurals name="hql_report_trips_unit">
+        <item quantity="one">trajet</item>
+        <item quantity="many">trajets</item>
+        <item quantity="other">trajets</item>
+    </plurals>
 </resources>

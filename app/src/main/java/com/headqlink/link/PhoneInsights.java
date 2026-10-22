@@ -140,12 +140,26 @@ final class PhoneInsights {
     private void build(Data d) {
         col.removeAllViews();
         carCard(d);
+        reportCard();
         monthCard(d);
         parkedCard(d);
         howCard(d);
         chargesCard(d);
         curveCard(d);
         drivesCard(d);
+    }
+
+    /** El informe del mes (MonthlyReportActivity): tu mes en cifras, para ver y compartir. */
+    private void reportCard() {
+        LinearLayout c = card(Str.get(R.string.hql_report_title));
+        c.addView(note(Str.get(R.string.hql_report_card_text)));
+        com.google.android.material.button.MaterialButton b = new com.google.android.material.button.MaterialButton(act);
+        b.setText(Str.get(R.string.hql_report_open));
+        b.setOnClickListener(v -> act.startActivity(MonthlyReportActivity.intent(act, null)));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(10);
+        c.addView(b, lp);
+        addCard(c);
     }
 
     private void carCard(Data d) {

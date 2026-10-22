@@ -418,6 +418,12 @@ final class CarCloud {
         return history;
     }
 
+    /** Cuándo se leyó el historial (cubre los CloudHistory.KEEP_MS de antes), o 0 (en la demostración, ahora). */
+    static long historyAtMs() {
+        if (DemoMode.active() && history.isEmpty()) return System.currentTimeMillis();
+        return historyAtMs;
+    }
+
     /** Consumo de las últimas semanas según el coche, o null (en la demostración, el suyo). */
     static CloudHistory.Weekly weekly() {
         CloudHistory.Weekly w = weekly;
