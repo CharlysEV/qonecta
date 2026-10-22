@@ -111,8 +111,8 @@ android {
         // Android 6+: lo pide Material 3 (1.14) y, de todas formas, Android Auto ya exige Android 9 en el móvil.
         minSdk = 23
         targetSdk = 36
-        versionCode = 56
-        versionName = "0.2.74-qdauto"
+        versionCode = 57
+        versionName = "0.3.0-qdauto"
         setProperty("archivesBaseName", "Qonecta_${versionName}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -266,6 +266,8 @@ android {
                 it.systemProperty("hql.preview.only", (project.findProperty("previewOnly") ?: "").toString())
                 it.systemProperty("hql.preview.lang", (project.findProperty("previewLang") ?: "").toString())
                 it.systemProperty("hql.preview.size", (project.findProperty("previewSize") ?: "").toString())
+                // Las notas de una versión (Markdown) para la captura de la ventana de novedades (novedades.png).
+                it.systemProperty("hql.preview.notes", (project.findProperty("previewNotes") ?: "").toString())
             }
         }
     }
