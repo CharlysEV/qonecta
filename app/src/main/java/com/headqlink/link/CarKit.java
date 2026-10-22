@@ -343,6 +343,15 @@ final class CarKit {
         }
     }
 
+    /**
+     * Pestaña ancha en una pantalla pequeña (T03): la tarjeta mide un 85 % de ancho y un 92 % de alto de lo que mide en
+     * el C10 (w × h, su interior); su dibujo, pensado para el C10, se hace a ese tamaño y se encoge entero en vez de
+     * montarse los textos. En el C10, igual que siempre.
+     */
+    static Card fit(Card c, float w, float h) {
+        return CarStyle.smallScreen() ? c.design(w, h) : c;
+    }
+
     /** Fila o columna con un hueco GAP entre hijos. */
     static LinearLayout row(Context c) {
         LinearLayout l = new LinearLayout(c);
