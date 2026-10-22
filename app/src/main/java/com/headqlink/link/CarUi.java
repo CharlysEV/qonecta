@@ -352,6 +352,7 @@ final class CarUi {
     CarUi(Context ctx, int width, int height, int panelW, int dpi, float uiScale, Listener listener) {
         // Pantalla pequeña: la que con la escala automática se reduciría (la del coche es el lienzo por la escala).
         CarStyle.setUiScale(uiScale, UiScale.forCar(UiScale.toCar(width, uiScale), UiScale.toCar(height, uiScale), 0) < 1f);
+        splitRoom = UiScale.toCar(width, uiScale) >= SPLIT_MIN_CAR_W;
         this.ctx = ctx.getApplicationContext();
         this.width = width;
         this.height = height;
@@ -546,8 +547,16 @@ final class CarUi {
 
     /** Pantallas que se pueden poner junto a AA: la sección Coche (instrumentos: vale en marcha) y las de ocio. */
     static boolean splitCapable(String name) {
-        return "car".equals(name) || "web".equals(name) || "videos".equals(name) || "tv".equals(name);
+        return splitRoom && ("car".equals(name) || "web".equals(name) || "videos".equals(name) || "tv".equals(name));
     }
+
+    /**
+     * Ancho de la pantalla del coche (px) por debajo del cual no se parte: en el T03 (1024) la columna de Qonecta+ se
+     * quedaba en ~340 px con la letra diminuta, y Android Auto, estrecho.
+     */
+    static final int SPLIT_MIN_CAR_W = 1280;
+    /** La pantalla de esta sesión es lo bastante ancha para partirla (CarUi, al crearse). */
+    private static volatile boolean splitRoom = true;
 
     /** El aviso (mejor parado, bajo tu responsabilidad) es para el ocio; la sección Coche es información de conducción. */
     static boolean splitNeedsWarning(String name) {

@@ -96,4 +96,19 @@
         <item quantity="many">Según el coche: %1$d viajes · %3$.1f kWh/100 · %4$.1f L/100</item>
         <item quantity="other">Según el coche: %1$d viajes · %3$.1f kWh/100 · %4$.1f L/100</item>
     </plurals>
+    <plurals name="hql_notes_fixes">
+        <item quantity="one">🔧 %1$d arreglo</item>
+        <item quantity="many">🔧 %1$d arreglos</item>
+        <item quantity="other">🔧 %1$d arreglos</item>
+    </plurals>
+    <plurals name="hql_report_trips">
+        <item quantity="one">%1$d viaje</item>
+        <item quantity="many">%1$d viajes</item>
+        <item quantity="other">%1$d viajes</item>
+    </plurals>
+    <plurals name="hql_report_trips_unit">
+        <item quantity="one">viaje</item>
+        <item quantity="many">viajes</item>
+        <item quantity="other">viajes</item>
+    </plurals>
 </resources>

@@ -385,7 +385,8 @@ supporta.
   (consumo, batteria, autonomia, prossima sosta) accanto ad Android Auto, e va bene in marcia, senza avviso. Android Auto tiene un po' più della metà, quanto
   basta perché Google Maps si possa spostare e cercare. Ogni lato risponde ai suoi tocchi. «Schermo intero» la lascia di
   nuovo da sola. Dura finché resti collegato all'auto. La prima volta di ogni collegamento compare un avviso da
-  accettare: si consiglia di usarlo a veicolo fermo, e lo usi sotto la tua responsabilità.
+  accettare: si consiglia di usarlo a veicolo fermo, e lo usi sotto la tua responsabilità. Sulla T03 non c'è: il suo
+  schermo è troppo stretto per dividerlo.
 - **Sezione «Veicolo»** (stime dai sensori del telefono e da servizi aperti; con l'account Leapmotor, anche dati reali
   dell'auto: vedi [Dati reali dell'auto](#dati-reali-dellauto-account-leapmotor)):
   - «Percorso»: destinazione, arrivo, energia e consumo previsti; il profilo altimetrico colorato in base alla pendenza
@@ -535,6 +536,23 @@ congestiones 4`.
   soli dopo 15 s; se il server di Android Auto potrebbe essere rimasto acceso, vedrai «Il server di Android Auto è ancora
   attivo · Tocca per spegnerlo»: toccala con il telefono sbloccato.
 - Spegni l'hotspot se non ti serve.
+
+### Resoconto del mese
+
+Il tuo mese in cifre, nella scheda «Viaggi» del telefono › «Vedi il resoconto». Con ‹ e › passi da un mese all'altro.
+
+- **In alto:** «Il tuo ottobre con la C10» con i km, il consumo medio (kWh/100 km), l'energia e la spesa. Ogni cifra
+  mostra la variazione rispetto al mese precedente: in verde se migliora, in ambra se peggiora.
+- **Quanto risparmi** rispetto a un'auto a benzina, con il consumo e il prezzo della benzina delle impostazioni del viaggio.
+- **Ricariche:** quante, i kWh a casa e rapidi, la più veloce e quanto sono costate (le salva la ricarica in diretta).
+- **Con l'auto parcheggiata:** quanto ha perso la batteria nel mese.
+- **In evidenza:** il viaggio più efficiente, il più lungo e il giorno con più km.
+- **«Condividi»:** un'immagine con solo le cifre, senza luoghi né percorsi.
+- **Il giorno 1** (fino al 7) arriva un avviso con il mese appena finito.
+
+I viaggi sono quelli dell'auto (account Leapmotor) se la sua cronologia copre tutto il mese; altrimenti, quelli
+registrati dall'app. Il cloud conserva solo 35 giorni, quindi ogni mese viene salvato riassunto sul telefono. Il primo
+mese esce senza confronto.
 
 ### Connessione automatica: «Connetti al rilevamento del Bluetooth dell'auto»
 

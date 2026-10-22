@@ -96,4 +96,19 @@
         <item quantity="many">Dati dell\'auto: %1$d viaggi · %3$.1f kWh/100 · %4$.1f L/100</item>
         <item quantity="other">Dati dell\'auto: %1$d viaggi · %3$.1f kWh/100 · %4$.1f L/100</item>
     </plurals>
+    <plurals name="hql_notes_fixes">
+        <item quantity="one">🔧 %1$d correzione</item>
+        <item quantity="many">🔧 %1$d correzioni</item>
+        <item quantity="other">🔧 %1$d correzioni</item>
+    </plurals>
+    <plurals name="hql_report_trips">
+        <item quantity="one">%1$d viaggio</item>
+        <item quantity="many">%1$d viaggi</item>
+        <item quantity="other">%1$d viaggi</item>
+    </plurals>
+    <plurals name="hql_report_trips_unit">
+        <item quantity="one">viaggio</item>
+        <item quantity="many">viaggi</item>
+        <item quantity="other">viaggi</item>
+    </plurals>
 </resources>

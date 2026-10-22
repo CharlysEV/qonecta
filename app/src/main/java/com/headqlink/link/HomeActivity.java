@@ -442,6 +442,11 @@ public class HomeActivity extends Activity implements LinkState.Listener {
      */
     /** Notas de una versión (de GitHub, en texto llano) con el enlace a la release; download: botón «Descargar». */
     private void showReleaseNotes(String title, UpdateCheck.Release r, boolean download) {
+        UpdateCheck.Notes parts = UpdateCheck.sections(r.notes);
+        if (parts.structured()) {
+            showReleaseNotes(title, r, download, parts);
+            return;
+        }
         String notes = UpdateCheck.plainNotes(r.notes);
         MaterialAlertDialogBuilder b = new MaterialAlertDialogBuilder(this)
                 .setTitle(title)
@@ -455,6 +460,29 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         } else {
             b.setPositiveButton(Str.get(download ? R.string.hql_update_download : R.string.hql_update_on_github), (d, w) ->
                     startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(r.url))));
+        }
+        b.show();
+    }
+
+    /**
+     * Las notas por apartados (ReleaseNotesView): las novedades como estrellas, las mejoras debajo y los arreglos
+     * plegados. Versión nueva: «Instalar», «Ver en GitHub» y «Ahora no»; al estrenarla, «¡Entendido!» y sin título si ya
+     * lo dice la franja de novedades.
+     */
+    private void showReleaseNotes(String title, UpdateCheck.Release r, boolean download, UpdateCheck.Notes parts) {
+        android.widget.ScrollView sv = new android.widget.ScrollView(this);
+        sv.addView(ReleaseNotesView.view(this, r.version, parts));
+        MaterialAlertDialogBuilder b = new MaterialAlertDialogBuilder(this).setView(sv);
+        if (download || parts.added.isEmpty()) b.setTitle(title);
+        Runnable github = () -> startActivity(new Intent(Intent.ACTION_VIEW, android.net.Uri.parse(r.url)));
+        if (download) {
+            if (r.hasApk()) b.setPositiveButton(Str.get(R.string.hql_update_install), (d, w) -> downloadAndInstall(r));
+            else b.setPositiveButton(Str.get(R.string.hql_update_download), (d, w) -> github.run());
+            if (r.hasApk()) b.setNeutralButton(Str.get(R.string.hql_update_on_github), (d, w) -> github.run());
+            b.setNegativeButton(Str.get(R.string.hql_update_not_now), null);
+        } else {
+            b.setPositiveButton(Str.get(R.string.hql_notes_ok), null);
+            b.setNeutralButton(Str.get(R.string.hql_update_on_github), (d, w) -> github.run());
         }
         b.show();
     }

@@ -77,4 +77,16 @@
         <item quantity="one">Volgens de auto: %1$d rit · %3$.1f kWh/100 · %4$.1f L/100</item>
         <item quantity="other">Volgens de auto: %1$d ritten · %3$.1f kWh/100 · %4$.1f L/100</item>
     </plurals>
+    <plurals name="hql_notes_fixes">
+        <item quantity="one">🔧 %1$d oplossing</item>
+        <item quantity="other">🔧 %1$d oplossingen</item>
+    </plurals>
+    <plurals name="hql_report_trips">
+        <item quantity="one">%1$d rit</item>
+        <item quantity="other">%1$d ritten</item>
+    </plurals>
+    <plurals name="hql_report_trips_unit">
+        <item quantity="one">rit</item>
+        <item quantity="other">ritten</item>
+    </plurals>
 </resources>

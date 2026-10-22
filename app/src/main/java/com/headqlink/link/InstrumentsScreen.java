@@ -72,11 +72,11 @@ final class InstrumentsScreen implements CarScreen {
             CarKit.add(r2, smoothCard, 1f, 0);
         } else {
             top = CarKit.row(c);
-            CarKit.add(top, speedCard, 1.15f, 0);
-            CarKit.add(top, gCard, 1.15f, 0);
+            CarKit.add(top, CarKit.fit(speedCard, 496, 674), 1.15f, 0);
+            CarKit.add(top, CarKit.fit(gCard, 497, 674), 1.15f, 0);
             LinearLayout right = CarKit.add(top, CarKit.col(c), 0.9f, 0);
-            CarKit.add(right, inclCard, 1f, 0);
-            CarKit.add(right, smoothCard, 0.8f, 0);
+            CarKit.add(right, CarKit.fit(inclCard, 379, 323), 1f, 0);
+            CarKit.add(right, CarKit.fit(smoothCard, 379, 241), 0.8f, 0);
         }
         // «Reiniciar viaje», en la fila del título del velocímetro.
         TextView reset = CarKit.pill(c, Str.get(R.string.hql_reset_trip), false);

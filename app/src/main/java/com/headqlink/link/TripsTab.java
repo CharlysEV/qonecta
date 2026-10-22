@@ -99,8 +99,8 @@ final class TripsTab implements CarScreen {
             list.addView(note);
         }
         LinearLayout right = CarKit.add(row, CarKit.col(ctx), 1f, 0);
-        CarKit.add(right, new CarKit.Card(ctx, Str.get(R.string.hql_last_14_days), this::paintDays), 1f, 0);
-        CarKit.add(right, new CarKit.Card(ctx, Str.get(R.string.hql_records), this::paintRecords), 1f, 0);
+        CarKit.add(right, CarKit.fit(new CarKit.Card(ctx, Str.get(R.string.hql_last_14_days), this::paintDays), 464, 282), 1f, 0);
+        CarKit.add(right, CarKit.fit(new CarKit.Card(ctx, Str.get(R.string.hql_records), this::paintRecords), 464, 282), 1f, 0);
         running = true;
         tick();
         root = new FrameLayout(ctx);

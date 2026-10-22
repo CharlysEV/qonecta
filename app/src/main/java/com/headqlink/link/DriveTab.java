@@ -72,14 +72,24 @@ final class DriveTab implements CarScreen {
             CarKit.add(r3, sunCard, 1.5f, 0);
         } else {
             top = CarKit.row(c);
-            CarKit.add(top, turnCard, 1.5f, 0);
+            CarKit.add(top, CarKit.fit(turnCard, 872, 674), 1.5f, 0);
             LinearLayout right = CarKit.add(top, CarKit.col(c), 1f, 0);
-            CarKit.add(right, speedCard, 0, 300);
-            CarKit.add(right, headingCard, 0, 112);
-            LinearLayout pair = CarKit.add(right, CarKit.row(c), 0, 150);
-            CarKit.add(pair, altCard, 1f, 0);
-            CarKit.add(pair, slopeCard, 1f, 0);
-            CarKit.add(right, sunCard, 1f, 0);
+            if (CarStyle.smallScreen()) {
+                // T03: la columna es más baja; con alturas fijas el Sol se quedaba sin sitio. En proporción, como en el C10.
+                CarKit.add(right, CarKit.fit(speedCard, 566, 208), 300, 0);
+                CarKit.add(right, CarKit.fit(headingCard, 566, 64), 112, 0);
+                LinearLayout pair = CarKit.add(right, CarKit.row(c), 150, 0);
+                CarKit.add(pair, CarKit.fit(altCard, 250, 58), 1f, 0);
+                CarKit.add(pair, CarKit.fit(slopeCard, 250, 58), 1f, 0);
+                CarKit.add(right, CarKit.fit(sunCard, 566, 58), 150, 0);
+            } else {
+                CarKit.add(right, speedCard, 0, 300);
+                CarKit.add(right, headingCard, 0, 112);
+                LinearLayout pair = CarKit.add(right, CarKit.row(c), 0, 150);
+                CarKit.add(pair, altCard, 1f, 0);
+                CarKit.add(pair, slopeCard, 1f, 0);
+                CarKit.add(right, sunCard, 1f, 0);
+            }
         }
         running = true;
         tick();

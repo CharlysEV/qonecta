@@ -86,10 +86,10 @@ final class CarStatusTab implements CarScreen {
             LinearLayout c1 = CarKit.add(dataView, CarKit.col(ctx), 1.02f, 0);
             LinearLayout c2 = CarKit.add(dataView, CarKit.col(ctx), 1.1f, 0);
             LinearLayout c3 = CarKit.add(dataView, CarKit.col(ctx), 0.88f, 0);
-            CarKit.add(c1, battery, 1f, 0);
+            CarKit.add(c1, CarKit.fit(battery, 467, 674), 1f, 0);
             CarKit.add(c2, tyres, 1f, 0);
-            CarKit.add(c3, car, 1.12f, 0);
-            CarKit.add(c3, data, 1f, 0);
+            CarKit.add(c3, CarKit.fit(car, 397, 303), 1.12f, 0);
+            CarKit.add(c3, CarKit.fit(data, 397, 261), 1f, 0);
         }
         cards.add(battery);
         cards.add(tyres);
@@ -190,9 +190,13 @@ final class CarStatusTab implements CarScreen {
         y += 50;
         paintCharge(cv, r, y, s, p);
         // REEV: el depósito de gasolina; si no, la energía que queda (el % por la capacidad de la variante elegida).
+        // contentBottom: hasta dónde llega, para no montar debajo la línea de «Aparcado».
+        float contentBottom = y + 40;
         if (s.reev()) {
             paintFuel(cv, r, y + 122, s, p);
+            contentBottom = y + 122 + 14 + (Double.isNaN(s.combinedRangeKm) ? 50 : 82);
         } else if (!Double.isNaN(soc) && snap.capacityKwh > 0) {
+            contentBottom = y + 120 + 38;
             float ky = y + 120;
             CarKit.label(cv, Str.get(R.string.hql_cloud_in_battery), r.left, ky, p);
             CarKit.text(cv, Str.get(R.string.hql_cloud_kwh_of, num(soc / 100 * snap.capacityKwh, 1), num(snap.capacityKwh, 1)), r.left,
@@ -200,14 +204,15 @@ final class CarStatusTab implements CarScreen {
         }
         // Al subir al coche: lo que bajó la batería desde que se aparcó (ParkedDrain), encima de la temperatura.
         ParkedDrain.Park pk = DemoMode.active() ? demoPark() : ParkedDrain.sinceParked;
-        if (pk != null) {
+        float parkedY = r.bottom - (s.coldBattery() ? 64 : 4) - 40;
+        // Sin sitio (un REEV, con el depósito), sin la línea: mejor que encima de otra.
+        if (pk != null && parkedY - 22 > contentBottom + 6) {
             boolean odd = !DemoMode.active() && ParkedDrain.sinceParkedUnusual;
             String pl = Str.get(R.string.hql_parked_since, num(pk.dropPct(), 1), PhoneInsights.duration(Math.round(pk.hours() * 60)))
                     + (odd ? " · " + Str.get(R.string.hql_parked_high) : "");
-            float py = r.bottom - (s.coldBattery() ? 64 : 4) - 40;
             p.setTypeface(CarKit.MEDIUM);
             p.setTextSize(22);
-            CarKit.text(cv, CarKit.ellipsize(pl, r.width(), p), r.left, py, 22, odd ? CarKit.AMBER : CarKit.DIM, CarKit.MEDIUM, p,
+            CarKit.text(cv, CarKit.ellipsize(pl, r.width(), p), r.left, parkedY, 22, odd ? CarKit.AMBER : CarKit.DIM, CarKit.MEDIUM, p,
                     Paint.Align.LEFT);
         }
         // Temperatura de la batería (la del habitáculo está en la tarjeta Coche) y el aviso de batería fría.

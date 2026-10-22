@@ -77,4 +77,16 @@
         <item quantity="one">Fahrzeugdaten: %1$d Fahrt · %3$.1f kWh/100 · %4$.1f L/100</item>
         <item quantity="other">Fahrzeugdaten: %1$d Fahrten · %3$.1f kWh/100 · %4$.1f L/100</item>
     </plurals>
+    <plurals name="hql_notes_fixes">
+        <item quantity="one">🔧 %1$d Fehlerbehebung</item>
+        <item quantity="other">🔧 %1$d Fehlerbehebungen</item>
+    </plurals>
+    <plurals name="hql_report_trips">
+        <item quantity="one">%1$d Fahrt</item>
+        <item quantity="other">%1$d Fahrten</item>
+    </plurals>
+    <plurals name="hql_report_trips_unit">
+        <item quantity="one">Fahrt</item>
+        <item quantity="other">Fahrten</item>
+    </plurals>
 </resources>

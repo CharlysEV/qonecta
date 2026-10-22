@@ -77,4 +77,16 @@
         <item quantity="one">Car data: %1$d trip · %3$.1f kWh/100 · %4$.1f L/100</item>
         <item quantity="other">Car data: %1$d trips · %3$.1f kWh/100 · %4$.1f L/100</item>
     </plurals>
+    <plurals name="hql_notes_fixes">
+        <item quantity="one">🔧 %1$d fix</item>
+        <item quantity="other">🔧 %1$d fixes</item>
+    </plurals>
+    <plurals name="hql_report_trips">
+        <item quantity="one">%1$d trip</item>
+        <item quantity="other">%1$d trips</item>
+    </plurals>
+    <plurals name="hql_report_trips_unit">
+        <item quantity="one">trip</item>
+        <item quantity="other">trips</item>
+    </plurals>
 </resources>

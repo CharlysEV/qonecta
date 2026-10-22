@@ -93,13 +93,13 @@ final class EfficiencyScreen implements CarScreen {
             LinearLayout c1 = CarKit.add(row, CarKit.col(c), 1f, 0);
             LinearLayout c2 = CarKit.add(row, CarKit.col(c), 1f, 0);
             LinearLayout c3 = CarKit.add(row, CarKit.col(c), 1f, 0);
-            CarKit.add(c1, powerCard, 1.15f, 0);
-            CarKit.add(c1, condCard, 1f, 0);
-            CarKit.add(c2, useCard, 0.62f, 0);
-            CarKit.add(c2, splitCard, 1.38f, 0);
-            CarKit.add(c3, costCard, 0.8f, 0);
-            CarKit.add(c3, co2Card, 0.75f, 0);
-            CarKit.add(c3, tipCard, 0.85f, 0);
+            CarKit.add(c1, CarKit.fit(powerCard, 457, 308), 1.15f, 0);
+            CarKit.add(c1, CarKit.fit(condCard, 457, 255), 1f, 0);
+            CarKit.add(c2, CarKit.fit(useCard, 457, 139), 0.62f, 0);
+            CarKit.add(c2, CarKit.fit(splitCard, 457, 425), 1.38f, 0);
+            CarKit.add(c3, CarKit.fit(costCard, 458, 151), 0.8f, 0);
+            CarKit.add(c3, CarKit.fit(co2Card, 458, 136), 0.75f, 0);
+            CarKit.add(c3, CarKit.fit(tipCard, 458, 166), 0.85f, 0);
         }
         running = true;
         tick();

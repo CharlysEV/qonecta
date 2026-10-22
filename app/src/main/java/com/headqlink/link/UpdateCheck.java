@@ -6,6 +6,9 @@ import android.os.Looper;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 /**
@@ -123,6 +126,102 @@ final class UpdateCheck {
             out.append(l).append('\n');
         }
         return out.toString().trim();
+    }
+
+    /** Una entrada de las notas: el título (la negrita de delante, sin «:»; vacío si no hay), su texto y sus subpuntos. */
+    static final class NoteItem {
+        final String title;
+        final String body;
+        final List<String> sub = new ArrayList<>();
+
+        NoteItem(String title, String body) {
+            this.title = title;
+            this.body = body;
+        }
+    }
+
+    /** Las notas por apartados: novedades (estrellas), mejoras y arreglos; other, lo que no va en ninguno (texto llano). */
+    static final class Notes {
+        final List<NoteItem> added = new ArrayList<>();
+        final List<NoteItem> improved = new ArrayList<>();
+        final List<NoteItem> fixed = new ArrayList<>();
+        String other = "";
+
+        /** ¿Vienen con apartados? Si no (notas antiguas), se enseñan como texto. */
+        boolean structured() {
+            return !added.isEmpty() || !improved.isEmpty() || !fixed.isEmpty();
+        }
+    }
+
+    /**
+     * Puro: las notas de GitHub por apartados, como las escribimos: «### Nuevo» (también «Novedades», «New»), «### Mejorado»
+     * o «### Cambiado» («Improved», «Changed») y «### Arreglado» («Corregido», «Fixed»). Cada «- » es una entrada; si
+     * empieza en negrita («- **Título:** texto»), eso es su título. Los «  - » son subpuntos de la anterior. Sin la
+     * sección «Aviso» ni el SHA, como plainNotes.
+     */
+    static Notes sections(String md) {
+        Notes n = new Notes();
+        if (md == null) return n;
+        List<NoteItem> cur = null;
+        NoteItem last = null;
+        boolean skip = false;
+        StringBuilder other = new StringBuilder();
+        for (String raw : md.replace("\r", "").split("\n")) {
+            String l = raw.trim();
+            if (l.startsWith("## ")) {
+                skip = l.toLowerCase(Locale.ROOT).contains("aviso");
+                cur = null;
+                last = null;
+                continue;
+            }
+            if (skip || l.startsWith("**SHA-256") || l.startsWith("SHA-256")) continue;
+            if (l.startsWith("### ")) {
+                String h = l.substring(4).toLowerCase(Locale.ROOT);
+                cur = h.startsWith("nuev") || h.startsWith("novedad") || h.startsWith("new") ? n.added
+                        : h.startsWith("mejor") || h.startsWith("cambi") || h.startsWith("improv") || h.startsWith("chang") ? n.improved
+                        : h.startsWith("arregl") || h.startsWith("correg") || h.startsWith("fix") ? n.fixed : null;
+                last = null;
+                if (cur == null) other.append(l.substring(4).toUpperCase(Locale.ROOT)).append('\n');
+                continue;
+            }
+            boolean subItem = raw.startsWith("  - ") || raw.startsWith("    - ") || raw.startsWith("\t- ");
+            if (cur != null && subItem && last != null) {
+                last.sub.add(inline(l.substring(2)));
+            } else if (cur != null && l.startsWith("- ")) {
+                last = item(l.substring(2));
+                cur.add(last);
+            } else if (cur != null && !l.isEmpty() && last != null) {
+                // Una línea que sigue a la entrada (párrafo partido).
+                NoteItem joined = new NoteItem(last.title, (last.body + " " + inline(l)).trim());
+                joined.sub.addAll(last.sub);
+                cur.set(cur.size() - 1, joined);
+                last = joined;
+            } else if (cur == null && !l.isEmpty()) {
+                other.append(l.startsWith("- ") ? "• " + inline(l.substring(2)) : inline(l)).append('\n');
+            }
+        }
+        n.other = other.toString().trim();
+        return n;
+    }
+
+    /** «**Título:** texto» → la entrada con su título; sin negrita delante, todo es texto. */
+    private static NoteItem item(String s) {
+        if (s.startsWith("**")) {
+            int end = s.indexOf("**", 2);
+            if (end > 2) {
+                String title = s.substring(2, end).trim();
+                String rest = s.substring(end + 2).trim();
+                if (title.endsWith(":")) title = title.substring(0, title.length() - 1).trim();
+                if (rest.startsWith(":")) rest = rest.substring(1).trim();
+                return new NoteItem(inline(title), inline(rest));
+            }
+        }
+        return new NoteItem("", inline(s));
+    }
+
+    /** Sin negritas ni código. */
+    private static String inline(String s) {
+        return s.replace("**", "").replace("`", "").trim();
     }
 
     /**

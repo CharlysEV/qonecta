@@ -729,6 +729,18 @@
             android:exported="false"
             android:foregroundServiceType="dataSync" />
 
+        <!-- headqlink: informe del mes (desde la pestaña Viajes y el aviso del día 1) y su comprobación cada 6 h. -->
+        <activity
+            android:name="com.headqlink.link.MonthlyReportActivity"
+            android:exported="false"
+            android:label="@string/hql_report_title"
+            android:theme="@style/Theme.HeadQLink" />
+
+        <service
+            android:name="com.headqlink.link.MonthlyReportJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <!-- headqlink: carga en directo sin la app abierta (cada 15 min, una lectura de la nube de Leapmotor). -->
         <service
             android:name="com.headqlink.link.ChargeCheckJob"
