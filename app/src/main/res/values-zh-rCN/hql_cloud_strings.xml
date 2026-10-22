@@ -22,6 +22,19 @@
     <string name="hql_cloud_power_out">电池放电</string>
     <string name="hql_cloud_power_in">能量回收</string>
     <string name="hql_cloud_power_parked">驻车耗电</string>
+    <string name="hql_parked_title">停车时</string>
+    <string name="hql_parked_none">暂无数据。需要在两次使用本应用的行程之间停车至少 2 小时，期间不移动也不充电。</string>
+    <string name="hql_parked_per_day" formatted="false">%/天</string>
+    <string name="hql_parked_kwh_month">kWh/月</string>
+    <string name="hql_parked_cost_month">每月</string>
+    <string name="hql_parked_typical">你的车的正常水平：%1$s %%/天。根据车辆在一次行程结束时和下一次开始时报告的电量 %% 计算。</string>
+    <string name="hql_parked_row">%1$s · 停车 %2$s · −%3$s %% (%4$s kWh)</string>
+    <string name="hql_parked_unusual">高于正常</string>
+    <string name="hql_parked_since">停车：−%1$s %%（%2$s）</string>
+    <string name="hql_parked_high">偏高</string>
+    <string name="hql_parked_notice_title">停车耗电</string>
+    <string name="hql_parked_notice_text">停车 %1$s 期间耗电 %2$s kWh（%3$s %%）。你的车正常为 %4$s %%/天。是否开启了预约空调或有设备未关闭？</string>
+    <string name="hql_parked_channel">停车耗电</string>
     <string name="hql_cloud_batt_temp">电池 %1$s</string>
     <string name="hql_cloud_thermal_on">热管理已开启</string>
     <string name="hql_cloud_in_battery">电池内电量</string>
@@ -51,7 +64,7 @@
     <string name="hql_cloud_read">读取时间</string>
     <string name="hql_cloud_source">来源</string>
     <string name="hql_cloud_source_value">Leapmotor 账户 · %1$s</string>
-    <string name="hql_cloud_readonly_note">非官方。只读，保存车辆 PIN 后可控制哨兵模式。</string>
+    <string name="hql_cloud_readonly_note">非官方。只读，保存车辆 PIN 后可使用小组件指令。</string>
     <string name="hql_cloud_retry_in">无法连接云端：%1$d 分钟后重试。</string>
     <string name="hql_cloud_expired_short">Leapmotor 登录已过期：请在手机上重新登录。</string>
     <string name="hql_cloud_server_key_short">服务器证书已更换：请在手机上核对。</string>
@@ -141,7 +154,7 @@
     <string name="hql_cloud_server_key_dialog">SHA-256 指纹：\n%1$s\n到期：%2$s\n\n这可能是 Leapmotor 的正常更换，也可能是有人在拦截连接。请只在可信的网络（移动数据或家中 Wi-Fi）下接受。</string>
     <string name="hql_cloud_server_key_accept">信任此证书</string>
     <string name="hql_cloud_unsupported_phone">需要 Android 6 或更高版本（用于加密保存证书）。</string>
-    <string name="hql_cloud_credits">协议基于 txurtxil 的 LMB10（GPL-3.0）；增程信号和行程历史参考 leapmotor-mate（ProtossBlaster）和 leapmotor-api（markoceri；哨兵模式也参考于此），AGPL-3.0。非官方 API，与 Leapmotor 无关。</string>
+    <string name="hql_cloud_credits">协议基于 txurtxil 的 LMB10（GPL-3.0）；增程信号和行程历史参考 leapmotor-mate（ProtossBlaster）和 leapmotor-api（markoceri；车辆指令也参考于此），AGPL-3.0。非官方 API，与 Leapmotor 无关。</string>
     <string name="hql_cloud_err_network">无法连接 Leapmotor 云端</string>
     <string name="hql_cloud_err_expired">登录已过期；请重新登录</string>
     <string name="hql_cloud_err_p12">无法打开账户证书（%1$s）</string>
@@ -154,24 +167,12 @@
     <string name="hql_cloud_total_range">总续航：%1$s km</string>
     <string name="hql_cloud_profile_reev">C10 REEV · 28.4 kWh + 汽油</string>
     <string name="hql_cloud_3d_hint">拖动以旋转</string>
-    <string name="hql_cloud_step_sentry">5 · 哨兵模式</string>
-    <string name="hql_cloud_sentry_note">可选。在此保存车辆 PIN（在手机上加密）后，Qonecta+ 会发送哨兵模式；如果在下方开启「车辆」小组件指令，还可上锁、解锁、后备箱、空调和寻车。没有 PIN 时一切保持只读。</string>
+    <string name="hql_cloud_step_pin">5 · 车辆 PIN</string>
+    <string name="hql_cloud_pin_note">可选。在此保存车辆 PIN（在手机上加密），并在下方开启「车辆」小组件指令后，Qonecta+ 可以锁车、解锁、打开后备箱、开启空调和寻车。没有 PIN 时，一切仍为只读。</string>
     <string name="hql_cloud_pin_hint">车辆 PIN（Leapmotor 应用中的那个）</string>
     <string name="hql_cloud_pin_save">保存 PIN</string>
     <string name="hql_cloud_pin_forget">删除 PIN</string>
     <string name="hql_cloud_pin_invalid">4 到 12 位数字</string>
-    <string name="hql_cloud_sentry_on">开启</string>
-    <string name="hql_cloud_sentry_off">关闭</string>
-    <string name="hql_cloud_sentry_state_on">已开启</string>
-    <string name="hql_cloud_sentry_state_off">已关闭</string>
-    <string name="hql_cloud_sentry_unknown">暂无数据（请读取状态）</string>
-    <string name="hql_cloud_sentry_confirm_on">开启哨兵模式？</string>
-    <string name="hql_cloud_sentry_confirm_off">关闭哨兵模式？</string>
-    <string name="hql_cloud_sentry_confirm_text">指令将通过 Leapmotor 云端并使用你的 PIN 发送给车辆。可能需要几秒钟（车辆休眠时更久）。</string>
-    <string name="hql_cloud_sentry_done_on">哨兵模式已开启（车辆已确认）。</string>
-    <string name="hql_cloud_sentry_done_off">哨兵模式已关闭（车辆已确认）。</string>
-    <string name="hql_cloud_sentry_sent">指令已发送；车辆尚未确认（可能在休眠）。</string>
-    <string name="hql_cloud_sentry_failed">无法发送指令：%1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37.3 kWh</string>
     <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">车辆</string>

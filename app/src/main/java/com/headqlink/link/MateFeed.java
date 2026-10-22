@@ -192,7 +192,7 @@ final class MateFeed {
 
     /**
      * Puro: «el coche»: la foto de la nube de Leapmotor o la de Mate, la de dato del coche más reciente. A igualdad, la
-     * de la nube (trae más cosas: depósito, avisos de las ruedas, centinela); la de la demostración, siempre. Sin Mate,
+     * de la nube (trae más cosas: depósito, avisos de las ruedas); la de la demostración, siempre. Sin Mate,
      * la de la nube tal cual: la app funciona igual que solo con la cuenta de Leapmotor.
      */
     static CarCloud.Snapshot freshest(CarCloud.Snapshot cloud, CarCloud.Snapshot mate) {

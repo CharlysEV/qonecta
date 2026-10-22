@@ -82,11 +82,10 @@ public class CarCloudActivity extends Activity {
     private MaterialButton test;
     private TextView result;
     private TextView status;
-    // Modo centinela (opcional, con el PIN guardado).
-    private View sentryBox;
-    private TextView sentryState;
+    // PIN del coche (opcional): solo para las órdenes del widget.
+    private View pinSection;
     private View pinBox;
-    private View sentryActions;
+    private View pinActions;
     /** Órdenes al coche desde el widget de Qonecta+ (CarOrders), con el PIN guardado. */
     private com.google.android.material.materialswitch.MaterialSwitch orders;
     private View addWidget;
@@ -125,10 +124,9 @@ public class CarCloudActivity extends Activity {
         result = findViewById(R.id.hql_cloud_result);
         status = findViewById(R.id.hql_cloud_status);
         wipe = findViewById(R.id.hql_cloud_wipe);
-        sentryBox = findViewById(R.id.hql_cloud_sentry_box);
-        sentryState = findViewById(R.id.hql_cloud_sentry_state);
+        pinSection = findViewById(R.id.hql_cloud_pin_section);
         pinBox = findViewById(R.id.hql_cloud_pin_box);
-        sentryActions = findViewById(R.id.hql_cloud_sentry_actions);
+        pinActions = findViewById(R.id.hql_cloud_pin_actions);
         orders = findViewById(R.id.hql_cloud_orders);
         addWidget = findViewById(R.id.hql_cloud_add_widget);
         orders.setOnCheckedChangeListener((v, on) -> {
@@ -146,8 +144,6 @@ public class CarCloudActivity extends Activity {
             render();
             CarOrders.refresh(this);
         });
-        findViewById(R.id.hql_cloud_sentry_on).setOnClickListener(v -> confirmSentry(true));
-        findViewById(R.id.hql_cloud_sentry_off).setOnClickListener(v -> confirmSentry(false));
 
         enabled.setOnCheckedChangeListener((v, on) -> {
             if (rendering) return;
@@ -257,19 +253,14 @@ public class CarCloudActivity extends Activity {
         }
         status.setVisibility(line != null ? View.VISIBLE : View.GONE);
         if (line != null) status.setText(Str.get(R.string.hql_cloud_status_line, line));
-        // Modo centinela: con sesión y coche; el PIN se pide una vez y se guarda cifrado.
+        // PIN del coche (para las órdenes del widget): con sesión y coche; se pide una vez y se guarda cifrado.
         boolean pin = store.hasPin();
-        sentryBox.setVisibility(hasCert && hasSession && !tail.isEmpty() ? View.VISIBLE : View.GONE);
+        pinSection.setVisibility(hasCert && hasSession && !tail.isEmpty() ? View.VISIBLE : View.GONE);
         pinBox.setVisibility(pin ? View.GONE : View.VISIBLE);
-        sentryActions.setVisibility(pin ? View.VISIBLE : View.GONE);
+        pinActions.setVisibility(pin ? View.VISIBLE : View.GONE);
         orders.setVisibility(pin ? View.VISIBLE : View.GONE);
         orders.setChecked(new Config(this).getBool(CarOrders.K_ENABLED));
         addWidget.setVisibility(pin && orders.isChecked() ? View.VISIBLE : View.GONE);
-        Boolean sentry = snap.hasData() && !snap.demo ? snap.status.sentry : null;
-        sentryState.setText(Str.get(sentry == null ? R.string.hql_cloud_sentry_unknown
-                : sentry ? R.string.hql_cloud_sentry_state_on : R.string.hql_cloud_sentry_state_off));
-        findViewById(R.id.hql_cloud_sentry_on).setEnabled(!busy);
-        findViewById(R.id.hql_cloud_sentry_off).setEnabled(!busy);
         rendering = false;
     }
 
@@ -721,7 +712,7 @@ public class CarCloudActivity extends Activity {
                 .show();
     }
 
-    // ------------------------------------------------------------------ modo centinela
+    // ------------------------------------------------------------------ PIN del coche
 
     /** Guarda el PIN del coche (cifrado, como la sesión). No va al log. */
     private void savePin() {
@@ -738,28 +729,6 @@ public class CarCloudActivity extends Activity {
             L.w("nube Leapmotor: no se pudo guardar el PIN (" + e.getClass().getSimpleName() + ")");
         }
         render();
-    }
-
-    /** Encender o apagar el modo centinela, tras confirmarlo; luego se lee el estado para ver cómo ha quedado. */
-    private void confirmSentry(boolean on) {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(on ? R.string.hql_cloud_sentry_confirm_on : R.string.hql_cloud_sentry_confirm_off)
-                .setMessage(R.string.hql_cloud_sentry_confirm_text)
-                .setPositiveButton(on ? R.string.hql_cloud_sentry_on : R.string.hql_cloud_sentry_off, (d, w) -> {
-                    final boolean[] ok = new boolean[1];
-                    final LeapStatus[] after = new LeapStatus[1];
-                    run(R.string.hql_cloud_sentry_failed, () -> {
-                        ok[0] = CarCloudSession.setSentry(this, on);
-                        // El coche tarda un poco en subir el estado nuevo.
-                        SystemClock.sleep(4000);
-                        long t0 = SystemClock.elapsedRealtime();
-                        after[0] = CarCloudSession.readStatus(this);
-                        CarCloud.publish(this, after[0], SystemClock.elapsedRealtime() - t0);
-                    }, () -> showResult(Str.get(ok[0] ? (on ? R.string.hql_cloud_sentry_done_on : R.string.hql_cloud_sentry_done_off)
-                            : R.string.hql_cloud_sentry_sent), false));
-                })
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
     }
 
     // ------------------------------------------------------------------ prueba, clave del servidor y borrar

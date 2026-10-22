@@ -1446,7 +1446,7 @@ lleva su cabecera y está en `NOTICE`.
 | Capacidades del C10 (Life 69,9 kWh, ProMax 81,9 kWh) y consumo creíble (8-70 % cada 100 km) de `vehicle_profile.dart` y `daily_stats.dart` | `CarCloudStore`, `CloudEnergy` |
 
 **No portado, a propósito:** ninguna orden al coche (cerrar o abrir, maletero, clima y precondicionado, asientos y
-volante, ventanillas, persiana, centinela, límites de carga y de velocidad, cargador, `cert/sync`), ni el cifrado del PIN,
+volante, ventanillas, persiana, límites de carga y de velocidad, cargador, `cert/sync`), ni el cifrado del PIN,
 ni mensajes, historial de cargas, rutinas o la posición del coche. `LeapApi` solo tiene login, refresco, lista y
 estado, y el transporte rechaza cualquier ruta que no sea de esas cuatro (`LeapApi.allowed`, con su prueba).
 

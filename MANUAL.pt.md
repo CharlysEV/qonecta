@@ -774,10 +774,11 @@ do carro» desativa-o sem apagar nada.
 
 **Privacidade e segurança.**
 
-- Só de leitura, com uma exceção opcional: o **modo sentinela** (ligar e desligar, em «Dados do carro» →
-  «5 · Modo sentinela»), e só se guardar aí o PIN do carro (o da app da Leapmotor; fica cifrado no telemóvel e nunca
-  vai para o registo). Sem PIN, o Qonecta+ **nunca envia ordens ao carro**, e nenhuma outra ordem existe (nem
-  trancar, nem climatização, nem carga). Cada ordem é confirmada antes de ser enviada; «Esquecer PIN» apaga-o.
+- Só de leitura, com uma exceção opcional: as **ordens do widget «Carro»** (trancar, destrancar, bagageira,
+  climatização e localizar), e só se guardar o PIN do carro em «Dados do carro» → «5 · PIN do carro» e aí ativar as
+  ordens a partir do widget (o PIN é o da app da Leapmotor; fica cifrado no telemóvel e nunca vai para o registo). Sem
+  PIN, o Qonecta+ **nunca envia ordens ao carro**, e não existe nenhuma outra (nem carga nem limites). Cada ordem é
+  confirmada antes de ser enviada; «Esquecer PIN» apaga-o.
 - Os seus dados vão **só para os servidores da Leapmotor**. A posição do carro não é lida nem guardada.
 - O certificado, a sessão e o histórico de viagens ficam **cifrados** com uma chave do Android Keystore, fora das
   cópias de segurança. A

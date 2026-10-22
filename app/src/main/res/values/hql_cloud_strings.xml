@@ -22,6 +22,19 @@
     <string name="hql_cloud_power_out">leaving the battery</string>
     <string name="hql_cloud_power_in">regenerating</string>
     <string name="hql_cloud_power_parked">draw while parked</string>
+    <string name="hql_parked_title">With the car parked</string>
+    <string name="hql_parked_none">No data yet. The car needs to sit at least 2 h between two trips made with the app, without moving or charging.</string>
+    <string name="hql_parked_per_day" formatted="false">%/day</string>
+    <string name="hql_parked_kwh_month">kWh a month</string>
+    <string name="hql_parked_cost_month">a month</string>
+    <string name="hql_parked_typical">Normal for your car: %1$s %%/day. It comes from the battery %% the car reports at the end of one trip and at the start of the next.</string>
+    <string name="hql_parked_row">%1$s · parked %2$s · −%3$s %% (%4$s kWh)</string>
+    <string name="hql_parked_unusual">more than usual</string>
+    <string name="hql_parked_since">Parked: −%1$s %% in %2$s</string>
+    <string name="hql_parked_high">high</string>
+    <string name="hql_parked_notice_title">Battery use while parked</string>
+    <string name="hql_parked_notice_text">In %1$s parked it used %2$s kWh (%3$s %%). Normal for your car is %4$s %%/day. Scheduled climate or something left on?</string>
+    <string name="hql_parked_channel">Battery use while parked</string>
     <string name="hql_cloud_batt_temp">Battery %1$s</string>
     <string name="hql_cloud_thermal_on">thermal management on</string>
     <string name="hql_cloud_in_battery">In the battery</string>
@@ -51,7 +64,7 @@
     <string name="hql_cloud_read">Read</string>
     <string name="hql_cloud_source">Source</string>
     <string name="hql_cloud_source_value">Leapmotor account · %1$s</string>
-    <string name="hql_cloud_readonly_note">Unofficial. Read-only, except sentry mode if you save your car PIN.</string>
+    <string name="hql_cloud_readonly_note">Unofficial. Read-only, except the widget commands if you save your car PIN.</string>
     <string name="hql_cloud_retry_in">No connection to the cloud: retrying in %1$d min.</string>
     <string name="hql_cloud_expired_short">Leapmotor session expired: sign in again on the phone.</string>
     <string name="hql_cloud_server_key_short">New server certificate: review it on the phone.</string>
@@ -141,7 +154,7 @@
     <string name="hql_cloud_server_key_dialog">SHA-256 fingerprint:\n%1$s\nExpires: %2$s\n\nIt may be a normal change by Leapmotor or someone intercepting the connection. Only accept it on a network you trust (mobile data or your home Wi-Fi).</string>
     <string name="hql_cloud_server_key_accept">Trust this certificate</string>
     <string name="hql_cloud_unsupported_phone">Needs Android 6 or later (to store the certificate encrypted).</string>
-    <string name="hql_cloud_credits">Protocol based on LMB10 by txurtxil (GPL-3.0); REEV signals and trip history after leapmotor-mate (ProtossBlaster) and leapmotor-api (markoceri; also sentry mode), AGPL-3.0. Unofficial API, not affiliated with Leapmotor.</string>
+    <string name="hql_cloud_credits">Protocol based on LMB10 by txurtxil (GPL-3.0); REEV signals and trip history after leapmotor-mate (ProtossBlaster) and leapmotor-api (markoceri; also the car commands), AGPL-3.0. Unofficial API, not affiliated with Leapmotor.</string>
     <string name="hql_cloud_err_network">no connection to the Leapmotor cloud</string>
     <string name="hql_cloud_err_expired">the session expired; sign in again</string>
     <string name="hql_cloud_err_p12">the account certificate could not be opened (%1$s)</string>
@@ -154,24 +167,12 @@
     <string name="hql_cloud_total_range">Total range: %1$s km</string>
     <string name="hql_cloud_profile_reev">C10 REEV · 28.4 kWh + petrol</string>
     <string name="hql_cloud_3d_hint">Drag to rotate</string>
-    <string name="hql_cloud_step_sentry">5 · Sentry mode</string>
-    <string name="hql_cloud_sentry_note">Optional. With your car PIN saved here (encrypted on the phone), Qonecta+ sends sentry mode and, if you turn on the «Car» widget commands below, lock, unlock, trunk, climate and find. Without a PIN everything stays read-only.</string>
+    <string name="hql_cloud_step_pin">5 · Car PIN</string>
+    <string name="hql_cloud_pin_note">Optional. With your car PIN saved here (encrypted on the phone), and if you turn on the “Car” widget commands below, Qonecta+ can lock, unlock, open the boot, start the climate and find the car. Without a PIN, everything stays read-only.</string>
     <string name="hql_cloud_pin_hint">Car PIN (the one in the Leapmotor app)</string>
     <string name="hql_cloud_pin_save">Save PIN</string>
     <string name="hql_cloud_pin_forget">Forget PIN</string>
     <string name="hql_cloud_pin_invalid">4 to 12 digits</string>
-    <string name="hql_cloud_sentry_on">Turn on</string>
-    <string name="hql_cloud_sentry_off">Turn off</string>
-    <string name="hql_cloud_sentry_state_on">On</string>
-    <string name="hql_cloud_sentry_state_off">Off</string>
-    <string name="hql_cloud_sentry_unknown">No data yet (read the status)</string>
-    <string name="hql_cloud_sentry_confirm_on">Turn sentry mode on?</string>
-    <string name="hql_cloud_sentry_confirm_off">Turn sentry mode off?</string>
-    <string name="hql_cloud_sentry_confirm_text">The order goes to the car through the Leapmotor cloud with your PIN. It may take a few seconds (longer if the car is asleep).</string>
-    <string name="hql_cloud_sentry_done_on">Sentry mode on (confirmed by the car).</string>
-    <string name="hql_cloud_sentry_done_off">Sentry mode off (confirmed by the car).</string>
-    <string name="hql_cloud_sentry_sent">Order sent; the car has not confirmed it yet (it may be asleep).</string>
-    <string name="hql_cloud_sentry_failed">Could not send the order: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37.3 kWh</string>
     <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">Car</string>

@@ -207,6 +207,8 @@ final class TripLog {
             cloudStart = m;
             L.i(String.format(Locale.US, "viaje: inicio con datos del coche (%.1f %%%s)", soc,
                     Double.isNaN(m.fuelL) ? "" : String.format(Locale.US, ", %.2f L de gasolina", m.fuelL)));
+            // Lo que bajó la batería con el coche parado desde el viaje anterior (Coche › Estado; aviso si es raro).
+            ParkedNotice.check(ctx, startMs, soc, odo, m.timeMs, cs.capacityKwh);
         } else if (cs.status.charging() || cs.status.pluggedIn() || (!generator && prev != null && soc > prev.soc + 1.0)) {
             if (!cloudCharged) L.i("viaje: el coche ha cargado por el camino (el consumo real del viaje no se mide)");
             cloudCharged = true;

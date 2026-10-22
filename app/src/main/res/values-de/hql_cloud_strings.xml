@@ -22,6 +22,19 @@
     <string name="hql_cloud_power_out">aus dem Akku</string>
     <string name="hql_cloud_power_in">Rekuperation</string>
     <string name="hql_cloud_power_parked">Verbrauch im Stand</string>
+    <string name="hql_parked_title">Mit geparktem Auto</string>
+    <string name="hql_parked_none">Noch keine Daten. Das Auto muss zwischen zwei Fahrten mit der App mindestens 2 h stehen, ohne bewegt oder geladen zu werden.</string>
+    <string name="hql_parked_per_day" formatted="false">%/Tag</string>
+    <string name="hql_parked_kwh_month">kWh im Monat</string>
+    <string name="hql_parked_cost_month">im Monat</string>
+    <string name="hql_parked_typical">Normal für dein Auto: %1$s %%/Tag. Das ergibt sich aus dem Akku-%%, den das Auto am Ende einer Fahrt und am Anfang der nächsten meldet.</string>
+    <string name="hql_parked_row">%1$s · %2$s geparkt · −%3$s %% (%4$s kWh)</string>
+    <string name="hql_parked_unusual">mehr als üblich</string>
+    <string name="hql_parked_since">Geparkt: −%1$s %% in %2$s</string>
+    <string name="hql_parked_high">hoch</string>
+    <string name="hql_parked_notice_title">Verbrauch im Stand</string>
+    <string name="hql_parked_notice_text">In %1$s geparkt hat es %2$s kWh (%3$s %%) verbraucht. Normal für dein Auto sind %4$s %%/Tag. Geplante Klimatisierung oder etwas eingeschaltet?</string>
+    <string name="hql_parked_channel">Verbrauch im Stand</string>
     <string name="hql_cloud_batt_temp">Akku %1$s</string>
     <string name="hql_cloud_thermal_on">Thermomanagement aktiv</string>
     <string name="hql_cloud_in_battery">Im Akku</string>
@@ -51,7 +64,7 @@
     <string name="hql_cloud_read">Abgerufen</string>
     <string name="hql_cloud_source">Quelle</string>
     <string name="hql_cloud_source_value">Leapmotor-Konto · %1$s</string>
-    <string name="hql_cloud_readonly_note">Inoffiziell. Nur lesend, außer dem Wächtermodus, wenn du die PIN des Autos speicherst.</string>
+    <string name="hql_cloud_readonly_note">Inoffiziell. Nur lesend, außer den Widget-Befehlen, wenn du die PIN des Autos speicherst.</string>
     <string name="hql_cloud_retry_in">Keine Verbindung zur Cloud: neuer Versuch in %1$d min.</string>
     <string name="hql_cloud_expired_short">Leapmotor-Sitzung abgelaufen: am Handy neu anmelden.</string>
     <string name="hql_cloud_server_key_short">Neues Serverzertifikat: am Handy prüfen.</string>
@@ -141,7 +154,7 @@
     <string name="hql_cloud_server_key_dialog">SHA-256-Fingerabdruck:\n%1$s\nGültig bis: %2$s\n\nDas kann eine normale Änderung von Leapmotor sein oder jemand, der die Verbindung abfängt. Akzeptiere es nur in einem vertrauenswürdigen Netz (mobile Daten oder dein Wi-Fi zu Hause).</string>
     <string name="hql_cloud_server_key_accept">Diesem Zertifikat vertrauen</string>
     <string name="hql_cloud_unsupported_phone">Erfordert Android 6 oder neuer (für die verschlüsselte Speicherung des Zertifikats).</string>
-    <string name="hql_cloud_credits">Protokoll nach LMB10 von txurtxil (GPL-3.0); REEV-Signale und Fahrtenverlauf nach leapmotor-mate (ProtossBlaster) und leapmotor-api (markoceri; auch der Wächtermodus), AGPL-3.0. Inoffizielle API, keine Verbindung zu Leapmotor.</string>
+    <string name="hql_cloud_credits">Protokoll nach LMB10 von txurtxil (GPL-3.0); REEV-Signale und Fahrtenverlauf nach leapmotor-mate (ProtossBlaster) und leapmotor-api (markoceri; auch die Befehle an das Auto), AGPL-3.0. Inoffizielle API, keine Verbindung zu Leapmotor.</string>
     <string name="hql_cloud_err_network">keine Verbindung zur Leapmotor-Cloud</string>
     <string name="hql_cloud_err_expired">Sitzung abgelaufen; neu anmelden</string>
     <string name="hql_cloud_err_p12">Kontozertifikat ließ sich nicht öffnen (%1$s)</string>
@@ -154,24 +167,12 @@
     <string name="hql_cloud_total_range">Gesamtreichweite: %1$s km</string>
     <string name="hql_cloud_profile_reev">C10 REEV · 28,4 kWh + Benzin</string>
     <string name="hql_cloud_3d_hint">Zum Drehen ziehen</string>
-    <string name="hql_cloud_step_sentry">5 · Wächtermodus</string>
-    <string name="hql_cloud_sentry_note">Optional. Mit der hier gespeicherten PIN des Autos (verschlüsselt auf dem Handy) sendet Qonecta+ den Wächtermodus und, wenn du unten die Befehle des Widgets „Auto“ einschaltest, verriegeln, entriegeln, Kofferraum, Klima und finden. Ohne PIN bleibt alles nur lesend.</string>
+    <string name="hql_cloud_step_pin">5 · PIN des Autos</string>
+    <string name="hql_cloud_pin_note">Optional. Mit der hier gespeicherten PIN des Autos (verschlüsselt auf dem Handy) und wenn du unten die Befehle des Widgets „Auto“ aktivierst, kann Qonecta+ das Auto ver- und entriegeln, den Kofferraum öffnen, die Klimatisierung starten und das Auto finden. Ohne PIN bleibt alles nur lesend.</string>
     <string name="hql_cloud_pin_hint">PIN des Autos (die aus der Leapmotor-App)</string>
     <string name="hql_cloud_pin_save">PIN speichern</string>
     <string name="hql_cloud_pin_forget">PIN vergessen</string>
     <string name="hql_cloud_pin_invalid">4 bis 12 Ziffern</string>
-    <string name="hql_cloud_sentry_on">Einschalten</string>
-    <string name="hql_cloud_sentry_off">Ausschalten</string>
-    <string name="hql_cloud_sentry_state_on">Eingeschaltet</string>
-    <string name="hql_cloud_sentry_state_off">Ausgeschaltet</string>
-    <string name="hql_cloud_sentry_unknown">Noch keine Daten (Status lesen)</string>
-    <string name="hql_cloud_sentry_confirm_on">Wächtermodus einschalten?</string>
-    <string name="hql_cloud_sentry_confirm_off">Wächtermodus ausschalten?</string>
-    <string name="hql_cloud_sentry_confirm_text">Der Befehl geht über die Leapmotor-Cloud mit deiner PIN an das Auto. Das kann einige Sekunden dauern (länger, wenn das Auto schläft).</string>
-    <string name="hql_cloud_sentry_done_on">Wächtermodus eingeschaltet (vom Auto bestätigt).</string>
-    <string name="hql_cloud_sentry_done_off">Wächtermodus ausgeschaltet (vom Auto bestätigt).</string>
-    <string name="hql_cloud_sentry_sent">Befehl gesendet; das Auto hat ihn noch nicht bestätigt (es schläft vielleicht).</string>
-    <string name="hql_cloud_sentry_failed">Befehl konnte nicht gesendet werden: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>
     <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">Auto</string>

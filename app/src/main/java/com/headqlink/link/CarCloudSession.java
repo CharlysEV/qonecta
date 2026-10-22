@@ -145,29 +145,6 @@ final class CarCloudSession {
     }
 
     /**
-     * Modo centinela encendido o apagado (la única orden; con el PIN guardado). true si el coche lo confirma; false si no
-     * contesta a tiempo.
-     */
-    static synchronized boolean setSentry(Context ctx, boolean on) throws IOException, GeneralSecurityException {
-        CarCloudStore st = new CarCloudStore(ctx);
-        ensure(st);
-        if (saved.vin.isEmpty()) throw new NotConfiguredException("sin coche elegido");
-        String pin = st.pin();
-        if (pin == null || pin.isEmpty()) throw new NotConfiguredException("sin PIN del coche");
-        int v0 = api.sessionVersion();
-        try {
-            boolean ok = api.remote(saved.vin, LeapApi.CMD_SENTRY, LeapApi.sentryContent(on), pin);
-            L.i("nube Leapmotor: modo centinela " + (on ? "encendido" : "apagado") + (ok ? " (confirmado por el coche)" : " (sin confirmar)"));
-            return ok;
-        } catch (LeapApi.SessionExpiredException e) {
-            api = null;
-            throw e;
-        } finally {
-            if (api != null && api.sessionVersion() != v0) persist(st);
-        }
-    }
-
-    /**
      * Una orden del widget «Coche» (CarCommand), con el PIN guardado. true si el coche la confirma; false si no contesta a
      * tiempo. Para el clima a una temperatura, la del interior del coche (último dato) dice si calienta o enfría.
      */

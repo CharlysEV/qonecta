@@ -140,6 +140,12 @@ final class CarStatusTab implements CarScreen {
 
     // ------------------------------------------------------------------ formatos
 
+    /** La demostración (coche virtual sin coche, capturas): una noche aparcado, 0,3 %. */
+    private static ParkedDrain.Park demoPark() {
+        long now = System.currentTimeMillis();
+        return new ParkedDrain.Park(now - 52_200_000L, now, 68.4, 68.1, 81.9);
+    }
+
     private static String num(double v, int decimals) {
         if (Double.isNaN(v)) return "—";
         return String.format(Locale.getDefault(), decimals == 0 ? "%.0f" : decimals == 1 ? "%.1f" : "%.2f", v);
@@ -191,6 +197,18 @@ final class CarStatusTab implements CarScreen {
             CarKit.label(cv, Str.get(R.string.hql_cloud_in_battery), r.left, ky, p);
             CarKit.text(cv, Str.get(R.string.hql_cloud_kwh_of, num(soc / 100 * snap.capacityKwh, 1), num(snap.capacityKwh, 1)), r.left,
                     ky + 38, 30, CarKit.TEXT, CarKit.MEDIUM, p, Paint.Align.LEFT);
+        }
+        // Al subir al coche: lo que bajó la batería desde que se aparcó (ParkedDrain), encima de la temperatura.
+        ParkedDrain.Park pk = DemoMode.active() ? demoPark() : ParkedDrain.sinceParked;
+        if (pk != null) {
+            boolean odd = !DemoMode.active() && ParkedDrain.sinceParkedUnusual;
+            String pl = Str.get(R.string.hql_parked_since, num(pk.dropPct(), 1), PhoneInsights.duration(Math.round(pk.hours() * 60)))
+                    + (odd ? " · " + Str.get(R.string.hql_parked_high) : "");
+            float py = r.bottom - (s.coldBattery() ? 64 : 4) - 40;
+            p.setTypeface(CarKit.MEDIUM);
+            p.setTextSize(22);
+            CarKit.text(cv, CarKit.ellipsize(pl, r.width(), p), r.left, py, 22, odd ? CarKit.AMBER : CarKit.DIM, CarKit.MEDIUM, p,
+                    Paint.Align.LEFT);
         }
         // Temperatura de la batería (la del habitáculo está en la tarjeta Coche) y el aviso de batería fría.
         StringBuilder t = new StringBuilder();

@@ -777,11 +777,11 @@ cancellare nulla.
 
 **Privacy e sicurezza.**
 
-- Sola lettura, con un'eccezione facoltativa: la **modalità sentinella** (attivarla e disattivarla, in «Dati
-  dell'auto» → «5 · Modalità sentinella»), e solo se salvi lì il PIN dell'auto (quello dell'app Leapmotor; resta
-  cifrato sul telefono e non finisce mai nel registro). Senza PIN, Qonecta+ **non invia mai comandi all'auto**, e
-  nessun altro comando esiste (niente chiusura, clima, ricarica). Ogni comando va confermato prima dell'invio;
-  «Dimentica PIN» lo cancella.
+- Sola lettura, con un'eccezione facoltativa: i **comandi del widget «Auto»** (chiudere, aprire, bagagliaio, clima e
+  localizzare), e solo se salvi il PIN dell'auto in «Dati dell'auto» → «5 · PIN dell'auto» e lì attivi i comandi dal
+  widget (il PIN è quello dell'app Leapmotor; resta cifrato sul telefono e non finisce mai nel registro). Senza PIN,
+  Qonecta+ **non invia mai comandi all'auto**, e non esiste nessun altro comando (niente ricarica né limiti). Ogni
+  comando va confermato prima dell'invio; «Dimentica PIN» lo cancella.
 - I tuoi dati vanno **solo ai server di Leapmotor**. La posizione dell'auto non viene né letta né salvata.
 - Il certificato, la sessione e lo storico dei viaggi vengono salvati **cifrati** con una chiave dell'Android Keystore,
   fuori dai backup. La password non viene salvata: se la sessione scade, «Stato» te lo dice e accedi di nuovo dal

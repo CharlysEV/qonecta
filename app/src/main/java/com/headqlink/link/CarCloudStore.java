@@ -51,7 +51,7 @@ final class CarCloudStore {
     private static final String F_SESSION = "session.bin";
     /** Historial de la nube (viajes con sus kWh y litros, consumo semanal): cifrado como lo demás. */
     private static final String F_HISTORY = "history.bin";
-    /** PIN del coche (solo si el usuario lo guarda, para el modo centinela). Cifrado como la sesión. */
+    /** PIN del coche (solo si el usuario lo guarda, para las órdenes del widget). Cifrado como la sesión. */
     private static final String F_PIN = "pin.bin";
     private static final String K_ENABLED = "enabled";
     private static final String K_PROFILE = "profile";
