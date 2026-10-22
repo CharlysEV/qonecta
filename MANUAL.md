@@ -760,10 +760,11 @@ del coche» lo apaga sin borrar nada.
 
 **Privacidad y seguridad.**
 
-- Solo lectura, con una excepción opcional: el **modo centinela** (encender y apagar, en «Datos del coche» →
-  «5 · Modo centinela»), y solo si guardas allí el PIN del coche (el de la app de Leapmotor; se guarda cifrado en el
-  móvil y nunca va al log). Sin PIN, Qonecta+ **nunca manda órdenes al coche**, y ninguna otra orden existe (ni
-  cerrar, ni clima, ni carga). Cada orden se confirma antes de mandarla; «Olvidar PIN» lo borra.
+- Solo lectura, con una excepción opcional: las **órdenes del widget «Coche»** (cerrar, abrir, maletero, clima y
+  localizar), y solo si guardas el PIN del coche en «Datos del coche» → «5 · PIN del coche» y activas allí las órdenes
+  desde el widget (el PIN es el de la app de Leapmotor; se guarda cifrado en el móvil y nunca va al log). Sin PIN,
+  Qonecta+ **nunca manda órdenes al coche**, y no existe ninguna otra (ni carga ni límites). Cada orden se confirma
+  antes de mandarla; «Olvidar PIN» lo borra.
 - Tus datos van **solo a los servidores de Leapmotor**. No se lee ni se guarda la posición del coche.
 - El certificado, la sesión y el historial de viajes se guardan **cifrados** con una clave del Android Keystore, fuera
   de las copias de seguridad. La contraseña no se guarda: si la sesión caduca, «Estado» lo dice y se vuelve a entrar en el móvil.

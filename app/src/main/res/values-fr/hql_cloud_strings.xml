@@ -33,7 +33,7 @@
     <string name="hql_parked_since">Garée : −%1$s %% en %2$s</string>
     <string name="hql_parked_high">élevé</string>
     <string name="hql_parked_notice_title">Consommation à l\'arrêt</string>
-    <string name="hql_parked_notice_text">En %1$s garée, elle a consommé %2$s kWh (%3$s %%). La normale pour votre voiture est de %4$s %%/jour. Mode sentinelle, climatisation programmée ou quelque chose d\'allumé ?</string>
+    <string name="hql_parked_notice_text">En %1$s garée, elle a consommé %2$s kWh (%3$s %%). La normale pour votre voiture est de %4$s %%/jour. Climatisation programmée ou quelque chose d\'allumé ?</string>
     <string name="hql_parked_channel">Consommation à l\'arrêt</string>
     <string name="hql_cloud_batt_temp">Batterie %1$s</string>
     <string name="hql_cloud_thermal_on">gestion thermique active</string>
@@ -64,7 +64,7 @@
     <string name="hql_cloud_read">Lecture</string>
     <string name="hql_cloud_source">Source</string>
     <string name="hql_cloud_source_value">Compte Leapmotor · %1$s</string>
-    <string name="hql_cloud_readonly_note">Non officiel. Lecture seule, sauf le mode sentinelle si vous enregistrez le code PIN de la voiture.</string>
+    <string name="hql_cloud_readonly_note">Non officiel. Lecture seule, sauf les commandes du widget si vous enregistrez le code PIN de la voiture.</string>
     <string name="hql_cloud_retry_in">Pas de connexion au cloud : nouvel essai dans %1$d min.</string>
     <string name="hql_cloud_expired_short">Session Leapmotor expirée : reconnectez-vous sur le téléphone.</string>
     <string name="hql_cloud_server_key_short">Nouveau certificat du serveur : vérifiez-le sur le téléphone.</string>
@@ -154,7 +154,7 @@
     <string name="hql_cloud_server_key_dialog">Empreinte SHA-256 :\n%1$s\nExpiration : %2$s\n\nIl peut s\'agir d\'un changement normal de Leapmotor ou de quelqu\'un qui intercepte la connexion. Acceptez-le uniquement sur un réseau de confiance (données mobiles ou votre Wi-Fi à la maison).</string>
     <string name="hql_cloud_server_key_accept">Faire confiance à ce certificat</string>
     <string name="hql_cloud_unsupported_phone">Nécessite Android 6 ou plus récent (pour stocker le certificat chiffré).</string>
-    <string name="hql_cloud_credits">Protocole basé sur LMB10 de txurtxil (GPL-3.0) ; signaux du REEV et historique des trajets d\'après leapmotor-mate (ProtossBlaster) et leapmotor-api (markoceri ; aussi le mode sentinelle), AGPL-3.0. API non officielle, sans lien avec Leapmotor.</string>
+    <string name="hql_cloud_credits">Protocole basé sur LMB10 de txurtxil (GPL-3.0) ; signaux du REEV et historique des trajets d\'après leapmotor-mate (ProtossBlaster) et leapmotor-api (markoceri ; aussi les commandes à la voiture), AGPL-3.0. API non officielle, sans lien avec Leapmotor.</string>
     <string name="hql_cloud_err_network">pas de connexion au cloud Leapmotor</string>
     <string name="hql_cloud_err_expired">la session a expiré ; reconnectez-vous</string>
     <string name="hql_cloud_err_p12">impossible d\'ouvrir le certificat du compte (%1$s)</string>
@@ -167,26 +167,12 @@
     <string name="hql_cloud_total_range">Autonomie totale : %1$s km</string>
     <string name="hql_cloud_profile_reev">C10 REEV · 28,4 kWh + essence</string>
     <string name="hql_cloud_3d_hint">Glissez pour faire pivoter</string>
-    <string name="hql_cloud_step_sentry">5 · Mode sentinelle</string>
-    <string name="hql_cloud_sentry_note">Facultatif. Avec le code PIN de la voiture enregistré ici (chiffré sur le téléphone), Qonecta+ envoie le mode sentinelle et, si vous activez ci-dessous les commandes du widget « Voiture », verrouiller, ouvrir, coffre, clim et localiser. Sans code PIN, tout reste en lecture seule.</string>
+    <string name="hql_cloud_step_pin">5 · Code PIN de la voiture</string>
+    <string name="hql_cloud_pin_note">Facultatif. Avec le code PIN de la voiture enregistré ici (chiffré sur le téléphone), et si vous activez ci-dessous les commandes du widget « Voiture », Qonecta+ peut verrouiller, déverrouiller, ouvrir le coffre, lancer la climatisation et localiser la voiture. Sans PIN, tout reste en lecture seule.</string>
     <string name="hql_cloud_pin_hint">Code PIN de la voiture (celui de l\'app Leapmotor)</string>
     <string name="hql_cloud_pin_save">Enregistrer</string>
     <string name="hql_cloud_pin_forget">Oublier le PIN</string>
     <string name="hql_cloud_pin_invalid">De 4 à 12 chiffres</string>
-    <string name="hql_cloud_sentry_on">Activer</string>
-    <string name="hql_cloud_sentry_off">Désactiver</string>
-    <string name="hql_cloud_sentry_state_on">Activé</string>
-    <string name="hql_cloud_sentry_state_off">Désactivé</string>
-    <string name="hql_cloud_sentry_unknown">Pas encore de donnée (lisez l\'état)</string>
-    <string name="hql_cloud_sentry_confirm_on">Activer le mode sentinelle ?</string>
-    <string name="hql_cloud_sentry_confirm_off">Désactiver le mode sentinelle ?</string>
-    <string name="hql_cloud_sentry_confirm_text">La commande passe par le cloud Leapmotor avec votre code PIN. Cela peut prendre quelques secondes (plus si la voiture est en veille).</string>
-    <string name="hql_cloud_sentry_done_on">Mode sentinelle activé (selon la voiture).</string>
-    <string name="hql_cloud_sentry_done_off">Mode sentinelle désactivé (selon la voiture).</string>
-    <string name="hql_cloud_sentry_unverified">La voiture a reçu l\'ordre, mais son état est toujours « %1$s ». Le mode sentinelle n\'a peut-être pas changé : vérifiez dans l\'app Leapmotor.</string>
-    <string name="hql_cloud_sentry_stale">La voiture a reçu l\'ordre, mais n\'a pas encore envoyé son état (dernière donnée il y a %1$d min) : on ne sait pas si le mode sentinelle a changé. Relisez-le dans un moment.</string>
-    <string name="hql_cloud_sentry_sent">Commande envoyée ; la voiture ne l\'a pas encore confirmée (elle est peut-être en veille).</string>
-    <string name="hql_cloud_sentry_failed">Impossible d\'envoyer la commande : %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>
     <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">Voiture</string>

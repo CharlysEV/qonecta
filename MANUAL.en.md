@@ -750,10 +750,11 @@ data" turns it off without deleting anything.
 
 **Privacy and security.**
 
-- Read-only, with one optional exception: **sentry mode** (on and off, in "Car data" → "5 · Sentry mode"), and
-  only if you save your car PIN there (the one in the Leapmotor app; stored encrypted on the phone and never logged).
-  Without a PIN, Qonecta+ **never sends commands to the car**, and no other command exists (no lock, climate,
-  charging). Every command is confirmed before it is sent; "Forget PIN" deletes it.
+- Read-only, with one optional exception: the **commands of the "Car" widget** (lock, unlock, boot, climate and find),
+  and only if you save your car PIN in "Car data" → "5 · Car PIN" and turn on the widget commands there (the PIN is
+  the one in the Leapmotor app; stored encrypted on the phone and never logged). Without a PIN, Qonecta+ **never sends
+  commands to the car**, and no other command exists (no charging or limits). Every command is confirmed before it is
+  sent; "Forget PIN" deletes it.
 - Your data only goes **to Leapmotor's servers**. The car's location is neither read nor stored.
 - The certificate, the session and the trip history are stored **encrypted** with an Android Keystore key, outside
   backups. The password

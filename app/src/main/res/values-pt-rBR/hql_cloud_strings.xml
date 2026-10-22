@@ -33,7 +33,7 @@
     <string name="hql_parked_since">Estacionado: −%1$s %% em %2$s</string>
     <string name="hql_parked_high">alto</string>
     <string name="hql_parked_notice_title">Consumo com o carro parado</string>
-    <string name="hql_parked_notice_text">Em %1$s estacionado, gastou %2$s kWh (%3$s %%). O normal para o seu carro é %4$s %%/dia. Modo sentinela, climatização programada ou algo ligado?</string>
+    <string name="hql_parked_notice_text">Em %1$s estacionado, gastou %2$s kWh (%3$s %%). O normal para o seu carro é %4$s %%/dia. Climatização programada ou algo ligado?</string>
     <string name="hql_parked_channel">Consumo com o carro parado</string>
     <string name="hql_cloud_batt_temp">Bateria %1$s</string>
     <string name="hql_cloud_thermal_on">gestão térmica ativa</string>
@@ -64,7 +64,7 @@
     <string name="hql_cloud_read">Lido</string>
     <string name="hql_cloud_source">Origem</string>
     <string name="hql_cloud_source_value">Conta Leapmotor · %1$s</string>
-    <string name="hql_cloud_readonly_note">Não oficial. Só leitura, exceto o modo sentinela se você salvar o PIN do carro.</string>
+    <string name="hql_cloud_readonly_note">Não oficial. Só leitura, exceto os comandos do widget se você salvar o PIN do carro.</string>
     <string name="hql_cloud_retry_in">Sem conexão com a nuvem: nova tentativa em %1$d min.</string>
     <string name="hql_cloud_expired_short">A sessão da Leapmotor expirou: entre de novo no celular.</string>
     <string name="hql_cloud_server_key_short">Certificado do servidor novo: revise no celular.</string>
@@ -154,7 +154,7 @@
     <string name="hql_cloud_server_key_dialog">Impressão digital SHA-256:\n%1$s\nExpira: %2$s\n\nPode ser uma mudança normal da Leapmotor ou alguém interceptando a conexão. Aceite só em uma rede de confiança (dados móveis ou o Wi-Fi de casa).</string>
     <string name="hql_cloud_server_key_accept">Confiar neste certificado</string>
     <string name="hql_cloud_unsupported_phone">Precisa do Android 6 ou superior (para guardar o certificado criptografado).</string>
-    <string name="hql_cloud_credits">Protocolo baseado no LMB10, de txurtxil (GPL-3.0); sinais do REEV e histórico de viagens segundo o leapmotor-mate (ProtossBlaster) e o leapmotor-api (markoceri; também o modo sentinela), AGPL-3.0. API não oficial, sem relação com a Leapmotor.</string>
+    <string name="hql_cloud_credits">Protocolo baseado no LMB10, de txurtxil (GPL-3.0); sinais do REEV e histórico de viagens segundo o leapmotor-mate (ProtossBlaster) e o leapmotor-api (markoceri; também os comandos ao carro), AGPL-3.0. API não oficial, sem relação com a Leapmotor.</string>
     <string name="hql_cloud_err_network">sem conexão com a nuvem da Leapmotor</string>
     <string name="hql_cloud_err_expired">a sessão expirou; entre de novo</string>
     <string name="hql_cloud_err_p12">não foi possível abrir o certificado da conta (%1$s)</string>
@@ -167,26 +167,12 @@
     <string name="hql_cloud_total_range">Autonomia total: %1$s km</string>
     <string name="hql_cloud_profile_reev">C10 REEV · 28,4 kWh + gasolina</string>
     <string name="hql_cloud_3d_hint">Gire com o dedo</string>
-    <string name="hql_cloud_step_sentry">5 · Modo sentinela</string>
-    <string name="hql_cloud_sentry_note">Opcional. Com o PIN do carro salvo aqui (criptografado no celular), o Qonecta+ envia o modo sentinela e, se você ativar abaixo os comandos do widget «Carro», trancar, abrir, porta-malas, clima e localizar. Sem PIN, tudo continua só de leitura.</string>
+    <string name="hql_cloud_step_pin">5 · PIN do carro</string>
+    <string name="hql_cloud_pin_note">Opcional. Com o PIN do carro salvo aqui (cifrado no celular), e se você ativar abaixo os comandos do widget «Carro», o Qonecta+ pode trancar, destrancar, abrir o porta-malas, ligar a climatização e localizar o carro. Sem PIN, tudo continua só leitura.</string>
     <string name="hql_cloud_pin_hint">PIN do carro (o do app da Leapmotor)</string>
     <string name="hql_cloud_pin_save">Salvar PIN</string>
     <string name="hql_cloud_pin_forget">Esquecer PIN</string>
     <string name="hql_cloud_pin_invalid">De 4 a 12 dígitos</string>
-    <string name="hql_cloud_sentry_on">Ligar</string>
-    <string name="hql_cloud_sentry_off">Desligar</string>
-    <string name="hql_cloud_sentry_state_on">Ligado</string>
-    <string name="hql_cloud_sentry_state_off">Desligado</string>
-    <string name="hql_cloud_sentry_unknown">Sem dado ainda (leia o estado)</string>
-    <string name="hql_cloud_sentry_confirm_on">Ligar o modo sentinela?</string>
-    <string name="hql_cloud_sentry_confirm_off">Desligar o modo sentinela?</string>
-    <string name="hql_cloud_sentry_confirm_text">O comando vai ao carro pela nuvem da Leapmotor com o seu PIN. Pode levar alguns segundos (mais se o carro estiver dormindo).</string>
-    <string name="hql_cloud_sentry_done_on">Modo sentinela ligado (segundo o carro).</string>
-    <string name="hql_cloud_sentry_done_off">Modo sentinela desligado (segundo o carro).</string>
-    <string name="hql_cloud_sentry_unverified">O carro recebeu a ordem, mas o estado continua «%1$s». O modo sentinela pode não ter mudado: confira no app da Leapmotor.</string>
-    <string name="hql_cloud_sentry_stale">O carro recebeu a ordem, mas ainda não enviou seu estado (o último dado é de %1$d min atrás): não se sabe se o modo sentinela mudou. Leia de novo daqui a pouco.</string>
-    <string name="hql_cloud_sentry_sent">Comando enviado; o carro ainda não confirmou (pode estar dormindo).</string>
-    <string name="hql_cloud_sentry_failed">Não foi possível enviar o comando: %1$s</string>
     <string name="hql_cloud_profile_t03">T03 · 37,3 kWh</string>
     <!-- Órdenes al coche desde el widget de Qonecta+ y su ventanita (CarOrders, CarControlActivity) -->
     <string name="hql_cw_title">Carro</string>

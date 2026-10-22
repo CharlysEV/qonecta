@@ -253,9 +253,9 @@ class LeapApiTest {
             LeapApi.PATH_STATUS,
             null,
         )) assertFalse(p ?: "null", LeapApi.allowed(p))
-        // Las rutas de las órdenes no son de lectura (solo se permiten dentro de remote(), y solo para el centinela).
+        // Las rutas de las órdenes no son de lectura (solo se permiten dentro de remote(), con una orden de COMMANDS).
         for (p in LeapApi.REMOTE_PATHS) assertFalse(p, LeapApi.allowed(p))
-        // Ninguna otra orden existe: ni cerrar, ni abrir, ni clima, ni ventanillas, ni carga.
+        // No hay un método por orden (cerrar, clima, ventanillas, carga…): todas pasan por remote() y COMMANDS.
         val names = LeapApi::class.java.declaredMethods.map { it.name.lowercase() }
         for (bad in listOf("lock", "unlock", "ctl", "climate", "window", "trunk", "command", "charge"))
             assertFalse(bad, names.any { it.contains(bad) })
@@ -269,8 +269,11 @@ class LeapApiTest {
         assertEquals("X8Jc0iWRZgGrUiTOfVL6UQ==", LeapCrypto.operatePassword("1234", t))
     }
 
+    private val LOCK = """{"value":"lock"}"""
+    private val UNLOCK = """{"value":"unlock"}"""
+
     @Test
-    fun sentryGoesCertificatePinOrderAndResultSignedAndWithoutThePinInClear() {
+    fun anOrderGoesCertificatePinOrderAndResultSignedAndWithoutThePinInClear() {
         var polls = 0
         val (a, fake) = loggedIn { c ->
             // La misma regla que la capa de red de verdad (LeapHttps): sin esto, la orden no salía del móvil.
@@ -285,7 +288,7 @@ class LeapApiTest {
             }
         }
         a.sleeper = LeapApi.Sleeper { }
-        assertTrue(a.remote("VIN000000000000A1", LeapApi.CMD_SENTRY, LeapApi.sentryContent(true), "1234"))
+        assertTrue(a.remote("VIN000000000000A1", LeapApi.CMD_LOCK, LOCK, "1234"))
         assertEquals(listOf(LeapApi.PATH_CERT_SYNC, LeapApi.PATH_OPER_VERIFY, LeapApi.PATH_REMOTE_CTL, LeapApi.PATH_REMOTE_RESULT,
             LeapApi.PATH_REMOTE_RESULT), fake.calls.map { it.path })
         val op = LeapCrypto.operatePassword("1234", token1)
@@ -296,17 +299,17 @@ class LeapApiTest {
         assertEquals("operatePassword=" + LeapCrypto.encodeComponent(op) + "&vin=VIN000000000000A1", verify.body)
         assertSigned(verify, mapOf("vin" to "VIN000000000000A1", "operatePassword" to op))
         val ctl = fake.calls[2]
-        assertTrue(ctl.body, ctl.body.contains("&cmdId=220&"))
-        assertSigned(ctl, mapOf("vin" to "VIN000000000000A1", "cmdContent" to """{"value":"1"}""", "cmdId" to "220", "operatePassword" to op))
+        assertTrue(ctl.body, ctl.body.contains("&cmdId=110&"))
+        assertSigned(ctl, mapOf("vin" to "VIN000000000000A1", "cmdContent" to LOCK, "cmdId" to "110", "operatePassword" to op))
         assertSigned(fake.calls[3], mapOf("remoteCtlId" to "rc-9"))
         for (c in fake.calls) assertFalse(c.body, c.body.contains("1234"))
         // Fuera de remote(), la capa de red vuelve a negarse.
         for (p in LeapApi.REMOTE_PATHS) assertFalse(p, LeapApi.remoteAllowedNow(p))
         // La siguiente orden ya no vuelve a sincronizar el certificado.
         fake.calls.clear()
-        a.remote("VIN000000000000A1", LeapApi.CMD_SENTRY, LeapApi.sentryContent(false), "1234")
+        a.remote("VIN000000000000A1", LeapApi.CMD_LOCK, UNLOCK, "1234")
         assertEquals(LeapApi.PATH_OPER_VERIFY, fake.calls.first().path)
-        assertTrue(fake.calls[1].body.contains(LeapCrypto.encodeComponent("""{"value":"0"}""")))
+        assertTrue(fake.calls[1].body.contains(LeapCrypto.encodeComponent(UNLOCK)))
     }
 
     @Test
@@ -325,7 +328,8 @@ class LeapApiTest {
     @Test
     fun noOtherOrderAndNoOrderWithoutPin() {
         val (a, fake) = loggedIn { ok("{}") }
-        for (cmd in listOf("1", "100", "193", "320", "")) {
+        // 220 era el modo centinela: en Europa no existe y ya no se manda.
+        for (cmd in listOf("1", "100", "193", "220", "320", "")) {
             try {
                 a.remote("VIN000000000000A1", cmd, "{}", "1234")
                 fail("orden $cmd")
@@ -334,7 +338,7 @@ class LeapApiTest {
             }
         }
         try {
-            a.remote("VIN000000000000A1", LeapApi.CMD_SENTRY, LeapApi.sentryContent(true), "")
+            a.remote("VIN000000000000A1", LeapApi.CMD_LOCK, LOCK, "")
             fail("sin PIN")
         } catch (e: java.io.IOException) {
             // bien

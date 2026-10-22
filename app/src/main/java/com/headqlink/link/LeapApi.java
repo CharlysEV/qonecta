@@ -7,8 +7,8 @@
  *
  * SOLO LECTURA salvo unas órdenes opcionales: de LMB10 se ha portado únicamente el login, la sesión, la lista de coches
  * y el estado, y la capa de transporte se niega a pedir cualquier ruta que no sea de las de lectura (ALLOWED_PATHS). Las
- * órdenes al coche son las de COMMANDS (centinela; y, con el ajuste «Órdenes desde el widget», cerrar y abrir, maletero,
- * clima y localizar), y solo si el usuario ha guardado a propósito el PIN del coche: entonces, y solo dentro de remote(),
+ * órdenes al coche son las de COMMANDS (con el ajuste «Órdenes desde el widget»: cerrar y abrir, maletero, clima y
+ * localizar), y solo si el usuario ha guardado a propósito el PIN del coche: entonces, y solo dentro de remote(),
  * se permiten las cuatro rutas de REMOTE_PATHS. Nada más (ventanillas, carga, aparcar…) existe aquí. El flujo
  * (certificado, PIN cifrado, orden y confirmación) y los cuerpos de las órdenes siguen leapmotor-api (markoceri,
  * AGPL-3.0).
@@ -60,8 +60,6 @@ final class LeapApi {
     static final String PATH_REMOTE_RESULT = "/carownerservice/oversea/vehicle/v1/app/remote/ctl/result/query";
     static final List<String> REMOTE_PATHS = Collections.unmodifiableList(java.util.Arrays.asList(
             PATH_CERT_SYNC, PATH_OPER_VERIFY, PATH_REMOTE_CTL, PATH_REMOTE_RESULT));
-    /** Modo centinela (cmdId 220, {"value":"1"} encendido, {"value":"0"} apagado). */
-    static final String CMD_SENTRY = "220";
     /** Widget «Coche» (CarCommand): cerrar y abrir, localizar (pitido y luces), maletero y clima. */
     static final String CMD_LOCK = "110";
     static final String CMD_FIND = "120";
@@ -69,12 +67,7 @@ final class LeapApi {
     static final String CMD_CLIMATE = "170";
     /** Las únicas órdenes que se mandan. */
     static final List<String> COMMANDS = Collections.unmodifiableList(java.util.Arrays.asList(
-            CMD_SENTRY, CMD_LOCK, CMD_FIND, CMD_TRUNK, CMD_CLIMATE));
-
-    /** El cuerpo de la orden del centinela. */
-    static String sentryContent(boolean on) {
-        return on ? "{\"value\":\"1\"}" : "{\"value\":\"0\"}";
-    }
+            CMD_LOCK, CMD_FIND, CMD_TRUNK, CMD_CLIMATE));
 
     /** true si la ruta es una de las de lectura (el estado, con el modelo detrás: /status/get/c10). */
     static boolean allowed(String path) {
@@ -435,7 +428,7 @@ final class LeapApi {
     }
 
     /**
-     * Manda una orden al coche (solo CMD_SENTRY) con el PIN: certificado (una vez), PIN, orden y su resultado. true si el
+     * Manda una orden al coche (una de COMMANDS) con el PIN: certificado (una vez), PIN, orden y su resultado. true si el
      * coche la confirma; false si no contesta a tiempo (puede aplicarse igualmente). El PIN no se guarda aquí ni va al
      * log.
      */

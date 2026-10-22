@@ -333,9 +333,9 @@
                     </RadioGroup>
                 </LinearLayout>
 
-                <!-- 5 · Modo centinela (opcional: la única orden al coche, solo con el PIN guardado) -->
+                <!-- 5 · PIN del coche (opcional: solo para las órdenes del widget) -->
                 <LinearLayout
-                    android:id="@+id/hql_cloud_sentry_box"
+                    android:id="@+id/hql_cloud_pin_section"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
@@ -347,21 +347,14 @@
                         style="@style/HQL.Text.Label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/hql_cloud_step_sentry" />
-
-                    <TextView
-                        android:id="@+id/hql_cloud_sentry_state"
-                        style="@style/HQL.Text.RowTitle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp" />
+                        android:text="@string/hql_cloud_step_pin" />
 
                     <TextView
                         style="@style/HQL.Text.RowDetail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="@string/hql_cloud_sentry_note" />
+                        android:text="@string/hql_cloud_pin_note" />
 
                     <LinearLayout
                         android:id="@+id/hql_cloud_pin_box"
@@ -397,27 +390,12 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/hql_cloud_sentry_actions"
+                        android:id="@+id/hql_cloud_pin_actions"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/hql_cloud_sentry_on"
-                            style="@style/HQL.Button"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/hql_cloud_sentry_on" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/hql_cloud_sentry_off"
-                            style="@style/HQL.Button.Quiet"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/hql_cloud_sentry_off" />
 
                         <View
                             android:layout_width="0dp"

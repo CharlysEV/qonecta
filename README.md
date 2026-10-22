@@ -136,7 +136,8 @@ The optional "real car data" feature (Leapmotor account: battery, range, chargin
 pressures, doors and odometer in the extended mode) uses a client ported from
 [LMB10](https://github.com/txurtxil/LPB10) by **txurtxil** (GPL-3.0), combined here under section 13 of
 the GPL-3.0/AGPL-3.0: login, session refresh, request signing, vehicle list and status. It is read-only except
-for one opt-in command, sentry mode on/off, sent only if the user saves the car PIN (flow as in
+for the opt-in commands of the Qonecta+ "Car" widget (lock, unlock, boot, climate and find), sent only if the user saves
+the car PIN and turns them on (flow and command bodies as in
 [leapmotor-api](https://github.com/markoceri/leapmotor-api) by **markoceri**, AGPL-3.0); no other remote command exists. See [NOTICE](NOTICE) and the ported files' headers. It talks to Leapmotor's unofficial
 API, which may stop working at any time. The range-extender (REEV) tank signals and the per-trip history
 fields follow [leapmotor-mate](https://github.com/ProtossBlaster/leapmotor-mate) (ProtossBlaster), and the

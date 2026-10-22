@@ -71,8 +71,6 @@ final class LeapStatus {
         m.put("3263", "fuelMl");
         m.put("3259", "fuelRange");
         m.put("3261", "combinedRange");
-        // Modo centinela (leapmotor-api: señal 3636).
-        m.put("3636", "sentryMode");
         SIGNALS = java.util.Collections.unmodifiableMap(m);
     }
 
@@ -123,8 +121,6 @@ final class LeapStatus {
     final double fuelLiters;
     final double fuelRangeKm;
     final double combinedRangeKm;
-    /** Modo centinela: true encendido, false apagado, null si el coche no lo manda. */
-    final Boolean sentry;
 
     private LeapStatus(Map<String, Object> m) {
         soc = asDouble(asIntObj(m.get("soc")));
@@ -162,7 +158,6 @@ final class LeapStatus {
         fuelLiters = Double.isNaN(ml) ? Double.NaN : ml / 1000.0;
         fuelRangeKm = asDouble(m.get("fuelRange"));
         combinedRangeKm = asDouble(m.get("combinedRange"));
-        sentry = asBool(m.get("sentryMode"));
     }
 
     /** La posición del coche (grados) y si trae su signo (las señales de valor absoluto lo pierden). */
