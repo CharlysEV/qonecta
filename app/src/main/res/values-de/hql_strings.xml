@@ -234,7 +234,7 @@
     <string name="hql_thermal_normal">Normal (empfohlen)</string>
     <string name="hql_thermal_soft">Sanft · senkt nur die Bitrate; nie unter 30 fps, außer das Handy ist kritisch heiß</string>
     <string name="hql_thermal_off">Aus · wird nur protokolliert</string>
-    <string name="hql_thermal_help">Wenn Android Hitze meldet: Normal geht bei „mäßig“ auf 30 fps (falls die Sitzung mit 60 läuft), bei „schwer“ auf 24 fps und bei „kritisch“ auf 20 fps, jeweils mit weniger Bitrate; Sanft behält die fps und senkt nur die Bitrate (bei „schwer“ höchstens 30 fps). Nach 30 s Abkühlung wieder normal. Gilt sofort.</string>
+    <string name="hql_thermal_help">Wenn Android Hitze meldet: Normal geht bei „mäßig“ auf 30 fps (falls die Sitzung mit 60 fps läuft), bei „schwer“ auf 24 fps und bei „kritisch“ auf 20 fps, jeweils mit weniger Bitrate; Sanft behält die fps und senkt nur die Bitrate (bei „schwer“ höchstens 30 fps). Nach 30s Abkühlung wieder normal. Gilt sofort.</string>
     <string name="hql_profile_car">Fahrzeug</string>
     <string name="hql_profile_car_detail">Was das Fahrzeug anfordert (30 fps und ca. 5 Mbit/s): volle Auflösung, wenn dieses Handy auf den letzten Fahrten kühl blieb; 720p, wenn es heiß wurde. Ändert sich während der Fahrt nicht: am wenigsten Hitze und Akkuverbrauch</string>
     <string name="hql_profile_high">Hoch</string>
@@ -245,7 +245,7 @@
     <string name="hql_profile_max_detail">Volle Auflösung mit 60 fps und minimaler Latenz (mehr Stromverbrauch)</string>
     <string name="hql_profile_medium">Mittel</string>
     <string name="hql_profile_medium_detail">720p mit konstant 45 fps, auf dem Handy neu kodiert</string>
-    <string name="hql_profile_reason">%1$s · %2$d GB · 1080p30-Encoder %3$s · 1080p30-Decoder %4$s · 720p45-Encoder %5$s</string>
+    <string name="hql_profile_reason">%1$s · %2$d GB · 1080p30 Encoder %3$s · 1080p30 Decoder %4$s · 720p45 Encoder %5$s</string>
     <string name="hql_profile_reconnect_help">Wenn du verbunden bist, verbinden sich Fahrzeug und Android Auto mit dem neuen Profil von selbst neu (ein paar Sekunden).</string>
     <string name="hql_radio">Radio</string>
     <string name="hql_radio_list">Radioliste</string>
@@ -297,7 +297,7 @@
     <string name="hql_settings">Einstellungen</string>
     <string name="hql_settings_info">Aktuell: %1$s · ★ empfohlen für dieses Handy (%2$s)</string>
     <string name="hql_setup_aa_body">Android Auto akzeptiert ein Fahrzeugdisplay im Handy selbst nur über seinen Entwicklermodus. Er wird einmal aktiviert; danach kümmert sich Qonecta+ selbst darum.</string>
-    <string name="hql_setup_accessibility">Qonecta+-Bedienungshilfe</string>
+    <string name="hql_setup_accessibility">Qonecta+ Bedienungshilfe</string>
     <string name="hql_setup_accessibility_aa">Um Toucheingaben des Fahrzeugs zu empfangen und Android Auto zu starten</string>
     <string name="hql_setup_accessibility_app">Damit Toucheingaben des Fahrzeugs die App erreichen</string>
     <string name="hql_setup_app_body">Die App öffnet sich auf einem virtuellen Bildschirm, der ans Fahrzeug gesendet wird; auf dem Handy ist sie daher nicht zu sehen. Toucheingaben des Fahrzeugs kommen über die Bedienungshilfe an.</string>
@@ -305,7 +305,7 @@
     <string name="hql_setup_devmode">Entwicklermodus von Android Auto</string>
     <string name="hql_setup_diag">Diagnosemodus</string>
     <string name="hql_setup_diag_body">Zeigt im Fahrzeug ein Testbild mit Bildrate und Toucheingaben in Echtzeit. Praktisch, um die Verbindung vor Android Auto zu prüfen.</string>
-    <string name="hql_setup_guide">1.  Tippe auf „AA öffnen“ (fehlt die Taste, zuerst auf „Prüfen“).\n2.  Scrolle in den Android Auto Einstellungen ganz nach unten.\n3.  Tippe 10-mal auf „Version“ und bestätige die Warnung.\n4.  Kehre zu Qonecta+ zurück: Es prüft selbst.</string>
+    <string name="hql_setup_guide">1.  Tippe auf „AA öffnen“ (fehlt die Taste, zuerst auf „Prüfen“).\n2.  Scrolle in den Android Auto Einstellungen ganz nach unten.\n3.  Tippe 10 mal auf „Version“ und bestätige die Warnung.\n4.  Kehre zu Qonecta+ zurück: Es prüft selbst.</string>
     <string name="hql_setup_guide_title">So aktivierst du den Entwicklermodus</string>
     <string name="hql_setup_media">Fotos, Videos und Standort</string>
     <string name="hql_setup_media_why">Für die Galerie und die Fahrtanzeigen im Fahrzeug</string>
@@ -314,7 +314,7 @@
     <string name="hql_setup_overlay">Über anderen Apps einblenden</string>
     <string name="hql_setup_overlay_aa">Um Android Auto mit dem Handy im Hintergrund zu öffnen</string>
     <string name="hql_setup_overlay_app">Um die App mit dem Handy im Hintergrund zu öffnen</string>
-    <string name="hql_setup_perms_ok">Wi-Fi in der Nähe, Bluetooth und Benachrichtigungen</string>
+    <string name="hql_setup_perms_ok">WiFi in der Nähe, Bluetooth und Benachrichtigungen</string>
     <string name="hql_setup_perms_why">Um das Fahrzeug zu finden und den Bluetooth Status zu protokollieren</string>
     <string name="hql_setup_pick_app">App wählen</string>
     <string name="hql_setup_prepare">Android Auto einrichten</string>
@@ -362,7 +362,7 @@
     <string name="hql_welcome_parked">Richte alles bei geparktem Fahrzeug ein</string>
     <string name="hql_welcome_mirror">Spiegelungsapp auf dem Fahrzeugdisplay sichtbar</string>
     <string name="hql_welcome_title">Dein Handy auf dem Display des C10</string>
-    <string name="hql_welcome_wifi">Handy und Fahrzeug verbinden sich per Wi-Fi (Wi-Fi Direct oder Handy Hotspot), ohne Kabel, oder auf Wunsch mit einem USB Datenkabel.</string>
+    <string name="hql_welcome_wifi">Handy und Fahrzeug verbinden sich per WiFi (WiFi Direct oder Handy Hotspot), ohne Kabel, oder auf Wunsch mit einem USB Datenkabel.</string>
     <string name="hql_width">Breite</string>
     <string name="hql_wind">Wind</string>
     <string name="hql_wx_clear">Klar</string>
@@ -377,26 +377,26 @@
     <string name="hql_yes">ja</string>
     <!-- qdauto c6 -->
     <string name="hql_link_title">Verbindung zum Fahrzeug</string>
-    <string name="hql_link_p2p">Wi-Fi Direct</string>
-    <string name="hql_link_p2p_detail">Das Fahrzeug erstellt das Netz, das Handy tritt bei. Der Handy-Hotspot muss aus sein.</string>
+    <string name="hql_link_p2p">WiFi Direct</string>
+    <string name="hql_link_p2p_detail">Das Fahrzeug erstellt das Netz, das Handy tritt bei. Der Handy Hotspot muss aus sein.</string>
     <string name="hql_link_hotspot">Handy-Hotspot</string>
     <string name="hql_link_hotspot_detail">Das Fahrzeug verbindet sich mit dem Hotspot deines Handys. Am C10 getestet, auch bei ausgeschaltetem Bildschirm.</string>
     <string name="hql_hotspot_on">Hotspot an (%1$s)</string>
     <string name="hql_hotspot_off">Hotspot aus: bitte einschalten</string>
     <string name="hql_hotspot_unknown">Hotspotstatus unbekannt</string>
-    <string name="hql_hotspot_open">Hotspot-Einstellungen öffnen</string>
-    <string name="hql_hotspot_guide">1. Schalte den Handy Hotspot ein (am besten 5 GHz und ohne automatisches Ausschalten).\n2. Nur beim ersten Mal: im Fahrzeug unter Einstellungen › Wi-Fi den Hotspot deines Handys wählen.\n3. Öffne die Spiegelungsapp auf dem Fahrzeugdisplay. Qonecta+ verbindet sich selbst, auch bei gesperrtem Handy.\nDas Fahrzeug kann deine mobilen Daten nutzen.</string>
+    <string name="hql_hotspot_open">Hotspot Einstellungen öffnen</string>
+    <string name="hql_hotspot_guide">1. Schalte den Handy Hotspot ein (am besten 5 GHz und ohne automatisches Ausschalten).\n2. Nur beim ersten Mal: im Fahrzeug unter Einstellungen › WiFi den Hotspot deines Handys wählen.\n3. Öffne die Spiegelungsapp auf dem Fahrzeugdisplay. Qonecta+ verbindet sich selbst, auch bei gesperrtem Handy.\nDas Fahrzeug kann deine mobilen Daten nutzen.</string>
     <string name="hql_hotspot_guide_title">So verbindest du das Fahrzeug mit dem Hotspot</string>
     <string name="hql_hotspot_tips">Tipps: Das 5-GHz Band funktioniert besser (bei 2,4 GHz teilt sich der Funk mit dem Bluetooth des Fahrzeugs), und deaktiviere am besten die Option, die den Hotspot ausschaltet, wenn keine Geräte verbunden sind (Samsung).</string>
     <string name="hql_hotspot_row">Handy Hotspot</string>
     <string name="hql_hotspot_off_row">Hotspot aus</string>
     <string name="hql_hotspot_is_off">Aus</string>
     <string name="hql_hotspot_off_notif">Hotspot aus: einschalten, um das Fahrzeug zu verbinden</string>
-    <string name="hql_p2p_needs_hotspot_off">Schalte den Handy Hotspot aus, um Wi-Fi Direct zu nutzen.</string>
-    <string name="hql_hint_searching_hotspot">Prüfe, ob das Fahrzeug mit dem Handy-Hotspot verbunden ist, und öffne die Spiegelungsapp auf dem Fahrzeugdisplay. Du kannst das Handy sperren.</string>
+    <string name="hql_p2p_needs_hotspot_off">Schalte den Handy Hotspot aus, um WiFi Direct zu nutzen.</string>
+    <string name="hql_hint_searching_hotspot">Prüfe, ob das Fahrzeug mit dem Handy Hotspot verbunden ist, und öffne die Spiegelungsapp auf dem Fahrzeugdisplay. Du kannst das Handy sperren.</string>
     <string name="hql_network">Netzwerk</string>
-    <string name="hql_p2p_in_group">Wi-Fi Direct: in der Gruppe des Fahrzeugs (%1$s)</string>
-    <string name="hql_p2p_searching">Wi-Fi Direct: suche das Fahrzeug</string>
+    <string name="hql_p2p_in_group">WiFi Direct: in der Gruppe des Fahrzeugs (%1$s)</string>
+    <string name="hql_p2p_searching">WiFi Direct: suche das Fahrzeug</string>
     <string name="hql_setup_perms_ok_hotspot">Bluetooth und Benachrichtigungen</string>
     <!-- qdauto c7 -->
     <string name="hql_udp_busy">Port 18463 ist belegt (ist QDLink offen?). Schließe es; neuer Versuch alle 5 s.</string>
@@ -449,7 +449,7 @@
     <string name="hql_req_acc_restricted">Meldet Android „Eingeschränkte Einstellung“: Appinfo › ⋮ › Eingeschränkte Einstellungen zulassen, dann aktivieren.</string>
     <string name="hql_req_acc_stuck">Aktiv, läuft aber nicht (Android hat sie gestoppt): aus- und wieder einschalten.</string>
     <string name="hql_req_aa_disabled">Deaktiviert: in der Appinfo aktivieren</string>
-    <string name="hql_req_dev_off">Aus: in Android Auto 10-mal auf „Version“ tippen (siehe unten)</string>
+    <string name="hql_req_dev_off">Aus: in Android Auto 10 mal auf „Version“ tippen (siehe unten)</string>
     <string name="hql_req_dev_unchecked">Noch nicht geprüft: Qonecta+ öffnet kurz Android Auto</string>
     <string name="hql_req_notif">Benachrichtigungen</string>
     <string name="hql_req_notif_why">Für Verbindungsstatus und Warnungen</string>
@@ -466,14 +466,14 @@
     <string name="hql_req_blocked">Abgelehnt: in Appinfo › Berechtigungen zulassen</string>
     <string name="hql_req_nearby">Wi-Fi Geräte in der Nähe</string>
     <string name="hql_req_location">Standort</string>
-    <string name="hql_req_nearby_why">Um dem Wi-Fi Direct Netz des Fahrzeugs beizutreten</string>
-    <string name="hql_req_wifi">Wi-Fi an</string>
-    <string name="hql_req_wifi_why">Wi-Fi Direct braucht eingeschaltetes Wi-Fi (Verbindung mit einem Netz nicht nötig)</string>
-    <string name="hql_req_band">5-GHz-Band</string>
-    <string name="hql_req_band_why">Von hier nicht prüfbar: in den Hotspot-Einstellungen 5 GHz wählen und das automatische Ausschalten deaktivieren</string>
+    <string name="hql_req_nearby_why">Um dem WiFi Direct Netz des Fahrzeugs beizutreten</string>
+    <string name="hql_req_wifi">WiFi an</string>
+    <string name="hql_req_wifi_why">WiFi Direct braucht eingeschaltetes WiFi (Verbindung mit einem Netz nicht nötig)</string>
+    <string name="hql_req_band">5-GHz Band</string>
+    <string name="hql_req_band_why">Von hier nicht prüfbar: in den Hotspot Einstellungen 5 GHz wählen und das automatische Ausschalten deaktivieren</string>
     <string name="hql_req_gaccuracy">Google Standortgenauigkeit</string>
-    <string name="hql_req_gaccuracy_why">Aktiviert. Für Android Auto sucht Google alle paar Sekunden nach WLAN-Netzen, und jede Suche unterbricht kurz das Bild über Wi-Fi Direct und Hotspot (Sprünge und träge Berührungen). Ausgeschaltet läuft es flüssiger. GPS funktioniert weiter wie bisher: Maps, die Route und die Blitzer brauchen sie nicht; nur in Garagen oder Gebäuden dauert die Ortung etwas länger.</string>
-    <string name="hql_req_gaccuracy_ok">Aus: Android sucht während der Fahrt nicht nach WLAN-Netzen. GPS funktioniert wie bisher.</string>
+    <string name="hql_req_gaccuracy_why">Aktiviert. Für Android Auto sucht Google alle paar Sekunden nach WLAN Netzen, und jede Suche unterbricht kurz das Bild über WiFi Direct und Hotspot (Sprünge und träge Berührungen). Ausgeschaltet läuft es flüssiger. GPS funktioniert weiter wie bisher: Maps, die Route und die Blitzer brauchen sie nicht; nur in Garagen oder Gebäuden dauert die Ortung etwas länger.</string>
+    <string name="hql_req_gaccuracy_ok">Aus: Android sucht während der Fahrt nicht nach WLAN Netzen. GPS funktioniert wie bisher.</string>
     <string name="hql_star_badge">★ TOP NEUHEIT ★</string>
     <string name="hql_star_title">Weniger WLAN Aussetzer</string>
     <string name="hql_star_body">Wir haben herausgefunden: Mit eingeschalteter «Google Standortgenauigkeit» sucht Google alle 9 Sekunden nach WLAN Netzen, während du Android Auto nutzt. Jede Suche unterbricht kurz die Verbindung zum Auto: Bildsprünge und träge Berührungen, vor allem mit Hotspot.\n\nSchaltest du sie aus, hört das Handy mit diesen Suchen auf. In unseren Tests verschwanden die Aussetzer, die sie verursachten.</string>
@@ -521,7 +521,7 @@
 
     <!-- headqlink: USB-Kabel für das Auto (experimentell) -->
     <string name="hql_link_usb">USB-Kabel</string>
-    <string name="hql_link_usb_detail">Das Handy wird per Datenkabel mit dem USB Datenanschluss des Fahrzeugs verbunden, ohne Wi-Fi. Funktioniert nur, wenn das Fahrzeug das Handy in den Zubehörmodus schaltet, wie der C10.</string>
+    <string name="hql_link_usb_detail">Das Handy wird per Datenkabel mit dem USB Datenanschluss des Fahrzeugs verbunden, ohne WiFi. Funktioniert nur, wenn das Fahrzeug das Handy in den Zubehörmodus schaltet, wie der C10.</string>
     <string name="hql_experimental">Experimentell</string>
     <string name="hql_req_usb">USB-Datenkabel</string>
     <string name="hql_req_usb_why">Verbinde das Handy per Datenkabel (kein reines Ladekabel) mit dem USB-Datenanschluss des Fahrzeugs. Das Fahrzeug muss das Handy in den Zubehörmodus schalten: Passiert nichts, exportiere das Log und schick es uns (Zeilen HQL/USB).</string>
@@ -534,7 +534,7 @@
     <string name="hql_usb_net_denied">USB-Kabel: Berechtigung verweigert (Kabel ab- und wieder anstecken)</string>
     <string name="hql_usb_net_open_failed">USB-Kabel: %1$s lässt sich nicht öffnen (nutzt es eine andere App, etwa QDLink?)</string>
     <string name="hql_usb_net_other">USB-Kabel: Das Zubehör ist nicht das Fahrzeug (%1$s)</string>
-    <string name="hql_qd_usb_over_tcp">USB-Kabel Framing über Wi-Fi (Test mit qdsim --usb-framing): 512-Byte-Blöcke über TCP. Das Fahrzeug versteht es nicht: im Fahrzeug aus lassen</string>
+    <string name="hql_qd_usb_over_tcp">USB-Kabel Framing über WiFi (Test mit qdsim --usb-framing): 512-Byte-Blöcke über TCP. Das Fahrzeug versteht es nicht: im Fahrzeug aus lassen</string>
 
     <!-- headqlink: Manueller Start des Android Auto Servers (ohne Barrierefreiheitsdienste) -->
     <string name="hql_aa_server_start_title">Start des Android Auto Servers</string>
@@ -561,7 +561,7 @@
     <string name="hql_manual_confirm_title">Manueller Start des Android Auto Servers</string>
     <string name="hql_manual_confirm_msg">Ohne Bedienungshilfe startet und stoppt Qonecta+ den Android Auto Server nicht:\n\n•  Starte ihn selbst (Android Auto › ⋮ › „Server für Infotainmentsystem starten“) nach jedem Neustart des Handys oder Update von Android Auto.\n•  Qonecta+ schließt Android Auto immer sauber, sodass der Server weiter antwortet: Er funktioniert für die folgenden Fahrten ohne Neustart, auch bei gesperrtem Handy. Antwortet er einmal nicht (aus oder durch eine halb abgebrochene Verbindung blockiert), sagt Qonecta+ Bescheid und versucht es selbst erneut: Beende ihn und starte ihn neu.\n•  Er bleibt an, bis du ihn beendest. In einem öffentlichen Wi-Fi könnte jedes Gerät in diesem Netz versuchen, sich zu verbinden: Beende ihn, wenn du nicht im Fahrzeug bist (⋮ › „Server für Infotainmentsystem beenden“).\n\nEmpfohlen bleibt der automatische Start. Du kannst unter Einstellungen › Verbindung zurückwechseln.</string>
     <string name="hql_setup_guide_manual_title">So startest du den Android Auto Server</string>
-    <string name="hql_setup_guide_manual">1.  Tippe auf „AA öffnen“.\n2.  Tippe auf ⋮ (oben rechts) › „Server für Infotainmentsystem starten“.\n3.  Fehlt diese Option: Scrolle ganz nach unten, tippe 10-mal auf „Version“, bestätige die Warnung und wiederhole Schritt 2.\n4.  Kehre zu Qonecta+ zurück und verbinde. Qonecta+ prüft ihn nicht vorher (eine Testverbindung würde ihn blockieren): Antwortet Android Auto mit dem Fahrzeug nicht, sagt es Bescheid und versucht es alle 5 s erneut.\nMach das nach jedem Neustart des Handys oder Update von Android Auto: Zwischen den Fahrten bleibt er an und funktioniert ohne Neustart. Meldet Qonecta+, dass er nicht antwortet: ⋮ › „Server für Infotainmentsystem beenden“ und ⋮ › „Server für Infotainmentsystem starten“.</string>
+    <string name="hql_setup_guide_manual">1.  Tippe auf „AA öffnen“.\n2.  Tippe auf ⋮ (oben rechts) › „Server für Infotainmentsystem starten“.\n3.  Fehlt diese Option: Scrolle ganz nach unten, tippe 10 mal auf „Version“, bestätige die Warnung und wiederhole Schritt 2.\n4.  Kehre zu Qonecta+ zurück und verbinde. Qonecta+ prüft ihn nicht vorher (eine Testverbindung würde ihn blockieren): Antwortet Android Auto mit dem Fahrzeug nicht, sagt es Bescheid und versucht es alle 5 s erneut.\nMach das nach jedem Neustart des Handys oder Update von Android Auto: Zwischen den Fahrten bleibt er an und funktioniert ohne Neustart. Meldet Qonecta+, dass er nicht antwortet: ⋮ › „Server für Infotainmentsystem beenden“ und ⋮ › „Server für Infotainmentsystem starten“.</string>
     <!-- Vista previa del modo extendido (PreviewActivity, modo demostración) -->
     <string name="hql_preview_title">Vorschau des erweiterten Modus</string>
     <string name="hql_preview_busy">Die Vorschau nutzt Demodaten und ist bei Verbindung mit dem Fahrzeug nicht verfügbar. Trenne zuerst die Verbindung.</string>
@@ -581,7 +581,7 @@
     <string name="hql_sun_in">in %1$s</string>
     <string name="hql_sunrise_at">Aufgang %1$s</string>
     <!-- Sección Coche rediseñada: Instrumentos -->
-    <string name="hql_gforce">G-Kräfte</string>
+    <string name="hql_gforce">G Kräfte</string>
     <string name="hql_braking">Bremsen</string>
     <string name="hql_left_short">Links</string>
     <string name="hql_right_short">Rechts</string>
@@ -623,7 +623,7 @@
     <string name="hql_split_wait">Fahr ein Stück: Hier siehst du, wofür die Energie der Fahrt verbraucht wird.</string>
     <string name="hql_recovered">Zurückgewonnen</string>
     <string name="hql_net_kwh">netto %1$.2f kWh</string>
-    <string name="hql_estimated_model">Geschätzt mit dem C10-Modell</string>
+    <string name="hql_estimated_model">Geschätzt mit dem C10 Modell</string>
     <string name="hql_cost_rate">zu %1$s · %2$.2f kWh</string>
     <string name="hql_cost_petrol">Mit einem Benziner ~%1$s</string>
     <string name="hql_co2_note">Gegenüber einem Benziner mit %1$.1f l/100 km (%2$.2f kg CO₂ pro Liter, nur Auspuff).</string>
@@ -646,7 +646,7 @@
     <string name="hql_legend_down">Gefälle</string>
     <string name="hql_legend_headwind">Gegenwind</string>
     <string name="hql_legend_tailwind">Rückenwind</string>
-    <string name="hql_legend_battery">Akku-Prognose</string>
+    <string name="hql_legend_battery">Akku Prognose</string>
     <string name="hql_route_source">ungefähre Route (OSM/OSRM)</string>
     <string name="hql_route_source_google">wie die von Google Maps</string>
     <string name="hql_route_source_own">eigene Route: Google Maps führt nicht</string>
@@ -674,7 +674,7 @@
     <string name="hql_settings_price_kwh">Strompreis</string>
     <string name="hql_settings_price_help">Für die Fahrtkosten unter Fahrzeug › Effizienz und Fahrten (Laden zu Hause, dein Tarif).</string>
     <!-- Widget de la pantalla de inicio y botón de los ajustes rápidos -->
-    <string name="hql_w_description">Mit einem Tippen verbinden oder trennen und die Verbindung wählen: Hotspot, Wi-Fi Direct oder USB-Kabel.</string>
+    <string name="hql_w_description">Mit einem Tippen verbinden oder trennen und die Verbindung wählen: Hotspot, WiFi Direct oder USB-Kabel.</string>
     <string name="hql_w_off">Aus</string>
     <string name="hql_w_tap_to_connect">Zum Verbinden tippen</string>
     <string name="hql_w_searching">Suche das Fahrzeug…</string>
@@ -691,7 +691,7 @@
     <string name="hql_w_check_app">App prüfen</string>
     <string name="hql_w_mode_ext">Erweitert</string>
     <string name="hql_w_link_hotspot">Hotspot</string>
-    <string name="hql_w_link_p2p">Wi-Fi Direct</string>
+    <string name="hql_w_link_p2p">WiFi Direct</string>
     <string name="hql_w_link_usb">USB-Kabel</string>
     <string name="hql_w_cd_link">Verbindung: %1$s. Zum Ändern tippen</string>
     <string name="hql_w_cd_selected">%1$s, ausgewählt</string>
@@ -704,7 +704,7 @@
     <string name="hql_w_tile_already">Der Schalter ist schon in den Schnelleinstellungen</string>
     <string name="hql_w_tile_manual">Öffne die Schnelleinstellungen, tippe auf den Stift (Bearbeiten) und zieh „Qonecta+“ zu deinen Schaltern.</string>
     <!-- Android Auto-Versionen: Server-Schaltfläche nicht gefunden, Verbindungsabbrüche nach wenigen Sekunden und Warteschlange für die Überprüfung -->
-    <string name="hql_aa_compat_channel">Android Auto-Kompatibilität</string>
+    <string name="hql_aa_compat_channel">Android Auto Kompatibilität</string>
     <string name="hql_aa_ui_changed_title">Qonecta+ findet die Servertaste nicht</string>
     <string name="hql_aa_ui_changed_text">Qonecta+ findet die Servertaste in dieser Android Auto Version (%1$s) nicht: Starte den Server von Hand (⋮ › „Server für Infotainmentsystem starten“) oder nutze den manuellen Modus.</string>
     <string name="hql_aa_flap_title">Android Auto verbindet sich und bricht nach ein paar Sekunden ab</string>
@@ -1016,7 +1016,7 @@
     <string name="hql_setup_car_help">Wähle deinen Leapmotor und die Version: Akku, Laden und Verbrauch hängen davon ab. Später änderbar unter ⚙ › Auto › Fahrzeugdaten.</string>
     <string name="hql_setup_car_missing">Wähle dein Auto, um fortzufahren</string>
     <string name="hql_setup_car_c10_detail">Der normale Elektrische: 84 kW Schnellladen, 420 km WLTP.</string>
-    <string name="hql_setup_car_promax_detail">Großer 81,9-kWh Akku mit 800 V: Schnellladen bis 180 kW.</string>
+    <string name="hql_setup_car_promax_detail">Großer 81,9 kWh Akku mit 800V: Schnellladen bis 180 kW.</string>
     <string name="hql_setup_car_reev_detail">Range Extender: kleiner Akku und Benzingenerator.</string>
     <string name="hql_setup_car_t03_detail">Der Stadtwagen: 45 kW Schnellladen, 265 km WLTP und 10,1\" Bildschirm (die Anzeige passt sich an).</string>
     <string name="hql_tips_channel">Tipps</string>
@@ -1124,20 +1124,20 @@
     <string name="hql_mate_climate">Klima</string>
     <string name="hql_mate_charge">Laden</string>
     <string name="hql_mate_comfort">Komfort</string>
-    <string name="hql_mate_quick_cool">Schnell Kühlen</string>
-    <string name="hql_mate_quick_heat">Schnell Heizen</string>
+    <string name="hql_mate_quick_cool">Schnelles Kühlen</string>
+    <string name="hql_mate_quick_heat">Schnelles Heizen</string>
     <string name="hql_mate_ventilate">Lüften</string>
     <string name="hql_mate_windows_close">Fenster schließen</string>
     <string name="hql_mate_windows_open">Fenster öffnen</string>
-    <string name="hql_mate_preheat">Akku vorheizen</string>
+    <string name="hql_mate_preheat">Akku vorwärmen</string>
     <string name="hql_mate_unlock_cable">Kabel freigeben</string>
     <string name="hql_mate_limit">Ladelimit</string>
-    <string name="hql_mate_seat_heat_d">Fahrersitz: Wärme</string>
-    <string name="hql_mate_seat_heat_p">Beifahrersitz: Wärme</string>
+    <string name="hql_mate_seat_heat_d">Fahrersitz: Heizung</string>
+    <string name="hql_mate_seat_heat_p">Beifahrersitz: Heizung</string>
     <string name="hql_mate_seat_vent_d">Fahrersitz: Lüftung</string>
     <string name="hql_mate_seat_vent_p">Beifahrersitz: Lüftung</string>
-    <string name="hql_mate_wheel_heat">Lenkrad: Wärme</string>
-    <string name="hql_mate_mirror_heat">Spiegel: Wärme</string>
+    <string name="hql_mate_wheel_heat">Lenkrad: Heizung</string>
+    <string name="hql_mate_mirror_heat">Spiegel: Heizung</string>
     <string name="hql_mate_confirm">%1$s?</string>
     <string name="hql_mate_note">Daten von Leapmotor Mate über Home Assistant. Befehle unter „Steuerung“.</string>
     <string name="hql_mate_climate_inside">Innen %1$s</string>
@@ -1169,14 +1169,14 @@
     <string name="hql_report_spent">ausgegeben</string>
     <string name="hql_report_charges_split">Zu Hause (AC) %1$s kWh · Schnell (DC) %2$s kWh</string>
     <string name="hql_report_fastest">Am schnellsten: %1$s kW Spitze</string>
-    <string name="hql_report_charges_none">Diesen Monat keine Ladevorgänge gespeichert. Live-Laden speichert sie, wenn es einen verfolgt.</string>
+    <string name="hql_report_charges_none">Diesen Monat keine Ladevorgänge gespeichert. Live Laden speichert sie, wenn es einen verfolgt.</string>
     <string name="hql_report_parked_title">Mit geparktem Auto</string>
     <string name="hql_report_parked">Es verlor %1$s %% (%2$s kWh) in %3$s Standzeit.</string>
     <string name="hql_report_highlights">Highlights</string>
     <string name="hql_report_best">Effizienteste Fahrt</string>
     <string name="hql_report_longest">Längste Fahrt</string>
     <string name="hql_report_top_day">Tag mit den meisten km</string>
-    <string name="hql_report_source_car">Fahrten und kWh, vom Auto gemessen (Leapmotor-Konto).</string>
+    <string name="hql_report_source_car">Fahrten und kWh, vom Auto gemessen (Leapmotor Konto).</string>
     <string name="hql_report_source_app">Von Qonecta+ im Auto aufgezeichnete Fahrten; kWh geschätzt.</string>
     <string name="hql_report_compared">Änderungen gegenüber %1$s.</string>
     <string name="hql_report_no_compare">Noch kein Vergleich: Der Vormonat hat keine vollständigen Daten. Nächsten Monat siehst du die Änderungen.</string>
