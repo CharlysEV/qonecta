@@ -161,6 +161,23 @@ class LeapStatusTest {
     }
 
     @Test
+    fun rawSignalsDumpListsSignalsWithoutPosition() {
+        val dump = LeapStatus.rawSignalsDump(JSONObject(sample))
+        // Las conocidas salen con su nombre; las que no, solo con el número y el valor (como lo tendría la de 12 V).
+        assertTrue(dump, dump.contains("1177=396.5(batteryVoltage)"))
+        assertTrue(dump, dump.contains("1319=0.0(speed)"))
+        // Ordenadas por número y sin la cabecera «sts» (no numérica aquí no importa) ni la posición.
+        assertFalse(dump, dump.contains("2=-2.98"))
+        assertFalse(dump, dump.contains("3=43.12"))
+        assertTrue(dump.indexOf("1204=") < dump.indexOf("1318="))
+        // Una señal nueva que no mapeamos saldría tal cual, con su valor y sin nombre: así se encuentra la de 12 V.
+        val withAux = LeapStatus.rawSignalsDump(JSONObject("""{"signal":{"1177":355.0,"1500":12.6,"2":1.0,"3":2.0}}"""))
+        assertTrue(withAux, withAux.contains("1500=12.6"))
+        assertFalse(withAux, withAux.contains("1500=12.6("))
+        assertEquals("sin datos del coche", LeapStatus.rawSignalsDump(null))
+    }
+
+    @Test
     fun reevFuelSignals() {
         val bev = LeapStatus.parse(JSONObject(sample))
         assertFalse(bev.reev())

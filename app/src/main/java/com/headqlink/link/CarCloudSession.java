@@ -112,7 +112,18 @@ final class CarCloudSession {
         } finally {
             if (api != null && api.sessionVersion() != v0) persist(st);
         }
+        if (com.andrerinas.openheadunit.BuildConfig.LAB) dumpSignals(data);
         return LeapStatus.parse(data);
+    }
+
+    /** Solo en pruebas: vuelca al log las señales del coche (sin posición) cada 3 min, para buscar las que no usamos. */
+    private static long lastSignalDumpMs;
+
+    private static void dumpSignals(JSONObject data) {
+        long now = System.currentTimeMillis();
+        if (now - lastSignalDumpMs < 180_000L) return;
+        lastSignalDumpMs = now;
+        L.i("nube Leapmotor [pruebas]: " + LeapStatus.rawSignalsDump(data));
     }
 
     /**

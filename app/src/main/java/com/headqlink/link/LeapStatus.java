@@ -238,6 +238,45 @@ final class LeapStatus {
         return o == JSONObject.NULL ? null : o;
     }
 
+    /** Las señales de posición (latitud/longitud): nunca salen al log. */
+    static final java.util.Set<String> POSITION_SIGNALS =
+            new java.util.HashSet<>(java.util.Arrays.asList("2", "3", "2190", "2191", "3724", "3725"));
+
+    /**
+     * Volcado de diagnóstico (solo en la versión de pruebas): las señales numéricas que el coche manda en «data», con
+     * su nombre si lo conocemos, ordenadas por número. Sirve para localizar una señal que aún no interpretamos (por
+     * ejemplo la batería de 12 V, que sería una con un valor sobre 12-14). Omite las señales de posición y solo saca
+     * números y sí/no, nunca textos ni coordenadas: el log nunca lleva la ubicación del coche.
+     */
+    static String rawSignalsDump(JSONObject data) {
+        if (data == null) return "sin datos del coche";
+        Object sig = data.opt("signal");
+        if (!(sig instanceof JSONObject)) return "sin señales";
+        JSONObject s = (JSONObject) sig;
+        java.util.List<String> keys = new java.util.ArrayList<>();
+        for (Iterator<String> it = s.keys(); it.hasNext(); ) {
+            String k = it.next();
+            if (POSITION_SIGNALS.contains(k)) continue;
+            Object v = unwrap(s.opt(k));
+            if (v instanceof Number || v instanceof Boolean) keys.add(k);
+        }
+        java.util.Collections.sort(keys, (a, b) -> {
+            try {
+                return Long.compare(Long.parseLong(a), Long.parseLong(b));
+            } catch (NumberFormatException e) {
+                return a.compareTo(b);
+            }
+        });
+        if (keys.isEmpty()) return "sin señales numéricas";
+        StringBuilder b = new StringBuilder(keys.size() + " señales:");
+        for (String k : keys) {
+            String name = SIGNALS.get(k);
+            b.append(' ').append(k).append('=').append(unwrap(s.opt(k)));
+            if (name != null) b.append('(').append(name).append(')');
+        }
+        return b.toString();
+    }
+
     // ------------------------------------------------------------------ conversiones (las de LMB10)
 
     /** _asInt: un número se trunca; un texto solo si es un entero. */
