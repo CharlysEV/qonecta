@@ -27,6 +27,8 @@ final class DemoDrive {
     static final double WIND_KMH = 11;
     static final double WIND_FROM_DEG = 205;
     static final double TEMP_C = 24;
+    /** El tiempo de la demostración: poco nuboso (código WMO 1). */
+    static final int WEATHER_CODE = 1;
 
     private static final double G = 9.81;
     /** Tirón máximo (m/s³): las aceleraciones cambian de forma realista, no a saltos. */

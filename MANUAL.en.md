@@ -664,7 +664,8 @@ stays the same day and night. It applies at once, and the panel's text turns lig
 Below, "Hue" and "Light / dark" give any other color, and "Transparency" blends it into the black of the screen. "Side
 panel on the right" moves the panel to the other side, with Android Auto against the left edge. "Side panel buttons"
 picks which ones show (Yes / No) and in what order (arrows); "Auto" and "Settings" stay fixed. With the panel shrunk to
-icons, the time, the outside temperature and the car's battery (when known) show at the bottom. And on the phone's main
+icons, the weather (an emoji) with the outside temperature and the phone's battery (when known) show at the bottom; not
+the time, since LeapOS and Android Auto already show it. And on the phone's main
 screen, when a new version is out a notice shows its news and "Download and install" (the app downloads the APK and opens Android's installer; the
 first time it asks to allow Qonecta+ to install unknown apps); the first time a freshly installed
 version starts, its news is shown. In the ⚙ menu, "Check for new version" checks right away.

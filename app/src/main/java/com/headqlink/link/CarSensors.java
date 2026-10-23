@@ -70,6 +70,10 @@ final class CarSensors implements SensorEventListener, LocationListener {
         double windFromDeg;
         double headwindKmh = Double.NaN;
         double tempC = Double.NaN;
+        /** Tipo de tiempo de ahora (código WMO de Open-Meteo, como RouteTab.weatherText), o -1 si no se sabe. */
+        int weatherCode = -1;
+        /** Es de día en el sitio del coche (Open-Meteo is_day): de noche, luna en vez de sol. */
+        boolean day = true;
         String timer = "";
         double lat = Double.NaN;
         double lon = Double.NaN;
@@ -279,6 +283,13 @@ final class CarSensors implements SensorEventListener, LocationListener {
         return instance == null ? Double.NaN : instance.snapshot().tempC;
     }
 
+    /** El tiempo de ahora como emoticono (RouteTab.weatherEmoji), o vacío si los sensores aún no lo tienen. */
+    static synchronized String weatherEmoji() {
+        if (instance == null) return "";
+        Snapshot c = instance.snapshot();
+        return RouteTab.weatherEmoji(c.weatherCode, c.day);
+    }
+
     /** Reloj de los sensores (ms): el del sistema, o el simulado en el modo demostración. */
     private long nowMs() {
         return demo != null ? demoNs / 1_000_000 : SystemClock.elapsedRealtime();
@@ -307,6 +318,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
         c.windFromDeg = s.windFromDeg;
         c.headwindKmh = s.headwindKmh;
         c.tempC = s.tempC;
+        c.weatherCode = s.weatherCode;
+        c.day = s.day;
         c.timer = s.timer;
         c.lat = s.lat;
         c.lon = s.lon;
@@ -817,6 +830,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
         s.windKmh = DemoDrive.WIND_KMH;
         s.windFromDeg = DemoDrive.WIND_FROM_DEG;
         s.tempC = DemoDrive.TEMP_C;
+        s.weatherCode = DemoDrive.WEATHER_CODE;
+        s.day = true;
         baroAlt = d.altM[k];
         double step = demoK >= 0 ? RoadInfo.dist(demoLat, demoLon, d.lat[k], d.lon[k]) : 0;
         demoLat = d.lat[k];
@@ -857,7 +872,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
         new Thread(() -> {
             try {
                 String url = String.format(Locale.US, "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f"
-                        + "&current=temperature_2m,wind_speed_10m,wind_direction_10m&wind_speed_unit=kmh", lat, lon);
+                        + "&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code,is_day&wind_speed_unit=kmh",
+                        lat, lon);
                 HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
                 con.setConnectTimeout(10_000);
                 con.setReadTimeout(10_000);
@@ -874,6 +890,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
                     s.windKmh = cur.getDouble("wind_speed_10m") * 0.7;
                     s.windFromDeg = cur.getDouble("wind_direction_10m");
                     s.tempC = cur.getDouble("temperature_2m");
+                    s.weatherCode = cur.optInt("weather_code", -1);
+                    s.day = cur.optInt("is_day", 1) != 0;
                     updateHeadwind();
                 }
             } catch (Exception e) {

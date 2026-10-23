@@ -2578,6 +2578,24 @@ final class RouteTab implements CarScreen {
         if (searchState != null) searchState.close();
     }
 
+    /**
+     * Puro: el tiempo (código WMO de Open-Meteo) como emoticono, para la barra lateral; de noche, luna en vez de sol.
+     * Vacío si no se sabe.
+     */
+    static String weatherEmoji(int code, boolean day) {
+        if (code < 0) return "";
+        if (code == 0) return day ? "\u2600\uFE0F" : "\uD83C\uDF19";
+        if (code <= 2) return day ? "\uD83C\uDF24\uFE0F" : "\uD83C\uDF19";
+        if (code == 3) return "\u2601\uFE0F";
+        if (code <= 48) return "\uD83C\uDF2B\uFE0F";
+        if (code <= 57) return "\uD83C\uDF26\uFE0F";
+        if (code <= 67) return "\uD83C\uDF27\uFE0F";
+        if (code <= 77) return "\u2744\uFE0F";
+        if (code <= 82) return "\uD83C\uDF26\uFE0F";
+        if (code <= 86) return "\uD83C\uDF28\uFE0F";
+        return "\u26C8\uFE0F";
+    }
+
     static String weatherText(int code) {
         if (code < 0) return "—";
         if (code == 0) return Str.get(R.string.hql_wx_clear);

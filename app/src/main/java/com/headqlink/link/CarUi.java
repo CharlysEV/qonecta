@@ -249,7 +249,6 @@ final class CarUi {
     private boolean panelRight;
     /** Datos en la barra de iconos (hora, temperatura exterior y batería del coche), solo con el panel reducido. */
     private LinearLayout railInfo;
-    private TextView railTime;
     private TextView railTemp;
     private TextView railSoc;
     private final Runnable railTick = () -> {
@@ -2251,18 +2250,16 @@ final class CarUi {
     }
 
     /**
-     * Datos en la barra de iconos (cuando el panel está reducido): hora, temperatura exterior (del tiempo, si los sensores
-     * la tienen) y batería del MÓVIL, con su icono (la del coche ya sale en muchos sitios: el coche, la sección Coche y
-     * el planificador). Se refresca cada 30 s y al cambiar la batería.
+     * Datos en la barra de iconos (cuando el panel está reducido): el tiempo como emoticono con la temperatura exterior
+     * (si los sensores la tienen) y la batería del MÓVIL, con su icono (la del coche ya sale en muchos sitios: el coche,
+     * la sección Coche y el planificador). Sin hora: ya la dan LeapOS arriba y Android Auto (24-10). Se refresca cada
+     * 30 s y al cambiar la batería.
      */
     private View buildRailInfo(Context c) {
         LinearLayout l = new LinearLayout(c);
         l.setOrientation(LinearLayout.VERTICAL);
         l.setGravity(Gravity.CENTER_HORIZONTAL);
         l.setPadding(0, 4, 0, 4);
-        railTime = CarStyle.text(c, "", 20, CarTheme.navText());
-        railTime.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        railTime.setGravity(Gravity.CENTER);
         railTemp = CarStyle.text(c, "", 18, CarTheme.navTextDim());
         railTemp.setGravity(Gravity.CENTER);
         railSoc = CarStyle.text(c, "", 18, CarTheme.navTextDim());
@@ -2277,7 +2274,6 @@ final class CarUi {
             railSoc.setCompoundDrawablePadding(4);
         }
         railSoc.setContentDescription(Str.get(R.string.hql_phone_battery, 0));
-        l.addView(railTime);
         l.addView(railTemp);
         l.addView(railSoc);
         l.setVisibility(View.GONE);
@@ -2290,9 +2286,9 @@ final class CarUi {
         if (railInfo == null || railInfo.getVisibility() != View.VISIBLE) return false;
         int oldTempVisibility = railTemp.getVisibility();
         int oldSocVisibility = railSoc.getVisibility();
-        railTime.setText(new java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(new java.util.Date()));
         double t = CarSensors.outsideTempC();
-        railTemp.setText(Double.isNaN(t) ? "" : Math.round(t) + "\u00b0");
+        String sky = CarSensors.weatherEmoji();
+        railTemp.setText(Double.isNaN(t) ? "" : (sky.isEmpty() ? "" : sky + " ") + Math.round(t) + "\u00b0");
         railTemp.setVisibility(Double.isNaN(t) ? View.GONE : View.VISIBLE);
         railSoc.setText(phoneLevel < 0 ? "" : phoneLevel + " %" + (phoneCharging ? " \u26A1" : ""));
         railSoc.setVisibility(phoneLevel < 0 ? View.GONE : View.VISIBLE);
