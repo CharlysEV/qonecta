@@ -194,6 +194,31 @@ class LeapStatusTest {
     }
 
     @Test
+    fun evRangeFallsBackToCombinedMinusFuel() {
+        // BEV normal: el anillo enseña la autonomía que manda el coche (rangeKm), sin tocar.
+        val bev = LeapStatus.parse(JSONObject(sample))
+        assertFalse(bev.reev())
+        assertEquals(301.0, bev.evRangeKm(), 0.0)
+        // REEV real (el caso del usuario): liveRemainingRange (2188) llega 0; la eléctrica = total − gasolina = 597 − 545 = 52 km.
+        val reev = LeapStatus.parse(JSONObject("""{"signal":{"1204":24,"3235":"62.6","3263":31300,
+            "3259":"545","3261":597,"2188":0}}"""))
+        assertTrue(reev.reev())
+        assertEquals(0.0, reev.rangeKm, 0.0)
+        assertEquals(52.0, reev.evRangeKm(), 1e-9)
+        // REEV que sí manda una autonomía eléctrica real (>0 y distinta de la total): se respeta tal cual.
+        val reevLive = LeapStatus.parse(JSONObject("""{"signal":{"1204":24,"3235":"62.4","3263":29640,
+            "3259":"463","3261":530,"2188":31}}"""))
+        assertEquals(31.0, reevLive.evRangeKm(), 0.0)
+        // REEV cuyo rangeKm coincide con la total (sería el combinado, no la eléctrica): usamos total − gasolina = 67.
+        val reevCombined = LeapStatus.parse(JSONObject("""{"signal":{"1204":24,"3235":"62.4","3263":29640,
+            "3259":"463","3261":530,"2188":530}}"""))
+        assertEquals(67.0, reevCombined.evRangeKm(), 1e-9)
+        // REEV sin autonomía total ni de gasolina: no hay nada que derivar, se queda con lo que manda (aquí, 0).
+        val reevNoParts = LeapStatus.parse(JSONObject("""{"signal":{"1204":24,"3235":"62.4","2188":0}}"""))
+        assertEquals(0.0, reevNoParts.evRangeKm(), 0.0)
+    }
+
+    @Test
     fun onlyReadsTheSignalsItShows() {
         // Ni latitud ni longitud (señales 2/3 y 3724/3725/2190/2191) están en la tabla: no se leen.
         for (id in listOf("2", "3", "3724", "3725", "2190", "2191")) assertFalse(LeapStatus.SIGNALS.containsKey(id))

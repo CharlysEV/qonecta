@@ -402,6 +402,25 @@ final class LeapStatus {
         return !Double.isNaN(fuelPct) || !Double.isNaN(fuelLiters);
     }
 
+    /**
+     * Autonomía SOLO eléctrica, para el anillo de la batería. En un BEV es la que manda el coche (rangeKm) tal cual.
+     * En un REEV la señal liveRemainingRange (2188) suele llegar 0 —no refleja los km que quedan de batería—, así que,
+     * si rangeKm es 0 o no viene pero sí tenemos la autonomía total y la de gasolina, la eléctrica = total − gasolina
+     * (nunca negativa). Si un REEV manda un rangeKm > 0 se respeta, porque sería la autonomía eléctrica real del coche;
+     * salvo que coincida con la total (sería el combinado, no la eléctrica): entonces usamos igualmente la resta.
+     *
+     * Es un arreglo pragmático: hasta tener un volcado rawSignalsDump de un REEV real no se sabe si el coche manda una
+     * señal directa de autonomía eléctrica. De haberla, se leería aquí en vez de esta resta.
+     */
+    double evRangeKm() {
+        if (!reev()) return rangeKm;
+        if (Double.isNaN(combinedRangeKm) || Double.isNaN(fuelRangeKm)) return rangeKm;
+        double electric = Math.max(0, combinedRangeKm - fuelRangeKm);
+        boolean rangeEmpty = Double.isNaN(rangeKm) || rangeKm <= 0;
+        boolean rangeIsCombined = Math.abs(rangeKm - combinedRangeKm) < 1.0;
+        return (rangeEmpty || rangeIsCombined) ? electric : rangeKm;
+    }
+
     /** Enchufado: entrada de CA (lenta) o de CC (rápida) activa. */
     boolean pluggedIn() {
         return Boolean.TRUE.equals(acCharge) || Boolean.TRUE.equals(dcCharge);

@@ -180,7 +180,7 @@ final class CarStatusTab implements CarScreen {
         tmp.set(cx - rad, cy - rad, cx + rad, cy + rad);
         CarKit.ring(cv, tmp, 135, 270, Double.isNaN(soc) ? 0 : (float) soc / 100f, 26, CarKit.SURFACE_TOP, col, p);
         CarKit.number(cv, num(soc, 0), "%", cx, cy + 22, 100, CarKit.TEXT, CarKit.LIGHT, p, Paint.Align.CENTER);
-        CarKit.number(cv, num(s.rangeKm, 0), "km", cx, cy + 82, 40, CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.CENTER);
+        CarKit.number(cv, num(s.evRangeKm(), 0), "km", cx, cy + 82, 40, CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.CENTER);
         CarKit.text(cv, Str.get(R.string.hql_cloud_range), cx, cy + rad + 2, 20, CarKit.FAINT, CarKit.MEDIUM, p, Paint.Align.CENTER);
         float y = cy + rad + 44;
         CarKit.text(cv, CarCloud.realLabel(snap, now), cx, y, 23, ageColor(), CarKit.MEDIUM, p, Paint.Align.CENTER);
