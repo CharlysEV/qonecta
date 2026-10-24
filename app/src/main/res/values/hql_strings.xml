@@ -1259,4 +1259,15 @@
     <string name="hql_about_lrclib">Karaoke: synced lyrics from LRCLIB (lrclib.net)</string>
     <string name="hql_chargers_source_de">Data: in Germany, the Bundesnetzagentur register of public charging points (Ladesäulenregister, CC BY 4.0); elsewhere, © OpenStreetMap contributors (ODbL).</string>
     <string name="hql_about_bnetza">Chargers in Germany: Bundesnetzagentur Ladesäulenregister (CC BY 4.0)</string>
+    <string name="hql_trip_phone_used">Phone battery: −%1$d %%</string>
+    <string name="hql_trip_phone_used_mah">Phone battery: −%1$d %% (%2$d mAh)</string>
+    <string name="hql_trip_phone_charging">Phone battery: %1$d %% → %2$d %% (charging)</string>
+    <string name="hql_trip_phone_short">📱 −%1$d %%</string>
+    <string name="hql_energy_title">Qonecta+ and the phone battery</string>
+    <string name="hql_energy_idle_today">at rest, today</string>
+    <string name="hql_energy_per_hour">per hour of driving</string>
+    <string name="hql_energy_last_trip">last trip (phone)</string>
+    <string name="hql_energy_week">Last 7 days: at rest %1$s · in the car %2$s in %3$s</string>
+    <string name="hql_energy_note">Estimated from Android\'s statistics for this app. It doesn\'t count the phone screen while you use the app, nor what Android Auto, Maps or the music use.</string>
+    <string name="hql_energy_none">Measuring from now on: in a few hours you\'ll see what it uses at rest and on each trip.</string>
 </resources>

@@ -1258,4 +1258,15 @@
     <string name="hql_about_lrclib">卡拉OK：来自 LRCLIB（lrclib.net）的同步歌词</string>
     <string name="hql_chargers_source_de">数据：在德国，来自联邦网络局的公共充电桩登记册（Ladesäulenregister，CC BY 4.0）；其他地区，© OpenStreetMap 贡献者（ODbL）。</string>
     <string name="hql_about_bnetza">德国充电桩：联邦网络局 Ladesäulenregister（CC BY 4.0）</string>
+    <string name="hql_trip_phone_used">手机电量：−%1$d%%</string>
+    <string name="hql_trip_phone_used_mah">手机电量：−%1$d%%（%2$d mAh）</string>
+    <string name="hql_trip_phone_charging">手机电量：%1$d%% → %2$d%%（充电中）</string>
+    <string name="hql_trip_phone_short">📱 −%1$d%%</string>
+    <string name="hql_energy_title">Qonecta+ 与手机电量</string>
+    <string name="hql_energy_idle_today">今天待机</string>
+    <string name="hql_energy_per_hour">每小时行驶</string>
+    <string name="hql_energy_last_trip">上次行程（手机）</string>
+    <string name="hql_energy_week">最近 7 天：待机 %1$s · 车上 %2$s，共 %3$s</string>
+    <string name="hql_energy_note">根据 Android 提供的本应用统计估算。不包括你使用应用时的手机屏幕，也不包括 Android Auto、地图或音乐的耗电。</string>
+    <string name="hql_energy_none">从现在开始测量：几小时后就能看到待机和每次行程的耗电。</string>
 </resources>

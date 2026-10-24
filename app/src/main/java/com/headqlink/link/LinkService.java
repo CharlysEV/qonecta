@@ -81,6 +81,11 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
     private volatile boolean usbActive;
     /** Hubo alguna sesión por el cable (para el resumen del viaje). */
     private boolean usbUsed;
+    /** La batería del móvil al empezar el viaje (PhoneBattery.read) y, del último que acabó, inicio y fin. */
+    private long[] tripBattery;
+    static volatile long[][] lastTripBattery;
+    /** Hay un viaje (el servicio del coche en marcha): lo que gasta la app ahora va a la bolsa «en el coche» (AppEnergy). */
+    static volatile boolean tripRunning;
     /** El servicio arranca por el cable (ACTION_USB_ATTACHED antes de arrancar el transporte). */
     private boolean usbAtStart;
     /** Conexión y motor configurados al arrancar: los del Wi-Fi, al que se vuelve al quitar el cable. */
@@ -479,6 +484,10 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
             main.removeCallbacks(relatchTick);
             main.postDelayed(relatchTick, 20_000);
             SessionSummary.INSTANCE.startTrip(System.currentTimeMillis(), AaPassthroughSource.AA_LAUNCHES.get());
+            tripBattery = PhoneBattery.read(this);
+            // Lo gastado hasta ahora fue en reposo; desde aquí, en el coche.
+            AppEnergy.checkpoint(this, false);
+            tripRunning = true;
             acquireLocks();
             startTransport();
             LinkState.setRunning(true);
@@ -1149,6 +1158,11 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
     @Override
     public void onDestroy() {
         stopping = true;
+        // Lo gastado desde que empezó el viaje, a la bolsa «en el coche».
+        if (tripRunning) {
+            tripRunning = false;
+            AppEnergy.checkpoint(this, true);
+        }
         if (current == this) current = null;
         main.removeCallbacks(relatchTick);
         life.close();
@@ -1166,6 +1180,16 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
             if (qd != null && !qd.awaitStopped(500)) L.w("la sesión con el coche no terminó en 500 ms; el resumen del viaje puede no incluirla");
             if (usb != null && !usb.awaitStopped(500)) L.w("la sesión por cable no terminó en 500 ms; el resumen del viaje puede no incluirla");
             String trip = SessionSummary.INSTANCE.tripSummary(System.currentTimeMillis(), AaPassthroughSource.AA_LAUNCHES.get());
+            // Lo que gastó el móvil entero en el viaje (por Wi-Fi; enchufado, solo los %).
+            long[] b0 = tripBattery;
+            long[] b1 = PhoneBattery.read(this);
+            if (b0 != null && b1 != null) {
+                String bl = SessionSummary.batteryLine((int) b0[PhoneBattery.PCT], (int) b1[PhoneBattery.PCT], b0[PhoneBattery.UAH],
+                        b1[PhoneBattery.UAH], (System.currentTimeMillis() - b0[PhoneBattery.AT]) / 60_000.0,
+                        b0[PhoneBattery.PLUGGED] != 0 || b1[PhoneBattery.PLUGGED] != 0);
+                if (!bl.isEmpty()) trip = trip + "\n" + bl;
+                lastTripBattery = new long[][]{b0, b1};
+            }
             QdTrace.block("HQL/Viaje", trip);
             for (String line : trip.split("\n")) L.quiet("I", line);
             CarTrace.note("VIAJE", trip.replace('\n', ' '));

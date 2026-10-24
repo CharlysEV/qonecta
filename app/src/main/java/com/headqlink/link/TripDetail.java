@@ -187,6 +187,12 @@ final class TripDetail {
                     : Str.get(R.string.hql_trip_fuel, fuel, TripStats.litersPer100(t, history));
             CarKit.text(cv, ft, x + 40, y, 27, fuel < 0.05 ? CarKit.DIM : CarKit.TEXT, CarKit.MEDIUM, p, Paint.Align.LEFT);
         }
+        // Lo que gastó la batería del móvil en el viaje.
+        String phone = TripNotice.phoneText(t.phonePct0, t.phonePct1, t.phoneMah, t.phonePlugged);
+        if (!phone.isEmpty()) {
+            y += 46;
+            CarKit.text(cv, phone, x, y, 24, CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.LEFT);
+        }
         // Cifras: velocidad media, máxima, desnivel y coste (en una fila; en una columna estrecha, en dos de dos).
         y += 70;
         double avg = TripStats.avgKmh(t);

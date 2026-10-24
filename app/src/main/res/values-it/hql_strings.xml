@@ -1255,4 +1255,15 @@
     <string name="hql_about_lrclib">Karaoke: testi sincronizzati da LRCLIB (lrclib.net)</string>
     <string name="hql_chargers_source_de">Dati: in Germania, il registro dei punti di ricarica della Bundesnetzagentur (Ladesäulenregister, CC BY 4.0); altrove, © collaboratori di OpenStreetMap (ODbL).</string>
     <string name="hql_about_bnetza">Colonnine in Germania: Ladesäulenregister della Bundesnetzagentur (CC BY 4.0)</string>
+    <string name="hql_trip_phone_used">Batteria del telefono: −%1$d %%</string>
+    <string name="hql_trip_phone_used_mah">Batteria del telefono: −%1$d %% (%2$d mAh)</string>
+    <string name="hql_trip_phone_charging">Batteria del telefono: %1$d %% → %2$d %% (in carica)</string>
+    <string name="hql_trip_phone_short">📱 −%1$d %%</string>
+    <string name="hql_energy_title">Qonecta+ e la batteria del telefono</string>
+    <string name="hql_energy_idle_today">a riposo, oggi</string>
+    <string name="hql_energy_per_hour">per ora di viaggio</string>
+    <string name="hql_energy_last_trip">ultimo viaggio (telefono)</string>
+    <string name="hql_energy_week">Ultimi 7 giorni: a riposo %1$s · in auto %2$s in %3$s</string>
+    <string name="hql_energy_note">Stimato con le statistiche che Android fornisce di questa app. Non conta lo schermo del telefono mentre usi l\'app né quanto consumano Android Auto, Maps o la musica.</string>
+    <string name="hql_energy_none">Misurazione da ora: tra qualche ora vedrai quanto consuma a riposo e in ogni viaggio.</string>
 </resources>

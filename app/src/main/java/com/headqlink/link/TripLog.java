@@ -45,6 +45,17 @@ final class TripLog {
         /** REEV: litros del depósito al empezar y al terminar (NaN si no es REEV o no se supo). */
         double fuelStartL = Double.NaN;
         double fuelEndL = Double.NaN;
+        /** Batería del MÓVIL al empezar y al terminar (%; -1 si no se supo), lo gastado (mAh; NaN) y si iba enchufado. */
+        int phonePct0 = -1;
+        int phonePct1 = -1;
+        double phoneMah = Double.NaN;
+        boolean phonePlugged;
+
+        /** Lo que bajó la batería del móvil (puntos de %), o -1 si no se sabe o iba enchufado. */
+        int phoneUsedPct() {
+            if (phonePlugged || phonePct0 < 0 || phonePct1 < 0) return -1;
+            return Math.max(0, phonePct0 - phonePct1);
+        }
 
         /** Fin del viaje (aproximado: el inicio más la duración). */
         long endMs() {
@@ -107,8 +118,12 @@ final class TripLog {
         this.ctx = ctx.getApplicationContext();
         sensors = CarSensors.start(ctx);
         demo = DemoMode.active();
+        phoneStart = demo ? null : PhoneBattery.read(this.ctx);
         if (!demo && CarSensors.continuedTrip()) resume();
     }
+
+    /** La batería del móvil al empezar este viaje (PhoneBattery.read), o null. */
+    private long[] phoneStart;
 
     /**
      * La conexión anterior se cortó hace poco y los sensores siguen su viaje: este también, en el mismo fichero (su
@@ -139,6 +154,12 @@ final class TripLog {
                 cloudStart = new CloudMark(c.optDouble("socStart", Double.NaN), c.optDouble("odoStart", Double.NaN), startMs,
                         c.optDouble("fuelStart", Double.NaN));
                 cloudCharged = c.optBoolean("charged");
+            }
+            // La batería del móvil, desde el principio del viaje (no desde la reconexión).
+            JSONObject ph = o.optJSONObject("phone");
+            if (ph != null && ph.has("pct0")) {
+                phoneStart = new long[]{ph.optLong("pct0"), ph.optLong("uah0", Long.MIN_VALUE), ph.optBoolean("plugged") ? 1 : 0,
+                        startMs};
             }
             resumed = o;
             L.i("viaje: sigo el guardado de la conexión anterior (mismo fichero)");
@@ -277,6 +298,21 @@ final class TripLog {
                         c1.odo - c0.odo, r.ok() ? String.format(Locale.US, ", %.1f kWh/100 km reales", r.kwhPer100)
                                 : " (" + r.kind.name().toLowerCase(Locale.ROOT) + ")"));
             }
+            // La batería del móvil: al empezar y ahora (lo que gastó el móvil entero en el viaje).
+            long[] p0 = phoneStart;
+            long[] p1 = PhoneBattery.read(ctx);
+            if (p0 != null && p1 != null) {
+                JSONObject ph = new JSONObject();
+                ph.put("pct0", p0[PhoneBattery.PCT]);
+                ph.put("pct1", p1[PhoneBattery.PCT]);
+                if (p0[PhoneBattery.UAH] > 0) ph.put("uah0", p0[PhoneBattery.UAH]);
+                boolean plugged = p0[PhoneBattery.PLUGGED] != 0 || p1[PhoneBattery.PLUGGED] != 0;
+                ph.put("plugged", plugged);
+                if (!plugged && p0[PhoneBattery.UAH] > 0 && p1[PhoneBattery.UAH] > 0 && p0[PhoneBattery.UAH] >= p1[PhoneBattery.UAH]) {
+                    ph.put("mah", Math.round((p0[PhoneBattery.UAH] - p1[PhoneBattery.UAH]) / 1000.0));
+                }
+                o.put("phone", ph);
+            }
             File dir = new File(ctx.getExternalFilesDir(null), "trips");
             //noinspection ResultOfMethodCallIgnored
             dir.mkdirs();
@@ -330,6 +366,13 @@ final class TripLog {
                     t.charged = c.optBoolean("charged");
                     t.fuelStartL = c.optDouble("fuelStart");
                     t.fuelEndL = c.optDouble("fuelEnd");
+                }
+                JSONObject ph = o.optJSONObject("phone");
+                if (ph != null) {
+                    t.phonePct0 = ph.optInt("pct0", -1);
+                    t.phonePct1 = ph.optInt("pct1", -1);
+                    t.phoneMah = ph.optDouble("mah", Double.NaN);
+                    t.phonePlugged = ph.optBoolean("plugged");
                 }
                 out.add(t);
             } catch (Exception e) {

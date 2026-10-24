@@ -1254,4 +1254,15 @@
     <string name="hql_about_lrclib">Karaoke: synchronisierte Liedtexte von LRCLIB (lrclib.net)</string>
     <string name="hql_chargers_source_de">Daten: in Deutschland das Ladesäulenregister der Bundesnetzagentur (CC BY 4.0); sonst © OpenStreetMap-Mitwirkende (ODbL).</string>
     <string name="hql_about_bnetza">Ladesäulen in Deutschland: Ladesäulenregister der Bundesnetzagentur (CC BY 4.0)</string>
+    <string name="hql_trip_phone_used">Handy-Akku: −%1$d %%</string>
+    <string name="hql_trip_phone_used_mah">Handy-Akku: −%1$d %% (%2$d mAh)</string>
+    <string name="hql_trip_phone_charging">Handy-Akku: %1$d %% → %2$d %% (lädt)</string>
+    <string name="hql_trip_phone_short">📱 −%1$d %%</string>
+    <string name="hql_energy_title">Qonecta+ und der Handy-Akku</string>
+    <string name="hql_energy_idle_today">im Ruhezustand, heute</string>
+    <string name="hql_energy_per_hour">pro Fahrstunde</string>
+    <string name="hql_energy_last_trip">letzte Fahrt (Handy)</string>
+    <string name="hql_energy_week">Letzte 7 Tage: im Ruhezustand %1$s · im Auto %2$s in %3$s</string>
+    <string name="hql_energy_note">Geschätzt aus den Statistiken, die Android zu dieser App liefert. Ohne den Handybildschirm, während du die App benutzt, und ohne das, was Android Auto, Maps oder die Musik verbrauchen.</string>
+    <string name="hql_energy_none">Ab jetzt wird gemessen: In ein paar Stunden siehst du den Verbrauch im Ruhezustand und pro Fahrt.</string>
 </resources>

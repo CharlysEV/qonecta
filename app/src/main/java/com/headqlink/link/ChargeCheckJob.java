@@ -72,6 +72,8 @@ public class ChargeCheckJob extends JobService {
 
     /** Una lectura de la nube (la que haya, si ya se está leyendo por otro lado) y lo que toque con ella. */
     static void check(Context ctx) {
+        // Lo que gasta la app en reposo, apuntado cada vez que Android la despierta (sin viaje en marcha).
+        if (!LinkService.tripRunning) AppEnergy.checkpoint(ctx, false);
         if (!PhoneInsights.hasAccount(ctx)) return;
         ChargeWatch.restore(ctx);
         if (ChargeWatch.serviceRunning) return;
