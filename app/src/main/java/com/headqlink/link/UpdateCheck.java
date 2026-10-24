@@ -98,6 +98,41 @@ final class UpdateCheck {
         return v[0] + "." + v[1] + "." + v[2];
     }
 
+    private static final java.util.regex.Pattern LANG_MARK = java.util.regex.Pattern.compile("<!--\\s*lang:([a-z]{2})\\s*-->");
+
+    /**
+     * Puro: las notas en el idioma del móvil. Desde la 0.3.4 cada idioma va en su bloque, tras «&lt;!-- lang:xx --&gt;»
+     * (es, en, pt, it, fr, de, nl, zh), y el título general («## Qonecta+ 0.3.4») delante de todos. Se devuelve el título
+     * con el bloque del idioma de l; si no lo hay, el inglés; si no, el español. Notas sin bloques (las de antes): tal
+     * cual. Las versiones anteriores, que no saben de bloques, ven el español: los demás idiomas van bajo un «## Aviso…»,
+     * que ellas se saltan.
+     */
+    static String localized(String md, Locale l) {
+        if (md == null) return "";
+        java.util.regex.Matcher m = LANG_MARK.matcher(md);
+        java.util.Map<String, String> blocks = new java.util.HashMap<>();
+        String head = null;
+        String lang = null;
+        int from = 0;
+        while (m.find()) {
+            if (head == null) head = md.substring(0, m.start());
+            else blocks.put(lang, md.substring(from, m.start()));
+            lang = m.group(1);
+            from = m.end();
+        }
+        if (head == null) return md;
+        blocks.put(lang, md.substring(from));
+        String want = l == null ? "" : l.getLanguage();
+        String b = blocks.get(want);
+        if (b == null) b = blocks.get("en");
+        if (b == null) b = blocks.get("es");
+        if (b == null) return md;
+        // La etiqueta del idioma («#### English», para GitHub) no hace falta en la ventana.
+        b = b.trim();
+        if (b.startsWith("#### ")) b = b.indexOf('\n') > 0 ? b.substring(b.indexOf('\n') + 1).trim() : "";
+        return head.trim() + "\n\n" + b;
+    }
+
     /**
      * Puro: las notas de GitHub (Markdown) en texto llano para un diálogo: títulos sin «#», listas con «•», sin
      * negritas ni código, y sin la sección «Aviso» (licencias, que ya están en la app) ni el SHA.
@@ -155,7 +190,9 @@ final class UpdateCheck {
 
     /**
      * Puro: las notas de GitHub por apartados, como las escribimos: «### Nuevo» (también «Novedades», «New»), «### Mejorado»
-     * o «### Cambiado» («Improved», «Changed») y «### Arreglado» («Corregido», «Fixed»). Cada «- » es una entrada; si
+     * o «### Cambiado» («Improved», «Changed») y «### Arreglado» («Corregido», «Fixed»), y sus equivalentes en los demás
+     * idiomas de la app (Neu, Verbessert, Behoben; Novo, Melhorado; Novità, Migliorato, Corretto; Nouveau, Amélioré,
+     * Corrigé; Nieuw, Verbeterd, Opgelost; 新功能, 改进, 修复). Cada «- » es una entrada; si
      * empieza en negrita («- **Título:** texto»), eso es su título. Los «  - » son subpuntos de la anterior. Sin la
      * sección «Aviso» ni el SHA, como plainNotes.
      */
@@ -177,9 +214,11 @@ final class UpdateCheck {
             if (skip || l.startsWith("**SHA-256") || l.startsWith("SHA-256")) continue;
             if (l.startsWith("### ")) {
                 String h = l.substring(4).toLowerCase(Locale.ROOT);
-                cur = h.startsWith("nuev") || h.startsWith("novedad") || h.startsWith("new") ? n.added
-                        : h.startsWith("mejor") || h.startsWith("cambi") || h.startsWith("improv") || h.startsWith("chang") ? n.improved
-                        : h.startsWith("arregl") || h.startsWith("correg") || h.startsWith("fix") ? n.fixed : null;
+                cur = startsWithAny(h, "nuev", "novedad", "new", "neu", "novo", "novit", "nouveau", "nieuw", "新") ? n.added
+                        : startsWithAny(h, "mejor", "cambi", "improv", "chang", "verbess", "melhor", "miglior", "amélior",
+                        "amelior", "verbeter", "改进") ? n.improved
+                        : startsWithAny(h, "arregl", "correg", "fix", "behoben", "corrig", "corrett", "opgelost", "修复") ? n.fixed
+                        : null;
                 last = null;
                 if (cur == null) other.append(l.substring(4).toUpperCase(Locale.ROOT)).append('\n');
                 continue;
@@ -202,6 +241,11 @@ final class UpdateCheck {
         }
         n.other = other.toString().trim();
         return n;
+    }
+
+    private static boolean startsWithAny(String s, String... prefixes) {
+        for (String p : prefixes) if (s.startsWith(p)) return true;
+        return false;
     }
 
     /** «**Título:** texto» → la entrada con su título; sin negrita delante, todo es texto. */

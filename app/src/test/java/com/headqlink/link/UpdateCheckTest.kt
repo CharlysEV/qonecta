@@ -15,6 +15,76 @@ import org.robolectric.annotation.ConscryptMode
 @ConscryptMode(ConscryptMode.Mode.OFF)
 @RoboConfig(sdk = [35], application = android.app.Application::class)
 class UpdateCheckTest {
+    private val multi = """## Qonecta+ 0.3.4 <!-- lang:es -->
+
+Gracias al foro.
+
+### Nuevo
+- **Guía del camino:** texto.
+- **Karaoke:** texto.
+
+### Mejorado
+- **Cargadores de Alemania:** texto.
+
+## Aviso: notas en otros idiomas · Release notes in other languages
+
+<!-- lang:en -->
+#### English
+
+Thanks to the forum.
+
+### New
+- **Road guide:** text.
+
+<!-- lang:de -->
+#### Deutsch
+
+Danke ans Forum.
+
+### Neu
+- **Reiseführer unterwegs:** Text.
+- **Karaoke:** Text.
+
+### Verbessert
+- **Ladesäulen in Deutschland:** Text.
+
+<!-- lang:zh -->
+#### 中文
+
+### 新功能
+- **沿途导览：**文字。
+
+### 改进
+- **德国充电桩：**文字。
+
+**SHA-256 del APK:** `abc`
+"""
+
+    @Test
+    fun theNotesComeInThePhonesLanguageWithEnglishAndSpanishAsFallback() {
+        val de = UpdateCheck.localized(multi, java.util.Locale.GERMANY)
+        assertTrue(de, de.startsWith("## Qonecta+ 0.3.4") && de.contains("### Neu") && !de.contains("### Nuevo") && !de.contains("#### Deutsch"))
+        val n = UpdateCheck.sections(de)
+        assertEquals(listOf("Reiseführer unterwegs", "Karaoke"), n.added.map { it.title })
+        assertEquals("Ladesäulen in Deutschland", n.improved[0].title)
+        assertTrue(n.other.contains("Danke ans Forum."))
+        // Sin su idioma (polaco), el inglés; los títulos chinos también se reconocen.
+        assertTrue(UpdateCheck.localized(multi, java.util.Locale("pl")).contains("### New"))
+        assertEquals(1, UpdateCheck.sections(UpdateCheck.localized(multi, java.util.Locale.CHINA)).improved.size)
+        // Las notas de antes (sin bloques), tal cual.
+        assertEquals("## x\n### Nuevo\n- a", UpdateCheck.localized("## x\n### Nuevo\n- a", java.util.Locale.GERMANY))
+    }
+
+    @Test
+    fun olderVersionsThatDoNotKnowTheBlocksSeeOnlyTheSpanish() {
+        // Lo que hace una versión anterior con las notas enteras: los demás idiomas van bajo «## Aviso…» y se los salta.
+        val n = UpdateCheck.sections(multi)
+        assertEquals(listOf("Guía del camino", "Karaoke"), n.added.map { it.title })
+        assertEquals(1, n.improved.size)
+        assertFalse(n.other.contains("Danke") || n.other.contains("Thanks") || n.other.contains("<!--"))
+        assertTrue(n.other.contains("Gracias al foro."))
+    }
+
     @Test
     fun releaseJsonGivesTheApkAsset() {
         val json = org.json.JSONObject(
