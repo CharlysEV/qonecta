@@ -167,6 +167,8 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         if (modeView == null) return;
         if (insights != null && tab == 1) insights.show();
         if (phoneHome != null && tab == 2) phoneHome.show();
+        // Si este móvil ha planificado rutas por Alemania, el registro oficial de allí al día (con Wi-Fi; barato si no toca).
+        BnetzaChargers.refreshIfDue(this);
         LinkState.addListener(this);
         // Los interruptores de conexión automática también se cambian en Ajustes.
         syncSwitch(btAuto, cfg.btAutoConnect(), btAutoListener);

@@ -1943,8 +1943,9 @@ final class RouteTab implements CarScreen {
             }
             if (passing == 0) body.addView(hint(Str.get(nearFetching ? R.string.hql_near_loading : R.string.hql_near_none, nearRadius)));
             count.setText(Str.get(R.string.hql_near_count, passing, nearRadius));
-            body.addView(hint(Str.get(DgtChargers.inTile(ChargerCache.tileOf(pos[0], pos[1])) != null
-                    ? R.string.hql_chargers_source_dgt : R.string.hql_chargers_source_osm)));
+            String src = OfficialChargers.sourceOf(ChargerCache.tileOf(pos[0], pos[1]));
+            body.addView(hint(Str.get("dgt".equals(src) ? R.string.hql_chargers_source_dgt
+                    : "de".equals(src) ? R.string.hql_chargers_source_de : R.string.hql_chargers_source_osm)));
         };
         build[0].run();
         root.addView(panel, CarStyle.match());

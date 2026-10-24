@@ -14,7 +14,8 @@ import java.util.Locale;
  * false: el canal no acepta órdenes y nada de esto se usa.
  *
  * Órdenes (una por petición, en minúsculas): estado · msg TEXTO · fps N|auto · kbps N|auto · cable N|auto · qp N|auto ·
- * boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto.
+ * boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto ·
+ * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra).
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
@@ -104,6 +105,15 @@ final class LabControl {
                         cableKbps / 1000.0);
                 VideoPipeline.labApply();
                 break;
+            case "alemania":
+                if ("off".equals(a)) {
+                    BnetzaChargers.forget(ctx);
+                    done = "registro de Alemania borrado y sin pedir";
+                } else {
+                    BnetzaChargers.want(ctx);
+                    done = "registro de Alemania pedido (se baja con Wi-Fi)";
+                }
+                break;
             case "qp":
                 qpFloor = "auto".equals(a) ? 0 : clamp(parse(a), 12, 30);
                 done = (qpFloor == 0 ? "calidad mínima: la de siempre (QP 24)" : "calidad mínima QP " + qpFloor)
@@ -161,7 +171,7 @@ final class LabControl {
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, boost, termica, noche, hud, perfil, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, alemania, boost, termica, noche, hud, perfil, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);

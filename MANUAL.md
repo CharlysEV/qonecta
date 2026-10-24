@@ -411,7 +411,11 @@ admite.
       Transición Ecológica, publicado por la DGT en nap.dgt.es): la potencia y el **voltaje** de cada uno. Se descarga
       en el móvil una vez por semana (unos 3 MB). Lo que falta en el registro (hay operadores que no han dado de alta
       todos sus puntos) se completa con OpenStreetMap, sin repetir los que ya están; fuera de España, todo sale de
-      OpenStreetMap, donde la potencia o la red pueden faltar. **«Cargadores en ruta»** abre la lista con el distintivo
+      OpenStreetMap, donde la potencia o la red pueden faltar. **En Alemania**, los rápidos salen del registro oficial de
+      la Bundesnetzagentur (Ladesäulenregister), con su potencia y sus enchufes (sin voltaje: se usa el típico de cada
+      red). Pesa unos 55 MB, así que se baja solo con Wi-Fi, una vez al mes y solo en los móviles que han planificado
+      alguna ruta por Alemania; mientras, OpenStreetMap. La app elige el registro por dónde pasa la ruta, no por el
+      idioma del móvil. **«Cargadores en ruta»** abre la lista con el distintivo
       de cada red, el km, la potencia, el voltaje («350 kW · 920 V») y los enchufes.
     - **Cargadores cerca de ti:** «Cerca de mí» (junto a «Filtrar») busca los cargadores a 5, 10, 25 o 50 km de donde
       estás, sin ruta, de más cerca a más lejos: eliges la red («los Wenea cerca de mí») y la potencia mínima, y ves a

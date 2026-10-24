@@ -131,6 +131,7 @@ final class About {
                 Str.get(R.string.hql_about_osm),
                 Str.get(R.string.hql_about_weather),
                 Str.get(R.string.hql_about_dgt),
+                Str.get(R.string.hql_about_bnetza),
                 Str.get(R.string.hql_about_radio),
                 Str.get(R.string.hql_about_adblock),
                 Str.get(R.string.hql_about_wikipedia),

@@ -1256,4 +1256,6 @@
     <string name="hql_karaoke_offline">无法连接歌词服务：几秒后重试。</string>
     <string name="hql_karaoke_source">歌词：LRCLIB（lrclib.net）</string>
     <string name="hql_about_lrclib">卡拉OK：来自 LRCLIB（lrclib.net）的同步歌词</string>
+    <string name="hql_chargers_source_de">数据：在德国，来自联邦网络局的公共充电桩登记册（Ladesäulenregister，CC BY 4.0）；其他地区，© OpenStreetMap 贡献者（ODbL）。</string>
+    <string name="hql_about_bnetza">德国充电桩：联邦网络局 Ladesäulenregister（CC BY 4.0）</string>
 </resources>

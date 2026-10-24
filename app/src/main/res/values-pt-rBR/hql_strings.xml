@@ -1253,4 +1253,6 @@
     <string name="hql_karaoke_offline">Sem conexão com o serviço de letras: tento de novo em alguns segundos.</string>
     <string name="hql_karaoke_source">Letras: LRCLIB (lrclib.net)</string>
     <string name="hql_about_lrclib">Karaokê: letras sincronizadas do LRCLIB (lrclib.net)</string>
+    <string name="hql_chargers_source_de">Dados: na Alemanha, o registro de pontos de recarga da Bundesnetzagentur (Ladesäulenregister, CC BY 4.0); fora, © colaboradores do OpenStreetMap (ODbL).</string>
+    <string name="hql_about_bnetza">Carregadores na Alemanha: Ladesäulenregister da Bundesnetzagentur (CC BY 4.0)</string>
 </resources>

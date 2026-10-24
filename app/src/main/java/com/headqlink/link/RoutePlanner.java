@@ -136,7 +136,7 @@ final class RoutePlanner {
         List<String> routeTiles = new ArrayList<>();
         volatile List<String> missingTiles = new ArrayList<>();
         volatile int chargerVersion;
-        /** Versión de los puntos de la DGT con la que se hizo la lista (DgtChargers.version). */
+        /** Versión de los puntos oficiales (DGT y Bundesnetzagentur) con la que se hizo la lista (OfficialChargers.version). */
         int dgtVersion = -1;
         /** Cuántos cargadores de la lista salen de la DGT. */
         volatile int dgtCount;
@@ -667,7 +667,7 @@ final class RoutePlanner {
         if (f != null && f != p) finishPending(f);
         // Tráfico de la DGT sobre la ruta (obras, accidentes, retenciones, vehículos detenidos…).
         DgtTraffic.update(ctx, p, p == null ? 0 : p.km[Math.min(p.progress, p.n - 1)], this::trafficAlert);
-        if (p != null && !demo && !p.routeTiles.isEmpty() && p.dgtVersion != DgtChargers.version) {
+        if (p != null && !demo && !p.routeTiles.isEmpty() && p.dgtVersion != OfficialChargers.version()) {
             // Han llegado (o se han renovado) los puntos de la DGT: la lista de la ruta, con ellos.
             rebuildChargers(p);
             L.i("ruta: cargadores con los datos de la DGT: " + p.chargers.size() + " junto a la ruta (" + p.dgtCount + " de la DGT)");
@@ -3107,6 +3107,12 @@ final class RoutePlanner {
                 DgtChargers.refreshIfStale(ctx);
             }
         }
+        // En Alemania, el registro de la Bundesnetzagentur: nunca se espera (~55 MB, solo con Wi-Fi); mientras no esté,
+        // OpenStreetMap.
+        if (!demo && BnetzaChargers.nearGermany(p.lat, p.lon)) {
+            BnetzaChargers.sites(ctx);
+            BnetzaChargers.want(ctx);
+        }
         // Con lo que ya hay (DGT y caché) el plan sale ya; lo que falte se pide a OpenStreetMap en otro hilo y la lista se
         // rehace al llegar. Antes se esperaba aquí: con Overpass saturado, la ruta tardaba minutos en salir.
         rebuildChargers(p);
@@ -3140,7 +3146,7 @@ final class RoutePlanner {
     private void refreshChargers(Plan p, boolean all) {
         long now = System.currentTimeMillis();
         List<String> missing = new ArrayList<>();
-        for (String t : p.routeTiles) if (DgtChargers.inTile(t) == null && ChargerCache.get(ctx, t, now) == null) missing.add(t);
+        for (String t : p.routeTiles) if (OfficialChargers.inTile(t) == null && ChargerCache.get(ctx, t, now) == null) missing.add(t);
         int cached = p.routeTiles.size() - missing.size();
         int fetched = 0;
         for (int i = 0; i < missing.size(); i += TILES_PER_QUERY) {
@@ -3234,14 +3240,14 @@ final class RoutePlanner {
      * haya en el móvil (missing: las cuadrículas sin datos, para pedirlas con fetchNearby).
      */
     List<Charger> nearby(double lat, double lon, double radiusKm, List<String> missing) {
-        if (!demo) DgtChargers.sites(ctx);
+        if (!demo) OfficialChargers.load(ctx);
         long now = System.currentTimeMillis();
         List<Charger> official = new ArrayList<>();
         List<Charger> extra = new ArrayList<>();
         List<Charger> list = new ArrayList<>();
         java.util.Set<String> seen = new java.util.HashSet<>();
         for (String t : tilesAround(lat, lon, radiusKm)) {
-            List<DgtChargers.Site> dgt = DgtChargers.inTile(t);
+            List<DgtChargers.Site> dgt = OfficialChargers.inTile(t);
             if (dgt != null) {
                 for (DgtChargers.Site s : dgt) {
                     double d = distanceKm(lat, lon, s.lat, s.lon);
@@ -3335,9 +3341,9 @@ final class RoutePlanner {
         java.util.Set<String> missing = new java.util.LinkedHashSet<>();
         List<String> osmPending = new ArrayList<>();
         java.util.Set<String> seen = new java.util.HashSet<>();
-        int dgtVersion = DgtChargers.version;
+        int dgtVersion = OfficialChargers.version();
         for (String t : p.routeTiles) {
-            List<DgtChargers.Site> dgt = DgtChargers.inTile(t);
+            List<DgtChargers.Site> dgt = OfficialChargers.inTile(t);
             if (dgt != null) {
                 for (DgtChargers.Site s : dgt) {
                     int idx = nearest(p, s.lat, s.lon, -1);

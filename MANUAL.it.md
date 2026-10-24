@@ -411,7 +411,7 @@ supporta.
       Transizione Ecologica, pubblicato dalla DGT su nap.dgt.es): potenza e **tensione** di ognuna. Si scarica sul
       telefono una volta alla settimana (circa 3 MB). Quello che manca nel registro (alcuni operatori non hanno
       registrato tutti i loro punti) si completa con OpenStreetMap, senza ripetere quelle già presenti; fuori dalla
-      Spagna, tutto viene da OpenStreetMap, dove potenza o operatore possono mancare. **«Colonnine lungo il
+      Spagna, tutto viene da OpenStreetMap, dove potenza o operatore possono mancare. **In Germania**, le colonnine rapide vengono dal registro ufficiale della Bundesnetzagentur (Ladesäulenregister), con potenza e prese (senza tensione: si usa quella tipica di ogni rete). Pesa circa 55 MB, quindi si scarica solo con Wi-Fi, una volta al mese e solo sui telefoni che hanno pianificato un percorso in Germania; nel frattempo, OpenStreetMap. L'app sceglie il registro in base a dove passa il percorso, non alla lingua del telefono. **«Colonnine lungo il
       percorso»** apre l'elenco con il distintivo di ogni operatore, il km, la potenza, la tensione («350 kW · 920 V»)
       e le prese.
     - **Colonnine vicino a te:** «Vicino a me» (accanto a «Filtra») cerca le colonnine a 5, 10, 25 o 50 km da dove

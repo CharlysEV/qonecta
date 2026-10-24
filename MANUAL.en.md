@@ -402,7 +402,7 @@ version). That tells us whether the C10 supports it.
       Ecological Transition, published by the DGT at nap.dgt.es): the power and **voltage** of each one. It is
       downloaded on the phone once a week (about 3 MB). What the registry lacks (some operators have not registered
       all their points) is filled in from OpenStreetMap, without repeating the ones already there; outside Spain,
-      everything comes from OpenStreetMap, where power or network may be missing. **"Chargers along the route"** opens
+      everything comes from OpenStreetMap, where power or network may be missing. **In Germany**, fast chargers come from the Bundesnetzagentur's official register (Ladesäulenregister), with their power and sockets (no voltage: each network's typical one is used). It weighs about 55 MB, so it is only downloaded on Wi-Fi, once a month and only on phones that have planned a route through Germany; meanwhile, OpenStreetMap. The app picks the register by where the route goes, not by the phone's language. **"Chargers along the route"** opens
       the list with each network's badge, the km, the power, the voltage ("350 kW · 920 V") and the sockets.
     - **Chargers near you:** "Near me" (next to "Filter") finds the chargers 5, 10, 25 or 50 km from where you are,
       without a route, nearest first: pick the network ("the Wenea ones near me") and the minimum power, and see how far

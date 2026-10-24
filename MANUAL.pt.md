@@ -422,7 +422,7 @@ admite.
       Transição Ecológica, publicado pela DGT em nap.dgt.es): a potência e a **tensão** de cada um. É descarregado no
       telemóvel uma vez por semana (cerca de 3 MB). O que falta no registo (há operadores que não registaram todos os
       seus pontos) completa-se com o OpenStreetMap, sem repetir os que já lá estão; fora de Espanha, tudo vem do
-      OpenStreetMap, onde a potência ou a rede podem faltar. **«Carregadores ao longo da rota»** abre a lista com o
+      OpenStreetMap, onde a potência ou a rede podem faltar. **Na Alemanha**, os rápidos vêm do registo oficial da Bundesnetzagentur (Ladesäulenregister), com a potência e as fichas (sem tensão: usa-se a típica de cada rede). Ocupa uns 55 MB, por isso só se descarrega com Wi-Fi, uma vez por mês e só nos telemóveis que planearam alguma rota pela Alemanha; entretanto, OpenStreetMap. A app escolhe o registo pelo sítio por onde passa a rota, não pelo idioma do telemóvel. **«Carregadores ao longo da rota»** abre a lista com o
       distintivo de cada rede, o km, a potência, a tensão («350 kW · 920 V») e as fichas.
     - **Carregadores perto de si:** «Perto de mim» (ao lado de «Filtrar») procura os carregadores a 5, 10, 25 ou 50 km
       de onde está, sem rota, do mais perto ao mais longe: escolhe a rede («os Wenea perto de mim») e a potência mínima,

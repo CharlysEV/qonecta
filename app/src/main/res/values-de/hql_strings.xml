@@ -1252,4 +1252,6 @@
     <string name="hql_karaoke_offline">Keine Verbindung zum Liedtext-Dienst: neuer Versuch in ein paar Sekunden.</string>
     <string name="hql_karaoke_source">Liedtexte: LRCLIB (lrclib.net)</string>
     <string name="hql_about_lrclib">Karaoke: synchronisierte Liedtexte von LRCLIB (lrclib.net)</string>
+    <string name="hql_chargers_source_de">Daten: in Deutschland das Ladesäulenregister der Bundesnetzagentur (CC BY 4.0); sonst © OpenStreetMap-Mitwirkende (ODbL).</string>
+    <string name="hql_about_bnetza">Ladesäulen in Deutschland: Ladesäulenregister der Bundesnetzagentur (CC BY 4.0)</string>
 </resources>

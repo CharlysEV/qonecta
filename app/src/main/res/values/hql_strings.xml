@@ -1257,4 +1257,6 @@
     <string name="hql_karaoke_offline">No connection to the lyrics service: I\'ll try again in a few seconds.</string>
     <string name="hql_karaoke_source">Lyrics: LRCLIB (lrclib.net)</string>
     <string name="hql_about_lrclib">Karaoke: synced lyrics from LRCLIB (lrclib.net)</string>
+    <string name="hql_chargers_source_de">Data: in Germany, the Bundesnetzagentur register of public charging points (Ladesäulenregister, CC BY 4.0); elsewhere, © OpenStreetMap contributors (ODbL).</string>
+    <string name="hql_about_bnetza">Chargers in Germany: Bundesnetzagentur Ladesäulenregister (CC BY 4.0)</string>
 </resources>

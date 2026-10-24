@@ -1252,4 +1252,6 @@
     <string name="hql_karaoke_offline">Geen verbinding met de songtekstdienst: over een paar seconden probeer ik het opnieuw.</string>
     <string name="hql_karaoke_source">Songteksten: LRCLIB (lrclib.net)</string>
     <string name="hql_about_lrclib">Karaoke: gesynchroniseerde songteksten van LRCLIB (lrclib.net)</string>
+    <string name="hql_chargers_source_de">Gegevens: in Duitsland het laadpaalregister van de Bundesnetzagentur (Ladesäulenregister, CC BY 4.0); elders © OpenStreetMap-bijdragers (ODbL).</string>
+    <string name="hql_about_bnetza">Laadpalen in Duitsland: Ladesäulenregister van de Bundesnetzagentur (CC BY 4.0)</string>
 </resources>
