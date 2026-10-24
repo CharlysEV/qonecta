@@ -54,6 +54,16 @@ class AboutTest {
     }
 
     @Test
+    fun theBylineNeverSplitsTheName() {
+        val s = "v0.3.2\npor CharlysEV"
+        val p = android.text.TextPaint().apply { textSize = 40f }
+        fun lay(w: Int) = android.text.StaticLayout.Builder.obtain(s, 0, s.length, p, w).build()
+        // Con sitio, palabras enteras; tan estrecho que «CharlysEV» no cabe, se parte y se nota.
+        assertTrue(About.wholeWords(lay(2000), s))
+        org.junit.Assert.assertFalse(About.wholeWords(lay(p.measureText("Charl").toInt() + 2), s))
+    }
+
+    @Test
     fun render() {
         org.junit.Assume.assumeTrue(System.getProperty("hql.preview") == "1")
         val dir = File(System.getProperty("hql.preview.dir")!!)

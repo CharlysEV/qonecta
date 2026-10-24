@@ -413,6 +413,8 @@ final class WebScreen implements CarScreen {
 
     @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface"})
     private void makeWeb(Tab t) {
+        // Variante de pruebas: el navegador se puede inspeccionar desde el PC (chrome://inspect), para comprobar el bloqueo.
+        if (LabControl.enabled()) WebView.setWebContentsDebuggingEnabled(true);
         WebView web = new WebView(host.context());
         t.web = web;
         t.audio = new WebAudio(web);

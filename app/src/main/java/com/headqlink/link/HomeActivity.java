@@ -92,6 +92,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         // La versión y, debajo, de quién es la app; al tocar, «Acerca de y créditos».
         TextView version = findViewById(R.id.hql_home_version);
         version.setText(About.versionByline(this));
+        About.fitByline(version);
         version.setOnClickListener(v -> About.show(this));
         updateRow = findViewById(R.id.hql_home_update);
         // La novedad estrella (una vez) y, al cerrarla, las novedades de la versión recién instalada (la primera vez que
