@@ -4,6 +4,8 @@
 
 # Qonecta+
 
+<p align="center"><b>por <a href="https://github.com/CharlysEV">CharlysEV</a></b> · a partir de <a href="https://github.com/ryazrm/headqlink">HeadQLink</a>, de <b><a href="https://github.com/ryazrm">ryazrm</a></b><br/>Android Auto y mucho más en la pantalla de tu Leapmotor</p>
+
 > **Qonecta+** es el nuevo nombre de **HeadQLink** desde la versión 0.2.52: la misma app, con el mismo paquete (`com.headqlink.app`), que se instala encima y conserva los ajustes.
 
 > **Este fork (CharlysEV/qonecta) — rama `main`.** Sobre el HeadQLink original añade:
@@ -41,8 +43,9 @@ The phone can stay locked with the screen off. No root required.
   <em>Car screen: side panel + Android Auto (shown during startup)</em>
 </p>
 
-Personal and experimental project. Fork of [Open Headunit](https://github.com/andreknieriem/open-headunit)
-(original README at [README_OPEN_HEADUNIT.md](README_OPEN_HEADUNIT.md)).
+Personal and experimental project by **CharlysEV**. Fork of [HeadQLink](https://github.com/ryazrm/headqlink) by
+**ryazrm**, itself based on [Open Headunit](https://github.com/andreknieriem/open-headunit) (original README at
+[README_OPEN_HEADUNIT.md](README_OPEN_HEADUNIT.md)).
 
 ## Features
 
@@ -126,10 +129,12 @@ app/src/main/java/
 
 ## License
 
-[GNU AGPL-3.0](LICENSE). This project incorporates code from
-[Open Headunit](https://github.com/andreknieriem/open-headunit) (whose original copyright notices
-are preserved, including [Michael Reid's](COPYRIGHT_MICHAEL_REID_GPLv3AFFERO.txt)), but **Qonecta+
-is an independent project with no relationship to Open Headunit or its authors.** It is not
+Copyright (C) 2026 **CharlysEV**. [GNU AGPL-3.0](LICENSE).
+
+Qonecta+ is a fork of [HeadQLink](https://github.com/ryazrm/headqlink) by **ryazrm**, which is based on
+[Open Headunit](https://github.com/andreknieriem/open-headunit) by **André Rinas** and contributors (whose original
+copyright notices are preserved, including [Michael Reid's](COPYRIGHT_MICHAEL_REID_GPLv3AFFERO.txt)), but **Qonecta+
+is an independent project with no relationship to HeadQLink, Open Headunit or their authors.** It is not
 endorsed, supported or affiliated with them in any way.
 
 The optional "real car data" feature (Leapmotor account: battery, range, charging, tyre
@@ -147,7 +152,15 @@ both AGPL-3.0. The 3D car in the Status tab uses [three.js](https://threejs.org)
 "[LEAPMOTORS C10](https://sketchfab.com/3d-models/none-6206d1ddcc1b4c1288ba75d521b29b83)" by
 **vinishows-1753d1**, licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), modified
 (exterior only, fewer polygons, no textures, plain European plate, grey wheels; see
-`app/src/main/assets/c10.glb.LICENSE.txt`).
+`app/src/main/assets/c10.glb.LICENSE.txt`). The route and trip maps use [Leaflet](https://leafletjs.com) (BSD 2-Clause).
+
+Online data: map data © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors (ODbL), through
+the public Overpass servers, the [OSRM](https://project-osrm.org) demo router, [Photon](https://photon.komoot.io)
+by komoot and [Nominatim](https://nominatim.org); weather and elevation by [Open-Meteo.com](https://open-meteo.com)
+(CC BY 4.0) and [Open Topo Data](https://www.opentopodata.org); chargers in Spain from the official MITECO
+registry published by the DGT; internet radio from [radio-browser.info](https://www.radio-browser.info). The
+emulators (Nestopia, halfNES, bsnes, ClownMDEmu, PCSX ReARMed) and every other third-party part are listed with
+their licences in [NOTICE](NOTICE).
 
 This project is not affiliated with, endorsed by or sponsored by Leapmotor, Google, Neusoft, Open
 Headunit or any other company or project. Leapmotor, C10, Android Auto and QDLink are trademarks of

@@ -1191,4 +1191,27 @@
     <string name="hql_report_next">Volgende maand</string>
     <string name="hql_report_notice_title">Jouw %1$s met de C10 staat klaar</string>
     <string name="hql_report_notice_text">%1$s km · %2$s kWh/100 km · tik om te bekijken</string>
+    <!-- Acerca de y créditos -->
+    <string name="hql_about_menu">Over en credits</string>
+    <string name="hql_about_by">door %1$s</string>
+    <string name="hql_about_from">op basis van HeadQLink van %1$s</string>
+    <string name="hql_about_tagline">Android Auto en nog veel meer op het scherm van je Leapmotor.</string>
+    <string name="hql_about_based">Gebaseerd op</string>
+    <string name="hql_about_and_contributors">%1$s en bijdragers</string>
+    <string name="hql_about_qdauto">QDAuto-protocolengine · %1$s</string>
+    <string name="hql_about_cloud">Autogegevens (Leapmotor-account)</string>
+    <string name="hql_about_role_protocol">protocol</string>
+    <string name="hql_about_role_commands">widgetopdrachten en weekverbruik</string>
+    <string name="hql_about_role_reev">REEV-tank en rittengeschiedenis</string>
+    <string name="hql_about_data">Onlinegegevens</string>
+    <string name="hql_about_osm">Kaarten, wegen en laadpalen: © OpenStreetMap-bijdragers (ODbL), via Overpass, OSRM, Photon (komoot) en Nominatim</string>
+    <string name="hql_about_weather">Weer en hoogte: Open-Meteo.com (CC BY 4.0) en Open Topo Data</string>
+    <string name="hql_about_dgt">Laadpalen in Spanje: MITECO-register, gepubliceerd door de DGT</string>
+    <string name="hql_about_radio">Radio: radio-browser.info</string>
+    <string name="hql_about_libs">Bibliotheken en bronnen</string>
+    <string name="hql_about_3d">3D-auto: three.js (MIT) en ‘LEAPMOTORS C10’ door vinishows-1753d1 (CC BY 4.0, aangepast)</string>
+    <string name="hql_about_leaflet">Kaarten: Leaflet (BSD 2-Clause)</string>
+    <string name="hql_about_emulators">Emulators: Nestopia, halfNES, bsnes, ClownMDEmu en PCSX ReARMed. Alle licenties in het bestand NOTICE op GitHub.</string>
+    <string name="hql_about_license">Licentie GNU AGPL-3.0: vrije software, met de broncode op GitHub en zonder garantie.</string>
+    <string name="hql_about_independent">Qonecta+ heeft geen band met Leapmotor, Google, Neusoft of de genoemde projecten.</string>
 </resources>

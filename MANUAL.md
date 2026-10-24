@@ -2,7 +2,8 @@
 
 **Idiomas:** **Español** · [Português](MANUAL.pt.md) · [English](MANUAL.en.md) · [Italiano](MANUAL.it.md)
 
-Manual para conductores de la versión **0.2** de Qonecta+ (fork [CharlysEV/qonecta](https://github.com/CharlysEV/qonecta)).
+Manual para conductores de la versión **0.3** de Qonecta+, de **[CharlysEV](https://github.com/CharlysEV)**, a partir de [HeadQLink](https://github.com/ryazrm/headqlink), de **ryazrm**
+([CharlysEV/qonecta](https://github.com/CharlysEV/qonecta)).
 Qonecta+ es el nuevo nombre de HeadQLink desde la versión 0.2.52 (la misma app; se instala encima y conserva los ajustes).
 Los nombres de botones y menús aparecen «entre comillas», tal como los muestra la app en español.
 
@@ -1012,13 +1013,24 @@ Puedes pedir ayuda en la página del proyecto en GitHub: [CharlysEV/qonecta](htt
 
 ### Licencia y créditos
 
+- **Qonecta+ es de [CharlysEV](https://github.com/CharlysEV)** (Copyright © 2026 CharlysEV).
 - Licencia **[GNU AGPL-3.0](LICENSE)**. Tienes derecho a obtener el código fuente: está en
   [github.com/CharlysEV/qonecta](https://github.com/CharlysEV/qonecta). Las secciones 15 y 16 de la licencia (sin
   garantía y limitación de responsabilidad) también se aplican.
 - Basado en **[headqlink](https://github.com/ryazrm/headqlink)** de **ryazrm**, que a su vez parte de
   **[Open Headunit](https://github.com/andreknieriem/open-headunit)** de **André Rinas (andreknieriem)**, y del trabajo
   original de **Michael Reid** ([aviso de copyright](COPYRIGHT_MICHAEL_REID_GPLv3AFFERO.txt)). Qonecta+ es un proyecto
-  independiente, sin relación con Open Headunit ni con sus autores.
+  independiente, sin relación con HeadQLink, Open Headunit ni sus autores.
 - Motor de protocolo **QDAuto**: [CharlysEV/qdauto](https://github.com/CharlysEV/qdauto).
-- Datos reales del coche (cuenta Leapmotor): cliente de solo lectura portado de **[LMB10](https://github.com/txurtxil/LPB10)**,
-  de **txurtxil** (GPL-3.0); ver [NOTICE](NOTICE).
+- Datos reales del coche (cuenta Leapmotor): el protocolo, portado de **[LMB10](https://github.com/txurtxil/LPB10)**, de
+  **txurtxil** (GPL-3.0); las órdenes del widget «Coche» y el consumo semanal, según
+  **[leapmotor-api](https://github.com/markoceri/leapmotor-api)**, de **markoceri**; el depósito del REEV y el historial
+  de viajes, según **[leapmotor-mate](https://github.com/ProtossBlaster/leapmotor-mate)**, de **ProtossBlaster** (las
+  dos, AGPL-3.0).
+- Coche 3D: **[three.js](https://threejs.org)** (MIT) y el modelo «LEAPMOTORS C10», de **vinishows-1753d1** (CC BY
+  4.0, modificado). Mapas: **[Leaflet](https://leafletjs.com)** (BSD 2-Clause).
+- Datos en línea: mapas, carreteras y cargadores © colaboradores de **OpenStreetMap** (ODbL), con Overpass, OSRM,
+  Photon (komoot) y Nominatim; tiempo y altitud de **Open-Meteo.com** (CC BY 4.0) y Open Topo Data; cargadores en
+  España del registro del MITECO publicado por la DGT; radio de **radio-browser.info**.
+- Emuladores: Nestopia, halfNES, bsnes, ClownMDEmu y PCSX ReARMed, cada uno con su licencia. Todo, en
+  [NOTICE](NOTICE).

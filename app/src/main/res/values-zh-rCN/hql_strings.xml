@@ -1195,4 +1195,27 @@
     <string name="hql_report_next">下个月</string>
     <string name="hql_report_notice_title">你和 C10 的%1$s报告已生成</string>
     <string name="hql_report_notice_text">%1$s km · %2$s kWh/100 km · 点击查看</string>
+    <!-- Acerca de y créditos -->
+    <string name="hql_about_menu">关于与致谢</string>
+    <string name="hql_about_by">作者：%1$s</string>
+    <string name="hql_about_from">基于 %1$s 的 HeadQLink</string>
+    <string name="hql_about_tagline">在你的零跑屏幕上使用 Android Auto 及更多功能。</string>
+    <string name="hql_about_based">基于</string>
+    <string name="hql_about_and_contributors">%1$s 及贡献者</string>
+    <string name="hql_about_qdauto">QDAuto 协议引擎 · %1$s</string>
+    <string name="hql_about_cloud">车辆数据（Leapmotor 账户）</string>
+    <string name="hql_about_role_protocol">协议</string>
+    <string name="hql_about_role_commands">小部件指令和每周能耗</string>
+    <string name="hql_about_role_reev">增程油箱和行程记录</string>
+    <string name="hql_about_data">在线数据</string>
+    <string name="hql_about_osm">地图、道路和充电桩：© OpenStreetMap 贡献者（ODbL），通过 Overpass、OSRM、Photon（komoot）和 Nominatim</string>
+    <string name="hql_about_weather">天气和海拔：Open-Meteo.com（CC BY 4.0）和 Open Topo Data</string>
+    <string name="hql_about_dgt">西班牙充电桩：DGT 发布的 MITECO 登记数据</string>
+    <string name="hql_about_radio">电台：radio-browser.info</string>
+    <string name="hql_about_libs">库和资源</string>
+    <string name="hql_about_3d">3D 车辆：three.js（MIT）和 vinishows-1753d1 的「LEAPMOTORS C10」（CC BY 4.0，已修改）</string>
+    <string name="hql_about_leaflet">地图：Leaflet（BSD 2-Clause）</string>
+    <string name="hql_about_emulators">模拟器：Nestopia、halfNES、bsnes、ClownMDEmu 和 PCSX ReARMed。全部许可证见 GitHub 上的 NOTICE 文件。</string>
+    <string name="hql_about_license">许可证 GNU AGPL-3.0：自由软件，源代码在 GitHub 上，不提供担保。</string>
+    <string name="hql_about_independent">Qonecta+ 与零跑、Google、东软及所提到的项目均无关联。</string>
 </resources>
