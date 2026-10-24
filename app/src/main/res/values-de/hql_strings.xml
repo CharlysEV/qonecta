@@ -41,12 +41,12 @@
     <string name="hql_update_check">Nach neuer Version suchen</string>
     <string name="hql_update_checking">Prüfe…</string>
     <string name="hql_update_latest">Du hast schon die neueste Version (%1$s).</string>
-    <string name="hql_web_bookmarks">Web-Lesezeichen</string>
+    <string name="hql_web_bookmarks">Web Lesezeichen</string>
     <string name="hql_bookmark_name">Name</string>
     <string name="hql_bookmark_url">Adresse (URL)</string>
     <string name="hql_bookmark_add">Hinzufügen</string>
     <string name="hql_bookmark_defaults">Standard</string>
-    <string name="hql_bookmarks_help">Die Verknüpfungen des „Web“-Bildschirms im Auto. Hinzufügen, entfernen oder umsortieren.</string>
+    <string name="hql_bookmarks_help">Die Verknüpfungen des „Web“ Bildschirms im Auto. Hinzufügen, entfernen oder umsortieren.</string>
     <string name="hql_radar_voice">Blitzer-Sprachwarnungen</string>
     <string name="hql_voice_camera">Blitzer in %1$d Metern</string>
     <string name="hql_voice_camera_limit">Blitzer in %1$d Metern, Limit %2$d</string>
@@ -603,7 +603,7 @@
     <string name="hql_max">Max.</string>
     <string name="hql_peak">Spitze</string>
     <string name="hql_timer_line">%1$s km/h in %2$s s</string>
-    <!-- Sección Coche rediseñada: Eficiencia -->
+    <!-- Überarbeiteter Fahrzeugbereich: Effizienz -->
     <string name="hql_climbs">Steigungen</string>
     <string name="hql_electronics">Elektronik</string>
     <string name="hql_power_now">Leistung jetzt</string>
@@ -623,7 +623,7 @@
     <string name="hql_split_wait">Fahr ein Stück: Hier siehst du, wofür die Energie der Fahrt verbraucht wird.</string>
     <string name="hql_recovered">Zurückgewonnen</string>
     <string name="hql_net_kwh">netto %1$.2f kWh</string>
-    <string name="hql_estimated_model">Geschätzt mit dem C10-Modell</string>
+    <string name="hql_estimated_model">Geschätzt mit dem C10 Modell</string>
     <string name="hql_cost_rate">zu %1$s · %2$.2f kWh</string>
     <string name="hql_cost_petrol">Mit einem Benziner ~%1$s</string>
     <string name="hql_co2_note">Gegenüber einem Benziner mit %1$.1f l/100 km (%2$.2f kg CO₂ pro Liter, nur Auspuff).</string>
@@ -633,7 +633,7 @@
     <string name="hql_tip_regen">Du hast %1$.1f kWh bergab und beim Bremsen zurückgewonnen. Gut vorausschauend gefahren!</string>
     <string name="hql_tip_steady">Effizient gefahren. Bremse vorausschauend, um mehr Energie zurückzugewinnen.</string>
     <string name="hql_tip_slower_sub">Bei %1$.0f km/h, mit aktuellem Wind und aktueller Temperatur (Modellschätzung).</string>
-    <!-- Sección Coche rediseñada: Ruta -->
+    <!-- Überarbeiteter Bereich „Auto“: Route -->
     <string name="hql_battery_arrival">Akku bei Ankunft</string>
     <string name="hql_route_chargers_hint">Wähle ein Ziel, um die Ladestationen entlang der Route zu sehen.</string>
     <string name="hql_charger_line">in %2$.0f km · km %1$.0f der Route</string>
@@ -646,7 +646,7 @@
     <string name="hql_legend_down">Gefälle</string>
     <string name="hql_legend_headwind">Gegenwind</string>
     <string name="hql_legend_tailwind">Rückenwind</string>
-    <string name="hql_legend_battery">Akku-Prognose</string>
+    <string name="hql_legend_battery">Akku Prognose</string>
     <string name="hql_route_source">ungefähre Route (OSM/OSRM)</string>
     <string name="hql_route_source_google">wie die von Google Maps</string>
     <string name="hql_route_source_own">eigene Route: Google Maps führt nicht</string>
@@ -669,11 +669,11 @@
     <string name="hql_record_climb">Meiste Höhenmeter</string>
     <string name="hql_no_records">Noch keine Rekorde.</string>
     <string name="hql_trips_empty_title">Hier erscheinen deine Fahrten</string>
-    <!-- Ajustes del coche: precio de la electricidad -->
+    <!-- Fahrzeugeinstellungen: Strompreis -->
     <string name="hql_settings_energy">Energie</string>
     <string name="hql_settings_price_kwh">Strompreis</string>
     <string name="hql_settings_price_help">Für die Fahrtkosten unter Fahrzeug › Effizienz und Fahrten (Laden zu Hause, dein Tarif).</string>
-    <!-- Widget de la pantalla de inicio y botón de los ajustes rápidos -->
+    <!-- Startbildschirm Widget und Schnellzugriffstaste -->
     <string name="hql_w_description">Mit einem Tippen verbinden oder trennen und die Verbindung wählen: Hotspot, Wi-Fi Direct oder USB-Kabel.</string>
     <string name="hql_w_off">Aus</string>
     <string name="hql_w_tap_to_connect">Zum Verbinden tippen</string>
@@ -703,15 +703,15 @@
     <string name="hql_w_tile_added">Schalter zu den Schnelleinstellungen hinzugefügt</string>
     <string name="hql_w_tile_already">Der Schalter ist schon in den Schnelleinstellungen</string>
     <string name="hql_w_tile_manual">Öffne die Schnelleinstellungen, tippe auf den Stift (Bearbeiten) und zieh „Qonecta+“ zu deinen Schaltern.</string>
-    <!-- Versiones de Android Auto: botón del servidor no encontrado, cortes a los pocos segundos y fila de la Comprobación -->
-    <string name="hql_aa_compat_channel">Android Auto-Kompatibilität</string>
+    <!-- Android Auto-Versionen: Server Tasten nicht gefunden, Verbindungsabbrüche nach wenigen Sekunden und Warteschlange für die Überprüfung -->
+    <string name="hql_aa_compat_channel">Android Auto Kompatibilität</string>
     <string name="hql_aa_ui_changed_title">Qonecta+ findet die Servertaste nicht</string>
     <string name="hql_aa_ui_changed_text">Qonecta+ findet die Servertaste in dieser Android Auto-Version (%1$s) nicht: Starte den Server von Hand (⋮ › „Server für Infotainmentsystem starten“) oder nutze den manuellen Modus.</string>
     <string name="hql_aa_flap_title">Android Auto verbindet sich und bricht nach ein paar Sekunden ab</string>
     <string name="hql_aa_flap_text">Das passiert mit einigen neuen Android Auto-Versionen (hier %1$s). Versuche: den Cache von Android Auto leeren (Einstellungen › Apps › Android Auto › Speicher › Cache leeren), den Server beenden und neu starten (⋮) oder zu einer getesteten Version zurückkehren (%2$s). Qonecta+ versucht es höchstens alle 10 s erneut.</string>
     <string name="hql_req_aa_version">Android Auto %1$s</string>
     <string name="hql_req_aa_version_ok">Mit Qonecta+ getestet (%1$s). Damit sie sich nicht unbemerkt ändert, schalte das automatische Update von Android Auto aus.</string>
-    <string name="hql_req_aa_version_untested">Noch nicht mit Qonecta+ getestet (getestet: %1$s). Wenn es nicht klappt, schalte das automatische Update von Android Auto aus (Play Store › Android Auto › ⋮) und lies „Android Auto-Versionen“ im Handbuch.</string>
+    <string name="hql_req_aa_version_untested">Noch nicht mit Qonecta+ getestet (getestet: %1$s). Wenn es nicht klappt, schalte das automatische Update von Android Auto aus (Play Store › Android Auto › ⋮) und lies „Android Auto Versionen“ im Handbuch.</string>
     <string name="hql_req_aa_version_store">Play Store</string>
     <string name="hql_route_arrival_compare">Bei Ankunft: erwartet %1$.1f kWh · real %2$.1f kWh (Fahrzeugdaten)</string>
     <string name="hql_route_end">Route beenden</string>
@@ -747,7 +747,7 @@
     <string name="hql_trip_no_track">Für diese Fahrt wurde keine Strecke aufgezeichnet (kein GPS).</string>
     <string name="hql_trip_source_car">Fahrzeugdaten</string>
     <string name="hql_trip_source_estimated">geschätzt</string>
-    <string name="hql_trip_source_real">real (Akku-%)</string>
+    <string name="hql_trip_source_real">real (Akku %)</string>
     <string name="hql_trip_stop_line">%1$s um %2$s · km %3$.1f</string>
     <string name="hql_trip_stops">Halte: %1$d · %2$s</string>
     <string name="hql_trip_stops_old">Halte sind nur für Fahrten ab Version 0.2.7 bekannt.</string>
@@ -756,8 +756,8 @@
     <string name="hql_charger_filter_title">Passende Ladestationen</string>
     <string name="hql_charger_min_power">Mindestleistung</string>
     <string name="hql_charger_volts">Spannung</string>
-    <string name="hql_charger_volts_800">800 V</string>
-    <string name="hql_charger_volts_400">400–500 V</string>
+    <string name="hql_charger_volts_800">800V</string>
+    <string name="hql_charger_volts_400">400–500V</string>
     <string name="hql_charger_any">Beliebig</string>
     <string name="hql_charger_networks">Ladenetze</string>
     <string name="hql_charger_all_networks">Alle</string>
@@ -796,7 +796,7 @@
     <string name="hql_route_gps">GPS</string>
     <string name="hql_route_origin_gps">Mein Standort (GPS)</string>
     <string name="hql_route_origin_hint">Wo startest du?</string>
-    <string name="hql_route_test_soc">Test-Akku</string>
+    <string name="hql_route_test_soc">Test Akku</string>
     <string name="hql_plan_summary_stuck">Stopps: %1$d · %2$s laden · nach km %3$.0f ist keine Ladestation erreichbar</string>
     <string name="hql_route_charger_gap">Keine Ladestationsdaten von km %1$.0f bis %2$.0f (OpenStreetMap hat nicht geantwortet): Der Plan ist vielleicht nicht der beste. Wähle das Ziel erneut, um es noch einmal zu versuchen.</string>
     <string name="hql_route_guide_waze">Mit Waze navigieren</string>
@@ -811,9 +811,9 @@
     <string name="hql_chargers_list_stop">Stopp %1$d</string>
     <string name="hql_chargers_list_none">Keine Ladestationen voraus mit diesem Filter.</string>
     <string name="hql_charger_points">%1$d Ladepunkte</string>
-    <string name="hql_charger_low_volts">%1$.0f V: dein 800-V-Auto lädt hier mit halber Leistung</string>
-    <string name="hql_chargers_source_dgt">Daten: in Spanien das offizielle Ladepunktregister (Ministerium für den ökologischen Wandel, veröffentlicht von der DGT auf nap.dgt.es, CC BY); sonst © OpenStreetMap-Mitwirkende (ODbL).</string>
-    <string name="hql_chargers_source_osm">Daten: © OpenStreetMap-Mitwirkende (ODbL).</string>
+    <string name="hql_charger_low_volts">%1$.0f V: dein 800V Auto lädt hier mit halber Leistung</string>
+    <string name="hql_chargers_source_dgt">Daten: in Spanien das offizielle Ladepunktregister (Ministerium für den ökologischen Wandel, veröffentlicht von der DGT auf nap.dgt.es, CC BY); sonst © OpenStreetMap Mitwirkende (ODbL).</string>
+    <string name="hql_chargers_source_osm">Daten: © OpenStreetMap Mitwirkende (ODbL).</string>
     <string name="hql_live_block_title">Laden live</string>
     <string name="hql_live_channel">Laden live</string>
     <string name="hql_live_alert_channel">Ladehinweise</string>
@@ -846,7 +846,7 @@
     <string name="hql_split_warn_text">Wir empfehlen, ihn nur im Stand zu verwenden: Videos und das Web lenken beim Fahren ab. Die Nutzung erfolgt auf eigene Verantwortung.</string>
     <string name="hql_split_accept">Ich akzeptiere</string>
     <string name="hql_md">Mega Drive</string>
-    <string name="hql_md_sub">ClownMDEmu · deine Spiele, 6-Tasten-Pad</string>
+    <string name="hql_md_sub">ClownMDEmu · deine Spiele, 6-Tasten Pad</string>
     <string name="hql_menu_car">Auto</string>
     <string name="hql_menu_content">Inhalte des erweiterten Modus</string>
     <string name="hql_menu_app">App</string>
@@ -857,8 +857,8 @@
     <string name="hql_route_map_title">Geplante Route</string>
     <string name="hql_route_map_note">Die Strecke des Plans (OpenStreetMap), zum Vergleich mit Google Maps. Fährt Google anders, plant der Plan neu, sobald er sieht, dass du auf einer anderen Straße bist.</string>
     <string name="hql_maps_listener_label">Qonecta+: Google-Maps-Route</string>
-    <string name="hql_maps_read">Google-Maps-Route lesen</string>
-    <string name="hql_maps_read_on">Google-Maps-Route lesen ✓</string>
+    <string name="hql_maps_read">Google Maps Route lesen</string>
+    <string name="hql_maps_read_on">Google Maps Route lesen ✓</string>
     <string name="hql_maps_read_help">Aktiviere Qonecta+: Es liest die Navigationsbenachrichtigung von Google Maps (Routenlänge und Ankunftszeit), damit der Plan derselben Route folgt. Es liest nur die von Google Maps.</string>
     <string name="hql_tab_connection">Verbindung</string>
     <string name="hql_ins_car">Dein Auto jetzt</string>
@@ -869,7 +869,7 @@
     <string name="hql_ins_plugged">Eingesteckt</string>
     <string name="hql_ins_parked">Geparkt</string>
     <string name="hql_ins_ago">Daten von vor %1$s</string>
-    <string name="hql_ins_no_cloud">Verbinde dein Leapmotor-Konto (⚙ › Auto › Fahrzeugdaten), um Akku und Fahrtenverlauf zu sehen.</string>
+    <string name="hql_ins_no_cloud">Verbinde dein Leapmotor Konto (⚙ › Auto › Fahrzeugdaten), um Akku und Fahrtenverlauf zu sehen.</string>
     <string name="hql_ins_cloud_wait">Lese die Fahrzeugdaten…</string>
     <string name="hql_ins_30d">Letzte 30 Tage</string>
     <string name="hql_ins_daily_legend">Balken: km pro Tag · Linie: Verbrauch</string>
@@ -888,7 +888,7 @@
     <string name="hql_ins_curve_help">Leistung (kW) während sich der Akku füllt (%). Der C10 lädt langsamer, je voller er ist: das ist normal.</string>
     <string name="hql_ins_drives">Strecken</string>
     <string name="hql_trips_export">Fahrten exportieren</string>
-    <string name="hql_trips_export_text">Eine CSV-Datei mit deinen %1$d gespeicherten Fahrten: Datum, Uhrzeiten, km, kWh, Verbrauch, Kosten und Akku-%% bei Abfahrt und Ankunft. Sie lässt sich mit Excel, Google Tabellen und Ähnlichem öffnen.\n\nDu kannst die Strecke jeder Fahrt hinzufügen (GPX, für Karten). Sie enthält deine Standorte: teile sie nur mit Personen deiner Wahl.</string>
+    <string name="hql_trips_export_text">Eine CSV Datei mit deinen %1$d gespeicherten Fahrten: Datum, Uhrzeiten, km, kWh, Verbrauch, Kosten und Akku-%% bei Abfahrt und Ankunft. Sie lässt sich mit Excel, Google Tabellen und Ähnlichem öffnen.\n\nDu kannst die Strecke jeder Fahrt hinzufügen (GPX, für Karten). Sie enthält deine Standorte: teile sie nur mit Personen deiner Wahl.</string>
     <string name="hql_trips_export_csv">Nur CSV</string>
     <string name="hql_trips_export_gpx">CSV und Strecken</string>
     <string name="hql_trips_export_failed">Export fehlgeschlagen</string>
@@ -951,7 +951,7 @@
     <string name="hql_terms_read">Nutzungsbedingungen lesen</string>
     <string name="hql_tv_fill">Ausfüllen</string>
     <string name="hql_tv_fit">Einpassen</string>
-    <string name="hql_terms_detail">&lt;p&gt;&lt;b&gt;1. Unabhängige und experimentelle Software&lt;/b&gt;&lt;br&gt;Qonecta+ ist ein persönliches, experimentelles Open-Source-Projekt. Es nutzt nicht dokumentierte Protokolle und Schnittstellen sowie Dienste Dritter. Es kann jederzeit ausfallen, seine Funktion einstellen oder sich unerwartet verhalten, auch nach Updates des Telefons, Fahrzeugs oder dieser Dienste.&lt;/p&gt;&lt;p&gt;&lt;b&gt;2. Sichere Nutzung und Verantwortung des Nutzers&lt;/b&gt;&lt;br&gt;Der Fahrer ist dafür verantwortlich, seine Aufmerksamkeit auf die Straße zu richten, sicher zu fahren und die geltenden Verkehrsregeln einzuhalten. Installation, Einrichtung und Bedienung der App müssen bei stehendem Fahrzeug an einem sicheren Ort erfolgen. Während der Fahrt dürfen keine Videos, Spiele, Webseiten oder anderen Unterhaltungsinhalte betrachtet werden. Die App ersetzt keine Sicherheitssysteme des Fahrzeugs und gewährleistet nicht die Richtigkeit der Navigations- oder Fahrzeugdaten.&lt;/p&gt;&lt;p&gt;&lt;b&gt;3. Gewährleistungsausschluss&lt;/b&gt;&lt;br&gt;Die Software wird im vorliegenden Zustand ohne ausdrückliche oder stillschweigende Gewährleistung bereitgestellt, soweit dies gesetzlich zulässig ist. Betrieb, Verfügbarkeit, Kompatibilität, Sicherheit, Eignung für einen bestimmten Zweck und die Freiheit von Verletzungen der Rechte Dritter werden nicht gewährleistet. Der Nutzer trägt die mit Installation und Nutzung verbundenen Risiken.&lt;/p&gt;&lt;p&gt;&lt;b&gt;4. Haftungsbeschränkung&lt;/b&gt;&lt;br&gt;Soweit gesetzlich zulässig und sofern keine gesetzliche Verpflichtung oder ausdrückliche schriftliche Vereinbarung besteht, haften Autoren, Mitwirkende und Vertreiber nicht für direkte oder indirekte Schäden aus Nutzung, Missbrauch oder Unmöglichkeit der Nutzung der Software. Dazu gehören Unfälle, Verletzungen, Schäden am Fahrzeug, Telefon oder bei Dritten, Datenverlust oder unrichtige Daten, finanzielle Verluste, Geldbußen oder Sanktionen, Verlust von Fahrzeug- oder Gerätegarantien und Verstöße gegen Bedingungen von Diensten Dritter. Diese Beschränkung gilt auch für eine Nutzung entgegen geltendem Recht.&lt;/p&gt;&lt;p&gt;&lt;b&gt;5. Keine Zugehörigkeit und Dienste Dritter&lt;/b&gt;&lt;br&gt;Qonecta+ ist unabhängig und steht in keiner Verbindung zu Leapmotor, Google, Neusoft, Open Headunit oder dessen Autoren; es wird von ihnen weder unterstützt noch gesponsert. Genannte Marken gehören ihren jeweiligen Inhabern und beschreiben die Kompatibilität. Dienste Dritter unterliegen ihren eigenen Bedingungen und können sich ändern oder nicht mehr verfügbar sein.&lt;/p&gt;&lt;p&gt;&lt;b&gt;6. Lizenz und Zustimmung&lt;/b&gt;&lt;br&gt;Die Software wird unter der GNU AGPL-3.0 verbreitet. Die Abschnitte 15 und 16 zum Gewährleistungsausschluss und zur Haftungsbeschränkung gelten. Diese Bedingungen ändern keine durch diese Lizenz gewährten Rechte und schließen keine Haftung oder Rechte aus, deren Ausschluss gesetzlich unzulässig ist. Mit dem Ankreuzen erklärt der Nutzer, diese Bedingungen gelesen und akzeptiert zu haben. Die Zustimmung wird nach Abschluss der Einrichtung lokal gespeichert.&lt;/p&gt;</string>
+    <string name="hql_terms_detail">&lt;p&gt;&lt;b&gt;1. Unabhängige und experimentelle Software&lt;/b&gt;&lt;br&gt;Qonecta+ ist ein persönliches, experimentelles Open-Source Projekt. Es nutzt nicht dokumentierte Protokolle und Schnittstellen sowie Dienste Dritter. Es kann jederzeit ausfallen, seine Funktion einstellen oder sich unerwartet verhalten, auch nach Updates des Telefons, Fahrzeugs oder dieser Dienste.&lt;/p&gt;&lt;p&gt;&lt;b&gt;2. Sichere Nutzung und Verantwortung des Nutzers&lt;/b&gt;&lt;br&gt;Der Fahrer ist dafür verantwortlich, seine Aufmerksamkeit auf die Straße zu richten, sicher zu fahren und die geltenden Verkehrsregeln einzuhalten. Installation, Einrichtung und Bedienung der App müssen bei stehendem Fahrzeug an einem sicheren Ort erfolgen. Während der Fahrt dürfen keine Videos, Spiele, Webseiten oder anderen Unterhaltungsinhalte betrachtet werden. Die App ersetzt keine Sicherheitssysteme des Fahrzeugs und gewährleistet nicht die Richtigkeit der Navigations- oder Fahrzeugdaten.&lt;/p&gt;&lt;p&gt;&lt;b&gt;3. Gewährleistungsausschluss&lt;/b&gt;&lt;br&gt;Die Software wird im vorliegenden Zustand ohne ausdrückliche oder stillschweigende Gewährleistung bereitgestellt, soweit dies gesetzlich zulässig ist. Betrieb, Verfügbarkeit, Kompatibilität, Sicherheit, Eignung für einen bestimmten Zweck und die Freiheit von Verletzungen der Rechte Dritter werden nicht gewährleistet. Der Nutzer trägt die mit Installation und Nutzung verbundenen Risiken.&lt;/p&gt;&lt;p&gt;&lt;b&gt;4. Haftungsbeschränkung&lt;/b&gt;&lt;br&gt;Soweit gesetzlich zulässig und sofern keine gesetzliche Verpflichtung oder ausdrückliche schriftliche Vereinbarung besteht, haften Autoren, Mitwirkende und Vertreiber nicht für direkte oder indirekte Schäden aus Nutzung, Missbrauch oder Unmöglichkeit der Nutzung der Software. Dazu gehören Unfälle, Verletzungen, Schäden am Fahrzeug, Telefon oder bei Dritten, Datenverlust oder unrichtige Daten, finanzielle Verluste, Geldbußen oder Sanktionen, Verlust von Fahrzeug- oder Gerätegarantien und Verstöße gegen Bedingungen von Diensten Dritter. Diese Beschränkung gilt auch für eine Nutzung entgegen geltendem Recht.&lt;/p&gt;&lt;p&gt;&lt;b&gt;5. Keine Zugehörigkeit und Dienste Dritter&lt;/b&gt;&lt;br&gt;Qonecta+ ist unabhängig und steht in keiner Verbindung zu Leapmotor, Google, Neusoft, Open Headunit oder dessen Autoren; es wird von ihnen weder unterstützt noch gesponsert. Genannte Marken gehören ihren jeweiligen Inhabern und beschreiben die Kompatibilität. Dienste Dritter unterliegen ihren eigenen Bedingungen und können sich ändern oder nicht mehr verfügbar sein.&lt;/p&gt;&lt;p&gt;&lt;b&gt;6. Lizenz und Zustimmung&lt;/b&gt;&lt;br&gt;Die Software wird unter der GNU AGPL-3.0 verbreitet. Die Abschnitte 15 und 16 zum Gewährleistungsausschluss und zur Haftungsbeschränkung gelten. Diese Bedingungen ändern keine durch diese Lizenz gewährten Rechte und schließen keine Haftung oder Rechte aus, deren Ausschluss gesetzlich unzulässig ist. Mit dem Ankreuzen erklärt der Nutzer, diese Bedingungen gelesen und akzeptiert zu haben. Die Zustimmung wird nach Abschluss der Einrichtung lokal gespeichert.&lt;/p&gt;</string>
     <string name="hql_settings_sec_panel">Seitenleiste</string>
     <string name="hql_settings_sec_panel_sub">Seite, Farbe und Tasten</string>
     <string name="hql_settings_sec_trip">Fahrt</string>
@@ -960,7 +960,7 @@
     <string name="hql_settings_reconnect_note">Profil oder Flüssigkeit ändern verbindet Auto und Android Auto neu (ein paar Sekunden).</string>
     <string name="hql_usb_busy_channel">Autokabel</string>
     <string name="hql_usb_busy_title">Das Autokabel ist von einer anderen App belegt</string>
-    <string name="hql_usb_busy_qdlink">Wahrscheinlich die originale QDLink-App. Hier tippen und „Beenden erzwingen“: Qonecta+ übernimmt das Kabel.</string>
+    <string name="hql_usb_busy_qdlink">Wahrscheinlich die originale QDLink App. Hier tippen und „Beenden erzwingen“: Qonecta+ übernimmt das Kabel.</string>
     <string name="hql_usb_busy_other">Schließe die App, die es nutzt, oder stecke das Kabel aus und wieder ein.</string>
     <string name="hql_float_card">Karte mit dem nächsten Halt über Android Auto</string>
     <string name="hql_float_card_help">Antippen öffnet die Route; gedrückt halten, um sie zu verschieben.</string>
@@ -998,7 +998,7 @@
     <string name="hql_web_save_home">Auf Startseite speichern</string>
     <string name="hql_web_remove_home">Von Startseite entfernen</string>
     <string name="hql_web_text_size">Text: %1$d %%</string>
-    <string name="hql_web_desktop">Desktop-Version (diese Seite)</string>
+    <string name="hql_web_desktop">Desktop Version (diese Seite)</string>
     <string name="hql_web_adblock">Werbung blockieren</string>
     <string name="hql_psx_sub">PCSX ReARMed · .cue, .chd, .pbp, .iso, .m3u</string>
     <string name="hql_psx_copying">Disc wird aufs Handy kopiert… %1$d MB\nNur beim ersten Mal: danach startet es sofort.</string>
@@ -1033,7 +1033,7 @@
     <string name="hql_aa_size_note">Auf kleinen Bildschirmen (10\" wie beim T03) ist es schon von selbst kleiner. Gilt beim Neuverbinden.</string>
     <string name="hql_list_add">Liste hinzufügen</string>
     <string name="hql_lists_help">Tippe auf eine Liste, um sie im Auto zu nutzen (dort kannst du auch die Liste wechseln).</string>
-    <string name="hql_tv_formats">M3U-Listen oder die JSON-Liste von TDTChannels (…/lists/tv.json), die auch ihre YouTube- und Web-Sender mitbringt.</string>
+    <string name="hql_tv_formats">M3U-Listen oder die JSON-Liste von TDTChannels (…/lists/tv.json), die auch ihre YouTube- und Websender mitbringt.</string>
     <string name="hql_tv_backup">Ersatzquelle</string>
     <string name="hql_tv_other_source">Andere Quelle</string>
     <string name="hql_plan_cost">\u0020· ≈ %1$s fürs Laden</string>
@@ -1058,22 +1058,22 @@
     <string name="hql_trip_notice_title">Fahrt beendet · %1$s</string>
     <string name="hql_trip_notice_heat">Wärme: Stufe %1$d max. · %2$.0f °C</string>
     <string name="hql_trip_notice_route">Route: %1$.1f kWh geschätzt, %2$.1f real</string>
-    <string name="hql_android_car_mode">Android-Automodus beim Projizieren (nicht nötig; beim Verlassen lädt das Handy alle Apps neu, wie ein Soft-Reset)</string>
+    <string name="hql_android_car_mode">Android-Automodus beim Projizieren (nicht nötig; beim Verlassen lädt das Handy alle Apps neu, wie ein Softreset)</string>
     <string name="hql_update_acc_channel">Qonecta+ aktualisiert</string>
     <string name="hql_update_acc_title">Qonecta+ wurde aktualisiert</string>
     <string name="hql_update_acc_text">Android hat die Bedienungshilfe „Qonecta+ Touch“ beim Update abgeschaltet. Tippe, um sie wieder einzuschalten; ohne sie bleibt der Autobildschirm schwarz.</string>
     <string name="hql_epg_until">bis %1$s</string>
     <string name="hql_backup_menu">Einstellungen sichern</string>
-    <string name="hql_backup_help">Speichert TV- und Radiolisten, Favoriten, Web-Lesezeichen, Preise, Ladesäulenfilter, Routenplaner, Bild- und Leisteneinstellungen und das Automodell in einer Datei. Zum Handywechsel oder um deine Einstellungen weiterzugeben.\n\nNie enthalten: dein Leapmotor-Konto, Home Assistant, Web-Verlauf und letzte Orte. Listen aus einer Datei auf diesem Handy bleiben draußen. Hat eine TV-Liste Benutzername oder Passwort in der Adresse, landet es in der Datei.</string>
+    <string name="hql_backup_help">Speichert TV- und Radiolisten, Favoriten, Web Lesezeichen, Preise, Ladesäulenfilter, Routenplaner, Bild- und Leisteneinstellungen und das Automodell in einer Datei. Zum Handywechsel oder um deine Einstellungen weiterzugeben.\n\nNie enthalten: dein Leapmotor Konto, Home Assistant, Web Verlauf und letzte Orte. Listen aus einer Datei auf diesem Handy bleiben draußen. Hat eine TV Liste Benutzername oder Passwort in der Adresse, landet es in der Datei.</string>
     <string name="hql_backup_export">Exportieren</string>
     <string name="hql_backup_import">Importieren</string>
     <string name="hql_backup_saved">Einstellungen in der Datei gespeichert</string>
     <string name="hql_backup_failed">Datei konnte nicht gespeichert werden: %1$s</string>
-    <string name="hql_backup_invalid">Diese Datei ist keine Qonecta+-Einstellungssicherung</string>
-    <string name="hql_backup_confirm">Inhalt der Datei: Einstellungen %1$d · TV-Listen %2$d · Radiolisten %3$d · Favoriten %4$d · Web-Lesezeichen %5$d. Sie ersetzen die auf diesem Handy; alles andere bleibt, wie es ist.</string>
+    <string name="hql_backup_invalid">Diese Datei ist keine Qonecta+ Einstellungssicherung</string>
+    <string name="hql_backup_confirm">Inhalt der Datei: Einstellungen %1$d · TV Listen %2$d · Radiolisten %3$d · Favoriten %4$d · Web Lesezeichen %5$d. Sie ersetzen die auf diesem Handy; alles andere bleibt, wie es ist.</string>
     <string name="hql_backup_done">Einstellungen importiert. Bild- und Verbindungseinstellungen gelten ab der nächsten Verbindung.</string>
     <string name="hql_usb_auto_switch">Verbinden, wenn das Autokabel eingesteckt wird</string>
-    <string name="hql_usb_auto_off">Beim Einstecken passiert nichts: tippe auf Verbinden, wenn du willst. Öffnet Android mit dem Kabel immer Qonecta+ und du willst QDLink nutzen, entferne „Standardmäßig öffnen“ in den App-Einstellungen.</string>
+    <string name="hql_usb_auto_off">Beim Einstecken passiert nichts: tippe auf Verbinden, wenn du willst. Öffnet Android mit dem Kabel immer Qonecta+ und du willst QDLink nutzen, entferne „Standardmäßig öffnen“ in den App Einstellungen.</string>
     <string name="hql_qd_diag_trace">Detaillierte Ablaufverfolgung (eine Logzeile pro Bild, Berührungen, Leistungstrace und vollständiges Logcat; mehr Wärme und sehr große Logs)</string>
     <string name="hql_v_invalid">Erweitert: ein Wert außerhalb des Bereichs wurde ignoriert (fps 0-120, kbps 0-100000, Breite und Höhe 0-4096, Fenster 0-64; leer = automatisch)</string>
     <string name="hql_acc_lost_channel">Bedienungshilfe</string>
@@ -1084,22 +1084,22 @@
     <string name="hql_acc_guide">Android schaltet die Bedienungshilfe aus, wenn es Qonecta+ zwangsweise beendet, um Akku oder Speicher zu sparen. So vermeidest du es:\n\n• Akku von Qonecta+: «Nicht eingeschränkt».\n• %1$s\n• Nie «Beenden erzwingen» bei Qonecta+ verwenden.</string>
     <string name="hql_acc_guide_samsung">Samsung: Einstellungen › Akku › Grenzwerte für Hintergrundnutzung: Qonecta+ aus den Apps im Standby entfernen und zu «Apps nie im Standby» hinzufügen.</string>
     <string name="hql_acc_guide_honor">%1$s: Einstellungen › Akku › App-Start › Qonecta+ › «Manuell verwalten», alle drei Optionen an.</string>
-    <string name="hql_acc_guide_xiaomi">Xiaomi: «Autostart» für Qonecta+ einschalten und den Akku-Sparmodus auf «Keine Einschränkungen» stellen.</string>
+    <string name="hql_acc_guide_xiaomi">Xiaomi: «Autostart» für Qonecta+ einschalten und den Akku Sparmodus auf «Keine Einschränkungen» stellen.</string>
     <string name="hql_acc_guide_other">Der Akkumanager des Herstellers: Qonecta+ im Hintergrund laufen lassen.</string>
     <string name="hql_acc_guide_restricted">Wenn Android das Einschalten nicht erlaubt: App-Info › ⋮ › «Eingeschränkte Einstellungen zulassen».</string>
     <string name="hql_acc_guide_battery">Akku</string>
-    <string name="hql_psx_enhanced">Verbessertes PlayStation-Bild</string>
+    <string name="hql_psx_enhanced">Verbessertes PlayStation Bild</string>
     <string name="hql_psx_enhanced_sum">Doppelte interne Auflösung und kein Dithering: weniger Treppenstufen und glattere Farben. Braucht etwas mehr Akku und wird wärmer; gilt ab dem nächsten Spiel.</string>
     <string name="hql_tr_title">Verkehr</string>
     <string name="hql_tr_pill">Verkehr · %1$d</string>
     <string name="hql_tr_list_title">Verkehr auf der Route (DGT)</string>
-    <string name="hql_tr_none">Keine DGT-Meldungen auf der restlichen Route.</string>
+    <string name="hql_tr_none">Keine DGT Meldungen auf der restlichen Route.</string>
     <string name="hql_tr_at">in %1$s km</string>
     <string name="hql_tr_source">Daten: DGT, spanischer Nationaler Zugangspunkt (nap.dgt.es). Katalonien und das Baskenland veröffentlichen ihre eigenen.</string>
     <string name="hql_tr_lane">Fahrstreifen gesperrt</string>
     <string name="hql_tr_carriageway">Fahrbahn gesperrt</string>
     <string name="hql_tr_voice">Achtung: %1$s in %2$s Kilometern</string>
-    <string name="hql_tr_setting">DGT-Verkehr auf der Route</string>
+    <string name="hql_tr_setting">DGT Verkehr auf der Route</string>
     <string name="hql_tr_setting_sum">Baustellen, Unfälle, Staus und liegengebliebene Fahrzeuge auf der Route, mit Warnung bei Wichtigem (nur Spanien)</string>
     <string name="hql_tr_accident">Unfall</string>
     <string name="hql_tr_vehicle">Liegengebliebenes Fahrzeug</string>
@@ -1169,14 +1169,14 @@
     <string name="hql_report_spent">ausgegeben</string>
     <string name="hql_report_charges_split">Zu Hause (AC) %1$s kWh · Schnell (DC) %2$s kWh</string>
     <string name="hql_report_fastest">Am schnellsten: %1$s kW Spitze</string>
-    <string name="hql_report_charges_none">Diesen Monat keine Ladevorgänge gespeichert. Live-Laden speichert sie, wenn es einen verfolgt.</string>
+    <string name="hql_report_charges_none">Diesen Monat keine Ladevorgänge gespeichert. Live Laden speichert sie, wenn es einen verfolgt.</string>
     <string name="hql_report_parked_title">Mit geparktem Auto</string>
     <string name="hql_report_parked">Es verlor %1$s %% (%2$s kWh) in %3$s Standzeit.</string>
     <string name="hql_report_highlights">Highlights</string>
     <string name="hql_report_best">Effizienteste Fahrt</string>
     <string name="hql_report_longest">Längste Fahrt</string>
     <string name="hql_report_top_day">Tag mit den meisten km</string>
-    <string name="hql_report_source_car">Fahrten und kWh, vom Auto gemessen (Leapmotor-Konto).</string>
+    <string name="hql_report_source_car">Fahrten und kWh, vom Auto gemessen (Leapmotor Konto).</string>
     <string name="hql_report_source_app">Von Qonecta+ im Auto aufgezeichnete Fahrten; kWh geschätzt.</string>
     <string name="hql_report_compared">Änderungen gegenüber %1$s.</string>
     <string name="hql_report_no_compare">Noch kein Vergleich: Der Vormonat hat keine vollständigen Daten. Nächsten Monat siehst du die Änderungen.</string>
@@ -1191,20 +1191,20 @@
     <string name="hql_report_next">Nächster Monat</string>
     <string name="hql_report_notice_title">Dein %1$s mit dem C10 ist fertig</string>
     <string name="hql_report_notice_text">%1$s km · %2$s kWh/100 km · tippen zum Ansehen</string>
-    <!-- Acerca de y créditos -->
+    <!-- Über uns und Mitwirkende -->
     <string name="hql_about_menu">Über und Danksagungen</string>
     <string name="hql_about_by">von %1$s</string>
     <string name="hql_about_from">auf Basis von HeadQLink von %1$s</string>
     <string name="hql_about_tagline">Android Auto und vieles mehr auf dem Display deines Leapmotor.</string>
     <string name="hql_about_based">Basiert auf</string>
     <string name="hql_about_and_contributors">%1$s und Mitwirkende</string>
-    <string name="hql_about_qdauto">QDAuto-Protokoll-Engine · %1$s</string>
-    <string name="hql_about_cloud">Fahrzeugdaten (Leapmotor-Konto)</string>
+    <string name="hql_about_qdauto">QDAuto-Protokollengine · %1$s</string>
+    <string name="hql_about_cloud">Fahrzeugdaten (Leapmotor Konto)</string>
     <string name="hql_about_role_protocol">Protokoll</string>
-    <string name="hql_about_role_commands">Widget-Befehle und Wochenverbrauch</string>
-    <string name="hql_about_role_reev">REEV-Tank und Fahrtenverlauf</string>
+    <string name="hql_about_role_commands">Widgetbefehle und Wochenverbrauch</string>
+    <string name="hql_about_role_reev">REEV Tank und Fahrtenverlauf</string>
     <string name="hql_about_data">Online-Daten</string>
-    <string name="hql_about_osm">Karten, Straßen und Ladesäulen: © OpenStreetMap-Mitwirkende (ODbL), über Overpass, OSRM, Photon (komoot) und Nominatim</string>
+    <string name="hql_about_osm">Karten, Straßen und Ladesäulen: © OpenStreetMap Mitwirkende (ODbL), über Overpass, OSRM, Photon (komoot) und Nominatim</string>
     <string name="hql_about_weather">Wetter und Höhe: Open-Meteo.com (CC BY 4.0) und Open Topo Data</string>
     <string name="hql_about_dgt">Ladesäulen in Spanien: MITECO-Register, veröffentlicht von der DGT</string>
     <string name="hql_about_radio">Radio: radio-browser.info</string>
