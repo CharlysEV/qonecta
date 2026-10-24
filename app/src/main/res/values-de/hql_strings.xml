@@ -3,7 +3,7 @@
 <resources>
     <string name="hql_aa_devmode_missing">Entwicklermodus von Android Auto ist aus</string>
     <string name="hql_aa_no_start_why">Startet nicht: %1$s</string>
-    <string name="hql_aa_server_failed">Der Android Auto-Server konnte nicht gestartet werden</string>
+    <string name="hql_aa_server_failed">Der Android Auto Server konnte nicht gestartet werden</string>
     <string name="hql_acceleration">Beschleunigung</string>
     <string name="hql_accessibility_first">Zuerst die Bedienungshilfe</string>
     <string name="hql_accessibility_first_msg">Qonecta+ braucht seine Bedienungshilfe, um den Entwicklermodus von Android Auto zu prüfen.</string>
@@ -84,7 +84,7 @@
     <string name="hql_brake_help">Die Drosselung gilt nur im Profil „Basis“ (ohne Neukodierung).</string>
     <string name="hql_brake_window">Frames unterwegs bei Drosselung (2)</string>
     <string name="hql_bt_auto_battery">Damit Android den Start im Hintergrund zulässt, erlaube Qonecta+, ohne Akkueinschränkungen zu laufen.</string>
-    <string name="hql_bt_auto_info">Verbindet sich das Handy per Bluetooth mit einem Gerät, dessen Name diesen Text enthält, wartet Qonecta+ auf das Fahrzeug (öffne die Spiegelungs-App auf dessen Display). Trennt sich Bluetooth, bevor die Verbindung steht, hört es wieder auf.</string>
+    <string name="hql_bt_auto_info">Verbindet sich das Handy per Bluetooth mit einem Gerät, dessen Name diesen Text enthält, wartet Qonecta+ auf das Fahrzeug (öffne die Spiegelungsapp auf dessen Display). Trennt sich Bluetooth, bevor die Verbindung steht, hört es wieder auf.</string>
     <string name="hql_bt_auto_switch">Verbinden, wenn das Bluetooth des Fahrzeugs erkannt wird</string>
     <string name="hql_bt_auto_title">Automatische Verbindung</string>
     <string name="hql_calculating">Berechne…</string>
@@ -120,7 +120,7 @@
     <string name="hql_estimated">geschätzt</string>
     <string name="hql_fg_aa_test">Android Auto-Test</string>
     <string name="hql_fg_encoder">Encoder-Test</string>
-    <string name="hql_fg_restart_aa">Android Auto-Server wird neu gestartet</string>
+    <string name="hql_fg_restart_aa">Android Auto Server wird neu gestartet</string>
     <string name="hql_finish">Fertig</string>
     <string name="hql_finish_anyway">Trotzdem abschließen</string>
     <string name="hql_fly_10">10 Pfosten, wie der C10!</string>
@@ -153,7 +153,7 @@
     <string name="hql_grant">Erteilen</string>
     <string name="hql_guard_alert_channel">Sicherheitswarnungen</string>
     <string name="hql_guard_alert_text">Entsperre das Handy, um ihn zu schließen</string>
-    <string name="hql_guard_alert_title">Android Auto-Server ist offen</string>
+    <string name="hql_guard_alert_title">Android Auto Server ist offen</string>
     <string name="hql_guard_channel">Android Auto wartet</string>
     <string name="hql_guard_parked">Android Auto wartet, bis du das Handy entsperrst (dann schließt es sich von selbst)</string>
     <string name="hql_h264_profile">H.264-Profil</string>
@@ -161,8 +161,8 @@
     <string name="hql_height">Höhe</string>
     <string name="hql_hide">Ausblenden</string>
     <string name="hql_hint_connected">Du kannst das Handy sperren: Das Bild kommt weiter im Fahrzeug an. Trennt sich das Fahrzeug, stoppt Qonecta+ von selbst.</string>
-    <string name="hql_hint_idle">Ist das Fahrzeug an und die Spiegelungs-App auf seinem Display geöffnet, tippe auf „Verbinden“.</string>
-    <string name="hql_hint_searching">Öffne die Spiegelungs-App auf dem Fahrzeugdisplay. Du kannst das Handy jederzeit sperren.</string>
+    <string name="hql_hint_idle">Ist das Fahrzeug an und die Spiegelungsapp auf seinem Display geöffnet, tippe auf „Verbinden“.</string>
+    <string name="hql_hint_searching">Öffne die Spiegelungsapp auf dem Fahrzeugdisplay. Du kannst das Handy jederzeit sperren.</string>
     <string name="hql_home">Start</string>
     <string name="hql_home_no_app">Keine App gewählt.</string>
     <string name="hql_home_opens_app">%1$s öffnet sich im Fahrzeug.</string>
@@ -174,7 +174,7 @@
     <string name="hql_language">Sprache</string>
     <string name="hql_language_system">Systemsprache</string>
     <string name="hql_list_now_file">Aktuell: eine Datei auf dem Handy.</string>
-    <string name="hql_list_paste">Füge die URL deiner M3U-Liste ein oder wähle eine Datei.</string>
+    <string name="hql_list_paste">Füge die URL deiner M3U Liste ein oder wähle eine Datei.</string>
     <string name="hql_list_radio_default">Ohne Liste zeigt das Fahrzeug die beliebten Sender.</string>
     <string name="hql_load_failed">Laden fehlgeschlagen: %1$s</string>
     <string name="hql_low_latency_profile">Latenzoptimierungen (vom Profil gesetzt; brauchen mehr Akku)</string>
@@ -337,9 +337,9 @@
     <string name="hql_theme_light">Immer hell</string>
     <string name="hql_this_phone">Dieses Handy: %1$s</string>
     <string name="hql_touch_label">Qonecta+ Touch</string>
-    <string name="hql_touch_service_desc">Leitet Toucheingaben vom Fahrzeugdisplay an die übertragene App weiter und startet bei Bedarf den Android Auto-Server.</string>
+    <string name="hql_touch_service_desc">Leitet Toucheingaben vom Fahrzeugdisplay an die übertragene App weiter und startet bei Bedarf den Android Auto Server.</string>
     <string name="hql_trips_none">Jede Fahrt über 300 m in „Auto erweitert“ wird am Ende automatisch gespeichert, mit Strecke, geschätztem Verbrauch und Höhenmetern.</string>
-    <string name="hql_trips_note">Energie geschätzt mit dem C10-Modell (ohne Fahrzeugdaten). Preise: %1$s; Benzin %2$.1f l/100 km zu %3$s.</string>
+    <string name="hql_trips_note">Energie geschätzt mit dem C10 Modell (ohne Fahrzeugdaten). Preise: %1$s; Benzin %2$.1f l/100 km zu %3$s.</string>
     <string name="hql_ttt_draw">Unentschieden. Tippen für neue Runde</string>
     <string name="hql_ttt_lose">Der C10 gewinnt. Tippen für neue Runde</string>
     <string name="hql_ttt_start">Du spielst X, der C10 spielt O</string>
@@ -354,13 +354,13 @@
     <string name="hql_video_status">Fahrzeug verbunden · Video %1$d×%2$d</string>
     <string name="hql_videos">Videos</string>
     <string name="hql_waiting_car">Warte auf das Fahrzeug</string>
-    <string name="hql_waiting_gps">Warte auf GPS-Position des Handys…</string>
+    <string name="hql_waiting_gps">Warte auf GPS Position des Handys…</string>
     <string name="hql_waiting_phone_gps">Warte auf GPS des Handys…</string>
     <string name="hql_web_address">Suchen oder Adresse eingeben</string>
     <string name="hql_welcome_body">Qonecta+ nutzt die eingebaute Spiegelungsverbindung des Fahrzeugs, um Android Auto auf sein Display zu bringen: Karten, Musik und Nachrichten, mit mehr Funktionen in „Auto erweitert“. Das Handy kann gesperrt und mit ausgeschaltetem Bildschirm bleiben.</string>
     <string name="hql_welcome_never">Und bediene das Handy nie während der Fahrt.</string>
     <string name="hql_welcome_parked">Richte alles bei geparktem Fahrzeug ein</string>
-    <string name="hql_welcome_mirror">Spiegelungs-App auf dem Fahrzeugdisplay sichtbar</string>
+    <string name="hql_welcome_mirror">Spiegelungsapp auf dem Fahrzeugdisplay sichtbar</string>
     <string name="hql_welcome_title">Dein Handy auf dem Display des C10</string>
     <string name="hql_welcome_wifi">Handy und Fahrzeug verbinden sich per Wi-Fi (Wi-Fi Direct oder Handy-Hotspot), ohne Kabel, oder auf Wunsch mit einem USB-Datenkabel.</string>
     <string name="hql_width">Breite</string>
@@ -378,29 +378,29 @@
     <!-- qdauto c6 -->
     <string name="hql_link_title">Verbindung zum Fahrzeug</string>
     <string name="hql_link_p2p">Wi-Fi Direct</string>
-    <string name="hql_link_p2p_detail">Das Fahrzeug erstellt das Netz, das Handy tritt bei. Der Handy-Hotspot muss aus sein.</string>
-    <string name="hql_link_hotspot">Handy-Hotspot</string>
+    <string name="hql_link_p2p_detail">Das Fahrzeug erstellt das Netz, das Handy tritt bei. Der Handy Hotspot muss aus sein.</string>
+    <string name="hql_link_hotspot">Handy Hotspot</string>
     <string name="hql_link_hotspot_detail">Das Fahrzeug verbindet sich mit dem Hotspot deines Handys. Am C10 getestet, auch bei ausgeschaltetem Bildschirm.</string>
     <string name="hql_hotspot_on">Hotspot an (%1$s)</string>
     <string name="hql_hotspot_off">Hotspot aus: bitte einschalten</string>
     <string name="hql_hotspot_unknown">Hotspotstatus unbekannt</string>
-    <string name="hql_hotspot_open">Hotspot-Einstellungen öffnen</string>
-    <string name="hql_hotspot_guide">1. Schalte den Handy-Hotspot ein (am besten 5 GHz und ohne automatisches Ausschalten).\n2. Nur beim ersten Mal: im Fahrzeug unter Einstellungen › Wi-Fi den Hotspot deines Handys wählen.\n3. Öffne die Spiegelungs-App auf dem Fahrzeugdisplay. Qonecta+ verbindet sich selbst, auch bei gesperrtem Handy.\nDas Fahrzeug kann deine mobilen Daten nutzen.</string>
+    <string name="hql_hotspot_open">Hotspot Einstellungen öffnen</string>
+    <string name="hql_hotspot_guide">1. Schalte den Handy-Hotspot ein (am besten 5 GHz und ohne automatisches Ausschalten).\n2. Nur beim ersten Mal: im Fahrzeug unter Einstellungen › Wi-Fi den Hotspot deines Handys wählen.\n3. Öffne die Spiegelungapp auf dem Fahrzeugdisplay. Qonecta+ verbindet sich selbst, auch bei gesperrtem Handy.\nDas Fahrzeug kann deine mobilen Daten nutzen.</string>
     <string name="hql_hotspot_guide_title">So verbindest du das Fahrzeug mit dem Hotspot</string>
-    <string name="hql_hotspot_tips">Tipps: Das 5-GHz-Band funktioniert besser (bei 2,4 GHz teilt sich der Funk mit dem Bluetooth des Fahrzeugs), und deaktiviere am besten die Option, die den Hotspot ausschaltet, wenn keine Geräte verbunden sind (Samsung).</string>
-    <string name="hql_hotspot_row">Handy-Hotspot</string>
+    <string name="hql_hotspot_tips">Tipps: Das 5-GHz Band funktioniert besser (bei 2,4 GHz teilt sich der Funk mit dem Bluetooth des Fahrzeugs), und deaktiviere am besten die Option, die den Hotspot ausschaltet, wenn keine Geräte verbunden sind (Samsung).</string>
+    <string name="hql_hotspot_row">Handy Hotspot</string>
     <string name="hql_hotspot_off_row">Hotspot aus</string>
     <string name="hql_hotspot_is_off">Aus</string>
     <string name="hql_hotspot_off_notif">Hotspot aus: einschalten, um das Fahrzeug zu verbinden</string>
-    <string name="hql_p2p_needs_hotspot_off">Schalte den Handy-Hotspot aus, um Wi-Fi Direct zu nutzen.</string>
-    <string name="hql_hint_searching_hotspot">Prüfe, ob das Fahrzeug mit dem Handy-Hotspot verbunden ist, und öffne die Spiegelungs-App auf dem Fahrzeugdisplay. Du kannst das Handy sperren.</string>
+    <string name="hql_p2p_needs_hotspot_off">Schalte den Handy Hotspot aus, um Wi-Fi Direct zu nutzen.</string>
+    <string name="hql_hint_searching_hotspot">Prüfe, ob das Fahrzeug mit dem Handy-Hotspot verbunden ist, und öffne die Spiegelungsapp auf dem Fahrzeugdisplay. Du kannst das Handy sperren.</string>
     <string name="hql_network">Netzwerk</string>
     <string name="hql_p2p_in_group">Wi-Fi Direct: in der Gruppe des Fahrzeugs (%1$s)</string>
     <string name="hql_p2p_searching">Wi-Fi Direct: suche das Fahrzeug</string>
     <string name="hql_setup_perms_ok_hotspot">Bluetooth und Benachrichtigungen</string>
     <!-- qdauto c7 -->
     <string name="hql_udp_busy">Port 18463 ist belegt (ist QDLink offen?). Schließe es; neuer Versuch alle 5 s.</string>
-    <string name="hql_engine_title">Protokoll-Engine</string>
+    <string name="hql_engine_title">Protokoll Engine</string>
     <string name="hql_engine_qdauto">QDAuto (empfohlen)</string>
     <string name="hql_engine_original">Älterer Motor (übernommen)</string>
     <string name="hql_applies_on_reconnect">Gilt ab der nächsten Verbindung.</string>
@@ -512,12 +512,12 @@
     <string name="hql_unlock_channel">Android Auto-Start</string>
     <string name="hql_unlock_start_title">Entsperre das Handy, um Android Auto zu starten</string>
     <string name="hql_unlock_start_text">Das Fahrzeug ist bereit. Sobald du entsperrst, startet Qonecta+ Android Auto selbst; du musst die App nicht öffnen.</string>
-    <string name="hql_server_on_title">Der Android Auto-Server läuft noch</string>
+    <string name="hql_server_on_title">Der Android Auto Server läuft noch</string>
     <string name="hql_server_on_text">Zum Ausschalten tippen</string>
     <string name="hql_car_wait_title">Auf das Fahrzeug warten</string>
     <string name="hql_car_wait_option">%1$d min</string>
     <string name="hql_car_wait_option_default">%1$d min (empfohlen)</string>
-    <string name="hql_car_wait_help">Geht das Fahrzeug aus oder bricht die Verbindung ab, lauscht Qonecta+ weiter und lässt Android Auto so lange pausiert: Kommt das Fahrzeug zurück, ist das Bild sofort wieder da, ohne Entsperren. Danach schließt es alles und schaltet den Android Auto-Server aus. Beim manuellen Serverstart schließt es ebenfalls alles, kann den Server aber nicht ausschalten: Er bleibt an, und die nächste Fahrt nutzt ihn ohne Neustart wieder.</string>
+    <string name="hql_car_wait_help">Geht das Fahrzeug aus oder bricht die Verbindung ab, lauscht Qonecta+ weiter und lässt Android Auto so lange pausiert: Kommt das Fahrzeug zurück, ist das Bild sofort wieder da, ohne Entsperren. Danach schließt es alles und schaltet den Android Auto Server aus. Beim manuellen Serverstart schließt es ebenfalls alles, kann den Server aber nicht ausschalten: Er bleibt an, und die nächste Fahrt nutzt ihn ohne Neustart wieder.</string>
 
     <!-- headqlink: cable USB del coche (experimental) -->
     <string name="hql_link_usb">USB-Kabel</string>
@@ -527,40 +527,40 @@
     <string name="hql_req_usb_why">Verbinde das Handy per Datenkabel (kein reines Ladekabel) mit dem USB-Datenanschluss des Fahrzeugs. Das Fahrzeug muss das Handy in den Zubehörmodus schalten: Passiert nichts, exportiere das Log und schick es uns (Zeilen HQL/USB).</string>
     <string name="hql_req_usb_chooser">Ist QDLink installiert, fragt Android beim Einstecken eventuell, welche App „QDriveLink“ öffnen soll: Wähle Qonecta+ und „Immer“, oder deinstalliere QDLink.</string>
     <string name="hql_usb_guide_title">Verbindung per USB-Kabel</string>
-    <string name="hql_usb_guide">1. Verbinde das Handy per Datenkabel mit dem USB-Datenanschluss des Fahrzeugs.\n2. Öffne die Spiegelungs-App auf dem Fahrzeugdisplay.\n3. Fragt Android, welche App „QDriveLink“ öffnen soll, wähle Qonecta+ und „Immer“.\nQonecta+ startet von selbst, sobald das Fahrzeug das Handy in den Zubehörmodus schaltet, egal welche Verbindung gewählt ist; ziehst du das Kabel ab, geht es zurück zu Wi-Fi. Passiert nichts, exportiere das Log (Diagnose) und schick es uns.</string>
+    <string name="hql_usb_guide">1. Verbinde das Handy per Datenkabel mit dem USB-Datenanschluss des Fahrzeugs.\n2. Öffne die Spiegelungsapp auf dem Fahrzeugdisplay.\n3. Fragt Android, welche App „QDriveLink“ öffnen soll, wähle Qonecta+ und „Immer“.\nQonecta+ startet von selbst, sobald das Fahrzeug das Handy in den Zubehörmodus schaltet, egal welche Verbindung gewählt ist; ziehst du das Kabel ab, geht es zurück zu Wi-Fi. Passiert nichts, exportiere das Log (Diagnose) und schick es uns.</string>
     <string name="hql_usb_net_waiting">USB-Kabel: warte auf das Fahrzeug (Datenkabel im USB-Datenanschluss des Fahrzeugs)</string>
     <string name="hql_usb_net_connected">USB-Kabel: verbunden</string>
     <string name="hql_usb_net_permission">USB-Kabel: erlaube Qonecta+, %1$s zu öffnen</string>
     <string name="hql_usb_net_denied">USB-Kabel: Berechtigung verweigert (Kabel ab- und wieder anstecken)</string>
     <string name="hql_usb_net_open_failed">USB-Kabel: %1$s lässt sich nicht öffnen (nutzt es eine andere App, etwa QDLink?)</string>
     <string name="hql_usb_net_other">USB-Kabel: Das Zubehör ist nicht das Fahrzeug (%1$s)</string>
-    <string name="hql_qd_usb_over_tcp">USB-Kabel-Framing über Wi-Fi (Test mit qdsim --usb-framing): 512-Byte-Blöcke über TCP. Das Fahrzeug versteht es nicht: im Fahrzeug aus lassen</string>
+    <string name="hql_qd_usb_over_tcp">USB-Kabel Framing über Wi-Fi (Test mit qdsim --usb-framing): 512-Byte-Blöcke über TCP. Das Fahrzeug versteht es nicht: im Fahrzeug aus lassen</string>
 
     <!-- headqlink: arranque manual del servidor de Android Auto (sin accesibilidad) -->
-    <string name="hql_aa_server_start_title">Start des Android Auto-Servers</string>
+    <string name="hql_aa_server_start_title">Start des Android Auto Servers</string>
     <string name="hql_aa_server_start_auto">Automatisch (Bedienungshilfe) · Empfohlen</string>
     <string name="hql_aa_server_start_manual">Manuell (ohne Bedienungshilfe)</string>
-    <string name="hql_aa_server_start_help">Automatisch: Qonecta+ startet und stoppt den Android Auto-Server selbst, über seine Bedienungshilfe. Manuell: ohne Bedienungshilfe; du startest ihn selbst (Android Auto › ⋮ › „Server für Infotainmentsystem starten“) nach jedem Neustart des Handys oder Update von Android Auto, und Qonecta+ stoppt ihn nie: Er bleibt zwischen den Fahrten an, und die nächste nutzt ihn ohne Neustart wieder, auch bei gesperrtem Handy. Antwortet er einmal nicht (aus oder durch eine halb abgebrochene Verbindung blockiert), sagt Qonecta+ Bescheid und versucht es selbst erneut: Beende ihn und starte ihn neu (⋮ › „Server für Infotainmentsystem beenden“ und ⋮ › „Server für Infotainmentsystem starten“). In einem öffentlichen Wi-Fi könnte jedes Gerät in diesem Netz versuchen, sich zu verbinden: Beende ihn, wenn du ihn nicht nutzt. Gilt sofort.</string>
-    <string name="hql_aa_server_wait">Warte auf den Android Auto-Server</string>
+    <string name="hql_aa_server_start_help">Automatisch: Qonecta+ startet und stoppt den Android Auto Server selbst, über seine Bedienungshilfe. Manuell: ohne Bedienungshilfe; du startest ihn selbst (Android Auto › ⋮ › „Server für Infotainmentsystem starten“) nach jedem Neustart des Handys oder Update von Android Auto, und Qonecta+ stoppt ihn nie: Er bleibt zwischen den Fahrten an, und die nächste nutzt ihn ohne Neustart wieder, auch bei gesperrtem Handy. Antwortet er einmal nicht (aus oder durch eine halb abgebrochene Verbindung blockiert), sagt Qonecta+ Bescheid und versucht es selbst erneut: Beende ihn und starte ihn neu (⋮ › „Server für Infotainmentsystem beenden“ und ⋮ › „Server für Infotainmentsystem starten“). In einem öffentlichen Wi-Fi könnte jedes Gerät in diesem Netz versuchen, sich zu verbinden: Beende ihn, wenn du ihn nicht nutzt. Gilt sofort.</string>
+    <string name="hql_aa_server_wait">Warte auf den Android Auto Server</string>
     <string name="hql_aa_server_wait_hint">Android Auto antwortet nicht: Starte seinen Server (neu): Android Auto › ⋮ › „Server für Infotainmentsystem beenden“ (falls vorhanden) und ⋮ › „Server für Infotainmentsystem starten“. Tippe hier oder auf die Zeile „Auto“, um Android Auto zu öffnen; Qonecta+ versucht es alle 5 s erneut und macht von selbst weiter, sobald er antwortet.</string>
-    <string name="hql_aa_server_ask_title">Starte den Android Auto-Server (neu)</string>
+    <string name="hql_aa_server_ask_title">Starte den Android Auto Server (neu)</string>
     <string name="hql_aa_server_ask_text">Android Auto › ⋮ › „Server für Infotainmentsystem beenden“ (falls vorhanden) und ⋮ › „Server für Infotainmentsystem starten“. Tippe, um Android Auto zu öffnen; Qonecta+ versucht es alle 5 s erneut und macht von selbst weiter, sobald er antwortet.</string>
     <string name="hql_aa_server_ask_channel">Manueller Start von Android Auto</string>
     <string name="hql_reason_manual">manueller Start: Beende den Server in Android Auto › ⋮ und starte ihn neu</string>
     <string name="hql_req_info">Info</string>
-    <string name="hql_req_aa_server">Android Auto-Server</string>
+    <string name="hql_req_aa_server">Android Auto Server</string>
     <string name="hql_req_aa_server_in_use">Von Qonecta+ genutzt (Android Auto verbunden). Schließt Android Auto normal, bleibt der Server an und antwortet wieder: kein Neustart nötig.</string>
     <string name="hql_req_aa_server_waiting">Antwortet nicht: Starte ihn (neu) in Android Auto › ⋮ › „Server für Infotainmentsystem beenden“ (falls vorhanden) und ⋮ › „Server für Infotainmentsystem starten“. Qonecta+ versucht es selbst erneut.</string>
     <string name="hql_req_aa_server_tip">Qonecta+ prüft ihn nicht vor dem Verbinden: Eine Testverbindung (die öffnet und schließt, ohne zu kommunizieren) würde ihn blockieren. Starte ihn vor dem Verbinden (⋮ › „Server für Infotainmentsystem starten“); solange er an bleibt, funktioniert er für die folgenden Fahrten. Meldet Qonecta+, dass er nicht antwortet, beende ihn und starte ihn neu.</string>
     <string name="hql_req_auto_use">Automatischer Modus</string>
     <string name="hql_req_manual_title">Ohne Bedienungshilfe?</string>
-    <string name="hql_req_manual_why">Du kannst den Android Auto-Server selbst starten (manueller Start) und die Bedienungshilfe aus lassen. Empfohlen bleibt der automatische Modus.</string>
+    <string name="hql_req_manual_why">Du kannst den Android Auto Server selbst starten (manueller Start) und die Bedienungshilfe aus lassen. Empfohlen bleibt der automatische Modus.</string>
     <string name="hql_req_manual_use">Manueller Start</string>
     <string name="hql_req_acc_manual">Nur für den automatischen Modus</string>
     <string name="hql_req_dev_manual">Ohne Bedienungshilfe nicht prüfbar: Fehlt in Android Auto › ⋮ der Eintrag „Server für Infotainmentsystem starten“, aktiviere den Entwicklermodus (Anleitung unten).</string>
-    <string name="hql_manual_confirm_title">Manueller Start des Android Auto-Servers</string>
-    <string name="hql_manual_confirm_msg">Ohne Bedienungshilfe startet und stoppt Qonecta+ den Android Auto-Server nicht:\n\n•  Starte ihn selbst (Android Auto › ⋮ › „Server für Infotainmentsystem starten“) nach jedem Neustart des Handys oder Update von Android Auto.\n•  Qonecta+ schließt Android Auto immer sauber, sodass der Server weiter antwortet: Er funktioniert für die folgenden Fahrten ohne Neustart, auch bei gesperrtem Handy. Antwortet er einmal nicht (aus oder durch eine halb abgebrochene Verbindung blockiert), sagt Qonecta+ Bescheid und versucht es selbst erneut: Beende ihn und starte ihn neu.\n•  Er bleibt an, bis du ihn beendest. In einem öffentlichen Wi-Fi könnte jedes Gerät in diesem Netz versuchen, sich zu verbinden: Beende ihn, wenn du nicht im Fahrzeug bist (⋮ › „Server für Infotainmentsystem beenden“).\n\nEmpfohlen bleibt der automatische Start. Du kannst unter Einstellungen › Verbindung zurückwechseln.</string>
-    <string name="hql_setup_guide_manual_title">So startest du den Android Auto-Server</string>
+    <string name="hql_manual_confirm_title">Manueller Start des Android Auto Servers</string>
+    <string name="hql_manual_confirm_msg">Ohne Bedienungshilfe startet und stoppt Qonecta+ den Android Auto Server nicht:\n\n•  Starte ihn selbst (Android Auto › ⋮ › „Server für Infotainmentsystem starten“) nach jedem Neustart des Handys oder Update von Android Auto.\n•  Qonecta+ schließt Android Auto immer sauber, sodass der Server weiter antwortet: Er funktioniert für die folgenden Fahrten ohne Neustart, auch bei gesperrtem Handy. Antwortet er einmal nicht (aus oder durch eine halb abgebrochene Verbindung blockiert), sagt Qonecta+ Bescheid und versucht es selbst erneut: Beende ihn und starte ihn neu.\n•  Er bleibt an, bis du ihn beendest. In einem öffentlichen Wi-Fi könnte jedes Gerät in diesem Netz versuchen, sich zu verbinden: Beende ihn, wenn du nicht im Fahrzeug bist (⋮ › „Server für Infotainmentsystem beenden“).\n\nEmpfohlen bleibt der automatische Start. Du kannst unter Einstellungen › Verbindung zurückwechseln.</string>
+    <string name="hql_setup_guide_manual_title">So startest du den Android Auto Server</string>
     <string name="hql_setup_guide_manual">1.  Tippe auf „AA öffnen“.\n2.  Tippe auf ⋮ (oben rechts) › „Server für Infotainmentsystem starten“.\n3.  Fehlt diese Option: Scrolle ganz nach unten, tippe 10-mal auf „Version“, bestätige die Warnung und wiederhole Schritt 2.\n4.  Kehre zu Qonecta+ zurück und verbinde. Qonecta+ prüft ihn nicht vorher (eine Testverbindung würde ihn blockieren): Antwortet Android Auto mit dem Fahrzeug nicht, sagt es Bescheid und versucht es alle 5 s erneut.\nMach das nach jedem Neustart des Handys oder Update von Android Auto: Zwischen den Fahrten bleibt er an und funktioniert ohne Neustart. Meldet Qonecta+, dass er nicht antwortet: ⋮ › „Server für Infotainmentsystem beenden“ und ⋮ › „Server für Infotainmentsystem starten“.</string>
     <!-- Vista previa del modo extendido (PreviewActivity, modo demostración) -->
     <string name="hql_preview_title">Vorschau des erweiterten Modus</string>
@@ -682,7 +682,7 @@
     <string name="hql_w_waiting_video">Warte auf das Bild…</string>
     <string name="hql_w_waiting_return">Warte, bis das Fahrzeug zurück ist</string>
     <string name="hql_w_aa_paused">Android Auto pausiert</string>
-    <string name="hql_w_aa_server">Warte auf den Android Auto-Server</string>
+    <string name="hql_w_aa_server">Warte auf den Android Auto Server</string>
     <string name="hql_w_aa_server_hint">Android Auto › ⋮ › Server beenden und starten</string>
     <string name="hql_w_close_qdlink">QDLink schließen</string>
     <string name="hql_w_port_busy">Port 18463 ist belegt</string>
