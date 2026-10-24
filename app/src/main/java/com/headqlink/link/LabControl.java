@@ -13,8 +13,9 @@ import java.util.Locale;
  * un marcador en una esquina (temperatura, calor, fps, bitrate y radio). En la versión de siempre BuildConfig.LAB es
  * false: el canal no acepta órdenes y nada de esto se usa.
  *
- * Órdenes (una por petición, en minúsculas): estado · msg TEXTO · fps N|auto · kbps N|auto · cable N|auto ·
- * boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto.
+ * Órdenes (una por petición, en minúsculas): estado · msg TEXTO · fps N|auto · kbps N|auto · cable N|auto · qp N|auto ·
+ * boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto ·
+ * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra).
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
@@ -28,6 +29,12 @@ final class LabControl {
     static volatile int cableKbps;
     /** Salto a 60 fps al tocar: null, lo del perfil; si no, forzado. */
     static volatile Boolean touchBoost;
+    /**
+     * Suelo de calidad del codificador (QP) para probar la nitidez: el QP-I de partida y el mínimo de los P-frames al
+     * configurar (0: los de siempre, 24). Más bajo = más nítido y frames más grandes; el c2.qti solo lo coge al
+     * configurar, así que vale desde la siguiente conexión («reconectar»).
+     */
+    static volatile int qpFloor;
 
     private LabControl() {
     }
@@ -55,6 +62,7 @@ final class LabControl {
             b.append(b.length() > 0 ? ", " : "").append(String.format(Locale.getDefault(), "techo por cable %.0f Mbit/s", cableKbps / 1000.0));
         }
         if (touchBoost != null) b.append(b.length() > 0 ? ", " : "").append(touchBoost ? "salto a 60 al tocar" : "sin salto a 60");
+        if (qpFloor > 0) b.append(b.length() > 0 ? ", " : "").append("QP ").append(qpFloor);
         return b.toString();
     }
 
@@ -96,6 +104,20 @@ final class LabControl {
                         : String.format(Locale.getDefault(), "techo por cable %.0f Mbit/s (perfil adaptable, coche a 60 fps por cable)",
                         cableKbps / 1000.0);
                 VideoPipeline.labApply();
+                break;
+            case "alemania":
+                if ("off".equals(a)) {
+                    BnetzaChargers.forget(ctx);
+                    done = "registro de Alemania borrado y sin pedir";
+                } else {
+                    BnetzaChargers.want(ctx);
+                    done = "registro de Alemania pedido (se baja con Wi-Fi)";
+                }
+                break;
+            case "qp":
+                qpFloor = "auto".equals(a) ? 0 : clamp(parse(a), 12, 30);
+                done = (qpFloor == 0 ? "calidad mínima: la de siempre (QP 24)" : "calidad mínima QP " + qpFloor)
+                        + " · vale al reconectar (orden «reconectar»)";
                 break;
             case "boost":
                 touchBoost = "auto".equals(a) ? null : "on".equals(a) ? Boolean.TRUE : Boolean.FALSE;
@@ -144,11 +166,12 @@ final class LabControl {
                 maxKbps = 0;
                 cableKbps = 0;
                 touchBoost = null;
+                qpFloor = 0;
                 VideoPipeline.labApply();
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, cable, boost, termica, noche, hud, perfil, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, alemania, boost, termica, noche, hud, perfil, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);

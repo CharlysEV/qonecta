@@ -295,12 +295,14 @@ final class VideoPipeline {
         vp.noRepeat = cfg.getBool("enc_no_repeat");
         vp.maxClocks = cfg.encMaxClocks();
         // Tamaño de los IDR: QP mínimo de los I-frames de partida (Android 12+); lo ajusta IdrSizeController.
-        vp.qpIMin = IdrSizeController.QP_START;
+        // Pruebas («qp N»): otro suelo para ver cuánto gana la nitidez (por cable sobra ancho de banda).
+        int labQp = LabControl.enabled() ? LabControl.qpFloor : 0;
+        vp.qpIMin = labQp > 0 ? labQp : IdrSizeController.QP_START;
         vp.qpIMax = IdrSizeController.QP_MAX;
         // Suelo de QP de los P-frames al configurar, el mismo que el del IDR (docs §23): sin él, el P-frame que sigue a
         // cada IDR afinaba la imagen entera y pesaba de mediana 2,3 veces el IDR (hasta 250-335 KB a 1,2-2,5 Mbit/s). El
         // c2.qti no hace caso de los cambios de QP en marcha, así que tiene que ir aquí.
-        vp.qpPMin = PFrameSizeController.QP_FLOOR;
+        vp.qpPMin = labQp > 0 ? labQp : PFrameSizeController.QP_FLOOR;
         boolean latestFrame = source instanceof AaPassthroughSource;
         if (latestFrame) {
             // Como SspSession: sin IDR periódicos (el coche pide uno cuando lo necesita), intra-refresh. VBR en todos los

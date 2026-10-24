@@ -381,7 +381,7 @@ supporta.
   Viaggi, Strumenti, Efficienza e Stato), «Foto», «Video», «Web», «TV», «Radio», «Giochi» e «Impostazioni». Con Android
   Auto sullo schermo, il pannello si riduce da solo dopo qualche secondo (anche in Foto, TV, Giochi…); tocca il bordo dal lato del pannello per farlo
   ricomparire. Foto, video, web, TV e giochi sono **solo per quando l'auto è ferma**.
-- **Schermo diviso («Auto esteso»):** in «Veicolo», «Web», «Video» e «TV», il pulsante «Dividi schermo» del pannello
+- **Schermo diviso («Auto esteso»):** in «Veicolo», «Guida», «Web», «Video» e «TV», il pulsante «Dividi schermo» del pannello
   mette Android Auto a sinistra, accanto al pannello, e quella schermata a destra. Con «Veicolo» hai gli strumenti
   (consumo, batteria, autonomia, prossima sosta) accanto ad Android Auto, e va bene in marcia, senza avviso. Android Auto tiene un po' più della metà, quanto
   basta perché Google Maps si possa spostare e cercare. Ogni lato risponde ai suoi tocchi. «Schermo intero» la lascia di
@@ -411,7 +411,7 @@ supporta.
       Transizione Ecologica, pubblicato dalla DGT su nap.dgt.es): potenza e **tensione** di ognuna. Si scarica sul
       telefono una volta alla settimana (circa 3 MB). Quello che manca nel registro (alcuni operatori non hanno
       registrato tutti i loro punti) si completa con OpenStreetMap, senza ripetere quelle già presenti; fuori dalla
-      Spagna, tutto viene da OpenStreetMap, dove potenza o operatore possono mancare. **«Colonnine lungo il
+      Spagna, tutto viene da OpenStreetMap, dove potenza o operatore possono mancare. **In Germania**, le colonnine rapide vengono dal registro ufficiale della Bundesnetzagentur (Ladesäulenregister), con potenza e prese (senza tensione: si usa quella tipica di ogni rete). Pesa circa 55 MB, quindi si scarica solo con Wi-Fi, una volta al mese e solo sui telefoni che hanno pianificato un percorso in Germania; nel frattempo, OpenStreetMap. L'app sceglie il registro in base a dove passa il percorso, non alla lingua del telefono. **«Colonnine lungo il
       percorso»** apre l'elenco con il distintivo di ogni operatore, il km, la potenza, la tensione («350 kW · 920 V»)
       e le prese.
     - **Colonnine vicino a te:** «Vicino a me» (accanto a «Filtra») cerca le colonnine a 5, 10, 25 o 50 km da dove
@@ -554,6 +554,39 @@ Il tuo mese in cifre, nella scheda «Viaggi» del telefono › «Vedi il resocon
 I viaggi sono quelli dell'auto (account Leapmotor) se la sua cronologia copre tutto il mese; altrimenti, quelli
 registrati dall'app. Il cloud conserva solo 35 giorni, quindi ogni mese viene salvato riassunto sul telefono. Il primo
 mese esce senza confronto.
+
+### Guida di viaggio («Auto esteso»)
+
+Ti racconta cosa vale la pena vedere vicino alla strada: castelli, cattedrali, borghi storici, laghi, montagne… Viene
+da Wikipedia, nella lingua dell'app.
+
+- **Come si attiva:** di serie è spenta. Nell'auto, «Impostazioni» › «Pulsanti del pannello laterale» › «Guida» (Sì).
+  Da quel momento «Guida» è nel pannello.
+- **Cosa vedi:** una scheda con la foto, il nome, a che distanza e da che lato si trova («2,8 km · a destra») e un
+  riassunto; sotto, cosa c'è più avanti. «Racconta» lo legge ad alta voce e «Portami lì» avvia la navigazione. Toccando
+  un luogo dell'elenco, passa nella scheda.
+- **Voce:** con «Voce» attiva (in alto a destra), racconta solo i luoghi più importanti a meno di 5 km davanti, ognuno
+  una volta e al massimo uno ogni 4 minuti. Non parla mai sopra una chiamata, le indicazioni del navigatore o un altro
+  avviso, e la musica si abbassa un momento mentre parla. Mentre parla compare «Ferma», che la interrompe
+  subito. «Senza voce»: solo le schede (e interrompe quello che sta raccontando).
+- **Da fermo:** dopo un minuto da fermo (per esempio in ricarica), mostra cosa c'è vicino a piedi, con i minuti a piedi.
+- **Schermo diviso:** con «Dividi schermo», la guida sta accanto ad Android Auto, in una colonna, e si può usare in
+  marcia, senza avviso.
+- Funziona mentre la guida è aperta, da sola o accanto ad Android Auto. Serve la posizione GPS e pochissimi dati
+  mobili. Testi e foto: Wikipedia e Wikimedia Commons (CC BY-SA).
+
+### Karaoke («Auto esteso»)
+
+Il testo di ciò che suona su Android Auto (Spotify, YouTube Music…), sincronizzato con la canzone. Viene da LRCLIB
+(lrclib.net).
+
+- **Come si attiva:** di serie è spento. Nell'auto, «Impostazioni» › «Pulsanti del pannello laterale» › «Karaoke» (Sì).
+- **Da fermo:** il testo intero, con la riga attuale evidenziata e che scorre da sola.
+- **In marcia:** solo la riga attuale e la successiva, grandi e ferme, per non distrarre.
+- In alto, la copertina, il titolo e precedente / pausa / successivo.
+- Serve l'«Accesso alle notifiche» (lo stesso di «Leggi il percorso di Google Maps», nel menu ⚙ del telefono). Se una
+  canzone non ha il testo sincronizzato, compare il testo senza tempi; se non c'è, lo dice.
+- Con «Dividi schermo» sta accanto ad Android Auto; come il resto dell'intrattenimento, meglio ad auto ferma.
 
 ### Connessione automatica: «Connetti al rilevamento del Bluetooth dell'auto»
 

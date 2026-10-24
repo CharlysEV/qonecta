@@ -381,7 +381,7 @@ admite.
   Conducción, Viajes, Instrumentos, Eficiencia y Estado), «Fotos», «Vídeos», «Web», «TV», «Radio», «Juegos» y «Ajustes». Con
   Android Auto en pantalla, el panel se recoge solo a los pocos segundos (también en Fotos, TV, Juegos…); toca el borde del lado del panel para que vuelva.
   Fotos, vídeos, web, TV y juegos son **solo para cuando el coche está parado**.
-- **Pantalla partida («Auto extendido»):** en «Coche», «Web», «Vídeos» y «TV», el botón «Partir pantalla» del panel
+- **Pantalla partida («Auto extendido»):** en «Coche», «Guía», «Web», «Vídeos» y «TV», el botón «Partir pantalla» del panel
   pone Android Auto a la izquierda, junto al panel, y esa pantalla a la derecha. Con «Coche» tienes los instrumentos
   (consumo, batería, autonomía, próxima parada) junto a Android Auto, y vale en marcha, sin aviso. Android Auto se queda con algo más de la mitad, lo
   justo para que Google Maps se pueda mover y buscar. Cada lado responde a sus toques. «Pantalla completa» la deja sola
@@ -411,7 +411,11 @@ admite.
       Transición Ecológica, publicado por la DGT en nap.dgt.es): la potencia y el **voltaje** de cada uno. Se descarga
       en el móvil una vez por semana (unos 3 MB). Lo que falta en el registro (hay operadores que no han dado de alta
       todos sus puntos) se completa con OpenStreetMap, sin repetir los que ya están; fuera de España, todo sale de
-      OpenStreetMap, donde la potencia o la red pueden faltar. **«Cargadores en ruta»** abre la lista con el distintivo
+      OpenStreetMap, donde la potencia o la red pueden faltar. **En Alemania**, los rápidos salen del registro oficial de
+      la Bundesnetzagentur (Ladesäulenregister), con su potencia y sus enchufes (sin voltaje: se usa el típico de cada
+      red). Pesa unos 55 MB, así que se baja solo con Wi-Fi, una vez al mes y solo en los móviles que han planificado
+      alguna ruta por Alemania; mientras, OpenStreetMap. La app elige el registro por dónde pasa la ruta, no por el
+      idioma del móvil. **«Cargadores en ruta»** abre la lista con el distintivo
       de cada red, el km, la potencia, el voltaje («350 kW · 920 V») y los enchufes.
     - **Cargadores cerca de ti:** «Cerca de mí» (junto a «Filtrar») busca los cargadores a 5, 10, 25 o 50 km de donde
       estás, sin ruta, de más cerca a más lejos: eliges la red («los Wenea cerca de mí») y la potencia mínima, y ves a
@@ -544,6 +548,39 @@ Tu mes en cifras, en la pestaña «Viajes» del móvil › «Ver el informe». C
 
 Los viajes son los del coche (cuenta de Leapmotor) si su historial cubre el mes entero, y si no, los que grabó la app.
 La nube solo guarda 35 días, así que cada mes se guarda resumido en el móvil. El primer mes sale sin comparación.
+
+### Guía del camino («Auto extendido»)
+
+Te cuenta lo que merece la pena cerca de la carretera: castillos, catedrales, pueblos con historia, embalses, sierras…
+Lo saca de Wikipedia, en el idioma de la app.
+
+- **Cómo se enciende:** no sale de serie. En el coche, «Ajustes» › «Botones del panel lateral» › «Guía» (Sí). Desde
+  entonces, «Guía» está en el panel.
+- **Qué ves:** una tarjeta con la foto, el nombre, a cuánto y a qué lado queda («2,8 km · a la derecha») y un resumen;
+  debajo, lo que viene más adelante. «Contar» lo lee en voz alta y «Llévame» abre la navegación hasta allí. Al tocar un
+  sitio de la lista, pasa a la tarjeta.
+- **Voz:** con «Voz» encendido (arriba a la derecha), cuenta solo los sitios más destacados que tienes a menos de 5 km
+  por delante, cada uno una vez y como mucho uno cada 4 minutos. Nunca habla encima de una llamada, de las indicaciones
+  del navegador ni de otro aviso, y la música baja un momento mientras habla. Mientras habla sale «Parar»,
+  que la corta al momento. «Sin voz»: solo las tarjetas (y corta lo que esté contando).
+- **Parado:** tras un minuto parado (por ejemplo, cargando), enseña lo que tienes cerca a pie, con los minutos andando.
+- **Pantalla partida:** con «Partir pantalla», la guía va junto a Android Auto, en una columna, y vale en marcha, sin
+  aviso.
+- Funciona mientras la guía está abierta, sola o junto a Android Auto. Necesita la posición del GPS y muy pocos datos
+  móviles. Textos y fotos: Wikipedia y Wikimedia Commons (CC BY-SA).
+
+### Karaoke («Auto extendido»)
+
+La letra de lo que suena en Android Auto (Spotify, YouTube Music…), sincronizada con la canción. Sale de LRCLIB
+(lrclib.net).
+
+- **Cómo se enciende:** no sale de serie. En el coche, «Ajustes» › «Botones del panel lateral» › «Karaoke» (Sí).
+- **Parado:** la letra entera, con la línea de ahora resaltada y avanzando sola.
+- **En marcha:** solo la línea de ahora y la siguiente, grandes y quietas, para no distraer.
+- Arriba, la portada, el título y anterior / pausa / siguiente.
+- Necesita el «Acceso a notificaciones» (el mismo que «Leer la ruta de Google Maps», en el menú ⚙ del móvil). Si una
+  canción no tiene letra sincronizada, sale el texto sin tiempos; si no hay ninguna, lo dice.
+- Con «Partir pantalla» va junto a Android Auto; como el resto del ocio, mejor con el coche parado.
 
 ### Conexión automática: «Conectar al detectar el Bluetooth del coche»
 

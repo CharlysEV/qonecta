@@ -60,11 +60,13 @@ final class DgtChargers {
         boolean type2;
         /** Puntos de recarga (conectores que cargan a la vez). */
         int points;
+        /** De qué registro oficial viene: «dgt» (España) o «de» (Alemania, BnetzaChargers). */
+        String src = "dgt";
 
         /** Como cargador de la ruta (sin el km). */
         RoutePlanner.Charger toCharger() {
             RoutePlanner.Charger c = new RoutePlanner.Charger();
-            c.id = id == null || id.isEmpty() ? "" : "dgt:" + id;
+            c.id = id == null || id.isEmpty() ? "" : src + ":" + id;
             c.lat = lat;
             c.lon = lon;
             // La red, por el operador oficial (el nombre engaña: hay «superchargers» que no son de Tesla).
@@ -428,6 +430,8 @@ final class DgtChargers {
         // Tras la coma, la forma jurídica o algo más («…, S.L.», «…, SOCIEDAD LIMITADA»).
         if (o.indexOf(',') > 2) o = o.substring(0, o.indexOf(',')).trim();
         o = o.replaceAll("(?i)[,.]?\\s+(s\\.?\\s?l\\.?\\s?u?\\.?|s\\.?\\s?a\\.?\\s?u?\\.?|s\\.?\\s?coop\\.?.*|sociedad .*)$", "").trim();
+        // Las alemanas (registro de la Bundesnetzagentur): «GmbH», «AG und Co.KG», «GmbH & Co. KG», «SE», «mbH»…
+        o = o.replaceAll("(?i)\\s+(gmbh\\b.*|ag\\b.*|se|kg|mbh|e\\.\\s?v\\.)$", "").trim();
         if (o.length() > 2 && o.equals(o.toUpperCase(Locale.ROOT)) && o.matches(".*[A-ZÁÉÍÓÚÑ].*")) {
             StringBuilder b = new StringBuilder();
             for (String w : o.toLowerCase(Locale.ROOT).split(" ")) {

@@ -8,9 +8,9 @@ import java.nio.charset.StandardCharsets;
 
 /** HTTP mínimo para los servicios abiertos (OSM, OSRM, Open-Meteo). Llamar fuera del hilo principal. */
 final class Http {
-    /** Nominatim y Overpass piden identificarse. */
+    /** Nominatim, Overpass y Wikipedia piden identificarse, con un sitio de contacto. */
     static final String USER_AGENT = "Qonecta+/" + com.andrerinas.openheadunit.BuildConfig.VERSION_NAME
-            + " (proyecto abierto; Android Auto en los coches Leapmotor)";
+            + " (" + About.REPO_URL + "; proyecto abierto; Android Auto en los coches Leapmotor)";
 
     private Http() {
     }

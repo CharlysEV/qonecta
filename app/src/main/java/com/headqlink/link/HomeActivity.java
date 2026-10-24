@@ -167,6 +167,8 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         if (modeView == null) return;
         if (insights != null && tab == 1) insights.show();
         if (phoneHome != null && tab == 2) phoneHome.show();
+        // Si este móvil ha planificado rutas por Alemania, el registro oficial de allí al día (con Wi-Fi; barato si no toca).
+        BnetzaChargers.refreshIfDue(this);
         LinkState.addListener(this);
         // Los interruptores de conexión automática también se cambian en Ajustes.
         syncSwitch(btAuto, cfg.btAutoConnect(), btAutoListener);
@@ -446,12 +448,14 @@ public class HomeActivity extends Activity implements LinkState.Listener {
      */
     /** Notas de una versión (de GitHub, en texto llano) con el enlace a la release; download: botón «Descargar». */
     private void showReleaseNotes(String title, UpdateCheck.Release r, boolean download) {
-        UpdateCheck.Notes parts = UpdateCheck.sections(r.notes);
+        // En el idioma del móvil (o de la app), si las notas lo traen.
+        String md = UpdateCheck.localized(r.notes, Str.locale());
+        UpdateCheck.Notes parts = UpdateCheck.sections(md);
         if (parts.structured()) {
             showReleaseNotes(title, r, download, parts);
             return;
         }
-        String notes = UpdateCheck.plainNotes(r.notes);
+        String notes = UpdateCheck.plainNotes(md);
         MaterialAlertDialogBuilder b = new MaterialAlertDialogBuilder(this)
                 .setTitle(title)
                 .setMessage(notes.isEmpty() ? Str.get(R.string.hql_update_no_notes) : notes)

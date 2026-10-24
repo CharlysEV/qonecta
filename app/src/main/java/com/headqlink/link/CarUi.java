@@ -544,9 +544,13 @@ final class CarUi {
         return width - sideW() - (splitActive() ? splitAaWidth(width, height, pw, dpi) : 0);
     }
 
-    /** Pantallas que se pueden poner junto a AA: la sección Coche (instrumentos: vale en marcha) y las de ocio. */
+    /**
+     * Pantallas que se pueden poner junto a AA: la sección Coche (instrumentos: vale en marcha), la guía del camino y las de
+     * ocio.
+     */
     static boolean splitCapable(String name) {
-        return splitRoom && ("car".equals(name) || "web".equals(name) || "videos".equals(name) || "tv".equals(name));
+        return splitRoom && ("car".equals(name) || "guide".equals(name) || "web".equals(name) || "videos".equals(name)
+                || "tv".equals(name) || "karaoke".equals(name));
     }
 
     /**
@@ -557,9 +561,12 @@ final class CarUi {
     /** La pantalla de esta sesión es lo bastante ancha para partirla (CarUi, al crearse). */
     private static volatile boolean splitRoom = true;
 
-    /** El aviso (mejor parado, bajo tu responsabilidad) es para el ocio; la sección Coche es información de conducción. */
+    /**
+     * El aviso (mejor parado, bajo tu responsabilidad) es para el ocio; la sección Coche y la guía del camino (se escucha
+     * y se mira de un vistazo) son para ir conduciendo.
+     */
     static boolean splitNeedsWarning(String name) {
-        return splitCapable(name) && !"car".equals(name);
+        return splitCapable(name) && !"car".equals(name) && !"guide".equals(name);
     }
 
     /**
@@ -2231,6 +2238,8 @@ final class CarUi {
             case "radio": return Str.get(R.string.hql_radio);
             case "games": return Str.get(R.string.hql_games);
             case "home": return Str.get(R.string.hql_ha_title);
+            case "guide": return Str.get(R.string.hql_guide);
+            case "karaoke": return Str.get(R.string.hql_karaoke);
             default: return id;
         }
     }
@@ -2245,6 +2254,8 @@ final class CarUi {
             case "radio": return R.drawable.hql_ic_radio;
             case "games": return R.drawable.hql_ic_games;
             case "home": return R.drawable.hql_ic_home;
+            case "guide": return R.drawable.hql_ic_guide;
+            case "karaoke": return R.drawable.hql_ic_karaoke;
             default: return R.drawable.hql_ic_settings;
         }
     }
@@ -2447,7 +2458,7 @@ final class CarUi {
         }
         // WhitelistAppOn: Android Auto y la sección Coche son interfaces de conducción; el resto, ocio.
         // La radio también (solo audio, como la música de AA).
-        SspSession.setDrivingUi("aa".equals(name) || "car".equals(name) || "radio".equals(name));
+        SspSession.setDrivingUi("aa".equals(name) || "car".equals(name) || "radio".equals(name) || "guide".equals(name));
         stopPanelSlide();
         // Panel y pantalla grande se ajustan junto con la pantalla nueva (applyLayout, abajo), de una vez: antes AA recibía
         // primero los márgenes del panel completo y enseguida los de la pantalla partida, y se recolocaba dos veces.
@@ -2535,6 +2546,10 @@ final class CarUi {
                 return InstrumentsScreen::new;
             case "efficiency":
                 return EfficiencyScreen::new;
+            case "guide":
+                return GuideScreen::new;
+            case "karaoke":
+                return KaraokeScreen::new;
             default:
                 return null;
         }

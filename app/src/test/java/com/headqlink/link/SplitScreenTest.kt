@@ -15,6 +15,12 @@ class SplitScreenTest {
         // La sección Coche también (instrumentos junto a AA), y sin aviso: es información de conducción.
         assertTrue(CarUi.splitCapable("car"))
         assertFalse(CarUi.splitNeedsWarning("car"))
+        // La guía del camino, igual: junto a AA y sin aviso.
+        assertTrue(CarUi.splitCapable("guide"))
+        assertFalse(CarUi.splitNeedsWarning("guide"))
+        // El karaoke también, pero con el aviso del ocio.
+        assertTrue(CarUi.splitCapable("karaoke"))
+        assertTrue(CarUi.splitNeedsWarning("karaoke"))
         assertTrue(CarUi.splitNeedsWarning("web"))
         assertFalse(CarUi.splitCapable("aa"))
         assertFalse(CarUi.splitCapable("photos"))

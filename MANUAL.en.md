@@ -374,7 +374,7 @@ version). That tells us whether the C10 supports it.
   Efficiency and Status tabs), "Photos", "Videos", "Web", "TV", "Radio", "Games" and "Settings". With Android Auto on screen, the
   panel shrinks by itself after a few seconds (also in Photos, TV, Games…); tap the edge on the panel's side to bring it back. Photos, videos, web, TV and games are
   **only for when the car is stopped**.
-- **Split screen ("Auto extended"):** in "Car", "Web", "Videos" and "TV", the panel's "Split screen" button puts
+- **Split screen ("Auto extended"):** in "Car", "Guide", "Web", "Videos" and "TV", the panel's "Split screen" button puts
   Android Auto on the left, next to the panel, and that screen on the right. With "Car" you get the gauges (consumption,
   battery, range, next stop) next to Android Auto, and it is fine while driving, with no notice. Android Auto keeps a bit more than half, just enough for
   Google Maps to pan and search. Each side takes its own touches. "Full screen" shows it alone again. It lasts while you
@@ -402,7 +402,7 @@ version). That tells us whether the C10 supports it.
       Ecological Transition, published by the DGT at nap.dgt.es): the power and **voltage** of each one. It is
       downloaded on the phone once a week (about 3 MB). What the registry lacks (some operators have not registered
       all their points) is filled in from OpenStreetMap, without repeating the ones already there; outside Spain,
-      everything comes from OpenStreetMap, where power or network may be missing. **"Chargers along the route"** opens
+      everything comes from OpenStreetMap, where power or network may be missing. **In Germany**, fast chargers come from the Bundesnetzagentur's official register (Ladesäulenregister), with their power and sockets (no voltage: each network's typical one is used). It weighs about 55 MB, so it is only downloaded on Wi-Fi, once a month and only on phones that have planned a route through Germany; meanwhile, OpenStreetMap. The app picks the register by where the route goes, not by the phone's language. **"Chargers along the route"** opens
       the list with each network's badge, the km, the power, the voltage ("350 kW · 920 V") and the sockets.
     - **Chargers near you:** "Near me" (next to "Filter") finds the chargers 5, 10, 25 or 50 km from where you are,
       without a route, nearest first: pick the network ("the Wenea ones near me") and the minimum power, and see how far
@@ -535,6 +535,39 @@ Your month in figures, in the phone's "Trips" tab › "See the report". Use ‹ 
 Trips come from the car (Leapmotor account) if its history covers the whole month; otherwise, from the ones the app
 recorded. The cloud only keeps 35 days, so each month is saved as a summary on the phone. The first month has no
 comparison.
+
+### Road guide ("Auto extended")
+
+It tells you what is worth seeing near the road: castles, cathedrals, historic towns, reservoirs, mountain ranges… It
+comes from Wikipedia, in the app's language.
+
+- **How to turn it on:** it is off by default. In the car, "Settings" › "Side panel buttons" › "Guide" (Yes). From then
+  on, "Guide" is in the panel.
+- **What you see:** a card with the photo, the name, how far and on which side it is ("2.8 km · on the right") and a
+  summary; below, what comes further ahead. "Tell me" reads it aloud and "Take me there" starts navigation to it.
+  Tapping a place in the list moves it to the card.
+- **Voice:** with "Voice" on (top right), it only tells you about the most notable places less than 5 km ahead, each
+  one once and at most one every 4 minutes. It never talks over a call, the navigator's directions or another alert,
+  and the music is lowered for a moment while it speaks. While it speaks, "Stop" cuts it off at once. "No
+  voice": cards only (and it cuts off what it is saying).
+- **Stopped:** after a minute stopped (for example, charging), it shows what is nearby on foot, with the walking time.
+- **Split screen:** with "Split screen", the guide sits next to Android Auto, in one column, and can be used while
+  driving, with no warning.
+- It works while the guide is open, alone or next to Android Auto. It needs the GPS position and very little mobile
+  data. Text and photos: Wikipedia and Wikimedia Commons (CC BY-SA).
+
+### Karaoke ("Auto extended")
+
+The lyrics of what is playing in Android Auto (Spotify, YouTube Music…), synced with the song. They come from LRCLIB
+(lrclib.net).
+
+- **How to turn it on:** it is off by default. In the car, "Settings" › "Side panel buttons" › "Karaoke" (Yes).
+- **Stopped:** the whole lyrics, with the current line highlighted and scrolling by itself.
+- **While driving:** only the current line and the next one, large and still, so they don't distract.
+- At the top, the cover, the title and previous / pause / next.
+- It needs "Notification access" (the same as "Read the Google Maps route", in the phone's ⚙ menu). If a song has no
+  synced lyrics, the plain text is shown; if there are none, it says so.
+- With "Split screen" it sits next to Android Auto; like the rest of the entertainment, better with the car stopped.
 
 ### Automatic connection: "Connect when the car's Bluetooth is detected"
 
