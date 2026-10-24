@@ -1253,9 +1253,4 @@
     <string name="hql_karaoke_offline">Pas de connexion au service de paroles : nouvel essai dans quelques secondes.</string>
     <string name="hql_karaoke_source">Paroles : LRCLIB (lrclib.net)</string>
     <string name="hql_about_lrclib">Karaoké : paroles synchronisées de LRCLIB (lrclib.net)</string>
-    <string name="hql_karaoke_voice">Voix</string>
-    <string name="hql_karaoke_voice_normal">Normale</string>
-    <string name="hql_karaoke_voice_soft">Douce</string>
-    <string name="hql_karaoke_voice_medium">Moyenne</string>
-    <string name="hql_karaoke_voice_off">Sans voix</string>
 </resources>

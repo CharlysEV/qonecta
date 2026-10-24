@@ -565,10 +565,6 @@ The lyrics of what is playing in Android Auto (Spotify, YouTube Music…), synce
 - **Stopped:** the whole lyrics, with the current line highlighted and scrolling by itself.
 - **While driving:** only the current line and the next one, large and still, so they don't distract.
 - At the top, the cover, the title and previous / pause / next.
-- **"Voice":** "Normal", "Soft" (the voice at half), "Medium" (very low, as a guide; the default) and "No
-  voice" turn the song's voice down so you can sing over it; the low end (bass and kick) stays. It works with
-  the music that comes through Android Auto, best with the voice in the centre of the mix (most pop and rock).
-  When you leave the karaoke, the music sounds normal again.
 - It needs "Notification access" (the same as "Read the Google Maps route", in the phone's ⚙ menu). If a song has no
   synced lyrics, the plain text is shown; if there are none, it says so.
 - With "Split screen" it sits next to Android Auto; like the rest of the entertainment, better with the car stopped.

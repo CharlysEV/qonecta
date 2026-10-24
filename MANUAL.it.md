@@ -584,10 +584,6 @@ Il testo di ciò che suona su Android Auto (Spotify, YouTube Music…), sincroni
 - **Da fermo:** il testo intero, con la riga attuale evidenziata e che scorre da sola.
 - **In marcia:** solo la riga attuale e la successiva, grandi e ferme, per non distrarre.
 - In alto, la copertina, il titolo e precedente / pausa / successivo.
-- **«Voce»:** «Normale», «Leggera» (la voce a metà), «Media» (molto bassa, come guida; quella di serie) e
-  «Senza voce» abbassano la voce della canzone per cantarci sopra; i bassi (basso e cassa) restano. Funziona
-  con la musica che arriva da Android Auto, meglio con la voce al centro del mix (quasi tutto il pop e il
-  rock). Uscendo dal karaoke, la musica torna normale.
 - Serve l'«Accesso alle notifiche» (lo stesso di «Leggi il percorso di Google Maps», nel menu ⚙ del telefono). Se una
   canzone non ha il testo sincronizzato, compare il testo senza tempi; se non c'è, lo dice.
 - Con «Dividi schermo» sta accanto ad Android Auto; come il resto dell'intrattenimento, meglio ad auto ferma.

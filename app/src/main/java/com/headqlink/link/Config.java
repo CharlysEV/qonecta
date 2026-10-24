@@ -932,18 +932,6 @@ final class Config {
         sp.edit().putString(PANEL_BUTTONS, String.join(",", ids)).putBoolean("panel_home_seen", true).apply();
     }
 
-    /**
-     * Karaoke: cuánto se baja la voz de la canción (0 Normal, 1 Suave, 2 Media, 3 Sin voz; VocalReducer.LEVELS). De
-     * serie, Media: se oye de fondo y marca la melodía.
-     */
-    int karaokeVocal() {
-        return Math.max(0, Math.min(3, sp.getInt("karaoke_vocal", 2)));
-    }
-
-    void setKaraokeVocal(int level) {
-        sp.edit().putInt("karaoke_vocal", Math.max(0, Math.min(3, level))).apply();
-    }
-
     /** Guía del camino (RoadGuide): contar en voz alta lo que hay por delante (por defecto, sí). */
     boolean guideVoice() {
         return sp.getBoolean("guide_voice", true);

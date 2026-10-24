@@ -574,10 +574,6 @@ La letra de lo que suena en Android Auto (Spotify, YouTube Music…), sincroniza
 - **Parado:** la letra entera, con la línea de ahora resaltada y avanzando sola.
 - **En marcha:** solo la línea de ahora y la siguiente, grandes y quietas, para no distraer.
 - Arriba, la portada, el título y anterior / pausa / siguiente.
-- **«Voz»:** «Normal», «Suave» (la voz a la mitad), «Media» (muy baja, de guía; la de serie) y «Sin voz»
-  bajan la voz de la canción para cantar encima; los graves (bajo y bombo) se quedan. Funciona con la música
-  que llega por Android Auto y mejor con la voz en el centro de la mezcla (casi todo el pop y el rock). Al
-  salir del karaoke, la música vuelve a sonar normal.
 - Necesita el «Acceso a notificaciones» (el mismo que «Leer la ruta de Google Maps», en el menú ⚙ del móvil). Si una
   canción no tiene letra sincronizada, sale el texto sin tiempos; si no hay ninguna, lo dice.
 - Con «Partir pantalla» va junto a Android Auto; como el resto del ocio, mejor con el coche parado.
