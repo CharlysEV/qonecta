@@ -503,7 +503,23 @@ final class IptvScreen implements CarScreen {
         s.setMediaPlaybackRequiresUserGesture(false);
         s.setUseWideViewPort(true);
         s.setLoadWithOverviewMode(true);
-        w.setWebViewClient(new android.webkit.WebViewClient());
+        // Canales web (YouTube y webs de las cadenas): el mismo bloqueo de anuncios que el navegador, si está encendido.
+        boolean adblock = WebScreen.adblockOn(c);
+        boolean early = adblock && AdBlockJs.install(w) != null;
+        if (adblock) AdBlock.ensure(c);
+        w.setWebViewClient(new android.webkit.WebViewClient() {
+            @Override
+            public void onPageStarted(android.webkit.WebView v, String url, android.graphics.Bitmap favicon) {
+                if (adblock && !early) AdBlockJs.late(v);
+            }
+
+            @Override
+            public android.webkit.WebResourceResponse shouldInterceptRequest(android.webkit.WebView v,
+                                                                              android.webkit.WebResourceRequest req) {
+                if (!adblock || req.getUrl() == null || !AdBlock.isAd(req.getUrl().getHost())) return null;
+                return new android.webkit.WebResourceResponse("text/plain", "utf-8", new java.io.ByteArrayInputStream(new byte[0]));
+            }
+        });
         View[] custom = new View[1];
         w.setWebChromeClient(new android.webkit.WebChromeClient() {
             @Override

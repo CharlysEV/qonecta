@@ -83,6 +83,11 @@ final class SplashView extends View {
         p.setTextSize(h * 0.034f);
         int dots = (int) (t * 2) % 4;
         cv.drawText(Str.get(R.string.hql_starting_auto) + "...".substring(0, dots) + "   ".substring(dots), w / 2, h * 0.88f, p);
+        // De quién es la app y de qué parte, pequeño y en el color de la app.
+        p.setColor(CarStyle.ACCENT);
+        p.setTextSize(h * 0.028f);
+        cv.drawText(Str.get(R.string.hql_about_by, About.AUTHOR) + " · " + Str.get(R.string.hql_about_from, About.BASE_AUTHOR),
+                w / 2, h * 0.95f, p);
         if (!stopped && isAttachedToWindow()) postInvalidateOnAnimation();
     }
 }

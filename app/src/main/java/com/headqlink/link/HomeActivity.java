@@ -89,7 +89,11 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         modeDetail = findViewById(R.id.hql_home_mode_detail);
         hint = findViewById(R.id.hql_home_hint);
         toggle = findViewById(R.id.hql_home_toggle);
-        ((TextView) findViewById(R.id.hql_home_version)).setText(Ui.appVersionLabel(this));
+        // La versión y, debajo, de quién es la app; al tocar, «Acerca de y créditos».
+        TextView version = findViewById(R.id.hql_home_version);
+        version.setText(About.versionByline(this));
+        About.fitByline(version);
+        version.setOnClickListener(v -> About.show(this));
         updateRow = findViewById(R.id.hql_home_update);
         // La novedad estrella (una vez) y, al cerrarla, las novedades de la versión recién instalada (la primera vez que
         // arranca).
@@ -667,6 +671,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         app.add(new int[]{13, R.string.hql_update_check});
         app.add(new int[]{18, R.string.hql_backup_menu});
         app.add(new int[]{17, R.string.hql_terms_title});
+        app.add(new int[]{21, R.string.hql_about_menu});
         if (android.os.Build.VERSION.SDK_INT >= 33) app.add(new int[]{4, R.string.hql_language});
         if (android.os.Build.VERSION.SDK_INT >= 26) app.add(new int[]{8, R.string.hql_w_add_widget});
         if (android.os.Build.VERSION.SDK_INT >= 33) app.add(new int[]{9, R.string.hql_w_add_tile});
@@ -841,6 +846,9 @@ public class HomeActivity extends Activity implements LinkState.Listener {
                 break;
             case 17:
                 TermsOfUse.show(this);
+                break;
+            case 21:
+                About.show(this);
                 break;
             case 18:
                 showBackup();

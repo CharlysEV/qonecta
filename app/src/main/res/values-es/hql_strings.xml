@@ -1197,4 +1197,28 @@
     <string name="hql_report_next">Mes siguiente</string>
     <string name="hql_report_notice_title">Tu %1$s con el C10 está listo</string>
     <string name="hql_report_notice_text">%1$s km · %2$s kWh/100 km · toca para verlo</string>
+    <!-- Acerca de y créditos -->
+    <string name="hql_about_menu">Acerca de y créditos</string>
+    <string name="hql_about_by">por %1$s</string>
+    <string name="hql_about_from">a partir de HeadQLink, de %1$s</string>
+    <string name="hql_about_tagline">Android Auto y mucho más en la pantalla de tu Leapmotor.</string>
+    <string name="hql_about_based">Basado en</string>
+    <string name="hql_about_and_contributors">%1$s y colaboradores</string>
+    <string name="hql_about_qdauto">Motor de protocolo QDAuto · %1$s</string>
+    <string name="hql_about_cloud">Datos del coche (cuenta de Leapmotor)</string>
+    <string name="hql_about_role_protocol">protocolo</string>
+    <string name="hql_about_role_commands">órdenes del widget y consumo semanal</string>
+    <string name="hql_about_role_reev">depósito del REEV e historial de viajes</string>
+    <string name="hql_about_data">Datos en línea</string>
+    <string name="hql_about_osm">Mapas, carreteras y cargadores: © colaboradores de OpenStreetMap (ODbL), con Overpass, OSRM, Photon (komoot) y Nominatim</string>
+    <string name="hql_about_weather">Tiempo y altitud: Open-Meteo.com (CC BY 4.0) y Open Topo Data</string>
+    <string name="hql_about_dgt">Cargadores en España: registro del MITECO publicado por la DGT</string>
+    <string name="hql_about_radio">Radio: radio-browser.info</string>
+    <string name="hql_about_adblock">Bloqueo de anuncios: lista HaGeZi Pro mini (GPL-3.0)</string>
+    <string name="hql_about_libs">Bibliotecas y recursos</string>
+    <string name="hql_about_3d">Coche 3D: three.js (MIT) y «LEAPMOTORS C10», de vinishows-1753d1 (CC BY 4.0, modificado)</string>
+    <string name="hql_about_leaflet">Mapas: Leaflet (BSD 2-Clause)</string>
+    <string name="hql_about_emulators">Emuladores: Nestopia, halfNES, bsnes, ClownMDEmu y PCSX ReARMed. Todas las licencias, en el fichero NOTICE de GitHub.</string>
+    <string name="hql_about_license">Licencia GNU AGPL-3.0: software libre, con el código fuente en GitHub y sin garantía.</string>
+    <string name="hql_about_independent">Qonecta+ no tiene relación con Leapmotor, Google, Neusoft ni con los proyectos que cita.</string>
 </resources>

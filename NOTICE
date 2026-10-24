@@ -1,11 +1,19 @@
-Qonecta+ (formerly HeadQLink) is licensed under the GNU Affero General Public License v3.0 (see LICENSE). Its base,
-Open Headunit, and the other projects it builds on are credited in README.md.
+Qonecta+ (formerly HeadQLink)
+Copyright (C) 2026 CharlysEV - https://github.com/CharlysEV/qonecta
+Licensed under the GNU Affero General Public License v3.0 (see LICENSE).
+
+Based on:
+  HeadQLink by ryazrm (https://github.com/ryazrm/headqlink), GNU AGPL v3.0, which is based on
+  Open Headunit by Andre Rinas (andreknieriem) and contributors (https://github.com/andreknieriem/open-headunit),
+  which builds on Headunit for Android Auto by Michael A. Reid (COPYRIGHT_MICHAEL_REID_GPLv3AFFERO.txt).
+  Their copyright notices are preserved. Qonecta+ is an independent project, not affiliated with or endorsed by them.
+  The QDAuto protocol engine is Qonecta+'s own (https://github.com/CharlysEV/qdauto).
 
 Leapmotor cloud client (real car data, optional):
   This product includes code ported from LMB10 (https://github.com/txurtxil/LPB10) by txurtxil,
   licensed under the GNU General Public License v3.0 and combined with Qonecta+ under section 13
-  of both licenses. Only the read-only part of the protocol was ported (login, session refresh,
-  request signing, vehicle list and status); none of LMB10's remote-control functions.
+  of both licenses. Only the protocol part was ported (login, session refresh, request signing, vehicle
+  list and status); none of LMB10's remote-control functions.
     app/src/main/java/com/headqlink/link/LeapCrypto.java  - signing, HKDF key, account PKCS#12 password, device id
     app/src/main/java/com/headqlink/link/LeapApi.java     - login, session, token refresh, vehicle list and status
     app/src/main/java/com/headqlink/link/LeapStatus.java  - signal table, field merging, conversions, charge/tyre rules
@@ -18,9 +26,10 @@ Range-extender (REEV) signals and the Leapmotor cloud trip history:
   consumption endpoint follows leapmotor-api (https://github.com/markoceri/leapmotor-api) by markoceri.
   Both are licensed under the GNU Affero General Public License v3.0. No code was copied; Qonecta+
   reimplements the read-only requests in LeapApi.java, LeapStatus.java and CloudHistory.java.
-  The only command to the car, sentry mode on/off (opt-in: sent only with the car PIN the user saves),
-  follows leapmotor-api's flow (certificate sync, AES-encrypted PIN verify, remote/ctl cmdId 220, result
-  query; sentry status signal 3636), reimplemented in LeapApi.remote() and LeapCrypto.operatePassword().
+  The only commands to the car are the opt-in ones of the "Car" widget (lock, unlock, boot, climate and
+  find; sent only if the user saves the car PIN and turns them on). They follow leapmotor-api's flow
+  (certificate sync, AES-encrypted PIN verify, remote/ctl with cmdId 110, 120, 130 and 170, result query),
+  reimplemented in LeapApi.remote() and LeapCrypto.operatePassword(). No other remote command exists.
 
 Charging point data (Route tab and charge plan):
   In Spain, chargers come from the official registry of public charging points of the Ministry for the
@@ -30,9 +39,31 @@ Charging point data (Route tab and charge plan):
   and for points missing from the registry, chargers come from OpenStreetMap (© OpenStreetMap
   contributors, ODbL) through the public Overpass servers.
 
+Maps, routes, search, weather and elevation (online services the app queries):
+  Map data (C) OpenStreetMap contributors, ODbL (https://www.openstreetmap.org/copyright): map tiles from
+  tile.openstreetmap.org, roads, speed limits and chargers through the public Overpass servers, routes
+  from the OSRM demo server (https://project-osrm.org), place search with Photon by komoot
+  (https://photon.komoot.io) and Nominatim (https://nominatim.org).
+  Weather data and elevation by Open-Meteo.com (https://open-meteo.com), CC BY 4.0; elevation fallback
+  from Open Topo Data (https://www.opentopodata.org) with NASA SRTM data.
+  Ad and tracker blocking (web browser and TV web channels): the domain list "HaGeZi Pro mini" from HaGeZi's DNS
+  blocklists (https://github.com/hagezi/dns-blocklists, GPL-3.0), downloaded by the app once a week; not bundled.
+  Internet radio directory: radio-browser.info (https://www.radio-browser.info). TV lists: the app reads the
+  TDTChannels list format (https://github.com/LaQuay/TDTChannels, Apache-2.0); no list is bundled.
+
 three.js (3D car in the Status tab):
   app/src/main/assets/three/three.min.js is three.js r149 (https://threejs.org), Copyright 2010-2023
   three.js authors, MIT License (app/src/main/assets/three/LICENSE).
+
+C10 3D model (Status tab):
+  app/src/main/assets/c10.glb is "LEAPMOTORS C10" by vinishows-1753d1
+  (https://sketchfab.com/3d-models/none-6206d1ddcc1b4c1288ba75d521b29b83), licensed under CC BY 4.0
+  (https://creativecommons.org/licenses/by/4.0/), modified: exterior only, fewer polygons, no textures, plain
+  European plate, grey wheels (app/src/main/assets/c10.glb.LICENSE.txt).
+
+Leaflet (maps of routes and trips):
+  app/src/main/assets/leaflet is Leaflet 1.9.4 (https://leafletjs.com), Copyright (c) 2010-2023 Volodymyr
+  Agafonkin, Copyright (c) 2010-2011 CloudMade, BSD 2-Clause License (app/src/main/assets/leaflet/LICENSE).
 
 Super Nintendo emulator (Games > SNES, the user's own ROM files):
   The core is bsnes by byuu and contributors (libretro port, https://github.com/libretro/bsnes, based on

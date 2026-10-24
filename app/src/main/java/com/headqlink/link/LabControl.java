@@ -13,14 +13,19 @@ import java.util.Locale;
  * un marcador en una esquina (temperatura, calor, fps, bitrate y radio). En la versión de siempre BuildConfig.LAB es
  * false: el canal no acepta órdenes y nada de esto se usa.
  *
- * Órdenes (una por petición, en minúsculas): estado · msg TEXTO · fps N|auto · kbps N|auto · boost on|off|auto ·
- * termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto.
+ * Órdenes (una por petición, en minúsculas): estado · msg TEXTO · fps N|auto · kbps N|auto · cable N|auto ·
+ * boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto.
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
     static volatile int fpsCap;
     /** Tope de bitrate de Claude en kbps (0: ninguno). */
     static volatile int maxKbps;
+    /**
+     * Techo del bitrate adaptable POR CABLE en kbps, por encima del del perfil (0: el del perfil, 16 Mbit/s en Máximo).
+     * Para probar en el coche hasta dónde llega el USB; el adaptable sube solo hasta él si el enlace aguanta.
+     */
+    static volatile int cableKbps;
     /** Salto a 60 fps al tocar: null, lo del perfil; si no, forzado. */
     static volatile Boolean touchBoost;
 
@@ -46,6 +51,9 @@ final class LabControl {
         StringBuilder b = new StringBuilder();
         if (fpsCap > 0) b.append("tope ").append(fpsCap).append(" fps");
         if (maxKbps > 0) b.append(b.length() > 0 ? ", " : "").append(String.format(Locale.getDefault(), "máx. %.1f Mbit/s", maxKbps / 1000.0));
+        if (cableKbps > 0) {
+            b.append(b.length() > 0 ? ", " : "").append(String.format(Locale.getDefault(), "techo por cable %.0f Mbit/s", cableKbps / 1000.0));
+        }
         if (touchBoost != null) b.append(b.length() > 0 ? ", " : "").append(touchBoost ? "salto a 60 al tocar" : "sin salto a 60");
         return b.toString();
     }
@@ -80,6 +88,13 @@ final class LabControl {
             case "kbps":
                 maxKbps = "auto".equals(a) ? 0 : clamp(parse(a), 1000, 20000);
                 done = maxKbps == 0 ? "bitrate sin tope de Claude" : String.format(Locale.getDefault(), "bitrate como mucho %.1f Mbit/s", maxKbps / 1000.0);
+                VideoPipeline.labApply();
+                break;
+            case "cable":
+                cableKbps = "auto".equals(a) ? 0 : clamp(parse(a), 8000, 40000);
+                done = cableKbps == 0 ? "techo por cable: el del perfil"
+                        : String.format(Locale.getDefault(), "techo por cable %.0f Mbit/s (perfil adaptable, coche a 60 fps por cable)",
+                        cableKbps / 1000.0);
                 VideoPipeline.labApply();
                 break;
             case "boost":
@@ -127,12 +142,13 @@ final class LabControl {
             case "auto":
                 fpsCap = 0;
                 maxKbps = 0;
+                cableKbps = 0;
                 touchBoost = null;
                 VideoPipeline.labApply();
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, boost, termica, noche, hud, perfil, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, boost, termica, noche, hud, perfil, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);

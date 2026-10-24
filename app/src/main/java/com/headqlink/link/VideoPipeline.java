@@ -100,6 +100,8 @@ final class VideoPipeline {
     private int abrInitial;
     private int abrMin;
     private int abrMax;
+    /** El adaptable va por cable (el coche pide 50 fps o más): la variante de pruebas puede subirle el techo. */
+    private boolean abrCable;
     private int abrCalm;
     /** Puerta: cola del kernel máxima (bytes) para codificar otro frame. */
     private int gateOutq = GATE_OUTQ;
@@ -318,6 +320,7 @@ final class VideoPipeline {
                     abrInitial = vp.bitrate;
                     abrMin = prof.minBitrateFor(carFps);
                     abrMax = prof.maxBitrateFor(carFps);
+                    abrCable = !VideoProfile.byWifi(carFps);
                 }
             }
             if (prof.followsCar) {
@@ -654,7 +657,10 @@ final class VideoPipeline {
 
     /** Techo del ABR: el del perfil o, con calor, el tope térmico (lo que sea menor). */
     private int abrCeiling() {
-        return labCap(thermalMaxBps > 0 ? Math.min(abrMax, thermalMaxBps) : abrMax);
+        int max = abrMax;
+        // Variante de pruebas: por cable, el techo de Claude (LabControl.cableKbps) si es más alto que el del perfil.
+        if (abrCable && LabControl.cableKbps > 0) max = Math.max(max, LabControl.cableKbps * 1000);
+        return labCap(thermalMaxBps > 0 ? Math.min(max, thermalMaxBps) : max);
     }
 
     /** Variante de pruebas: bps con el tope de bitrate de Claude (LabControl), si lo hay. */
