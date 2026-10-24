@@ -84,7 +84,7 @@
     <string name="hql_brake_help">Die Drosselung gilt nur im Profil „Basis“ (ohne Neukodierung).</string>
     <string name="hql_brake_window">Frames unterwegs bei Drosselung (2)</string>
     <string name="hql_bt_auto_battery">Damit Android den Start im Hintergrund zulässt, erlaube Qonecta+, ohne Akkueinschränkungen zu laufen.</string>
-    <string name="hql_bt_auto_info">Verbindet sich das Handy per Bluetooth mit einem Gerät, dessen Name diesen Text enthält, wartet Qonecta+ auf das Fahrzeug (öffne die Spiegelungs-App auf dessen Display). Trennt sich Bluetooth, bevor die Verbindung steht, hört es wieder auf.</string>
+    <string name="hql_bt_auto_info">Verbindet sich das Handy per Bluetooth mit einem Gerät, dessen Name diesen Text enthält, wartet Qonecta+ auf das Fahrzeug (öffne die Spiegelungsapp auf dessen Display). Trennt sich Bluetooth, bevor die Verbindung steht, hört es wieder auf.</string>
     <string name="hql_bt_auto_switch">Verbinden, wenn das Bluetooth des Fahrzeugs erkannt wird</string>
     <string name="hql_bt_auto_title">Automatische Verbindung</string>
     <string name="hql_calculating">Berechne…</string>
@@ -161,8 +161,8 @@
     <string name="hql_height">Höhe</string>
     <string name="hql_hide">Ausblenden</string>
     <string name="hql_hint_connected">Du kannst das Handy sperren: Das Bild kommt weiter im Fahrzeug an. Trennt sich das Fahrzeug, stoppt Qonecta+ von selbst.</string>
-    <string name="hql_hint_idle">Ist das Fahrzeug an und die Spiegelungs-App auf seinem Display geöffnet, tippe auf „Verbinden“.</string>
-    <string name="hql_hint_searching">Öffne die Spiegelungs-App auf dem Fahrzeugdisplay. Du kannst das Handy jederzeit sperren.</string>
+    <string name="hql_hint_idle">Ist das Fahrzeug an und die Spiegelungsapp auf seinem Display geöffnet, tippe auf „Verbinden“.</string>
+    <string name="hql_hint_searching">Öffne die Spiegelungsapp auf dem Fahrzeugdisplay. Du kannst das Handy jederzeit sperren.</string>
     <string name="hql_home">Start</string>
     <string name="hql_home_no_app">Keine App gewählt.</string>
     <string name="hql_home_opens_app">%1$s öffnet sich im Fahrzeug.</string>
@@ -360,7 +360,7 @@
     <string name="hql_welcome_body">Qonecta+ nutzt die eingebaute Spiegelungsverbindung des Fahrzeugs, um Android Auto auf sein Display zu bringen: Karten, Musik und Nachrichten, mit mehr Funktionen in „Auto erweitert“. Das Handy kann gesperrt und mit ausgeschaltetem Bildschirm bleiben.</string>
     <string name="hql_welcome_never">Und bediene das Handy nie während der Fahrt.</string>
     <string name="hql_welcome_parked">Richte alles bei geparktem Fahrzeug ein</string>
-    <string name="hql_welcome_mirror">Spiegelungs-App auf dem Fahrzeugdisplay sichtbar</string>
+    <string name="hql_welcome_mirror">Spiegelungsapp auf dem Fahrzeugdisplay sichtbar</string>
     <string name="hql_welcome_title">Dein Handy auf dem Display des C10</string>
     <string name="hql_welcome_wifi">Handy und Fahrzeug verbinden sich per Wi-Fi (Wi-Fi Direct oder Handy-Hotspot), ohne Kabel, oder auf Wunsch mit einem USB-Datenkabel.</string>
     <string name="hql_width">Breite</string>
@@ -385,7 +385,7 @@
     <string name="hql_hotspot_off">Hotspot aus: bitte einschalten</string>
     <string name="hql_hotspot_unknown">Hotspotstatus unbekannt</string>
     <string name="hql_hotspot_open">Hotspot-Einstellungen öffnen</string>
-    <string name="hql_hotspot_guide">1. Schalte den Handy-Hotspot ein (am besten 5 GHz und ohne automatisches Ausschalten).\n2. Nur beim ersten Mal: im Fahrzeug unter Einstellungen › Wi-Fi den Hotspot deines Handys wählen.\n3. Öffne die Spiegelungs-App auf dem Fahrzeugdisplay. Qonecta+ verbindet sich selbst, auch bei gesperrtem Handy.\nDas Fahrzeug kann deine mobilen Daten nutzen.</string>
+    <string name="hql_hotspot_guide">1. Schalte den Handy-Hotspot ein (am besten 5 GHz und ohne automatisches Ausschalten).\n2. Nur beim ersten Mal: im Fahrzeug unter Einstellungen › Wi-Fi den Hotspot deines Handys wählen.\n3. Öffne die Spiegelungsapp auf dem Fahrzeugdisplay. Qonecta+ verbindet sich selbst, auch bei gesperrtem Handy.\nDas Fahrzeug kann deine mobilen Daten nutzen.</string>
     <string name="hql_hotspot_guide_title">So verbindest du das Fahrzeug mit dem Hotspot</string>
     <string name="hql_hotspot_tips">Tipps: Das 5-GHz-Band funktioniert besser (bei 2,4 GHz teilt sich der Funk mit dem Bluetooth des Fahrzeugs), und deaktiviere am besten die Option, die den Hotspot ausschaltet, wenn keine Geräte verbunden sind (Samsung).</string>
     <string name="hql_hotspot_row">Handy-Hotspot</string>
@@ -393,7 +393,7 @@
     <string name="hql_hotspot_is_off">Aus</string>
     <string name="hql_hotspot_off_notif">Hotspot aus: einschalten, um das Fahrzeug zu verbinden</string>
     <string name="hql_p2p_needs_hotspot_off">Schalte den Handy-Hotspot aus, um Wi-Fi Direct zu nutzen.</string>
-    <string name="hql_hint_searching_hotspot">Prüfe, ob das Fahrzeug mit dem Handy-Hotspot verbunden ist, und öffne die Spiegelungs-App auf dem Fahrzeugdisplay. Du kannst das Handy sperren.</string>
+    <string name="hql_hint_searching_hotspot">Prüfe, ob das Fahrzeug mit dem Handy-Hotspot verbunden ist, und öffne die Spiegelungsapp auf dem Fahrzeugdisplay. Du kannst das Handy sperren.</string>
     <string name="hql_network">Netzwerk</string>
     <string name="hql_p2p_in_group">Wi-Fi Direct: in der Gruppe des Fahrzeugs (%1$s)</string>
     <string name="hql_p2p_searching">Wi-Fi Direct: suche das Fahrzeug</string>
@@ -527,7 +527,7 @@
     <string name="hql_req_usb_why">Verbinde das Handy per Datenkabel (kein reines Ladekabel) mit dem USB-Datenanschluss des Fahrzeugs. Das Fahrzeug muss das Handy in den Zubehörmodus schalten: Passiert nichts, exportiere das Log und schick es uns (Zeilen HQL/USB).</string>
     <string name="hql_req_usb_chooser">Ist QDLink installiert, fragt Android beim Einstecken eventuell, welche App „QDriveLink“ öffnen soll: Wähle Qonecta+ und „Immer“, oder deinstalliere QDLink.</string>
     <string name="hql_usb_guide_title">Verbindung per USB-Kabel</string>
-    <string name="hql_usb_guide">1. Verbinde das Handy per Datenkabel mit dem USB-Datenanschluss des Fahrzeugs.\n2. Öffne die Spiegelungs-App auf dem Fahrzeugdisplay.\n3. Fragt Android, welche App „QDriveLink“ öffnen soll, wähle Qonecta+ und „Immer“.\nQonecta+ startet von selbst, sobald das Fahrzeug das Handy in den Zubehörmodus schaltet, egal welche Verbindung gewählt ist; ziehst du das Kabel ab, geht es zurück zu Wi-Fi. Passiert nichts, exportiere das Log (Diagnose) und schick es uns.</string>
+    <string name="hql_usb_guide">1. Verbinde das Handy per Datenkabel mit dem USB-Datenanschluss des Fahrzeugs.\n2. Öffne die Spiegelungsapp auf dem Fahrzeugdisplay.\n3. Fragt Android, welche App „QDriveLink“ öffnen soll, wähle Qonecta+ und „Immer“.\nQonecta+ startet von selbst, sobald das Fahrzeug das Handy in den Zubehörmodus schaltet, egal welche Verbindung gewählt ist; ziehst du das Kabel ab, geht es zurück zu Wi-Fi. Passiert nichts, exportiere das Log (Diagnose) und schick es uns.</string>
     <string name="hql_usb_net_waiting">USB-Kabel: warte auf das Fahrzeug (Datenkabel im USB-Datenanschluss des Fahrzeugs)</string>
     <string name="hql_usb_net_connected">USB-Kabel: verbunden</string>
     <string name="hql_usb_net_permission">USB-Kabel: erlaube Qonecta+, %1$s zu öffnen</string>
@@ -1033,7 +1033,7 @@
     <string name="hql_aa_size_note">Auf kleinen Bildschirmen (10\" wie beim T03) ist es schon von selbst kleiner. Gilt beim Neuverbinden.</string>
     <string name="hql_list_add">Liste hinzufügen</string>
     <string name="hql_lists_help">Tippe auf eine Liste, um sie im Auto zu nutzen (dort kannst du auch die Liste wechseln).</string>
-    <string name="hql_tv_formats">M3U-Listen oder die JSON-Liste von TDTChannels (…/lists/tv.json), die auch ihre YouTube- und Web-Sender mitbringt.</string>
+    <string name="hql_tv_formats">M3U-Listen oder die JSON-Liste von TDTChannels (…/lists/tv.json), die auch ihre YouTube- und Websender mitbringt.</string>
     <string name="hql_tv_backup">Ersatzquelle</string>
     <string name="hql_tv_other_source">Andere Quelle</string>
     <string name="hql_plan_cost">\u0020· ≈ %1$s fürs Laden</string>
@@ -1058,7 +1058,7 @@
     <string name="hql_trip_notice_title">Fahrt beendet · %1$s</string>
     <string name="hql_trip_notice_heat">Wärme: Stufe %1$d max. · %2$.0f °C</string>
     <string name="hql_trip_notice_route">Route: %1$.1f kWh geschätzt, %2$.1f real</string>
-    <string name="hql_android_car_mode">Android-Automodus beim Projizieren (nicht nötig; beim Verlassen lädt das Handy alle Apps neu, wie ein Soft-Reset)</string>
+    <string name="hql_android_car_mode">Android-Automodus beim Projizieren (nicht nötig; beim Verlassen lädt das Handy alle Apps neu, wie ein Softreset)</string>
     <string name="hql_update_acc_channel">Qonecta+ aktualisiert</string>
     <string name="hql_update_acc_title">Qonecta+ wurde aktualisiert</string>
     <string name="hql_update_acc_text">Android hat die Bedienungshilfe „Qonecta+ Touch“ beim Update abgeschaltet. Tippe, um sie wieder einzuschalten; ohne sie bleibt der Autobildschirm schwarz.</string>
@@ -1198,10 +1198,10 @@
     <string name="hql_about_tagline">Android Auto und vieles mehr auf dem Display deines Leapmotor.</string>
     <string name="hql_about_based">Basiert auf</string>
     <string name="hql_about_and_contributors">%1$s und Mitwirkende</string>
-    <string name="hql_about_qdauto">QDAuto-Protokoll-Engine · %1$s</string>
+    <string name="hql_about_qdauto">QDAuto-Protokollengine · %1$s</string>
     <string name="hql_about_cloud">Fahrzeugdaten (Leapmotor-Konto)</string>
     <string name="hql_about_role_protocol">Protokoll</string>
-    <string name="hql_about_role_commands">Widget-Befehle und Wochenverbrauch</string>
+    <string name="hql_about_role_commands">Widgetbefehle und Wochenverbrauch</string>
     <string name="hql_about_role_reev">REEV-Tank und Fahrtenverlauf</string>
     <string name="hql_about_data">Online-Daten</string>
     <string name="hql_about_osm">Karten, Straßen und Ladesäulen: © OpenStreetMap-Mitwirkende (ODbL), über Overpass, OSRM, Photon (komoot) und Nominatim</string>
