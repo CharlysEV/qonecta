@@ -673,7 +673,8 @@ se lea.
 Debajo, «Tono» y «Claro / oscuro» dan cualquier otro color, y «Transparencia» lo funde con el negro de la pantalla.
 «Panel lateral a la derecha» pone el panel al otro lado, con Android Auto pegado al borde izquierdo. «Botones del panel
 lateral» elige cuáles se ven (Sí / No) y en qué orden (flechas); «Auto» y «Ajustes» van fijos. Con el panel reducido a
-iconos, abajo salen la hora, la temperatura exterior y la batería del coche (cuando hay dato). Y en la pantalla
+iconos, abajo salen el tiempo (un emoticono) con la temperatura exterior y la batería del móvil (cuando hay dato); la
+hora no, porque ya la dan LeapOS y Android Auto. Y en la pantalla
 principal del móvil, al salir una versión nueva aparece un aviso con sus novedades y «Descargar e instalar» (la app baja el APK y abre el instalador de Android; la
 primera vez pide permitir a Qonecta+ instalar apps desconocidas); la primera
 vez que arranca una versión recién instalada, se enseñan sus novedades. En el menú ⚙, «Buscar versión nueva» lo

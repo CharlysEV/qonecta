@@ -186,7 +186,9 @@ final class PhoneInsights {
         LinearLayout facts = new LinearLayout(act);
         facts.setOrientation(LinearLayout.VERTICAL);
         facts.setPadding(dp(18), 0, 0, 0);
-        facts.addView(fact(Str.get(R.string.hql_ins_range), Double.isNaN(st.rangeKm) ? "—" : fmt0(st.rangeKm), "km"));
+        // Como el anillo de Coche › Estado: en un REEV, la autonomía eléctrica (LeapStatus.evRangeKm), no el 0 que manda.
+        double range = st.evRangeKm();
+        facts.addView(fact(Str.get(R.string.hql_ins_range), Double.isNaN(range) ? "—" : fmt0(range), "km"));
         facts.addView(fact(Str.get(R.string.hql_ins_odo), Double.isNaN(st.odometerKm) ? "—" : fmtThousands(st.odometerKm), "km"));
         if (st.charging() && !Double.isNaN(st.chargeRemainMin) && st.chargeRemainMin > 0) {
             facts.addView(fact(Str.get(R.string.hql_ins_full_in), duration((long) st.chargeRemainMin), ""));

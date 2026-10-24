@@ -688,8 +688,8 @@ perché si legga.
 Sotto, «Tonalità» e «Chiaro / scuro» danno qualsiasi altro colore, e «Trasparenza» lo fonde con il nero dello schermo.
 «Pannello laterale a destra» sposta il pannello dall'altro lato, con Android Auto contro il bordo sinistro. «Pulsanti
 del pannello laterale» sceglie quali si vedono (Sì / No) e in che ordine (frecce); «Auto» e «Impostazioni» restano
-fissi. Con il pannello ridotto a icone, in basso compaiono l'ora, la temperatura esterna e la batteria dell'auto (quando
-c'è il dato). E nella schermata principale del telefono, quando esce una versione nuova compare un avviso con le novità
+fissi. Con il pannello ridotto a icone, in basso compaiono il tempo (un'emoji) con la temperatura esterna e la batteria del
+telefono (quando c'è il dato); l'ora no, perché la mostrano già LeapOS e Android Auto. E nella schermata principale del telefono, quando esce una versione nuova compare un avviso con le novità
 e «Scarica e installa» (l'app scarica l'APK e apre l'installer di Android; la prima volta chiede di permettere a
 Qonecta+ di installare app sconosciute); la prima volta che si avvia una versione appena installata, si mostrano le
 sue novità. Nel menu ⚙, «Cerca nuova versione» controlla subito.

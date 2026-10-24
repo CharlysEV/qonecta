@@ -431,7 +431,9 @@ final class DemoMode {
                 sig.put("3263", Math.round(fuel * 1000));
                 sig.put("3259", Math.round(fuel / 6.4 * 100));
                 sig.put("3261", Math.round(fuel / 6.4 * 100 + soc * 1.3));
-                sig.put("2188", Math.round(soc * 1.3));
+                // Como el C10 REEV real: liveRemainingRange llega a 0 (no cuenta la batería). El anillo saca la
+                // autonomía eléctrica de total − gasolina (LeapStatus.evRangeKm).
+                sig.put("2188", 0);
             }
             org.json.JSONObject data = new org.json.JSONObject();
             data.put("collectTime", charging ? chargeT0Ms + Math.round(chargeMin * 60_000) : now - 40_000);
