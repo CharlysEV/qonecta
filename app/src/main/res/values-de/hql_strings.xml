@@ -1252,4 +1252,9 @@
     <string name="hql_karaoke_offline">Keine Verbindung zum Liedtext-Dienst: neuer Versuch in ein paar Sekunden.</string>
     <string name="hql_karaoke_source">Liedtexte: LRCLIB (lrclib.net)</string>
     <string name="hql_about_lrclib">Karaoke: synchronisierte Liedtexte von LRCLIB (lrclib.net)</string>
+    <string name="hql_karaoke_voice">Stimme</string>
+    <string name="hql_karaoke_voice_normal">Normal</string>
+    <string name="hql_karaoke_voice_soft">Leise</string>
+    <string name="hql_karaoke_voice_medium">Mittel</string>
+    <string name="hql_karaoke_voice_off">Ohne Stimme</string>
 </resources>

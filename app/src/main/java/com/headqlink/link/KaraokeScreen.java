@@ -24,6 +24,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.andrerinas.openheadunit.R;
+import com.andrerinas.openheadunit.decoder.audio.VocalReducer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,9 @@ import java.util.List;
  * «Acceso a notificaciones» que la lectura de Google Maps (MapsNavListener); sin él, se explica cómo darlo.
  * - Parado: la letra entera, con la línea de ahora resaltada y centrada, avanzando sola.
  * - En marcha (más de 10 km/h): solo la línea de ahora y la siguiente, grandes y sin desplazarse, para no distraer.
- * Arriba, la portada, el título y anterior / pausa / siguiente. Se enciende en Ajustes › Botones del panel lateral y
+ * Arriba, la portada, el título y anterior / pausa / siguiente; debajo, «Voz»: Normal, Suave, Media o Sin voz, que baja
+ * la voz de la canción para cantar encima (VocalReducer, en la música que llega por Android Auto; al salir, Normal).
+ * Se enciende en Ajustes › Botones del panel lateral y
  * va también junto a AA con la pantalla partida (con el aviso del ocio). El registro no lleva títulos.
  */
 final class KaraokeScreen implements CarScreen {
@@ -52,6 +55,8 @@ final class KaraokeScreen implements CarScreen {
     private TextView title;
     private TextView artist;
     private ImageView playButton;
+    private final TextView[] vocalPills = new TextView[4];
+    private int vocal;
     private FrameLayout body;
     private TextView source;
     // Letra sincronizada: parado (todas las líneas) o en marcha (ahora y la siguiente).
@@ -107,6 +112,7 @@ final class KaraokeScreen implements CarScreen {
         col.setPadding(28, 20, 28, 12);
         col.setBackgroundColor(CarKit.BG);
         col.addView(header(c));
+        col.addView(vocalRow(c));
         body = new FrameLayout(c);
         LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f);
         bl.topMargin = 14;
@@ -115,7 +121,10 @@ final class KaraokeScreen implements CarScreen {
         source.setPadding(6, 8, 0, 0);
         col.addView(source);
         message(Str.get(R.string.hql_karaoke_nothing));
+        vocal = new Config(c).karaokeVocal();
+        renderVocal();
         if (live) {
+            VocalReducer.setAmount(VocalReducer.LEVELS[vocal]);
             sensors = CarSensors.start(c);
             connect(c);
             main.post(tick);
@@ -126,6 +135,8 @@ final class KaraokeScreen implements CarScreen {
     @Override
     public void destroy() {
         destroyed = true;
+        // Fuera del karaoke, la música suena normal (se funde en ~50 ms, sin chasquido).
+        if (live) VocalReducer.setAmount(0f);
         main.removeCallbacks(tick);
         if (ctrl != null) ctrl.unregisterCallback(callback);
         ctrl = null;
@@ -175,6 +186,43 @@ final class KaraokeScreen implements CarScreen {
         });
         setCover(null);
         return row;
+    }
+
+    /** «Voz: Normal · Suave · Media · Sin voz»: cuánto se baja la voz de la canción. Se aplica y se guarda al momento. */
+    private View vocalRow(Context c) {
+        LinearLayout row = new LinearLayout(c);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(0, 14, 0, 0);
+        TextView label = CarStyle.label(c, Str.get(R.string.hql_karaoke_voice));
+        label.setPadding(4, 0, 14, 0);
+        row.addView(label);
+        int[] names = {R.string.hql_karaoke_voice_normal, R.string.hql_karaoke_voice_soft, R.string.hql_karaoke_voice_medium,
+                R.string.hql_karaoke_voice_off};
+        for (int i = 0; i < names.length; i++) {
+            int level = i;
+            TextView p = CarStyle.pill(c, Str.get(names[i]));
+            p.setOnClickListener(v -> setVocal(c, level));
+            vocalPills[i] = p;
+            row.addView(p);
+        }
+        return row;
+    }
+
+    private void setVocal(Context c, int level) {
+        vocal = level;
+        new Config(c).setKaraokeVocal(level);
+        if (live) VocalReducer.setAmount(VocalReducer.LEVELS[level]);
+        L.i("karaoke: voz " + level);
+        renderVocal();
+    }
+
+    private void renderVocal() {
+        for (int i = 0; i < vocalPills.length; i++) {
+            boolean on = i == vocal;
+            vocalPills[i].setBackground(on ? CarStyle.accent(28) : CarStyle.round(CarStyle.PILL_BG, 28));
+            vocalPills[i].setTextColor(on ? CarStyle.ON_ACCENT : CarStyle.TEXT);
+        }
     }
 
     private static ImageView control(Context c, int icon) {

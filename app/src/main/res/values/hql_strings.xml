@@ -1257,4 +1257,9 @@
     <string name="hql_karaoke_offline">No connection to the lyrics service: I\'ll try again in a few seconds.</string>
     <string name="hql_karaoke_source">Lyrics: LRCLIB (lrclib.net)</string>
     <string name="hql_about_lrclib">Karaoke: synced lyrics from LRCLIB (lrclib.net)</string>
+    <string name="hql_karaoke_voice">Voice</string>
+    <string name="hql_karaoke_voice_normal">Normal</string>
+    <string name="hql_karaoke_voice_soft">Soft</string>
+    <string name="hql_karaoke_voice_medium">Medium</string>
+    <string name="hql_karaoke_voice_off">No voice</string>
 </resources>

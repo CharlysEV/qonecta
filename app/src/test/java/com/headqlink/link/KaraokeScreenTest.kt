@@ -105,6 +105,20 @@ class KaraokeScreenTest {
     }
 
     @Test
+    fun theVoiceLevelsShowWithMediumByDefaultAndATapChangesIt() {
+        val v = build(split, song, 9_500, false)
+        val pills = views(v).filter { it.text.toString() in listOf("Normal", "Suave", "Media", "Sin voz") }
+        assertTrue(pills.map { it.text.toString() }.toString(), pills.size == 4 && texts(v).contains("Voz"))
+        val medium = pills.first { it.text.toString() == "Media" }
+        assertTrue(medium.currentTextColor == CarStyle.ON_ACCENT)
+        val off = pills.first { it.text.toString() == "Sin voz" }
+        off.performClick()
+        assertTrue(off.currentTextColor == CarStyle.ON_ACCENT && medium.currentTextColor == CarStyle.TEXT)
+        assertTrue(Config(ctx).karaokeVocal() == 3)
+        Config(ctx).setKaraokeVocal(2)
+    }
+
+    @Test
     fun render() {
         org.junit.Assume.assumeTrue(System.getProperty("hql.preview") == "1")
         val dir = File(System.getProperty("hql.preview.dir")!!)

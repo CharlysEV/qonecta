@@ -1256,4 +1256,9 @@
     <string name="hql_karaoke_offline">无法连接歌词服务：几秒后重试。</string>
     <string name="hql_karaoke_source">歌词：LRCLIB（lrclib.net）</string>
     <string name="hql_about_lrclib">卡拉OK：来自 LRCLIB（lrclib.net）的同步歌词</string>
+    <string name="hql_karaoke_voice">人声</string>
+    <string name="hql_karaoke_voice_normal">原声</string>
+    <string name="hql_karaoke_voice_soft">轻度</string>
+    <string name="hql_karaoke_voice_medium">中度</string>
+    <string name="hql_karaoke_voice_off">无人声</string>
 </resources>

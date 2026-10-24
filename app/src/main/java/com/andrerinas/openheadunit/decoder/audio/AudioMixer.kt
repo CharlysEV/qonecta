@@ -77,6 +77,8 @@ class AudioMixer(
     private val channelBuffer = ShortArray(SHORTS_PER_CYCLE)
     private val outputBuffer = ShortArray(SHORTS_PER_CYCLE)
     private val limiter = MixerSoftClipper()
+    /** Karaoke: lowers centred vocals on the media sink only (guidance and calls untouched). */
+    private val vocals = VocalReducer()
     private val ducking = MixerDuckingEnvelope(OUTPUT_SAMPLE_RATE)
 
     fun start() {
@@ -203,6 +205,7 @@ class AudioMixer(
         for (state in cycleChannels) {
             val active = state.buffer.render(channelBuffer, nowMs, outputBurstFrames)
             state.activeThisCycle = active
+            if (active && state.isMediaSink) vocals.process(channelBuffer)
             val gain = state.gain
             if (active && gain > 0f) activeChannels++
             speechActive = speechActive || (active && !state.isMediaSink && gain > 0f)
