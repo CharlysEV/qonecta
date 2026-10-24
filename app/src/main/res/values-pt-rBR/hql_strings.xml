@@ -1243,4 +1243,14 @@
     <string name="hql_guide_say_ahead">À frente, a %2$s: %1$s.</string>
     <string name="hql_guide_say_near">Perto, a %2$s: %1$s.</string>
     <string name="hql_about_wikipedia">Guia da estrada: textos e fotos da Wikipédia e da Wikimedia Commons (CC BY-SA)</string>
+    <string name="hql_karaoke">Karaokê</string>
+    <string name="hql_karaoke_need_access">Para ver a letra do que está tocando, o Qonecta+ precisa do acesso às notificações: no celular, menu ⚙ › «%1$s».</string>
+    <string name="hql_karaoke_nothing">Toque música no Android Auto (Spotify, YouTube Music…) e a letra aparecerá aqui.</string>
+    <string name="hql_karaoke_searching">Procurando a letra…</string>
+    <string name="hql_karaoke_not_found">Não encontro a letra desta música.</string>
+    <string name="hql_karaoke_instrumental">Instrumental: sem letra.</string>
+    <string name="hql_karaoke_unsynced">Letra não sincronizada</string>
+    <string name="hql_karaoke_offline">Sem conexão com o serviço de letras: tento de novo em alguns segundos.</string>
+    <string name="hql_karaoke_source">Letras: LRCLIB (lrclib.net)</string>
+    <string name="hql_about_lrclib">Karaokê: letras sincronizadas do LRCLIB (lrclib.net)</string>
 </resources>

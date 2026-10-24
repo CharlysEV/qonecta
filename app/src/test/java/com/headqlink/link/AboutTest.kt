@@ -47,7 +47,7 @@ class AboutTest {
         // Primero el autor y la base, antes que cualquier otro crédito.
         assertTrue(t.indexOf("por CharlysEV") < t.indexOf("a partir de HeadQLink, de ryazrm"))
         for (who in listOf("ryazrm", "André Rinas", "Michael A. Reid", "txurtxil", "markoceri", "ProtossBlaster", "OpenStreetMap",
-                "Open-Meteo.com", "DGT", "radio-browser.info", "HaGeZi", "Wikipedia", "three.js", "vinishows-1753d1", "Leaflet", "Nestopia")) {
+                "Open-Meteo.com", "DGT", "radio-browser.info", "HaGeZi", "Wikipedia", "LRCLIB", "three.js", "vinishows-1753d1", "Leaflet", "Nestopia")) {
             assertTrue(who, t.any { it.contains(who) })
         }
         assertTrue(About.versionByline(ctx).toString().endsWith("\npor CharlysEV"))

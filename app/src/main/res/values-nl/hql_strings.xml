@@ -1242,4 +1242,14 @@
     <string name="hql_guide_say_ahead">Voor je, op %2$s: %1$s.</string>
     <string name="hql_guide_say_near">Dichtbij, op %2$s: %1$s.</string>
     <string name="hql_about_wikipedia">Reisgids: teksten en foto\'s van Wikipedia en Wikimedia Commons (CC BY-SA)</string>
+    <string name="hql_karaoke">Karaoke</string>
+    <string name="hql_karaoke_need_access">Om de songtekst van wat er speelt te zien, heeft Qonecta+ toegang tot meldingen nodig: op de telefoon, menu ⚙ › ‘%1$s’.</string>
+    <string name="hql_karaoke_nothing">Speel muziek af in Android Auto (Spotify, YouTube Music…) en de songtekst verschijnt hier.</string>
+    <string name="hql_karaoke_searching">Songtekst zoeken…</string>
+    <string name="hql_karaoke_not_found">Ik vind de songtekst van dit nummer niet.</string>
+    <string name="hql_karaoke_instrumental">Instrumentaal: geen tekst.</string>
+    <string name="hql_karaoke_unsynced">Songtekst niet gesynchroniseerd</string>
+    <string name="hql_karaoke_offline">Geen verbinding met de songtekstdienst: over een paar seconden probeer ik het opnieuw.</string>
+    <string name="hql_karaoke_source">Songteksten: LRCLIB (lrclib.net)</string>
+    <string name="hql_about_lrclib">Karaoke: gesynchroniseerde songteksten van LRCLIB (lrclib.net)</string>
 </resources>

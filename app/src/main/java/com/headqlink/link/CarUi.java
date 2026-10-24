@@ -550,7 +550,7 @@ final class CarUi {
      */
     static boolean splitCapable(String name) {
         return splitRoom && ("car".equals(name) || "guide".equals(name) || "web".equals(name) || "videos".equals(name)
-                || "tv".equals(name));
+                || "tv".equals(name) || "karaoke".equals(name));
     }
 
     /**
@@ -2239,6 +2239,7 @@ final class CarUi {
             case "games": return Str.get(R.string.hql_games);
             case "home": return Str.get(R.string.hql_ha_title);
             case "guide": return Str.get(R.string.hql_guide);
+            case "karaoke": return Str.get(R.string.hql_karaoke);
             default: return id;
         }
     }
@@ -2254,6 +2255,7 @@ final class CarUi {
             case "games": return R.drawable.hql_ic_games;
             case "home": return R.drawable.hql_ic_home;
             case "guide": return R.drawable.hql_ic_guide;
+            case "karaoke": return R.drawable.hql_ic_karaoke;
             default: return R.drawable.hql_ic_settings;
         }
     }
@@ -2546,6 +2548,8 @@ final class CarUi {
                 return EfficiencyScreen::new;
             case "guide":
                 return GuideScreen::new;
+            case "karaoke":
+                return KaraokeScreen::new;
             default:
                 return null;
         }

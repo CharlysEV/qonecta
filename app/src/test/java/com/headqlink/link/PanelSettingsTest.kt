@@ -28,6 +28,8 @@ class PanelSettingsTest {
         // La guía del camino existe, pero no sale de serie: la enciende el usuario.
         assertTrue(Config.PANEL_BUTTONS_ALL.contains("guide"))
         assertFalse(Config.PANEL_BUTTONS_DEFAULT.contains("guide"))
+        assertTrue(Config.PANEL_BUTTONS_ALL.contains("karaoke"))
+        assertFalse(Config.PANEL_BUTTONS_DEFAULT.contains("karaoke"))
         assertEquals(listOf("car", "guide"), Config.panelButtonsFrom("car,guide"))
         assertEquals(listOf("web", "car", "radio"), Config.panelButtonsFrom("web, car,radio"))
         // Lo que no existe o se repite, fuera; vacío = ningún botón (solo Auto y Ajustes).

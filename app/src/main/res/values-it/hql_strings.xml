@@ -1243,4 +1243,14 @@
     <string name="hql_guide_say_ahead">Davanti, a %2$s: %1$s.</string>
     <string name="hql_guide_say_near">Qui vicino, a %2$s: %1$s.</string>
     <string name="hql_about_wikipedia">Guida di viaggio: testi e foto da Wikipedia e Wikimedia Commons (CC BY-SA)</string>
+    <string name="hql_karaoke">Karaoke</string>
+    <string name="hql_karaoke_need_access">Per vedere il testo di ciò che suona, Qonecta+ ha bisogno dell\'accesso alle notifiche: sul telefono, menu ⚙ › «%1$s».</string>
+    <string name="hql_karaoke_nothing">Metti musica su Android Auto (Spotify, YouTube Music…) e qui comparirà il testo.</string>
+    <string name="hql_karaoke_searching">Cerco il testo…</string>
+    <string name="hql_karaoke_not_found">Non trovo il testo di questa canzone.</string>
+    <string name="hql_karaoke_instrumental">Strumentale: senza testo.</string>
+    <string name="hql_karaoke_unsynced">Testo non sincronizzato</string>
+    <string name="hql_karaoke_offline">Nessuna connessione al servizio dei testi: riprovo tra qualche secondo.</string>
+    <string name="hql_karaoke_source">Testi: LRCLIB (lrclib.net)</string>
+    <string name="hql_about_lrclib">Karaoke: testi sincronizzati da LRCLIB (lrclib.net)</string>
 </resources>

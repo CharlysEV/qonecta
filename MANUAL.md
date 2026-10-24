@@ -565,6 +565,19 @@ Lo saca de Wikipedia, en el idioma de la app.
 - Funciona mientras la guía está abierta, sola o junto a Android Auto. Necesita la posición del GPS y muy pocos datos
   móviles. Textos y fotos: Wikipedia y Wikimedia Commons (CC BY-SA).
 
+### Karaoke («Auto extendido»)
+
+La letra de lo que suena en Android Auto (Spotify, YouTube Music…), sincronizada con la canción. Sale de LRCLIB
+(lrclib.net).
+
+- **Cómo se enciende:** no sale de serie. En el coche, «Ajustes» › «Botones del panel lateral» › «Karaoke» (Sí).
+- **Parado:** la letra entera, con la línea de ahora resaltada y avanzando sola.
+- **En marcha:** solo la línea de ahora y la siguiente, grandes y quietas, para no distraer.
+- Arriba, la portada, el título y anterior / pausa / siguiente.
+- Necesita el «Acceso a notificaciones» (el mismo que «Leer la ruta de Google Maps», en el menú ⚙ del móvil). Si una
+  canción no tiene letra sincronizada, sale el texto sin tiempos; si no hay ninguna, lo dice.
+- Con «Partir pantalla» va junto a Android Auto; como el resto del ocio, mejor con el coche parado.
+
 ### Conexión automática: «Conectar al detectar el Bluetooth del coche»
 
 Con este interruptor, Qonecta+ se pone a esperar al coche en cuanto el móvil se conecta a su Bluetooth, sin que abras

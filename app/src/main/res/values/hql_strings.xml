@@ -1247,4 +1247,14 @@
     <string name="hql_guide_say_ahead">Ahead, %2$s away: %1$s.</string>
     <string name="hql_guide_say_near">Nearby, %2$s away: %1$s.</string>
     <string name="hql_about_wikipedia">Road guide: text and photos from Wikipedia and Wikimedia Commons (CC BY-SA)</string>
+    <string name="hql_karaoke">Karaoke</string>
+    <string name="hql_karaoke_need_access">To show the lyrics of what is playing, Qonecta+ needs notification access: on the phone, menu ⚙ › “%1$s”.</string>
+    <string name="hql_karaoke_nothing">Play music in Android Auto (Spotify, YouTube Music…) and its lyrics will show up here.</string>
+    <string name="hql_karaoke_searching">Looking for the lyrics…</string>
+    <string name="hql_karaoke_not_found">I can\'t find the lyrics of this song.</string>
+    <string name="hql_karaoke_instrumental">Instrumental: no lyrics.</string>
+    <string name="hql_karaoke_unsynced">Lyrics not synced</string>
+    <string name="hql_karaoke_offline">No connection to the lyrics service: I\'ll try again in a few seconds.</string>
+    <string name="hql_karaoke_source">Lyrics: LRCLIB (lrclib.net)</string>
+    <string name="hql_about_lrclib">Karaoke: synced lyrics from LRCLIB (lrclib.net)</string>
 </resources>

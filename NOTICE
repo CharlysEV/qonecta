@@ -53,6 +53,8 @@ Maps, routes, search, weather and elevation (online services the app queries):
   Road guide: place summaries and photos from Wikipedia (https://www.wikipedia.org, text under CC BY-SA 4.0) and
   Wikimedia Commons (each photo under its own free licence), fetched while the guide is open; not bundled. The app
   shows them with the source; summaries are shortened (without parentheses or references).
+  Karaoke: song lyrics from LRCLIB (https://lrclib.net), fetched on demand for the song that is playing and kept only
+  in memory; not bundled. The lyrics belong to their authors.
 
 three.js (3D car in the Status tab):
   app/src/main/assets/three/three.min.js is three.js r149 (https://threejs.org), Copyright 2010-2023
