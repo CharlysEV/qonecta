@@ -893,7 +893,9 @@ final class Config {
 
     /** Botones del panel que se ven, en su orden (entre «Auto», fijo arriba, y «Ajustes», fijo abajo). */
     static final String PANEL_BUTTONS = "panel_buttons";
-    static final String[] PANEL_BUTTONS_ALL = {"car", "photos", "videos", "web", "tv", "radio", "games", "home"};
+    static final String[] PANEL_BUTTONS_ALL = {"car", "photos", "videos", "web", "tv", "radio", "games", "home", "guide"};
+    /** Los de serie: todos menos la guía del camino, que solo sale si el usuario la enciende (Ajustes › Botones del panel). */
+    static final String[] PANEL_BUTTONS_DEFAULT = {"car", "photos", "videos", "web", "tv", "radio", "games", "home"};
 
     /**
      * Los botones del panel. «Casa» (Home Assistant) solo si está configurada; y la primera vez que lo está aparece sola
@@ -909,11 +911,11 @@ final class Config {
         return out;
     }
 
-    /** Puro: la lista guardada («car,web,radio»), o todos si no hay nada guardado; ignora lo que no exista. */
+    /** Puro: la lista guardada («car,web,radio»), o los de serie si no hay nada guardado; ignora lo que no exista. */
     static java.util.List<String> panelButtonsFrom(String csv) {
         java.util.List<String> out = new java.util.ArrayList<>();
         if (csv == null) {
-            java.util.Collections.addAll(out, PANEL_BUTTONS_ALL);
+            java.util.Collections.addAll(out, PANEL_BUTTONS_DEFAULT);
             return out;
         }
         for (String id : csv.split(",")) {
@@ -925,6 +927,15 @@ final class Config {
 
     void setPanelButtons(java.util.List<String> ids) {
         sp.edit().putString(PANEL_BUTTONS, String.join(",", ids)).putBoolean("panel_home_seen", true).apply();
+    }
+
+    /** Guía del camino (RoadGuide): contar en voz alta lo que hay por delante (por defecto, sí). */
+    boolean guideVoice() {
+        return sp.getBoolean("guide_voice", true);
+    }
+
+    void setGuideVoice(boolean on) {
+        sp.edit().putBoolean("guide_voice", on).apply();
     }
 
     /** Aviso de versión nueva (UpdateCheck): cuándo se consultó GitHub y la última release recordada. */

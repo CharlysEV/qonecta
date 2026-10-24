@@ -374,7 +374,7 @@ version). That tells us whether the C10 supports it.
   Efficiency and Status tabs), "Photos", "Videos", "Web", "TV", "Radio", "Games" and "Settings". With Android Auto on screen, the
   panel shrinks by itself after a few seconds (also in Photos, TV, Games…); tap the edge on the panel's side to bring it back. Photos, videos, web, TV and games are
   **only for when the car is stopped**.
-- **Split screen ("Auto extended"):** in "Car", "Web", "Videos" and "TV", the panel's "Split screen" button puts
+- **Split screen ("Auto extended"):** in "Car", "Guide", "Web", "Videos" and "TV", the panel's "Split screen" button puts
   Android Auto on the left, next to the panel, and that screen on the right. With "Car" you get the gauges (consumption,
   battery, range, next stop) next to Android Auto, and it is fine while driving, with no notice. Android Auto keeps a bit more than half, just enough for
   Google Maps to pan and search. Each side takes its own touches. "Full screen" shows it alone again. It lasts while you
@@ -535,6 +535,25 @@ Your month in figures, in the phone's "Trips" tab › "See the report". Use ‹ 
 Trips come from the car (Leapmotor account) if its history covers the whole month; otherwise, from the ones the app
 recorded. The cloud only keeps 35 days, so each month is saved as a summary on the phone. The first month has no
 comparison.
+
+### Road guide ("Auto extended")
+
+It tells you what is worth seeing near the road: castles, cathedrals, historic towns, reservoirs, mountain ranges… It
+comes from Wikipedia, in the app's language.
+
+- **How to turn it on:** it is off by default. In the car, "Settings" › "Side panel buttons" › "Guide" (Yes). From then
+  on, "Guide" is in the panel.
+- **What you see:** a card with the photo, the name, how far and on which side it is ("2.8 km · on the right") and a
+  summary; below, what comes further ahead. "Tell me" reads it aloud and "Take me there" starts navigation to it.
+  Tapping a place in the list moves it to the card.
+- **Voice:** with "Voice" on (top right), it only tells you about the most notable places less than 5 km ahead, each
+  one once and at most one every 4 minutes. It never talks over a call, the navigator's directions or another alert,
+  and the music is lowered for a moment while it speaks. "No voice": cards only.
+- **Stopped:** after a minute stopped (for example, charging), it shows what is nearby on foot, with the walking time.
+- **Split screen:** with "Split screen", the guide sits next to Android Auto, in one column, and can be used while
+  driving, with no warning.
+- It works while the guide is open, alone or next to Android Auto. It needs the GPS position and very little mobile
+  data. Text and photos: Wikipedia and Wikimedia Commons (CC BY-SA).
 
 ### Automatic connection: "Connect when the car's Bluetooth is detected"
 

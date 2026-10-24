@@ -41,6 +41,11 @@ final class VoiceAlert {
         speak(app, text);
     }
 
+    /** ¿Está hablando ahora? (la guía del camino no corta un aviso del plan) */
+    static synchronized boolean speaking() {
+        return pending != null || (tts != null && ready && tts.isSpeaking());
+    }
+
     private static synchronized void onInit(Context app, int status) {
         if (status != TextToSpeech.SUCCESS || tts == null) {
             L.w("voz: el sistema no tiene voz (" + status + ")");

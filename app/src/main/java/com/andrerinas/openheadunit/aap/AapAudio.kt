@@ -585,6 +585,7 @@ internal class AapAudio(
             onAudioPlaybackStarted(channel, track.playbackOwner)
         }
 
+        if (channel == Channel.ID_AU1) lastGuidanceMs = SystemClock.elapsedRealtime()
         audioDecoder.decode(channel, buf, start, length, decoderSession)
     }
 
@@ -634,5 +635,14 @@ internal class AapAudio(
 
     companion object {
         private const val AUDIO_BUFS_SIZE = 65536 * 4  // Up to 256 Kbytes
+
+        /**
+         * Last time (elapsedRealtime) guidance audio arrived from AA's navigator, so the road guide (RoadGuide) does
+         * not talk over it. -1 until it has spoken.
+         */
+        @Volatile
+        @JvmStatic
+        var lastGuidanceMs: Long = -1
+            private set
     }
 }

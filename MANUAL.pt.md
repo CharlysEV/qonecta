@@ -393,7 +393,7 @@ admite.
   Viagens, Instrumentos, Eficiência e Estado), «Fotos», «Vídeos», «Web», «TV», «Rádio», «Jogos» e «Definições». Com o Android
   Auto no ecrã, o painel recolhe-se sozinho ao fim de alguns segundos (também em Fotos, TV, Jogos…); toque na margem esquerda para que volte. Fotos,
   vídeos, web, TV e jogos são **só para quando o carro está parado**.
-- **Ecrã dividido («Auto estendido»):** em «Carro», «Web», «Vídeos» e «TV», o botão «Dividir ecrã» do painel põe o
+- **Ecrã dividido («Auto estendido»):** em «Carro», «Guia», «Web», «Vídeos» e «TV», o botão «Dividir ecrã» do painel põe o
   Android Auto à esquerda, junto ao painel, e esse ecrã à direita. Com «Carro» tem os instrumentos (consumo, bateria,
   autonomia, próxima paragem) junto ao Android Auto, e serve em andamento, sem aviso. O Android Auto fica com um pouco mais de metade, o suficiente para o
   Google Maps se poder mover e pesquisar. Cada lado responde aos seus toques. «Ecrã inteiro» deixa-o sozinho outra vez.
@@ -557,6 +557,25 @@ O seu mês em números, no separador «Viagens» do telemóvel › «Ver o relat
 
 As viagens são as do carro (conta Leapmotor) se o seu histórico cobrir o mês inteiro; se não, as que a app gravou. A
 nuvem só guarda 35 dias, por isso cada mês fica guardado em resumo no telemóvel. O primeiro mês aparece sem comparação.
+
+### Guia da estrada («Auto estendido»)
+
+Conta-lhe o que vale a pena perto da estrada: castelos, catedrais, vilas com história, albufeiras, serras… Vem da
+Wikipédia, no idioma da aplicação.
+
+- **Como se liga:** vem desligado. No carro, «Definições» › «Botões do painel lateral» › «Guia» (Sim). A partir daí,
+  «Guia» aparece no painel.
+- **O que vê:** um cartão com a foto, o nome, a que distância e de que lado fica («2,8 km · à direita») e um resumo;
+  por baixo, o que vem mais à frente. «Contar» lê-o em voz alta e «Levar-me lá» abre a navegação até lá. Ao tocar num
+  local da lista, passa para o cartão.
+- **Voz:** com «Voz» ligado (em cima, à direita), conta só os locais mais destacados a menos de 5 km à frente, cada um
+  uma vez e no máximo um a cada 4 minutos. Nunca fala por cima de uma chamada, das indicações do navegador nem de outro
+  aviso, e a música baixa um momento enquanto fala. «Sem voz»: só os cartões.
+- **Parado:** após um minuto parado (por exemplo, a carregar), mostra o que tem perto a pé, com os minutos a andar.
+- **Ecrã dividido:** com «Dividir ecrã», o guia fica ao lado do Android Auto, numa coluna, e pode ser usado em
+  andamento, sem aviso.
+- Funciona enquanto o guia está aberto, sozinho ou ao lado do Android Auto. Precisa da posição do GPS e de muito
+  poucos dados móveis. Textos e fotos: Wikipédia e Wikimedia Commons (CC BY-SA).
 
 ### Ligação automática: «Ligar ao detetar o Bluetooth do carro»
 

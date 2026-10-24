@@ -132,7 +132,8 @@ final class About {
                 Str.get(R.string.hql_about_weather),
                 Str.get(R.string.hql_about_dgt),
                 Str.get(R.string.hql_about_radio),
-                Str.get(R.string.hql_about_adblock));
+                Str.get(R.string.hql_about_adblock),
+                Str.get(R.string.hql_about_wikipedia));
         section(c, col, R.string.hql_about_libs,
                 Str.get(R.string.hql_about_3d),
                 Str.get(R.string.hql_about_leaflet),

@@ -2,6 +2,7 @@ package com.headqlink.link
 
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,7 +24,11 @@ class PanelSettingsTest {
 
     @Test
     fun buttonsDefaultToAllAndKeepTheSavedOrder() {
-        assertEquals(Config.PANEL_BUTTONS_ALL.toList(), Config.panelButtonsFrom(null))
+        assertEquals(Config.PANEL_BUTTONS_DEFAULT.toList(), Config.panelButtonsFrom(null))
+        // La guía del camino existe, pero no sale de serie: la enciende el usuario.
+        assertTrue(Config.PANEL_BUTTONS_ALL.contains("guide"))
+        assertFalse(Config.PANEL_BUTTONS_DEFAULT.contains("guide"))
+        assertEquals(listOf("car", "guide"), Config.panelButtonsFrom("car,guide"))
         assertEquals(listOf("web", "car", "radio"), Config.panelButtonsFrom("web, car,radio"))
         // Lo que no existe o se repite, fuera; vacío = ningún botón (solo Auto y Ajustes).
         assertEquals(listOf("tv"), Config.panelButtonsFrom("tv,nada,tv"))

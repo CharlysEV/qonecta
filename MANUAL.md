@@ -381,7 +381,7 @@ admite.
   Conducción, Viajes, Instrumentos, Eficiencia y Estado), «Fotos», «Vídeos», «Web», «TV», «Radio», «Juegos» y «Ajustes». Con
   Android Auto en pantalla, el panel se recoge solo a los pocos segundos (también en Fotos, TV, Juegos…); toca el borde del lado del panel para que vuelva.
   Fotos, vídeos, web, TV y juegos son **solo para cuando el coche está parado**.
-- **Pantalla partida («Auto extendido»):** en «Coche», «Web», «Vídeos» y «TV», el botón «Partir pantalla» del panel
+- **Pantalla partida («Auto extendido»):** en «Coche», «Guía», «Web», «Vídeos» y «TV», el botón «Partir pantalla» del panel
   pone Android Auto a la izquierda, junto al panel, y esa pantalla a la derecha. Con «Coche» tienes los instrumentos
   (consumo, batería, autonomía, próxima parada) junto a Android Auto, y vale en marcha, sin aviso. Android Auto se queda con algo más de la mitad, lo
   justo para que Google Maps se pueda mover y buscar. Cada lado responde a sus toques. «Pantalla completa» la deja sola
@@ -544,6 +544,25 @@ Tu mes en cifras, en la pestaña «Viajes» del móvil › «Ver el informe». C
 
 Los viajes son los del coche (cuenta de Leapmotor) si su historial cubre el mes entero, y si no, los que grabó la app.
 La nube solo guarda 35 días, así que cada mes se guarda resumido en el móvil. El primer mes sale sin comparación.
+
+### Guía del camino («Auto extendido»)
+
+Te cuenta lo que merece la pena cerca de la carretera: castillos, catedrales, pueblos con historia, embalses, sierras…
+Lo saca de Wikipedia, en el idioma de la app.
+
+- **Cómo se enciende:** no sale de serie. En el coche, «Ajustes» › «Botones del panel lateral» › «Guía» (Sí). Desde
+  entonces, «Guía» está en el panel.
+- **Qué ves:** una tarjeta con la foto, el nombre, a cuánto y a qué lado queda («2,8 km · a la derecha») y un resumen;
+  debajo, lo que viene más adelante. «Contar» lo lee en voz alta y «Llévame» abre la navegación hasta allí. Al tocar un
+  sitio de la lista, pasa a la tarjeta.
+- **Voz:** con «Voz» encendido (arriba a la derecha), cuenta solo los sitios más destacados que tienes a menos de 5 km
+  por delante, cada uno una vez y como mucho uno cada 4 minutos. Nunca habla encima de una llamada, de las indicaciones
+  del navegador ni de otro aviso, y la música baja un momento mientras habla. «Sin voz»: solo las tarjetas.
+- **Parado:** tras un minuto parado (por ejemplo, cargando), enseña lo que tienes cerca a pie, con los minutos andando.
+- **Pantalla partida:** con «Partir pantalla», la guía va junto a Android Auto, en una columna, y vale en marcha, sin
+  aviso.
+- Funciona mientras la guía está abierta, sola o junto a Android Auto. Necesita la posición del GPS y muy pocos datos
+  móviles. Textos y fotos: Wikipedia y Wikimedia Commons (CC BY-SA).
 
 ### Conexión automática: «Conectar al detectar el Bluetooth del coche»
 
