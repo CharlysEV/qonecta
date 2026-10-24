@@ -1209,6 +1209,7 @@
     <string name="hql_about_weather">Tempo e altitude: Open-Meteo.com (CC BY 4.0) e Open Topo Data</string>
     <string name="hql_about_dgt">Carregadores em Espanha: registo do MITECO publicado pela DGT</string>
     <string name="hql_about_radio">Rádio: radio-browser.info</string>
+    <string name="hql_about_adblock">Bloqueio de anúncios: lista HaGeZi Pro mini (GPL-3.0)</string>
     <string name="hql_about_libs">Bibliotecas e recursos</string>
     <string name="hql_about_3d">Carro 3D: three.js (MIT) e «LEAPMOTORS C10», de vinishows-1753d1 (CC BY 4.0, modificado)</string>
     <string name="hql_about_leaflet">Mapas: Leaflet (BSD 2-Clause)</string>

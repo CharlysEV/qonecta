@@ -1208,6 +1208,7 @@
     <string name="hql_about_weather">Weer en hoogte: Open-Meteo.com (CC BY 4.0) en Open Topo Data</string>
     <string name="hql_about_dgt">Laadpalen in Spanje: MITECO-register, gepubliceerd door de DGT</string>
     <string name="hql_about_radio">Radio: radio-browser.info</string>
+    <string name="hql_about_adblock">Advertentieblokkering: lijst HaGeZi Pro mini (GPL-3.0)</string>
     <string name="hql_about_libs">Bibliotheken en bronnen</string>
     <string name="hql_about_3d">3D-auto: three.js (MIT) en ‘LEAPMOTORS C10’ door vinishows-1753d1 (CC BY 4.0, aangepast)</string>
     <string name="hql_about_leaflet">Kaarten: Leaflet (BSD 2-Clause)</string>

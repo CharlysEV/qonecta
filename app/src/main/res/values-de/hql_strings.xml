@@ -1208,6 +1208,7 @@
     <string name="hql_about_weather">Wetter und Höhe: Open-Meteo.com (CC BY 4.0) und Open Topo Data</string>
     <string name="hql_about_dgt">Ladesäulen in Spanien: MITECO-Register, veröffentlicht von der DGT</string>
     <string name="hql_about_radio">Radio: radio-browser.info</string>
+    <string name="hql_about_adblock">Werbeblocker: Liste HaGeZi Pro mini (GPL-3.0)</string>
     <string name="hql_about_libs">Bibliotheken und Ressourcen</string>
     <string name="hql_about_3d">3D-Auto: three.js (MIT) und „LEAPMOTORS C10“ von vinishows-1753d1 (CC BY 4.0, verändert)</string>
     <string name="hql_about_leaflet">Karten: Leaflet (BSD 2-Clause)</string>

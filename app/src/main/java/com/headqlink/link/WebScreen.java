@@ -101,6 +101,8 @@ final class WebScreen implements CarScreen {
     private static final class Tab {
         WebView web;
         WebAudio audio;
+        /** El guion contra anuncios (AdBlockJs) puesto antes de cada página, o null (apagado o WebView viejo). */
+        androidx.webkit.ScriptHandler adScript;
         String url = "";
         String title = "";
     }
@@ -142,6 +144,8 @@ final class WebScreen implements CarScreen {
         tabsPill = CarStyle.pill(c, "⧉ 1");
         TextView more = CarStyle.pill(c, "⋯");
         adblock = prefs(c).getBoolean("adblock", true);
+        // La lista grande de dominios (la guardada o, si tiene más de una semana, una nueva), en otro hilo.
+        if (adblock) AdBlock.ensure(c);
         TextView kb = CarStyle.pill(c, Str.get(R.string.hql_keyboard));
         bar.addView(back);
         bar.addView(fwd);
@@ -428,9 +432,12 @@ final class WebScreen implements CarScreen {
         mobileUa = s.getUserAgentString();
         applyUa(s);
         web.addJavascriptInterface(new KeyboardBridge(), "HqlKeyboard");
+        if (adblock) t.adScript = AdBlockJs.install(web);
         web.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView v, String url, Bitmap favicon) {
+                // WebView sin guion antes de la página: aquí, algo tarde (salta y esconde, pero no limpia los datos).
+                if (adblock && t.adScript == null) AdBlockJs.late(v);
                 t.audio.navigation();
                 applySiteSettings(v, url, true);
                 if (v != WebScreen.this.web) return;
@@ -814,6 +821,16 @@ final class WebScreen implements CarScreen {
                 + (adblock && page ? " · " + Str.plural(R.plurals.hql_web_adblock_count, blockedHere) : ""), true, () -> {
             adblock = !adblock;
             prefs(c).edit().putBoolean("adblock", adblock).apply();
+            // El guion de cada pestaña, puesto o quitado (vale desde la próxima página: se recarga la de delante).
+            for (Tab tab : tabs) {
+                if (tab.web == null) continue;
+                if (adblock && tab.adScript == null) tab.adScript = AdBlockJs.install(tab.web);
+                if (!adblock && tab.adScript != null) {
+                    tab.adScript.remove();
+                    tab.adScript = null;
+                }
+            }
+            if (adblock) AdBlock.ensure(c);
             closeOverlay();
             if (web != null && web.getParent() != null) web.reload();
         }));
@@ -1150,6 +1167,11 @@ final class WebScreen implements CarScreen {
     }
 
     // ------------------------------------------------------------------ historial, última página e iconos
+
+    /** ¿Bloqueo de anuncios encendido? (el interruptor del navegador; vale también para los canales web de la TV) */
+    static boolean adblockOn(Context c) {
+        return prefs(c).getBoolean("adblock", true);
+    }
 
     private static SharedPreferences prefs(Context c) {
         return c.getApplicationContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);

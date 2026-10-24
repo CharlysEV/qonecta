@@ -46,6 +46,8 @@ Maps, routes, search, weather and elevation (online services the app queries):
   (https://photon.komoot.io) and Nominatim (https://nominatim.org).
   Weather data and elevation by Open-Meteo.com (https://open-meteo.com), CC BY 4.0; elevation fallback
   from Open Topo Data (https://www.opentopodata.org) with NASA SRTM data.
+  Ad and tracker blocking (web browser and TV web channels): the domain list "HaGeZi Pro mini" from HaGeZi's DNS
+  blocklists (https://github.com/hagezi/dns-blocklists, GPL-3.0), downloaded by the app once a week; not bundled.
   Internet radio directory: radio-browser.info (https://www.radio-browser.info). TV lists: the app reads the
   TDTChannels list format (https://github.com/LaQuay/TDTChannels, Apache-2.0); no list is bundled.
 

@@ -1213,6 +1213,7 @@
     <string name="hql_about_weather">Weather and elevation: Open-Meteo.com (CC BY 4.0) and Open Topo Data</string>
     <string name="hql_about_dgt">Chargers in Spain: MITECO registry published by the DGT</string>
     <string name="hql_about_radio">Radio: radio-browser.info</string>
+    <string name="hql_about_adblock">Ad blocking: HaGeZi Pro mini list (GPL-3.0)</string>
     <string name="hql_about_libs">Libraries and resources</string>
     <string name="hql_about_3d">3D car: three.js (MIT) and «LEAPMOTORS C10» by vinishows-1753d1 (CC BY 4.0, modified)</string>
     <string name="hql_about_leaflet">Maps: Leaflet (BSD 2-Clause)</string>
