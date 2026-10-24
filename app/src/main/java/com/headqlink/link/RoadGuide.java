@@ -82,6 +82,9 @@ final class RoadGuide {
     /** Lo guardado, solo hasta esta distancia (lo que queda atrás se olvida). */
     static final double KEEP_KM = 40;
 
+    /** Quién habla en VoiceAlert cuando es la guía (para «Parar»). */
+    static final String VOICE = "guide";
+
     /** Lado del sitio respecto al rumbo. */
     static final int AHEAD = 0;
     static final int RIGHT = 1;
@@ -121,6 +124,8 @@ final class RoadGuide {
         Status status = Status.WAITING_GPS;
         boolean moving = true;
         boolean voice;
+        /** La guía está hablando ahora: la pantalla enseña «Parar». */
+        boolean talking;
         double lat = Double.NaN;
         double lon = Double.NaN;
         double heading;
@@ -480,10 +485,11 @@ final class RoadGuide {
         }
     }
 
-    /** Enciende o apaga la voz (se guarda). */
+    /** Enciende o apaga la voz (se guarda). Apagarla corta también lo que esté contando. */
     static void setVoice(Context c, boolean on) {
         new Config(c).setGuideVoice(on);
         voice = on;
+        if (!on) VoiceAlert.stop(c, VOICE);
         L.i("guía: voz " + (on ? "sí" : "no"));
         later(null);
     }
@@ -494,6 +500,13 @@ final class RoadGuide {
             picked = p;
             pickedUntil = SystemClock.elapsedRealtime() + PICK_MS;
         });
+    }
+
+    /** «Parar»: corta lo que esté contando la guía (la voz sigue encendida para los siguientes). */
+    static void hush(Context c) {
+        VoiceAlert.stop(c, VOICE);
+        L.i("guía: voz cortada");
+        later(null);
     }
 
     /** «Contar»: lo dice ahora (aunque la voz esté apagada o haga poco del anterior). */
@@ -525,6 +538,8 @@ final class RoadGuide {
         slowSince = -1;
         voice = new Config(ctx).guideVoice();
         sensors = CarSensors.start(ctx);
+        // Al acabar de hablar, la pantalla quita «Parar» al momento (sin esperar a la siguiente vuelta).
+        VoiceAlert.onIdle = () -> later(null);
         thread.start();
         h = new Handler(thread.getLooper());
         h.post(tick);
@@ -533,6 +548,8 @@ final class RoadGuide {
 
     private void end() {
         if (h != null) h.removeCallbacksAndMessages(null);
+        VoiceAlert.onIdle = null;
+        VoiceAlert.stop(ctx, VOICE);
         thread.quitSafely();
         CarSensors.stop();
         L.i("guía: parada");
@@ -557,6 +574,7 @@ final class RoadGuide {
     private State compute() {
         State st = new State();
         st.voice = voice;
+        st.talking = VoiceAlert.speaking(VOICE);
         CarSensors.Snapshot s = sensors.snapshot();
         long now = SystemClock.elapsedRealtime();
         if (!s.gpsLive() || Double.isNaN(s.lat) || Double.isNaN(s.lon)) return st;
@@ -604,6 +622,7 @@ final class RoadGuide {
         else cur = best(list);
         st.current = cur;
         for (Place p : list) if (p != cur) st.list.add(p);
+        st.talking = VoiceAlert.speaking(VOICE);
         st.status = cur != null ? Status.READY : offline ? Status.OFFLINE : searched ? Status.READY : Status.LOADING;
         return st;
     }
@@ -649,7 +668,7 @@ final class RoadGuide {
     private void say(Place p, boolean asked, State s) {
         String text = spoken(p, s);
         if (text.isEmpty()) return;
-        VoiceAlert.say(ctx, text);
+        VoiceAlert.say(ctx, text, VOICE);
         told.add(p.id);
         said = p;
         if (!asked) lastSaidMs = SystemClock.elapsedRealtime();

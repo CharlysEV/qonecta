@@ -1233,6 +1233,7 @@
     <string name="hql_guide_side_left">links</string>
     <string name="hql_guide_side_behind">schon hinter dir</string>
     <string name="hql_guide_walk">%1$d Min. zu Fuß</string>
+    <string name="hql_guide_stop">Stopp</string>
     <string name="hql_guide_tell">Erzählen</string>
     <string name="hql_guide_go">Hinfahren</string>
     <string name="hql_guide_source">Texte und Fotos: Wikipedia und Wikimedia Commons (CC BY-SA)</string>

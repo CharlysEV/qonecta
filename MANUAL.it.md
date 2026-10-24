@@ -567,7 +567,8 @@ da Wikipedia, nella lingua dell'app.
   un luogo dell'elenco, passa nella scheda.
 - **Voce:** con «Voce» attiva (in alto a destra), racconta solo i luoghi più importanti a meno di 5 km davanti, ognuno
   una volta e al massimo uno ogni 4 minuti. Non parla mai sopra una chiamata, le indicazioni del navigatore o un altro
-  avviso, e la musica si abbassa un momento mentre parla. «Senza voce»: solo le schede.
+  avviso, e la musica si abbassa un momento mentre parla. Mentre parla compare «Ferma», che la interrompe
+  subito. «Senza voce»: solo le schede (e interrompe quello che sta raccontando).
 - **Da fermo:** dopo un minuto da fermo (per esempio in ricarica), mostra cosa c'è vicino a piedi, con i minuti a piedi.
 - **Schermo diviso:** con «Dividi schermo», la guida sta accanto ad Android Auto, in una colonna, e si può usare in
   marcia, senza avviso.

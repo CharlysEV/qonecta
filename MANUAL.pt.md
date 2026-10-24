@@ -570,7 +570,8 @@ Wikipédia, no idioma da aplicação.
   local da lista, passa para o cartão.
 - **Voz:** com «Voz» ligado (em cima, à direita), conta só os locais mais destacados a menos de 5 km à frente, cada um
   uma vez e no máximo um a cada 4 minutos. Nunca fala por cima de uma chamada, das indicações do navegador nem de outro
-  aviso, e a música baixa um momento enquanto fala. «Sem voz»: só os cartões.
+  aviso, e a música baixa um momento enquanto fala. Enquanto fala aparece «Parar», que a corta logo. «Sem
+  voz»: só os cartões (e corta o que estiver a contar).
 - **Parado:** após um minuto parado (por exemplo, a carregar), mostra o que tem perto a pé, com os minutos a andar.
 - **Ecrã dividido:** com «Dividir ecrã», o guia fica ao lado do Android Auto, numa coluna, e pode ser usado em
   andamento, sem aviso.

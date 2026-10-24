@@ -20,13 +20,28 @@ final class VoiceAlert {
     private static String pending;
     private static AudioFocusRequest focus;
     private static int seq;
+    /** Quién mandó lo que se dice o se va a decir («» los avisos del plan; RoadGuide.VOICE, la guía). */
+    private static String owner = "";
+    /** Lo que se está diciendo (id), desde speak hasta que acaba, falla o se corta; null si nada. */
+    private static String activeId;
+    private static long activeSince;
+    /** Si el motor de voz no avisara del final, a este tiempo ya no cuenta como hablando. */
+    private static final long ACTIVE_MAX_MS = 90_000;
+    /** Al acabar o cortarse lo que se decía (la guía quita su «Parar»). Cualquier hilo. */
+    static volatile Runnable onIdle;
 
     private VoiceAlert() {
     }
 
     /** Dice el texto (el anterior, si sigue hablando, se corta). Se puede llamar desde cualquier hilo. */
     static synchronized void say(Context ctx, String text) {
+        say(ctx, text, "");
+    }
+
+    /** Como say, con quién lo manda (para cortarlo luego con stop). */
+    static synchronized void say(Context ctx, String text, String who) {
         if (text == null || text.trim().isEmpty()) return;
+        owner = who == null ? "" : who;
         Context app = ctx.getApplicationContext();
         if (tts == null) {
             pending = text;
@@ -43,7 +58,37 @@ final class VoiceAlert {
 
     /** ¿Está hablando ahora? (la guía del camino no corta un aviso del plan) */
     static synchronized boolean speaking() {
-        return pending != null || (tts != null && ready && tts.isSpeaking());
+        return pending != null
+                || (activeId != null && android.os.SystemClock.elapsedRealtime() - activeSince < ACTIVE_MAX_MS);
+    }
+
+    /** ¿Está hablando ahora, y es de who? */
+    static synchronized boolean speaking(String who) {
+        return owner.equals(who) && speaking();
+    }
+
+    /** Corta lo que se esté diciendo si es de who («Parar» de la guía); lo de otros sigue. */
+    static synchronized void stop(Context ctx, String who) {
+        if (!owner.equals(who) || !speaking()) return;
+        pending = null;
+        activeId = null;
+        if (tts != null && ready) tts.stop();
+        release(ctx.getApplicationContext());
+        idle();
+    }
+
+    /** Lo que se decía (id) ha terminado: sin «hablando», la música vuelve (releaseFocus) y se avisa. */
+    private static synchronized void finished(Context app, String id, boolean releaseFocus) {
+        // Un aviso cortado por otro nuevo (QUEUE_FLUSH) avisa tarde: el nuevo sigue hablando.
+        if (id == null || !id.equals(activeId)) return;
+        activeId = null;
+        if (releaseFocus) release(app);
+        idle();
+    }
+
+    private static void idle() {
+        Runnable r = onIdle;
+        if (r != null) r.run();
     }
 
     private static synchronized void onInit(Context app, int status) {
@@ -66,12 +111,17 @@ final class VoiceAlert {
 
             @Override
             public void onDone(String id) {
-                release(app);
+                finished(app, id, true);
             }
 
             @Override
             public void onError(String id) {
-                release(app);
+                finished(app, id, true);
+            }
+
+            @Override
+            public void onStop(String id, boolean interrupted) {
+                finished(app, id, true);
             }
         });
         ready = true;
@@ -99,6 +149,8 @@ final class VoiceAlert {
             }
         }
         String id = "hql-" + (++seq);
+        activeId = id;
+        activeSince = android.os.SystemClock.elapsedRealtime();
         if (Build.VERSION.SDK_INT >= 21) {
             tts.speak(text, TextToSpeech.QUEUE_FLUSH, new Bundle(), id);
         } else {
@@ -131,5 +183,6 @@ final class VoiceAlert {
         tts = null;
         ready = false;
         pending = null;
+        activeId = null;
     }
 }

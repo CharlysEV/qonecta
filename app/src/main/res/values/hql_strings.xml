@@ -1238,6 +1238,7 @@
     <string name="hql_guide_side_left">on the left</string>
     <string name="hql_guide_side_behind">behind you</string>
     <string name="hql_guide_walk">%1$d min on foot</string>
+    <string name="hql_guide_stop">Stop</string>
     <string name="hql_guide_tell">Tell me</string>
     <string name="hql_guide_go">Take me there</string>
     <string name="hql_guide_source">Text and photos: Wikipedia and Wikimedia Commons (CC BY-SA)</string>

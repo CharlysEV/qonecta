@@ -1234,6 +1234,7 @@
     <string name="hql_guide_side_left">à esquerda</string>
     <string name="hql_guide_side_behind">já para trás</string>
     <string name="hql_guide_walk">%1$d min a pé</string>
+    <string name="hql_guide_stop">Parar</string>
     <string name="hql_guide_tell">Contar</string>
     <string name="hql_guide_go">Levar-me lá</string>
     <string name="hql_guide_source">Textos e fotos: Wikipédia e Wikimedia Commons (CC BY-SA)</string>

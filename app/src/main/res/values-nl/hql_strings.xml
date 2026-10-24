@@ -1233,6 +1233,7 @@
     <string name="hql_guide_side_left">links</string>
     <string name="hql_guide_side_behind">al achter je</string>
     <string name="hql_guide_walk">%1$d min lopen</string>
+    <string name="hql_guide_stop">Stop</string>
     <string name="hql_guide_tell">Vertel</string>
     <string name="hql_guide_go">Breng me erheen</string>
     <string name="hql_guide_source">Teksten en foto\'s: Wikipedia en Wikimedia Commons (CC BY-SA)</string>

@@ -557,7 +557,8 @@ Lo saca de Wikipedia, en el idioma de la app.
   sitio de la lista, pasa a la tarjeta.
 - **Voz:** con «Voz» encendido (arriba a la derecha), cuenta solo los sitios más destacados que tienes a menos de 5 km
   por delante, cada uno una vez y como mucho uno cada 4 minutos. Nunca habla encima de una llamada, de las indicaciones
-  del navegador ni de otro aviso, y la música baja un momento mientras habla. «Sin voz»: solo las tarjetas.
+  del navegador ni de otro aviso, y la música baja un momento mientras habla. Mientras habla sale «Parar»,
+  que la corta al momento. «Sin voz»: solo las tarjetas (y corta lo que esté contando).
 - **Parado:** tras un minuto parado (por ejemplo, cargando), enseña lo que tienes cerca a pie, con los minutos andando.
 - **Pantalla partida:** con «Partir pantalla», la guía va junto a Android Auto, en una columna, y vale en marcha, sin
   aviso.

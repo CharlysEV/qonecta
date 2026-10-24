@@ -548,7 +548,8 @@ comes from Wikipedia, in the app's language.
   Tapping a place in the list moves it to the card.
 - **Voice:** with "Voice" on (top right), it only tells you about the most notable places less than 5 km ahead, each
   one once and at most one every 4 minutes. It never talks over a call, the navigator's directions or another alert,
-  and the music is lowered for a moment while it speaks. "No voice": cards only.
+  and the music is lowered for a moment while it speaks. While it speaks, "Stop" cuts it off at once. "No
+  voice": cards only (and it cuts off what it is saying).
 - **Stopped:** after a minute stopped (for example, charging), it shows what is nearby on foot, with the walking time.
 - **Split screen:** with "Split screen", the guide sits next to Android Auto, in one column, and can be used while
   driving, with no warning.

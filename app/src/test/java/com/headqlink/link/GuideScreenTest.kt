@@ -135,6 +135,33 @@ class GuideScreenTest {
     }
 
     @Test
+    fun whileItTalksAStopButtonCutsItOff() {
+        val quiet = texts(build(split, moving()).second)
+        val (_, v) = build(split, moving().also { it.talking = true })
+        val stop = views(v).first { it.text.toString() == "■  Parar" }
+        assertTrue(stop.visibility == View.VISIBLE)
+        // Callado, no está a la vista.
+        assertTrue(quiet.toString(), views(build(split, moving()).second).first { it.text.toString() == "■  Parar" }.visibility == View.GONE)
+        stop.performClick()
+        assertTrue(stop.visibility == View.GONE)
+    }
+
+    @Test
+    fun splittingTheScreenWithTheGuideOpenStacksItInOneColumn() {
+        val (_, v) = build(full, moving())
+        val label = { views(v).first { it.text.toString() == "Más adelante" } }
+        assertTrue(left(label(), v) > full / 2)
+        // Pantalla partida: el mismo GuideScreen, más estrecho.
+        v.measure(View.MeasureSpec.makeMeasureSpec(split, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY))
+        v.layout(0, 0, split, height)
+        org.robolectric.Shadows.shadowOf(android.os.Looper.getMainLooper()).idle()
+        v.measure(View.MeasureSpec.makeMeasureSpec(split, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY))
+        v.layout(0, 0, split, height)
+        assertTrue(left(label(), v) < split / 4)
+        assertTrue(texts(v).contains("Castillo de Ejemplo"))
+    }
+
+    @Test
     fun render() {
         org.junit.Assume.assumeTrue(System.getProperty("hql.preview") == "1")
         val dir = File(System.getProperty("hql.preview.dir")!!)

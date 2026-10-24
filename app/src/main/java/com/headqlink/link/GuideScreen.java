@@ -36,7 +36,9 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
     private Host host;
     private boolean wide;
     private TextView status;
+    private TextView stop;
     private TextView voice;
+    private FrameLayout bodyHost;
     private FrameLayout cardBox;
     private TextView listTitle;
     private LinearLayout listBox;
@@ -46,6 +48,8 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
     private TextView cardMeta;
     private final List<Long> rowIds = new ArrayList<>();
     private final List<TextView> rowMetas = new ArrayList<>();
+    /** Lo último enseñado (para rehacerlo al cambiar de ancho). */
+    private RoadGuide.State shown = new RoadGuide.State();
     private boolean destroyed;
 
     GuideScreen() {
@@ -64,6 +68,7 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
         LinearLayout col = new LinearLayout(c);
         col.setOrientation(LinearLayout.VERTICAL);
         col.setPadding(28, 20, 28, 12);
+        col.setBackgroundColor(CarKit.BG);
 
         LinearLayout head = new LinearLayout(c);
         head.setOrientation(LinearLayout.HORIZONTAL);
@@ -80,11 +85,53 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
         titles.addView(title);
         titles.addView(status);
         head.addView(titles, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        // «Parar»: solo mientras la guía habla; la corta al momento (la voz sigue encendida para los siguientes).
+        stop = CarStyle.pill(c, "\u25A0  " + Str.get(R.string.hql_guide_stop));
+        stop.setBackground(CarStyle.round(CarStyle.BAD, 28));
+        stop.setTextColor(CarStyle.ON_ACCENT);
+        stop.setOnClickListener(v -> {
+            RoadGuide.hush(c);
+            if (!live) render(copyQuiet(shown));
+        });
+        head.addView(stop);
         voice = CarStyle.pill(c, "");
         voice.setOnClickListener(v -> RoadGuide.setVoice(c, !RoadGuide.voiceOn(c)));
         head.addView(voice);
         col.addView(head);
 
+        bodyHost = new FrameLayout(c);
+        LinearLayout.LayoutParams bodyLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f);
+        bodyLp.topMargin = 16;
+        col.addView(bodyHost, bodyLp);
+        buildBody(c);
+        // Al partir la pantalla (o volver a completa) cambia el ancho sin rehacer la pantalla: se recoloca.
+        col.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            boolean w = r - l >= WIDE_MIN;
+            if (destroyed || r - l == or - ol || w == wide) return;
+            wide = w;
+            // Por el Host (el hilo principal, después de esta pasada de medidas), no View.post: va también sin ventana.
+            host.post(() -> {
+                if (destroyed) return;
+                buildBody(c);
+                render(shown);
+            });
+        });
+        TextView source = CarStyle.text(c, Str.get(R.string.hql_guide_source), 17, CarStyle.TEXT_DIM);
+        source.setPadding(6, 8, 0, 0);
+        col.addView(source);
+
+        render(new RoadGuide.State());
+        if (live) RoadGuide.start(c, this);
+        return col;
+    }
+
+    /** Tarjeta y lista: lado a lado (ancho) o una debajo de otra (estrecho). Vacías: las llena render. */
+    private void buildBody(Context c) {
+        bodyHost.removeAllViews();
+        cardPlace = null;
+        cardMeta = null;
+        rowIds.clear();
+        rowMetas.clear();
         cardBox = new FrameLayout(c);
         listTitle = CarStyle.label(c, "");
         listTitle.setPadding(6, 0, 0, 8);
@@ -94,8 +141,6 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
         listCol.setOrientation(LinearLayout.VERTICAL);
         listCol.addView(listTitle);
         listCol.addView(listBox);
-        LinearLayout.LayoutParams bodyLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f);
-        bodyLp.topMargin = 16;
         if (wide) {
             LinearLayout body = new LinearLayout(c);
             body.setOrientation(LinearLayout.HORIZONTAL);
@@ -107,7 +152,7 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
             ScrollView listScroll = new ScrollView(c);
             listScroll.addView(listCol);
             body.addView(listScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f));
-            col.addView(body, bodyLp);
+            bodyHost.addView(body, CarStyle.match());
         } else {
             ScrollView sv = new ScrollView(c);
             LinearLayout inner = new LinearLayout(c);
@@ -118,15 +163,8 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
             ll.topMargin = 20;
             inner.addView(listCol, ll);
             sv.addView(inner);
-            col.addView(sv, bodyLp);
+            bodyHost.addView(sv, CarStyle.match());
         }
-        TextView source = CarStyle.text(c, Str.get(R.string.hql_guide_source), 17, CarStyle.TEXT_DIM);
-        source.setPadding(6, 8, 0, 0);
-        col.addView(source);
-
-        render(new RoadGuide.State());
-        if (live) RoadGuide.start(c, this);
-        return col;
     }
 
     @Override
@@ -141,10 +179,12 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
     }
 
     private void render(RoadGuide.State s) {
+        shown = s;
         Context c = host.context();
         voice.setText(Str.get(s.voice ? R.string.hql_guide_voice_on : R.string.hql_guide_voice_off));
         voice.setBackground(s.voice ? CarStyle.accent(28) : CarStyle.round(CarStyle.PILL_BG, 28));
         voice.setTextColor(s.voice ? CarStyle.ON_ACCENT : CarStyle.TEXT);
+        stop.setVisibility(s.talking ? View.VISIBLE : View.GONE);
         status.setText(statusText(s));
         // La tarjeta: se rehace al cambiar de sitio; si es el mismo, solo la distancia.
         if (s.current == null) {
@@ -292,6 +332,20 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
         lp.bottomMargin = 10;
         r.setLayoutParams(lp);
         return r;
+    }
+
+    /** Sin la guía en marcha (pruebas): el mismo estado, ya callado. */
+    private static RoadGuide.State copyQuiet(RoadGuide.State s) {
+        RoadGuide.State n = new RoadGuide.State();
+        n.status = s.status;
+        n.moving = s.moving;
+        n.voice = s.voice;
+        n.lat = s.lat;
+        n.lon = s.lon;
+        n.heading = s.heading;
+        n.current = s.current;
+        n.list.addAll(s.list);
+        return n;
     }
 
     /** Sin la guía en marcha (pruebas): lo tocado pasa a la tarjeta al momento. */

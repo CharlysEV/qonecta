@@ -1237,6 +1237,7 @@
     <string name="hql_guide_side_left">左侧</string>
     <string name="hql_guide_side_behind">已在后方</string>
     <string name="hql_guide_walk">步行 %1$d 分钟</string>
+    <string name="hql_guide_stop">停止</string>
     <string name="hql_guide_tell">讲解</string>
     <string name="hql_guide_go">带我去</string>
     <string name="hql_guide_source">文字和图片：维基百科和维基共享资源（CC BY-SA）</string>
