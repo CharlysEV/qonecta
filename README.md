@@ -31,6 +31,7 @@ cómo exportar el log.
 - **Português:** [MANUAL.pt.md](MANUAL.pt.md)
 - **English:** [MANUAL.en.md](MANUAL.en.md)
 - **Italiano:** [MANUAL.it.md](MANUAL.it.md)
+- **Deutsch:** [MANUAL.de.md](MANUAL.de.md)
 
 
 Android app that brings **Android Auto** and a custom side panel with extra features to the

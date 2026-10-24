@@ -1,6 +1,6 @@
 # Qonecta+ · Manuale utente
 
-**Lingue:** [Español](MANUAL.md) · [Português](MANUAL.pt.md) · [English](MANUAL.en.md) · **Italiano**
+**Lingue:** [Español](MANUAL.md) · [Português](MANUAL.pt.md) · [English](MANUAL.en.md) · **Italiano** · [Deutsch](MANUAL.de.md)
 
 Manuale per chi guida, per la versione **0.3** di Qonecta+, di **[CharlysEV](https://github.com/CharlysEV)**, a partire da [HeadQLink](https://github.com/ryazrm/headqlink) di **ryazrm**
 ([CharlysEV/qonecta](https://github.com/CharlysEV/qonecta)).
@@ -1084,6 +1084,8 @@ Puoi chiedere aiuto sulla pagina GitHub del progetto: [CharlysEV/qonecta](https:
   modificato). Mappe: **[Leaflet](https://leafletjs.com)** (BSD 2-Clause).
 - Dati online: mappe, strade e colonnine © collaboratori di **OpenStreetMap** (ODbL), tramite Overpass, OSRM, Photon
   (komoot) e Nominatim; meteo e altitudine di **Open-Meteo.com** (CC BY 4.0) e Open Topo Data; colonnine in Spagna dal
-  registro del MITECO pubblicato dalla DGT; radio da **radio-browser.info**.
+  registro del MITECO pubblicato dalla DGT e in Germania dal Ladesäulenregister della **Bundesnetzagentur**
+  (CC BY 4.0); radio da **radio-browser.info**; luoghi della Guida di viaggio da **Wikipedia** (CC BY-SA); testi
+  del Karaoke da **LRCLIB**.
 - Emulatori: Nestopia, halfNES, bsnes, ClownMDEmu e PCSX ReARMed, ognuno con la sua licenza. Tutto in
   [NOTICE](NOTICE).

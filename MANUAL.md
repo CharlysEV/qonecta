@@ -1,6 +1,6 @@
 # Qonecta+ · Manual de usuario
 
-**Idiomas:** **Español** · [Português](MANUAL.pt.md) · [English](MANUAL.en.md) · [Italiano](MANUAL.it.md)
+**Idiomas:** **Español** · [Português](MANUAL.pt.md) · [English](MANUAL.en.md) · [Italiano](MANUAL.it.md) · [Deutsch](MANUAL.de.md)
 
 Manual para conductores de la versión **0.3** de Qonecta+, de **[CharlysEV](https://github.com/CharlysEV)**, a partir de [HeadQLink](https://github.com/ryazrm/headqlink), de **ryazrm**
 ([CharlysEV/qonecta](https://github.com/CharlysEV/qonecta)).
@@ -1068,6 +1068,8 @@ Puedes pedir ayuda en la página del proyecto en GitHub: [CharlysEV/qonecta](htt
   4.0, modificado). Mapas: **[Leaflet](https://leafletjs.com)** (BSD 2-Clause).
 - Datos en línea: mapas, carreteras y cargadores © colaboradores de **OpenStreetMap** (ODbL), con Overpass, OSRM,
   Photon (komoot) y Nominatim; tiempo y altitud de **Open-Meteo.com** (CC BY 4.0) y Open Topo Data; cargadores en
-  España del registro del MITECO publicado por la DGT; radio de **radio-browser.info**.
+  España del registro del MITECO publicado por la DGT y en Alemania del Ladesäulenregister de la
+  **Bundesnetzagentur** (CC BY 4.0); radio de **radio-browser.info**; lugares de la Guía del camino de **Wikipedia**
+  (CC BY-SA); letras del Karaoke de **LRCLIB**.
 - Emuladores: Nestopia, halfNES, bsnes, ClownMDEmu y PCSX ReARMed, cada uno con su licencia. Todo, en
   [NOTICE](NOTICE).
