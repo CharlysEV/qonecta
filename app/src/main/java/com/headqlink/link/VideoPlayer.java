@@ -178,6 +178,7 @@ final class VideoPlayer {
             }
         });
         diagnostics(player);
+        followMovie(player);
         player.prepare();
         host.setContent(f);
         host.setFullscreen(true);
@@ -298,6 +299,21 @@ final class VideoPlayer {
             @Override
             public void onDroppedVideoFrames(EventTime t, int dropped, long elapsedMs) {
                 L.i("vídeos: " + dropped + " fotogramas perdidos en " + elapsedMs + " ms");
+            }
+        });
+    }
+
+    /**
+     * Vídeo a pantalla completa (Vídeos y TV): en cuanto se sabe su formato, el vídeo al coche va a su ritmo
+     * (VideoPipeline.setMovie: cada frame al llegar y como mucho a sus fps). Al soltar el reproductor, setMovie(-1).
+     */
+    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+    static void followMovie(ExoPlayer p) {
+        p.addAnalyticsListener(new androidx.media3.exoplayer.analytics.AnalyticsListener() {
+            @Override
+            public void onVideoInputFormatChanged(EventTime t, androidx.media3.common.Format f,
+                                                  androidx.media3.exoplayer.DecoderReuseEvaluation reuse) {
+                VideoPipeline.setMovie(f.frameRate > 0 ? f.frameRate : 0);
             }
         });
     }
@@ -486,6 +502,7 @@ final class VideoPlayer {
             focus = null;
             player.release();
             player = null;
+            VideoPipeline.setMovie(-1);
         }
     }
 

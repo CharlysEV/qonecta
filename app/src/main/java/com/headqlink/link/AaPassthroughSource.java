@@ -305,6 +305,16 @@ final class AaPassthroughSource implements VideoSource {
         r.setMaxFps(fps, fixedRate || fps < targetFps);
     }
 
+    /** El vídeo a pantalla completa de ahora (setMovie), para el relay que se cree después (al reconectar). */
+    private volatile float movieFps = -1;
+
+    @Override
+    public void setMovie(float fps) {
+        movieFps = fps;
+        GlFrameRelay r = relay;
+        if (r != null) r.setMovie(fps);
+    }
+
     @Override
     public void setCarSize(int width, int height) {
         if (width > 0 && height > 0) {
@@ -726,6 +736,7 @@ final class AaPassthroughSource implements VideoSource {
         relay.setGate(gate);
         relay.setFixedRate(fixedRate);
         relay.setBurstTolerance(new Config(ctx).videoProfile().best());
+        relay.setMovie(movieFps);
         relay.setSplashOnly(!extended);
         // La capa se diseña a la resolución de la pantalla del coche; el relay la escala al vídeo.
         relay.setOverlaySize(extended ? uiW : carW, extended ? uiH : carH);

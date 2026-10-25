@@ -174,11 +174,13 @@ final class GlFrameRelay {
         @Override
         public void run() {
             if (released) return;
-            long period = keepAlivePeriodNs(pacer.fps());
+            boolean movie = movieOnTop();
+            long period = keepAlivePeriodNs(movie ? moviePacer.fps() : pacer.fps());
             long now = System.nanoTime();
             // Con AA a la vista sus frames ya marcan el ritmo: solo se rellenan huecos de verdad (tres periodos), para no
-            // meter un frame repetido justo antes del siguiente de AA (saldría a saltos).
-            long gap = ownScreenOnTop() || !aaHasFrame ? period : 3 * period;
+            // meter un frame repetido justo antes del siguiente de AA (saldría a saltos). Igual con un vídeo a pantalla
+            // completa: un frame repetido a un periodo retrasaba el siguiente del vídeo.
+            long gap = !movie && (ownScreenOnTop() || !aaHasFrame) ? period : 3 * period;
             if (!hasNew && now - lastDrawNs >= gap) {
                 frameNs = now;
                 hasNew = true;
@@ -257,13 +259,51 @@ final class GlFrameRelay {
         if (hh == null) {
             pacer.setFps(fps, fixed);
             pacer.setBurst(burstAllowed && fps >= 50);
+            refreshMoviePacer();
             return;
         }
         hh.post(() -> {
             pacer.setFps(fps, fixed);
             pacer.setBurst(burstAllowed && fps >= 50);
+            refreshMoviePacer();
             L.i("GL relay: ritmo " + fps + " fps" + (pacer.fixed() ? " en rejilla" : ""));
         });
+    }
+
+    /**
+     * Un vídeo (Vídeos o TV) a pantalla completa delante: sus fps (0 si no se saben), o -1 sin vídeo. Entonces la capa se
+     * dibuja al llegar cada frame, sin rejilla, y como mucho a un múltiplo de los fps del vídeo (25 → 25, o 50 con la
+     * sesión a 60): en la rejilla de 30, un vídeo de 25 fps repetía uno de cada cinco frames (tirones con las series de
+     * 25p, desde Alemania) y dos relojes de 30 sin sincronizar (pantalla virtual y rejilla) perdían o retrasaban frames.
+     */
+    private float movieFps = -1;
+    private final FramePacer moviePacer = new FramePacer(0);
+
+    void setMovie(float fps) {
+        Handler hh = h;
+        if (hh == null) {
+            movieFps = fps;
+            refreshMoviePacer();
+            return;
+        }
+        hh.post(() -> {
+            if (movieFps == fps) return;
+            movieFps = fps;
+            refreshMoviePacer();
+            L.i(fps < 0 ? "GL relay: sin vídeo delante" : String.format(java.util.Locale.US,
+                    "GL relay: vídeo delante (%s): cada frame al llegar, como mucho a %d fps", fps > 0
+                            ? String.format(java.util.Locale.US, "%.3f fps", fps) : "fps sin saber", moviePacer.fps()));
+        });
+    }
+
+    /** Hilo GL: el ritmo del vídeo, con los fps de ahora. */
+    private void refreshMoviePacer() {
+        moviePacer.setFps(movieFps < 0 ? 0 : VideoPipeline.movieCap(movieFps, pacer.fps()), false);
+    }
+
+    /** Hay un vídeo a pantalla completa y se ve (no AA, no la pantalla partida). */
+    private boolean movieOnTop() {
+        return movieFps >= 0 && ownScreenOnTop();
     }
 
     /** El tamaño negociado con AA puede cambiar tras crear el relay (al arrancar en frío vale 800x480). */
@@ -566,8 +606,10 @@ final class GlFrameRelay {
     private void tryDraw() {
         if (released || !hasNew) return;
         long now = System.nanoTime();
-        boolean paced = paced();
-        long wait = pacer.waitNs(now, paced);
+        boolean movie = movieOnTop();
+        FramePacer pc = movie ? moviePacer : pacer;
+        boolean paced = !movie && paced();
+        long wait = pc.waitNs(now, paced);
         Gate g = gate;
         boolean early = wait > 0;
         boolean closed = !early && g != null && !g.ready();
@@ -601,7 +643,7 @@ final class GlFrameRelay {
         hasNew = false;
         // Siguiente dibujo: en rejilla, el tic siguiente (si nos hemos retrasado más de un periodo, por el enlace
         // cerrado o sin frames, la rejilla vuelve a empezar aquí); si no, el ritmo medio.
-        pacer.onDraw(now, paced);
+        pc.onDraw(now, paced);
         statDrawn++;
         maybeLogStats();
     }
@@ -735,9 +777,15 @@ final class GlFrameRelay {
     private void maybeLogStats() {
         long now = SystemClock.elapsedRealtime();
         if (now - statStart < 5000) return;
-        L.i(String.format(java.util.Locale.US, "GL relay: AA %d frames, interfaz %d, enviados %d (%d sin cambios), descartados %d por ir atrasados, espera máx %d ms · esperas por ritmo %d, por enlace %d · ritmo %d fps%s%s",
-                statDecoded, statOverlay, statDrawn, statKeep, Math.max(0, statDecoded - (statDrawn - statKeep)), statMaxWaitMs, statDenyInterval, statDenyGate,
-                pacer.fps(), paced() ? " en rejilla" : "", statMaxHoldMs > 0 ? " (puerta cerrada máx " + statMaxHoldMs + " ms)" : ""));
+        // Descartados: los frames que llegaron y no salieron, de AA o, con una pantalla nuestra delante, de la capa (antes
+        // solo se contaban los de AA, y con AA en pausa por un vídeo salía siempre 0).
+        boolean own = ownScreenOnTop();
+        boolean movie = movieOnTop();
+        int lost = discarded(own ? statOverlay : statDecoded, statDrawn, statKeep);
+        L.i(String.format(java.util.Locale.US, "GL relay: AA %d frames, interfaz %d, enviados %d (%d sin cambios), descartados %d %s por ir atrasados, espera máx %d ms · esperas por ritmo %d, por enlace %d · ritmo %d fps%s%s",
+                statDecoded, statOverlay, statDrawn, statKeep, lost, own ? "de la interfaz" : "de AA", statMaxWaitMs, statDenyInterval, statDenyGate,
+                movie ? moviePacer.fps() : pacer.fps(), movie ? " (vídeo delante, al llegar)" : paced() ? " en rejilla" : "",
+                statMaxHoldMs > 0 ? " (puerta cerrada máx " + statMaxHoldMs + " ms)" : ""));
         statDenyInterval = 0;
         statDenyGate = 0;
         statStart = now;
@@ -747,6 +795,11 @@ final class GlFrameRelay {
         statKeep = 0;
         statMaxWaitMs = 0;
         statMaxHoldMs = 0;
+    }
+
+    /** Puro: frames que llegaron y no se mandaron (los dibujos sin cambios no cuentan como frames recibidos). */
+    static int discarded(int received, int drawn, int keep) {
+        return Math.max(0, received - (drawn - keep));
     }
 
     private static int compile(int type, String src) {

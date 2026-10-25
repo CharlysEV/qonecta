@@ -56,6 +56,13 @@ interface VideoSource {
     default void setMaxFps(int fps) {
     }
 
+    /**
+     * Un vídeo a pantalla completa (Vídeos o TV): sus fps (0 si no se saben), o -1 sin vídeo. Solo lo aplican las fuentes
+     * con relay GL: lo dibujan al ritmo del vídeo.
+     */
+    default void setMovie(float fps) {
+    }
+
     /** El coche cambia entre modo día y noche (Global/DarkModeOn). */
     default void onCarDarkMode(boolean dark) {
     }

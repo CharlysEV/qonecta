@@ -203,6 +203,8 @@ final class VideoPipeline {
         source.setCarSize(plan.car.carW, plan.car.carH);
         source.setVideoSize(plan.videoW, plan.videoH);
         source.setTargetFps(plan.fps);
+        // Un vídeo a pantalla completa que ya se veía (reconexión): a su ritmo desde el primer frame.
+        source.setMovie(movieFps);
         if (carDark != null) source.onCarDarkMode(carDark);
         if (!source.usesEncoder()) {
             startPassthrough();
@@ -560,6 +562,34 @@ final class VideoPipeline {
             p.applyFpsCap();
             L.i("vídeo: " + (on ? "juego en pantalla: hasta " + p.plan.fps + " fps" : "sin juego: " + p.fpsCap + " fps"));
         });
+    }
+
+    /** El vídeo a pantalla completa de ahora (Vídeos o TV): sus fps (0 si no se saben), o -1 sin vídeo. */
+    private static volatile float movieFps = -1;
+
+    /**
+     * Un vídeo a pantalla completa empieza (fps del vídeo, 0 si no se saben) o se va (-1): el relay lo dibuja a su ritmo
+     * (GlFrameRelay.setMovie). Desde cualquier hilo.
+     */
+    static void setMovie(float fps) {
+        if (movieFps == fps) return;
+        movieFps = fps;
+        VideoPipeline p = current;
+        if (p != null && !p.stopped) p.h.post(() -> {
+            VideoSource s = p.source;
+            if (s != null) s.setMovie(fps);
+        });
+    }
+
+    /**
+     * Puro: el tope para un vídeo de videoFps con el tope de ahora: el mayor múltiplo de los fps del vídeo que quepa (25 con
+     * 30, 50 con 60, 24 para 23,976); si el vídeo va más rápido que el tope, o no se saben sus fps, el tope.
+     */
+    static int movieCap(float videoFps, int cap) {
+        if (cap <= 0 || !(videoFps >= 10)) return cap;
+        int n = (int) Math.floor((cap + 0.5) / videoFps);
+        if (n < 1) return cap;
+        return Math.max(1, Math.min(cap, Math.round(n * videoFps)));
     }
 
     /** Puro: tope por el contenido: sin juego, 30 (salvo «Fluidez» a 60); con juego, los de la sesión. */

@@ -105,4 +105,71 @@ class FramePacerTest {
         val drawn = simulate(FramePacer(60).apply { setBurst(true) }, grid = false, seconds = 10, arrivalsMs = every(1000.0 / 90, 0.0, 10))
         assertTrue("dibujados $drawn", drawn in 590..601)
     }
+
+    /**
+     * Como simulate, con el relleno del relay (keepAlive: un dibujo repetido si no hay nada nuevo en gapMs desde el
+     * último). Devuelve las horas (ms) a las que salió cada frame de verdad (los repetidos no cuentan).
+     */
+    private fun realFrameTimes(pacer: FramePacer, grid: Boolean, gapMs: Long, seconds: Int, arrivalsMs: List<Long>): List<Long> {
+        val arrivals = arrivalsMs.toHashSet()
+        var hasNew = false
+        var real = false
+        var lastDraw = -1_000L
+        val out = ArrayList<Long>()
+        for (t in 0L until seconds * 1000L) {
+            if (t in arrivals) {
+                hasNew = true
+                real = true
+            }
+            if (!hasNew && t - lastDraw >= gapMs) hasNew = true
+            val now = 1_000_000_000L + t * ms
+            if (hasNew && pacer.waitNs(now, grid) <= 0) {
+                pacer.onDraw(now, grid)
+                if (real) out.add(t)
+                hasNew = false
+                real = false
+                lastDraw = t
+            }
+        }
+        return out
+    }
+
+    @Test
+    fun aMovieAt25GoesOutEvery40msNotInAGridOf30() {
+        // Un vídeo de 25 fps (un frame cada 40 ms) con nuestra pantalla delante. Antes: rejilla de 30 y relleno a un
+        // periodo (33 ms): el frame repetido ocupaba el tic y el del vídeo esperaba al siguiente (salidas a 27-60 ms).
+        val movie = every(40.0, 3.0, 10)
+        val old = realFrameTimes(FramePacer(30).apply { setFps(30, true) }, true, 33, 10, movie).zipWithNext { a, b -> b - a }
+        assertTrue("antes, intervalos irregulares: $old", old.count { it !in 38..42 } > 20)
+        // Ahora: el ritmo del vídeo (VideoPipeline.movieCap: 25 con la sesión a 30), sin rejilla y relleno a tres periodos.
+        val cap = VideoPipeline.movieCap(25f, 30)
+        assertEquals(25, cap)
+        val gaps = realFrameTimes(FramePacer(cap), false, 120, 10, movie).zipWithNext { a, b -> b - a }
+        assertTrue("intervalos $gaps", gaps.all { it in 39..41 })
+        assertTrue(gaps.size >= 245)
+    }
+
+    @Test
+    fun theMovieCapIsAMultipleOfTheVideoRate() {
+        assertEquals(25, VideoPipeline.movieCap(25f, 30))
+        assertEquals(50, VideoPipeline.movieCap(25f, 60))
+        assertEquals(24, VideoPipeline.movieCap(23.976f, 30))
+        assertEquals(48, VideoPipeline.movieCap(23.976f, 60))
+        assertEquals(30, VideoPipeline.movieCap(29.97f, 30))
+        assertEquals(50, VideoPipeline.movieCap(50f, 60))
+        // Más rápido que el tope, o sin saber sus fps: el tope.
+        assertEquals(30, VideoPipeline.movieCap(50f, 30))
+        assertEquals(30, VideoPipeline.movieCap(0f, 30))
+        assertEquals(30, VideoPipeline.movieCap(Float.NaN, 30))
+        // Con tope térmico de 20, un vídeo de 25 va a 20.
+        assertEquals(20, VideoPipeline.movieCap(25f, 20))
+    }
+
+    @Test
+    fun discardedCountsFramesThatArrivedAndWereNotSent() {
+        // 25 frames de la interfaz, 30 dibujos de los que 5 fueron sin cambios: ninguno perdido.
+        assertEquals(0, GlFrameRelay.discarded(25, 30, 5))
+        assertEquals(4, GlFrameRelay.discarded(25, 24, 3))
+        assertEquals(0, GlFrameRelay.discarded(0, 10, 10))
+    }
 }
