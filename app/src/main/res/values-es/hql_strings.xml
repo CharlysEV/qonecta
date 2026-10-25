@@ -1337,4 +1337,8 @@
     </plurals>
     <string name="hql_about_donate">☕ Invítame a un café</string>
     <string name="hql_about_donate_text">Qonecta+ es gratis y sin anuncios. Si te resulta útil y quieres apoyarlo, puedes hacerlo con PayPal.</string>
+    <string name="hql_ghost_behind">Fantasma: %1$s por detrás de tu mejor vez (%2$s)</string>
+    <string name="hql_ghost_ahead">Fantasma: %1$s por delante de tu mejor vez (%2$s)</string>
+    <string name="hql_ghost_even">Fantasma: a la par con tu mejor vez (%2$s)</string>
+    <string name="hql_record_route">Récord de ruta</string>
 </resources>

@@ -458,9 +458,12 @@ supporta.
     successiva; la velocità con il cartello del limite, la direzione, l'altitudine, la pendenza e il sole fino al
     tramonto.
   - «Viaggi»: il viaggio in corso e quelli salvati, con percorso, consumo, dislivello e costo; i km degli ultimi 14
-    giorni e i record. **Tocca un viaggio** per aprirlo in grande: il percorso su una mappa (OpenStreetMap), la partenza,
-    l'arrivo e **le soste** (2 minuti o più nello stesso posto, con durata, ora e km), e i suoi dati. Le soste sono note
-    per i viaggi dalla 0.2.7 in poi.
+    giorni e i record. **Tocca un viaggio** per aprirlo in grande: il percorso su una mappa (OpenStreetMap), la
+    partenza, l'arrivo e **le soste** (2 minuti o più nello stesso posto, con durata, ora e km), e i suoi dati. Le soste
+    sono note per i viaggi dalla 0.2.7 in poi. **Il fantasma:** se ripeti un percorso (stessa partenza, stessa strada),
+    «Viaggio in corso» ti dice in diretta quanto sei avanti o indietro rispetto al tuo tempo migliore fin qui
+    («Fantasma: 1:20 dietro il tuo tempo migliore»), e il viaggio più veloce di ogni percorso ripetuto ha «Record del
+    percorso».
   - «Strumenti»: tachimetro con il limite e la velocità massima, forze G con la scia degli ultimi secondi e i picchi,
     inclinazione e un punteggio di dolcezza di guida (0-100) in base agli strappi in accelerazione, frenata e sterzata.
   - «Efficienza»: la potenza degli ultimi 2 minuti (in verde quella recuperata), il consumo attuale, del viaggio e

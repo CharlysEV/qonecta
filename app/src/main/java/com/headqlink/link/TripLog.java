@@ -238,6 +238,21 @@ final class TripLog {
         cloudCap = cs.capacityKwh;
     }
 
+    /** El recorrido del viaje en curso hasta ahora ([lat, lon, segundo]; copia), o null sin viaje o en la demostración. */
+    static java.util.List<double[]> liveTrack() {
+        TripLog t = instance;
+        if (t == null || t.demo) return null;
+        synchronized (t.track) {
+            return new ArrayList<>(t.track);
+        }
+    }
+
+    /** Inicio del viaje en curso (ms), o 0. */
+    static long liveStartMs() {
+        TripLog t = instance;
+        return t == null ? 0 : t.startMs;
+    }
+
     /** Inicio del viaje en curso con datos de la nube, o null (en la demostración, el suyo). */
     static CloudMark cloudStart() {
         if (DemoMode.active()) return CarCloud.car().demo ? DemoMode.cloudTripStart() : null;

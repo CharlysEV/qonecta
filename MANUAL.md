@@ -456,9 +456,12 @@ admite.
   - «Conducción»: la próxima maniobra en grande, con una barra que se vacía hasta el giro, los carriles y la maniobra
     de después; la velocidad con la señal del límite, el rumbo, la altitud, la pendiente y el sol hasta la puesta.
   - «Viajes»: el viaje en curso y los guardados, con su recorrido, consumo, desnivel y coste; los km de los últimos 14
-    días y los récords. **Pulsa un viaje** y se abre en grande: el recorrido sobre un mapa (OpenStreetMap), la salida, la
-    llegada y **las paradas** (2 minutos o más en el mismo sitio, con su duración, la hora y el km), y sus cifras. Las
-    paradas se saben en los viajes desde la 0.2.7.
+    días y los récords. **Pulsa un viaje** y se abre en grande: el recorrido sobre un mapa (OpenStreetMap), la salida,
+    la llegada y **las paradas** (2 minutos o más en el mismo sitio, con su duración, la hora y el km), y sus cifras.
+    Las paradas se saben en los viajes desde la 0.2.7. **El fantasma:** si repites un camino (sales del mismo sitio y
+    vas por el mismo sitio), «En curso» te dice en directo cuánto vas por delante o por detrás de tu mejor vez hasta
+    donde estás («Fantasma: 1:20 por detrás de tu mejor vez»), y el viaje más rápido de cada camino repetido lleva
+    «Récord de ruta».
   - «Instrumentos»: velocímetro con el límite y la máxima, fuerzas G con la estela de los últimos segundos y los picos,
     inclinación y una nota de suavidad (0-100) según los tirones al acelerar, frenar y girar.
   - «Eficiencia»: la potencia de los últimos 2 minutos (en verde lo que se recupera), el consumo ahora, del viaje y

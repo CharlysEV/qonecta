@@ -1331,4 +1331,8 @@
     </plurals>
     <string name="hql_about_donate">☕ Spendier mir einen Kaffee</string>
     <string name="hql_about_donate_text">Qonecta+ ist kostenlos und werbefrei. Wenn es dir hilft und du es unterstützen möchtest, geht das per PayPal.</string>
+    <string name="hql_ghost_behind">Geist: %1$s hinter deiner Bestzeit (%2$s)</string>
+    <string name="hql_ghost_ahead">Geist: %1$s vor deiner Bestzeit (%2$s)</string>
+    <string name="hql_ghost_even">Geist: gleichauf mit deiner Bestzeit (%2$s)</string>
+    <string name="hql_record_route">Streckenrekord</string>
 </resources>

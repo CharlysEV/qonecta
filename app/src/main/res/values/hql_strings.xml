@@ -1336,4 +1336,8 @@
     </plurals>
     <string name="hql_about_donate">☕ Buy me a coffee</string>
     <string name="hql_about_donate_text">Qonecta+ is free and has no ads. If it\'s useful to you and you\'d like to support it, you can do so with PayPal.</string>
+    <string name="hql_ghost_behind">Ghost: %1$s behind your best time (%2$s)</string>
+    <string name="hql_ghost_ahead">Ghost: %1$s ahead of your best time (%2$s)</string>
+    <string name="hql_ghost_even">Ghost: level with your best time (%2$s)</string>
+    <string name="hql_record_route">Route record</string>
 </resources>

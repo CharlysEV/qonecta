@@ -1331,4 +1331,8 @@
     </plurals>
     <string name="hql_about_donate">☕ Trakteer me op een koffie</string>
     <string name="hql_about_donate_text">Qonecta+ is gratis en zonder advertenties. Heb je er iets aan en wil je het steunen, dan kan dat via PayPal.</string>
+    <string name="hql_ghost_behind">Spook: %1$s achter je beste tijd (%2$s)</string>
+    <string name="hql_ghost_ahead">Spook: %1$s voor op je beste tijd (%2$s)</string>
+    <string name="hql_ghost_even">Spook: gelijk met je beste tijd (%2$s)</string>
+    <string name="hql_record_route">Routerecord</string>
 </resources>

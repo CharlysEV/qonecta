@@ -1332,4 +1332,8 @@
     </plurals>
     <string name="hql_about_donate">☕ Offrimi un caffè</string>
     <string name="hql_about_donate_text">Qonecta+ è gratuito e senza pubblicità. Se ti è utile e vuoi sostenerlo, puoi farlo con PayPal.</string>
+    <string name="hql_ghost_behind">Fantasma: %1$s dietro il tuo tempo migliore (%2$s)</string>
+    <string name="hql_ghost_ahead">Fantasma: %1$s davanti al tuo tempo migliore (%2$s)</string>
+    <string name="hql_ghost_even">Fantasma: alla pari con il tuo tempo migliore (%2$s)</string>
+    <string name="hql_record_route">Record del percorso</string>
 </resources>

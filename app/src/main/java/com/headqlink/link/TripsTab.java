@@ -57,12 +57,21 @@ final class TripsTab implements CarScreen {
     private final CarKit.Para para = new CarKit.Para(26, CarKit.DIM, CarKit.REGULAR);
     private final RectF tmp = new RectF();
 
+    /** El fantasma (Ghost): los viajes guardados con los que comparar (más que los de la lista) y lo último calculado. */
+    private volatile List<TripLog.Trip> ghostTrips;
+    private volatile Ghost.Result ghost;
+    private long ghostAtMs;
+    /** Los récords de cada camino repetido (Ghost.routeRecords), por índice en trips. */
+    private java.util.Set<Integer> routeRecords = java.util.Collections.emptySet();
+
     @Override
     public View create(Host h) {
         ctx = h.context();
         cfg = new Config(ctx);
         sensors = CarSensors.start(ctx);
         trips = TripLog.recent(ctx, 30);
+        routeRecords = Ghost.routeRecords(trips);
+        new Thread(() -> ghostTrips = TripLog.recent(ctx, GHOST_TRIPS), "hql-ghost").start();
         history = CarCloud.history();
         longest = TripStats.longest(trips);
         efficient = TripStats.mostEfficient(trips, history);
@@ -132,10 +141,38 @@ final class TripsTab implements CarScreen {
         if (!running) return;
         s = sensors.snapshot();
         liveReal = TripLog.liveReal(CarCloud.car());
+        updateGhost();
         // El viaje en curso, solo si ya se ha movido el coche.
         live.setVisibility(s.tripKm >= 0.1 || (s.gpsLive() && s.speedKmh > 3) ? View.VISIBLE : View.GONE);
         live.invalidate();
         live.postDelayed(this::tick, 1000);
+    }
+
+    /** Cuántos viajes guardados se miran para el fantasma. */
+    static final int GHOST_TRIPS = 200;
+
+    /** Cada 5 s, fuera del hilo principal: el fantasma de ahora. */
+    private void updateGhost() {
+        long now = android.os.SystemClock.elapsedRealtime();
+        List<TripLog.Trip> past = ghostTrips;
+        if (past == null || now - ghostAtMs < 5000) return;
+        ghostAtMs = now;
+        new Thread(() -> {
+            Ghost.Result r = Ghost.compare(past, TripLog.liveTrack(), TripLog.liveStartMs());
+            if (r != null && (ghost == null || Math.abs(r.deltaSec - ghost.deltaSec) >= 1)) {
+                L.i(String.format(Locale.US, "fantasma: %+.0f s respecto a tu mejor vez (%d viajes por este camino)", r.deltaSec, r.runs));
+            }
+            ghost = r;
+        }, "hql-ghost").start();
+    }
+
+    /** «Fantasma: 1:20 por detrás de tu mejor vez (mar 14 oct)», o null sin fantasma. */
+    String ghostText(Ghost.Result g) {
+        if (g == null) return null;
+        long s = Math.round(Math.abs(g.deltaSec));
+        String t = s < 3600 ? String.format(Locale.getDefault(), "%d:%02d", s / 60, s % 60) : DriveTab.duration(s);
+        int res = Math.abs(g.deltaSec) < 5 ? R.string.hql_ghost_even : g.deltaSec > 0 ? R.string.hql_ghost_behind : R.string.hql_ghost_ahead;
+        return Str.get(res, t, day(g.bestStartMs));
     }
 
     @Override
@@ -173,6 +210,15 @@ final class TripsTab implements CarScreen {
         CarKit.text(cv, sub, r.left + w + 30, r.bottom - 12, 27, CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.LEFT);
         // GPS parado: los km y el consumo no avanzan hasta que vuelva (entonces se suma el hueco en línea recta).
         String gpsNote = s.gpsState == GpsWatch.State.WAITING ? null : CarSensors.gpsNote(s);
+        Ghost.Result g = ghost;
+        if (gpsNote == null && g != null) {
+            // El fantasma, en la línea del título: en verde si vas por delante, en ámbar si por detrás.
+            p.setTypeface(CarKit.MEDIUM);
+            p.setTextSize(22);
+            int gc = Math.abs(g.deltaSec) < 5 ? CarKit.DIM : g.deltaSec > 0 ? CarKit.AMBER : CarKit.GREEN;
+            CarKit.text(cv, CarKit.ellipsize(ghostText(g), r.width() * 0.66f, p), r.right - 34, r.top - 24, 22, gc, CarKit.MEDIUM, p,
+                    Paint.Align.RIGHT);
+        }
         if (gpsNote != null) {
             p.setTypeface(CarKit.MEDIUM);
             p.setTextSize(21);
@@ -378,6 +424,10 @@ final class TripsTab implements CarScreen {
             } else if (index == climb) {
                 badge = Str.get(R.string.hql_record_climb);
                 bc = CarKit.BLUE;
+            } else if (routeRecords.contains(index)) {
+                // El fantasma: el más rápido de un camino que has repetido.
+                badge = Str.get(R.string.hql_record_route);
+                bc = CarKit.ACCENT;
             }
             if (badge != null) {
                 p.setTypeface(CarKit.MEDIUM);
@@ -387,7 +437,7 @@ final class TripsTab implements CarScreen {
                 b.set(getWidth() - pad - bw, pad, getWidth() - pad, pad + 40);
                 p.setColor(CarKit.alpha(bc, 0.14f));
                 cv.drawRoundRect(b, 20, 20, p);
-                if (bc == CarKit.AMBER) CarIcons.trophy(cv, b.left + 24, b.centerY(), 24, bc, p);
+                if (bc == CarKit.AMBER || bc == CarKit.ACCENT) CarIcons.trophy(cv, b.left + 24, b.centerY(), 24, bc, p);
                 else if (bc == CarKit.GREEN) CarIcons.leaf(cv, b.left + 24, b.centerY(), 22, bc, p);
                 else CarIcons.mountain(cv, b.left + 24, b.centerY(), 24, bc, p);
                 CarKit.text(cv, badge, b.left + 44, b.centerY() + 7, 20, bc, CarKit.MEDIUM, p, Paint.Align.LEFT);

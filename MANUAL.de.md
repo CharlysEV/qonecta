@@ -486,7 +486,10 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
   - „Fahrten“: die laufende Fahrt und die gespeicherten, mit Strecke, Verbrauch, Höhenunterschied und Kosten; die km der
     letzten 14 Tage und die Rekorde. **Tippe auf eine Fahrt**, und sie öffnet sich groß: die Strecke auf einer Karte
     (OpenStreetMap), Start, Ankunft und **die Stopps** (2 Minuten oder länger am selben Ort, mit Dauer, Uhrzeit und km)
-    sowie ihre Zahlen. Die Stopps werden bei Fahrten ab Version 0.2.7 erfasst.
+    sowie ihre Zahlen. Die Stopps werden bei Fahrten ab Version 0.2.7 erfasst. **Der Geist:** Fährst du eine Strecke
+    erneut (gleicher Start, gleicher Weg), zeigt „Aktuelle Fahrt“ live, wie weit du vor oder hinter deiner Bestzeit bis
+    hierher bist („Geist: 1:20 hinter deiner Bestzeit“), und die schnellste Fahrt jeder wiederholten Strecke bekommt
+    „Streckenrekord“.
   - „Instrumente“: Tacho mit Tempolimit und Höchstgeschwindigkeit, G-Kräfte mit der Spur der letzten Sekunden und den
     Spitzenwerten, Neigung und eine Note für die Sanftheit (0–100) nach dem Rucken beim Beschleunigen, Bremsen und
     Lenken.

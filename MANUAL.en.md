@@ -444,9 +444,11 @@ version). That tells us whether the C10 supports it.
   - "Driving": the next manoeuvre in large, with a bar that empties until the turn, the lanes and the manoeuvre after;
     the speed with the speed-limit sign, heading, altitude, slope and the sun until sunset.
   - "Trips": the current trip and the saved ones, with their route, consumption, climbing and cost; the km of the last
-    14 days and the records. **Tap a trip** to open it in large: the route on a map (OpenStreetMap), the start, the end and
-    **the stops** (2 minutes or more in the same place, with how long, the time and the km), and its figures. Stops are
-    known for trips from 0.2.7 on.
+    14 days and the records. **Tap a trip** to open it in large: the route on a map (OpenStreetMap), the start, the end
+    and **the stops** (2 minutes or more in the same place, with how long, the time and the km), and its figures. Stops
+    are known for trips from 0.2.7 on. **The ghost:** if you repeat a road (same start, same way), "Current trip" tells
+    you live how far ahead of or behind your best time to this point you are ("Ghost: 1:20 behind your best time"), and
+    the fastest trip of each repeated road gets "Route record".
   - "Gauges": speedometer with the limit and the maximum, G forces with the trail of the last seconds and the peaks,
     inclination and a smoothness score (0-100) from the jerks when accelerating, braking and turning.
   - "Efficiency": the power of the last 2 minutes (what is recovered in green), consumption now, for the trip and on

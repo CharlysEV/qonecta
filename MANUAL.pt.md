@@ -467,7 +467,9 @@ admite.
   - «Viagens»: a viagem em curso e as guardadas, com o percurso, consumo, desnível e custo; os km dos últimos 14 dias e
     os recordes. **Toque numa viagem** para a abrir em grande: o percurso num mapa (OpenStreetMap), a partida, a chegada
     e **as paragens** (2 minutos ou mais no mesmo sítio, com a duração, a hora e o km), e os seus valores. As paragens
-    conhecem-se nas viagens a partir da 0.2.7.
+    conhecem-se nas viagens a partir da 0.2.7. **O fantasma:** se repetir um caminho (mesma partida, mesmo percurso),
+    «Em curso» diz-lhe em direto quanto vai à frente ou atrás do seu melhor tempo até onde está («Fantasma: 1:20 atrás
+    do seu melhor tempo»), e a viagem mais rápida de cada caminho repetido leva «Recorde da rota».
   - «Instrumentos»: velocímetro com o limite e a máxima, forças G com o rasto dos últimos segundos e os picos,
     inclinação e uma nota de suavidade (0-100) pelos solavancos ao acelerar, travar e virar.
   - «Eficiência»: a potência dos últimos 2 minutos (a verde o que se recupera), o consumo agora, da viagem e médio, para
