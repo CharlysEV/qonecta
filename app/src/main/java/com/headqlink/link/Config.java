@@ -859,6 +859,13 @@ final class Config {
         return sp.getBoolean(PANEL_RIGHT, false);
     }
 
+    /** Pantalla partida con Android Auto en la otra mitad y nuestra pantalla junto al panel (de serie, AA junto al panel). */
+    static final String SPLIT_AA_RIGHT = "split_aa_right";
+
+    boolean splitAaRight() {
+        return sp.getBoolean(SPLIT_AA_RIGHT, false);
+    }
+
     /** PlayStation con la imagen mejorada (resolución interna al doble y sin el tramado): de serie, sí. */
     static final String PSX_ENHANCED = "psx_enhanced";
 

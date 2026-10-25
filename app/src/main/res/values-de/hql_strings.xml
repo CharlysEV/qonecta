@@ -1265,4 +1265,6 @@
     <string name="hql_energy_week">Letzte 7 Tage: im Ruhezustand %1$s · im Auto %2$s in %3$s</string>
     <string name="hql_energy_note">Geschätzt aus den Statistiken, die Android zu dieser App liefert. Ohne den Handybildschirm, während du die App benutzt, und ohne das, was Android Auto, Maps oder die Musik verbrauchen.</string>
     <string name="hql_energy_none">Ab jetzt wird gemessen: In ein paar Stunden siehst du den Verbrauch im Ruhezustand und pro Fahrt.</string>
+    <string name="hql_split_aa_right">Geteilter Bildschirm: Android Auto rechts</string>
+    <string name="hql_split_swap">Seiten tauschen</string>
 </resources>

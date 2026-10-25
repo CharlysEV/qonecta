@@ -50,6 +50,7 @@ final class PreviewShots {
             new Shot("coche_ruta_filtro", "car-0-filtro", 300, 2200),
             new Shot("partida_ruta_filtro", "car-0-partida-filtro", 300, 2200),
             new Shot("partida_conduccion", "car-1-partida", 572, 1800),
+            new Shot("partida_conduccion_aa_derecha", "car-1-partida-derecha", 572, 1800),
             new Shot("partida_viajes", "car-2-partida", 600, 1800),
             new Shot("partida_instrumentos", "car-3-partida", 408.6, 1800),
             new Shot("partida_eficiencia", "car-4-partida", 396, 1800),

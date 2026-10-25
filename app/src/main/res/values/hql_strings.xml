@@ -1270,4 +1270,6 @@
     <string name="hql_energy_week">Last 7 days: at rest %1$s · in the car %2$s in %3$s</string>
     <string name="hql_energy_note">Estimated from Android\'s statistics for this app. It doesn\'t count the phone screen while you use the app, nor what Android Auto, Maps or the music use.</string>
     <string name="hql_energy_none">Measuring from now on: in a few hours you\'ll see what it uses at rest and on each trip.</string>
+    <string name="hql_split_aa_right">Split screen: Android Auto on the right</string>
+    <string name="hql_split_swap">Swap sides</string>
 </resources>

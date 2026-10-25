@@ -398,7 +398,8 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
   Spielen…); tippe auf den Bildschirmrand auf der Seite der Leiste, damit sie wiederkommt.
   Fotos, Videos, Web, TV und Spiele sind **nur für das stehende Fahrzeug** gedacht.
 - **Geteilter Bildschirm („Auto erweitert“):** Bei „Fahrzeug“, „Reiseführer“, „Web“, „Videos“ und „TV“ legt die Taste
-  „Bildschirm teilen“ in der Seitenleiste Android Auto nach links, neben die Leiste, und diese Ansicht nach rechts. Mit
+  „Bildschirm teilen“ in der Seitenleiste Android Auto nach links, neben die Leiste, und diese Ansicht nach rechts. Die Taste ⇄ darunter tauscht die Seiten
+  (die Ansicht neben die Leiste, Android Auto nach rechts), ohne Android Auto zu unterbrechen, und merkt sich das. Mit
   „Fahrzeug“ hast du die Instrumente (Verbrauch, Akku, Reichweite, nächster Halt) neben Android Auto, und das auch
   während der Fahrt, ohne Warnhinweis. Android Auto bekommt etwas mehr als die Hälfte, gerade genug, damit sich Google
   Maps verschieben und durchsuchen lässt. Jede Seite reagiert auf ihre eigenen Berührungen. „Vollbild“ zeigt die
@@ -760,7 +761,7 @@ damit er lesbar bleibt.
 
 Darunter ergeben „Farbton“ und „Hell / Dunkel“ jede beliebige andere Farbe, und „Transparenz“ lässt sie mit dem Schwarz
 des Displays verschmelzen. „Seitenleiste rechts“ setzt die Leiste auf die andere Seite, mit Android Auto direkt am
-linken Rand. „Tasten der Seitenleiste“ legt fest, welche zu sehen sind (Ja / Nein) und in welcher Reihenfolge (Pfeile);
+linken Rand. „Geteilter Bildschirm: Android Auto rechts“ macht dasselbe wie die Taste ⇄ beim geteilten Bildschirm. „Tasten der Seitenleiste“ legt fest, welche zu sehen sind (Ja / Nein) und in welcher Reihenfolge (Pfeile);
 „Auto“ und „Einstellungen“ sind fest. Ist die Leiste auf Symbole verkleinert, erscheinen unten das Wetter (ein Emoji)
 mit der Außentemperatur und der Handy-Akku (wenn Daten da sind); die Uhrzeit nicht, weil LeapOS und Android Auto sie
 schon anzeigen. Und auf dem Hauptbildschirm des Handys erscheint bei einer neuen Version ein Hinweis mit den Neuerungen

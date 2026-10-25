@@ -247,6 +247,9 @@ final class CarUi {
     }
     /** Panel a la derecha (Ajustes): AA y nuestras pantallas a su izquierda. */
     private boolean panelRight;
+    /** Pantalla partida con AA en la otra mitad (Ajustes o el botón ⇄): nuestra pantalla junto al panel. */
+    private boolean aaRight;
+    private LinearLayout swapButton;
     /** Datos en la barra de iconos (hora, temperatura exterior y batería del coche), solo con el panel reducido. */
     private LinearLayout railInfo;
     private TextView railTemp;
@@ -362,6 +365,7 @@ final class CarUi {
         CarTheme.setFixedPanel(cfg.panelFixedColor());
         CarTheme.setPanelAlpha(cfg.panelAlpha());
         this.panelRight = cfg.panelRight();
+        this.aaRight = cfg.splitAaRight();
         this.panelGray = cfg.panelColor();
         this.panelColor = CarTheme.panelColor(panelGray);
         this.autoHide = cfg.panelAutoHide();
@@ -436,6 +440,17 @@ final class CarUi {
             ui.panelRight = right;
             L.i("CarUi: panel a la " + (right ? "derecha" : "izquierda"));
             if (ui.pres != null) ui.rebuild();
+        });
+    }
+
+    /** «Android Auto a la derecha» de la pantalla partida (Ajustes): AA cambia de mitad al momento, sin rehacerse. */
+    static void applySplitAaRight(boolean right) {
+        CarUi ui = current;
+        if (ui != null) ui.main.post(() -> {
+            if (ui.aaRight == right) return;
+            ui.aaRight = right;
+            L.i("CarUi: pantalla partida con AA a la " + (right ? "derecha" : "izquierda"));
+            if (ui.pres != null) ui.applyLayout();
         });
     }
 
@@ -587,9 +602,25 @@ final class CarUi {
         return Math.min(Math.max(free / 2, min), Math.max(free / 2, free - SPLIT_MIN_SCREEN_W));
     }
 
+    /**
+     * Puro: dónde empiezan AA y nuestra pantalla (px del lienzo): {x de AA, x de nuestra pantalla}. side: lo que ocupa el
+     * panel o la barra; aaW: ancho de AA con la pantalla partida (0 sin partir). De serie AA va junto al panel y nuestra
+     * pantalla detrás; con aaRight (solo partida), al revés: nuestra pantalla junto al panel y AA en la otra mitad.
+     */
+    static int[] splitPlaces(int width, int side, int aaW, boolean panelRight, boolean aaRight) {
+        int start = panelRight ? 0 : side;
+        if (aaW > 0 && aaRight) return new int[]{start + width - side - aaW, start};
+        return new int[]{start, start + aaW};
+    }
+
     /** ¿Se ve ahora la pantalla partida? (pedida y con una pantalla que la admite abierta) */
     private boolean splitActive() {
         return split && screen != null && splitCapable(screenName);
+    }
+
+    /** Pantalla partida con AA en la otra mitad (AaPassthroughSource: AA conserva su ancho al cambiar de lado). */
+    boolean aaOnFarSide() {
+        return aaRight && splitActive();
     }
 
     /** ¿Se ve AA? Sola o junto a nuestra pantalla (partida). */
@@ -650,9 +681,11 @@ final class CarUi {
         // Con el panel encima de AA, AA y el contenido empiezan tras la barra aunque el panel esté desplegado.
         int side = sideW();
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) content.getLayoutParams();
-        // Con el panel a la derecha, AA va pegado al borde izquierdo y nuestra pantalla entre AA y el panel.
-        int aaX = panelRight ? 0 : side;
-        lp.leftMargin = aaX + aaW;
+        // Con el panel a la derecha, AA va pegado al borde izquierdo y nuestra pantalla entre AA y el panel; con la pantalla
+        // partida y AA en la otra mitad, nuestra pantalla junto al panel (splitPlaces).
+        int[] at = splitPlaces(width, side, aaW, panelRight, aaRight);
+        int aaX = at[0];
+        lp.leftMargin = at[1];
         lp.width = width - side - aaW;
         content.setLayoutParams(lp);
         renderSplitButton(rail);
@@ -681,7 +714,8 @@ final class CarUi {
             panelSpacer.setLayoutParams(spacer);
         }
         int buttonHeight = 72;
-        int buttons = navButtons.size() + (splitButton.getVisibility() == View.VISIBLE ? 1 : 0);
+        int buttons = navButtons.size() + (splitButton.getVisibility() == View.VISIBLE ? 1 : 0)
+                + (swapButton != null && swapButton.getVisibility() == View.VISIBLE ? 1 : 0);
         if (rail) {
             railInfo.measure(View.MeasureSpec.makeMeasureSpec(Math.max(1, panelWidth - 24), View.MeasureSpec.EXACTLY),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
@@ -702,10 +736,13 @@ final class CarUi {
                 button.setLayoutParams(lp);
             }
         }
-        LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) splitButton.getLayoutParams();
-        if (lp.height != buttonHeight) {
-            lp.height = buttonHeight;
-            splitButton.setLayoutParams(lp);
+        for (LinearLayout action : new LinearLayout[]{splitButton, swapButton}) {
+            if (action == null) continue;
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) action.getLayoutParams();
+            if (lp.height != buttonHeight) {
+                lp.height = buttonHeight;
+                action.setLayoutParams(lp);
+            }
         }
     }
 
@@ -733,6 +770,26 @@ final class CarUi {
         b.setBackground(split ? CarStyle.accent(36) : null);
         ((ImageView) b.getChildAt(0)).setImageTintList(ColorStateList.valueOf(fg));
         ((TextView) b.getChildAt(1)).setTextColor(fg);
+        LinearLayout s = swapButton;
+        if (s == null) return;
+        s.setVisibility(splitActive() ? View.VISIBLE : View.GONE);
+        s.getChildAt(1).setVisibility(rail ? View.GONE : View.VISIBLE);
+        s.setGravity(rail ? Gravity.CENTER : Gravity.CENTER_VERTICAL);
+        s.setPadding(rail ? 0 : 18, 0, rail ? 0 : 18, 0);
+        int nav = CarTheme.navText();
+        ((ImageView) s.getChildAt(0)).setImageTintList(ColorStateList.valueOf(nav));
+        ((TextView) s.getChildAt(1)).setTextColor(nav);
+    }
+
+    /**
+     * El botón ⇄: AA a la otra mitad y nuestra pantalla a la suya. AA conserva su ancho, así que solo se mueve (no se
+     * rehace); queda guardado como la opción de Ajustes para las próximas veces.
+     */
+    private void swapSides() {
+        aaRight = !aaRight;
+        new Config(ctx).putBool(Config.SPLIT_AA_RIGHT, aaRight);
+        L.i("CarUi: pantalla partida con AA a la " + (aaRight ? "derecha" : "izquierda") + " (botón)");
+        applyLayout();
     }
 
     /** El botón de la barra: AA junto a nuestra pantalla, o nuestra pantalla sola otra vez. */
@@ -1332,6 +1389,8 @@ final class CarUi {
                 // "…-filtro": con el filtro de cargadores abierto.
                 if (parts.length > 2 && parts[2].endsWith("filtro")) RouteTab.previewFilter = true;
                 split = parts.length > 2 && parts[2].startsWith("partida");
+                // "…-partida-derecha": con AA en la otra mitad (solo para la captura, no se guarda).
+                if (split && parts[2].contains("derecha")) aaRight = true;
                 splitAccepted = true;
                 open("car");
             } else {
@@ -1660,7 +1719,7 @@ final class CarUi {
         if (sp) {
             int pw = layoutPanelW();
             gravity = Gravity.BOTTOM | Gravity.LEFT;
-            left = (panelRight ? 0 : pw) + splitAaWidth(width, height, pw, dpi) + 12;
+            left = splitPlaces(width, pw, splitAaWidth(width, height, pw, dpi), panelRight, aaRight)[1] + 12;
             w = Math.min(contentWidth() - 24, GUESS_W);
         }
         if (lp.width != w || lp.gravity != gravity || lp.leftMargin != left) {
@@ -1978,6 +2037,7 @@ final class CarUi {
             if ("radio".equals(id)) p.addView(buildRadioMini(c));
         }
         p.addView(buildSplitButton(c));
+        p.addView(buildSwapButton(c));
 
         View spacer = new View(c);
         p.addView(spacer, new LinearLayout.LayoutParams(1, 0, 1f));
@@ -2045,10 +2105,11 @@ final class CarUi {
                 hudView = t;
             }
             hudView.setText(text);
-            // El borde derecho de AA: el de la pantalla, o con la pantalla partida, el de su mitad.
+            // El borde derecho de AA: el de la pantalla, o con la pantalla partida, el de su mitad (a un lado o al otro).
             int railW = layoutPanelW();
-            int right = splitActive() ? railW + splitAaWidth(width, height, COMPACT_W, dpi) : width;
-            int hw = Math.max(200, Math.min(HUD_W, right - railW - 24));
+            boolean sp = splitActive();
+            int right = sp ? aaRegX + aaRegW : width;
+            int hw = Math.max(200, Math.min(HUD_W, (sp ? aaRegW : right - railW) - 24));
             hudView.measure(View.MeasureSpec.makeMeasureSpec(hw, View.MeasureSpec.EXACTLY),
                     View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
             int x = Math.max(0, right - hw - 12);
@@ -2310,14 +2371,31 @@ final class CarUi {
     /** Elemento del panel al estilo de AA: icono + texto; el activo, en una píldora de color. */
     /** «Partir pantalla» (Web, Vídeos y TV): como un botón de la barra, pero no abre una pantalla. */
     private View buildSplitButton(Context c) {
+        LinearLayout b = actionButton(c, R.drawable.hql_ic_split, Str.get(R.string.hql_split_on));
+        b.setOnClickListener(v -> toggleSplit());
+        splitButton = b;
+        return b;
+    }
+
+    /** «Cambiar de lado» (⇄), solo con la pantalla partida: AA a la otra mitad. */
+    private View buildSwapButton(Context c) {
+        LinearLayout b = actionButton(c, R.drawable.hql_ic_swap, Str.get(R.string.hql_split_swap));
+        b.setContentDescription(Str.get(R.string.hql_split_swap));
+        b.setOnClickListener(v -> swapSides());
+        swapButton = b;
+        return b;
+    }
+
+    /** Un botón de la barra que hace algo sin abrir una pantalla: icono + texto, oculto hasta que toque. */
+    private LinearLayout actionButton(Context c, int icon, String label) {
         LinearLayout b = new LinearLayout(c);
         b.setOrientation(LinearLayout.HORIZONTAL);
         b.setGravity(Gravity.CENTER_VERTICAL);
         b.setPadding(18, 0, 18, 0);
         ImageView iv = new ImageView(c);
-        iv.setImageResource(R.drawable.hql_ic_split);
+        iv.setImageResource(icon);
         b.addView(iv, new LinearLayout.LayoutParams(40, 40));
-        TextView t = CarStyle.text(c, Str.get(R.string.hql_split_on), 25, CarStyle.TEXT);
+        TextView t = CarStyle.text(c, label, 25, CarStyle.TEXT);
         t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         t.setPadding(20, 0, 0, 0);
         t.setSingleLine(true);
@@ -2325,9 +2403,7 @@ final class CarUi {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 72);
         lp.bottomMargin = 6;
         b.setLayoutParams(lp);
-        b.setOnClickListener(v -> toggleSplit());
         b.setVisibility(View.GONE);
-        splitButton = b;
         return b;
     }
 

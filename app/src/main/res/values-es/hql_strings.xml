@@ -1271,4 +1271,6 @@
     <string name="hql_energy_week">Últimos 7 días: en reposo %1$s · en el coche %2$s en %3$s</string>
     <string name="hql_energy_note">Estimado con las estadísticas que Android da de esta app. No cuenta la pantalla del móvil mientras usas la app ni lo que gastan Android Auto, Maps o la música.</string>
     <string name="hql_energy_none">Midiendo desde ahora: en unas horas verás lo que gasta en reposo y en cada viaje.</string>
+    <string name="hql_split_aa_right">Pantalla partida: Android Auto a la derecha</string>
+    <string name="hql_split_swap">Cambiar de lado</string>
 </resources>

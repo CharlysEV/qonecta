@@ -394,7 +394,8 @@ admite.
   Auto no ecrã, o painel recolhe-se sozinho ao fim de alguns segundos (também em Fotos, TV, Jogos…); toque na margem esquerda para que volte. Fotos,
   vídeos, web, TV e jogos são **só para quando o carro está parado**.
 - **Ecrã dividido («Auto estendido»):** em «Carro», «Guia», «Web», «Vídeos» e «TV», o botão «Dividir ecrã» do painel põe o
-  Android Auto à esquerda, junto ao painel, e esse ecrã à direita. Com «Carro» tem os instrumentos (consumo, bateria,
+  Android Auto à esquerda, junto ao painel, e esse ecrã à direita. O botão ⇄, por baixo, troca os lados (esse ecrã
+  junto ao painel e o Android Auto à direita) sem interromper o Android Auto, e fica guardado. Com «Carro» tem os instrumentos (consumo, bateria,
   autonomia, próxima paragem) junto ao Android Auto, e serve em andamento, sem aviso. O Android Auto fica com um pouco mais de metade, o suficiente para o
   Google Maps se poder mover e pesquisar. Cada lado responde aos seus toques. «Ecrã inteiro» deixa-o sozinho outra vez.
   Dura enquanto estiver ligado ao carro. Da primeira vez em cada ligação aparece um aviso que é preciso aceitar:
@@ -720,7 +721,8 @@ das viagens; 0,20 por omissão), e ver a ligação e o motor em uso. Use-o só c
 que fica igual de dia e de noite. Aplica-se logo, e o texto do painel passa a claro ou escuro para se ler.
 
 Por baixo, «Tom» e «Claro / escuro» dão qualquer outra cor, e «Transparência» funde-a com o preto do ecrã. «Painel
-lateral à direita» põe o painel do outro lado, com o Android Auto encostado à borda esquerda. «Botões do painel lateral»
+lateral à direita» põe o painel do outro lado, com o Android Auto encostado à borda esquerda. «Ecrã dividido: Android Auto à direita» faz o mesmo que o botão ⇄ do
+ecrã dividido. «Botões do painel lateral»
 escolhe quais se veem (Sim / Não) e por que ordem (setas); «Auto» e «Definições» ficam fixos. Com o painel reduzido a
 ícones, em baixo aparecem o tempo (um emoji) com a temperatura exterior e a bateria do telemóvel (quando há dado); a hora
 não, porque já a mostram o LeapOS e o Android Auto. E no ecrã principal do
