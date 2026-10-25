@@ -693,6 +693,11 @@ The "Settings" button on the car's panel lets you change the picture profile and
 a few seconds"), auto-hide the panel and latency optimizations, the "Electricity price" (€/kWh, for the cost of trips;
 0.20 by default), and see the connection and engine in use. Only use it with the car stopped.
 
+"Fuel" (in the car, Settings › Trip; on the phone, in Settings): "Petrol price" and "Diesel price" (€/l; 1.60 and
+1.50 by default), "Compare with" (petrol or diesel) and the "Comparison car consumption" (6.5 and 5.5 l/100 km by
+default). They give the savings against a combustion car (Efficiency, monthly report) and the CO₂ you avoid; on the
+REEV, the petrol the generator uses is always counted at the petrol price.
+
 "Side panel color": "Automatic" (dark at night and light by day, like the car's screen) or one of 16 fixed colors, which
 stays the same day and night. It applies at once, and the panel's text turns light or dark so it stays readable.
 

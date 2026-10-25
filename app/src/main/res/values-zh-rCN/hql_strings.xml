@@ -1271,4 +1271,21 @@
     <string name="hql_energy_none">从现在开始测量：几小时后就能看到待机和每次行程的耗电。</string>
     <string name="hql_split_aa_right">分屏时 Android Auto 在右侧</string>
     <string name="hql_split_swap">交换左右</string>
+    <string name="hql_settings_fuel">燃油</string>
+    <string name="hql_price_petrol">汽油价格</string>
+    <string name="hql_price_diesel">柴油价格</string>
+    <string name="hql_price_fuel_help">用于与燃油车比较（节省费用和 CO₂），以及增程版（REEV）发电机所用的汽油。</string>
+    <string name="hql_compare_with">比较对象</string>
+    <string name="hql_compare_petrol">汽油车</string>
+    <string name="hql_compare_diesel">柴油车</string>
+    <string name="hql_compare_help">用来比较你花费的燃油车：该燃料的每升价格和 CO₂。</string>
+    <string name="hql_compare_l100">比较车辆的油耗</string>
+    <string name="hql_compare_l100_help">比较车辆每 100 公里的油耗（升），用于计算节省和 CO₂。</string>
+    <string name="hql_compare_l100_invalid">请输入 2 到 20 l/100 km 之间的油耗</string>
+    <string name="hql_aj_price_invalid_l">请输入 0 到 %1$s €/l 之间的价格</string>
+    <string name="hql_cost_diesel">柴油车需 ~%1$s</string>
+    <string name="hql_co2_note_diesel">对比油耗 %1$.1f l/100 km 的柴油车（每升 %2$.2f kg CO₂，仅计尾气排放）。</string>
+    <string name="hql_report_saved_diesel">油耗 %2$s L/100 km 的柴油车按 %3$s 计算需花费 %1$s。</string>
+    <string name="hql_report_share_saved_diesel">比柴油车节省约 %1$s</string>
+    <string name="hql_trips_note_diesel">能耗按 C10 模型估算（无车辆数据）。价格：%1$s；柴油 %2$.1f l/100 km，单价 %3$s。</string>
 </resources>

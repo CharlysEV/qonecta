@@ -716,6 +716,11 @@ si riconnette in pochi secondi»), l'occultamento automatico del pannello e le o
 dell'elettricità» (€/kWh, per il costo dei viaggi; 0,20 di default), e di vedere la connessione e il motore in uso. Usalo
 solo con l'auto ferma.
 
+«Carburante» (nell'auto, Impostazioni › Viaggio; sul telefono, nelle Impostazioni): «Prezzo della benzina» e «Prezzo
+del gasolio» (€/l; 1,60 e 1,50 di default), «Confronta con» (benzina o diesel) e il «Consumo dell'auto di confronto»
+(6,5 e 5,5 l/100 km di default). Da qui escono il risparmio rispetto a un'auto a combustione (Efficienza, resoconto del
+mese) e la CO₂ evitata; sulla REEV, la benzina del generatore si conta sempre al prezzo della benzina.
+
 «Colore del pannello laterale»: «Automatico» (scuro di notte e chiaro di giorno, come lo schermo dell'auto) o uno di 16
 colori fissi, che resta uguale di giorno e di notte. Si applica subito, e il testo del pannello diventa chiaro o scuro
 perché si legga.

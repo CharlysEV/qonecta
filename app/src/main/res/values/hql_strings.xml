@@ -1272,4 +1272,21 @@
     <string name="hql_energy_none">Measuring from now on: in a few hours you\'ll see what it uses at rest and on each trip.</string>
     <string name="hql_split_aa_right">Split screen: Android Auto on the right</string>
     <string name="hql_split_swap">Swap sides</string>
+    <string name="hql_settings_fuel">Fuel</string>
+    <string name="hql_price_petrol">Petrol price</string>
+    <string name="hql_price_diesel">Diesel price</string>
+    <string name="hql_price_fuel_help">To compare with a combustion car (savings and CO₂) and, on the REEV, for the petrol the generator uses.</string>
+    <string name="hql_compare_with">Compare with</string>
+    <string name="hql_compare_petrol">Petrol</string>
+    <string name="hql_compare_diesel">Diesel</string>
+    <string name="hql_compare_help">The combustion car your costs are compared with: price per litre and CO₂ of that fuel.</string>
+    <string name="hql_compare_l100">Comparison car consumption</string>
+    <string name="hql_compare_l100_help">Litres per 100 km of the car used for the comparison (savings and CO₂).</string>
+    <string name="hql_compare_l100_invalid">Enter a consumption from 2 to 20 l/100 km</string>
+    <string name="hql_aj_price_invalid_l">Enter a price from 0 to %1$s €/l</string>
+    <string name="hql_cost_diesel">In a diesel car, ~%1$s</string>
+    <string name="hql_co2_note_diesel">Versus a diesel car at %1$.1f l/100 km (%2$.2f kg of CO₂ per litre, tailpipe only).</string>
+    <string name="hql_report_saved_diesel">A diesel car using %2$s L/100 km would have cost %1$s at %3$s.</string>
+    <string name="hql_report_share_saved_diesel">~%1$s saved vs diesel</string>
+    <string name="hql_trips_note_diesel">Energy estimated with the C10 model (no car data). Prices: %1$s; diesel %2$.1f l/100 km at %3$s.</string>
 </resources>

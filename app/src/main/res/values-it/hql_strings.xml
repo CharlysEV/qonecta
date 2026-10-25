@@ -1268,4 +1268,21 @@
     <string name="hql_energy_none">Misurazione da ora: tra qualche ora vedrai quanto consuma a riposo e in ogni viaggio.</string>
     <string name="hql_split_aa_right">Schermo diviso: Android Auto a destra</string>
     <string name="hql_split_swap">Scambia i lati</string>
+    <string name="hql_settings_fuel">Carburante</string>
+    <string name="hql_price_petrol">Prezzo della benzina</string>
+    <string name="hql_price_diesel">Prezzo del gasolio</string>
+    <string name="hql_price_fuel_help">Per il confronto con un\'auto a combustione (risparmio e CO₂) e, sulla REEV, per la benzina del generatore.</string>
+    <string name="hql_compare_with">Confronta con</string>
+    <string name="hql_compare_petrol">Benzina</string>
+    <string name="hql_compare_diesel">Diesel</string>
+    <string name="hql_compare_help">L\'auto a combustione con cui si confronta quanto spendi: prezzo al litro e CO₂ di quel carburante.</string>
+    <string name="hql_compare_l100">Consumo dell\'auto di confronto</string>
+    <string name="hql_compare_l100_help">Litri ogni 100 km dell\'auto usata per il confronto (risparmio e CO₂).</string>
+    <string name="hql_compare_l100_invalid">Scrivi un consumo da 2 a 20 l/100 km</string>
+    <string name="hql_aj_price_invalid_l">Scrivi un prezzo da 0 a %1$s €/l</string>
+    <string name="hql_cost_diesel">Con un\'auto diesel, ~%1$s</string>
+    <string name="hql_co2_note_diesel">Rispetto a un\'auto diesel da %1$.1f l/100 km (%2$.2f kg di CO₂ per litro, solo allo scarico).</string>
+    <string name="hql_report_saved_diesel">Un\'auto diesel da %2$s L/100 km avrebbe speso %1$s a %3$s.</string>
+    <string name="hql_report_share_saved_diesel">~%1$s risparmiati rispetto al diesel</string>
+    <string name="hql_trips_note_diesel">Energia stimata con il modello della C10 (senza dati dell\'auto). Prezzi: %1$s; diesel %2$.1f l/100 km a %3$s.</string>
 </resources>

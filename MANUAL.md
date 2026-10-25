@@ -705,6 +705,11 @@ El botón «Ajustes» del panel del coche permite cambiar el perfil de imagen y 
 segundos»), ocultar el panel solo y las optimizaciones de latencia, el «Precio de la electricidad» (€/kWh, para el coste
 de los viajes; 0,20 de serie), y ver la conexión y el motor que se están usando. Úsalo solo con el coche parado.
 
+«Combustible» (en el coche, Ajustes › Viaje; en el móvil, en Ajustes): «Precio de la gasolina» y «Precio del diésel»
+(€/l; 1,60 y 1,50 de serie), «Comparar con» (gasolina o diésel) y el «Consumo del coche de comparación» (6,5 y
+5,5 l/100 km de serie). Con ellos salen el ahorro frente a un coche de combustión (Eficiencia, informe del mes) y el
+CO₂ que te ahorras; en el REEV, la gasolina que pone el generador cuenta siempre al precio de la gasolina.
+
 «Color del panel lateral»: «Automático» (oscuro de noche y claro de día, como la pantalla del coche) o uno de 16 colores
 fijos, que se queda igual de día y de noche. Se aplica al momento, y el texto del panel pasa a claro u oscuro para que
 se lea.

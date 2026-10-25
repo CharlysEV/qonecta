@@ -42,7 +42,8 @@ public final class Str {
      */
     private static final int[] CAR_NAMED = {R.string.hql_fly_10, R.string.hql_game_fly, R.string.hql_game_range_sub,
             R.string.hql_game_ttt_sub, R.string.hql_ttt_lose, R.string.hql_ttt_start, R.string.hql_welcome_title,
-            R.string.hql_trips_note, R.string.hql_estimated_model, R.string.hql_ins_curve_help, R.string.hql_range_wltp};
+            R.string.hql_trips_note, R.string.hql_trips_note_diesel, R.string.hql_estimated_model, R.string.hql_ins_curve_help,
+            R.string.hql_range_wltp};
 
     private static String car(int id, String text) {
         CarSpec spec = CarSpec.current();

@@ -44,7 +44,7 @@ final class MonthlyReport {
         /** REEV: litros de gasolina del mes, o NaN. */
         double fuelL = Double.NaN;
         double costEur = Double.NaN;
-        /** Lo que costaría en un coche de gasolina (Config.fuelLitersPer100 a Config.fuelPrice). */
+        /** Lo que costaría en el coche de combustión de Ajustes (Config.fuelLitersPer100 a Config.comparePrice). */
         double petrolEur = Double.NaN;
         int charges;
         double chargedKwh;
@@ -125,15 +125,24 @@ final class MonthlyReport {
         final double fuel;
         final double petrolLPer100;
 
+        /** €/l del coche de comparación (gasolina o diésel, Ajustes); fuel es la gasolina del generador del REEV. */
+        final double comparePrice;
+
         Prices(double home, double fast, double fuel, double petrolLPer100) {
+            this(home, fast, fuel, petrolLPer100, fuel);
+        }
+
+        Prices(double home, double fast, double fuel, double petrolLPer100, double comparePrice) {
             this.home = home;
             this.fast = fast;
             this.fuel = fuel;
             this.petrolLPer100 = petrolLPer100;
+            this.comparePrice = comparePrice;
         }
 
         static Prices of(Config cfg) {
-            return new Prices(cfg.electricityPrice(), cfg.fastChargePrice(), cfg.fuelPrice(), cfg.fuelLitersPer100());
+            return new Prices(cfg.electricityPrice(), cfg.fastChargePrice(), cfg.fuelPrice(), cfg.fuelLitersPer100(),
+                    cfg.comparePrice());
         }
     }
 
@@ -271,7 +280,7 @@ final class MonthlyReport {
             double fast = Math.min(s.fastKwh, s.kwh);
             s.costEur = fast * p.fast + (s.kwh - fast) * p.home + (Double.isNaN(s.fuelL) ? 0 : s.fuelL * p.fuel);
         }
-        if (p.fuel > 0 && p.petrolLPer100 > 0 && s.km > 0) s.petrolEur = s.km * p.petrolLPer100 / 100 * p.fuel;
+        if (p.comparePrice > 0 && p.petrolLPer100 > 0 && s.km > 0) s.petrolEur = s.km * p.petrolLPer100 / 100 * p.comparePrice;
 
         // Con el coche parado: los aparcamientos que acaban este mes (entre viajes grabados por la app).
         List<ParkedDrain.Park> parks = ParkedDrain.parks(trips, defaultCap);

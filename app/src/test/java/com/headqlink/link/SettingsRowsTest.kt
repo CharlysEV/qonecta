@@ -45,6 +45,26 @@ class SettingsRowsTest {
     }
 
     @Test
+    fun fuelPricesAndTheComparisonCarConsumption() {
+        // El combustible, por litro y hasta Config.FUEL_PRICE_MAX (Portugal pasa de 2 €).
+        assertEquals(2.05, SettingsRows.parsePrice("2,05 €/l", Config.FUEL_PRICE_MAX), 1e-9)
+        assertEquals(2.05, SettingsRows.parsePrice("2.05", Config.FUEL_PRICE_MAX), 1e-9)
+        assertEquals(-1.0, SettingsRows.parsePrice("4,10", Config.FUEL_PRICE_MAX), 0.0)
+        assertEquals("1,60 €/l", SettingsRows.priceText(1.6, "l", Locale("es", "ES")))
+        // El consumo: una décima, de 2 a 20 l/100 km, con o sin la unidad.
+        assertEquals(6.5, SettingsRows.parseL100("6,5"), 1e-9)
+        assertEquals(5.5, SettingsRows.parseL100("5.5 l/100 km"), 1e-9)
+        assertEquals(7.3, SettingsRows.parseL100("7,26"), 1e-9)
+        for (s in listOf(null, "", "1,9", "20,1", "abc", "-5", "6,5,1", "100")) {
+            assertEquals("«$s»", -1.0, SettingsRows.parseL100(s), 0.0)
+        }
+        assertEquals("6,5 l/100 km", SettingsRows.l100Text(6.5, Locale("es", "ES")))
+        // El CO₂ por litro del coche de comparación: gasolina o diésel.
+        assertEquals(2.31, Config.co2KgPerLiter(false), 0.0)
+        assertEquals(2.65, Config.co2KgPerLiter(true), 0.0)
+    }
+
+    @Test
     fun uiScaleChoices() {
         assertEquals(0, SettingsRows.UI_SCALE_CHOICES[0])
         for (p in SettingsRows.UI_SCALE_CHOICES.drop(1)) {

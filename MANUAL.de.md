@@ -755,6 +755,12 @@ Mit der Taste „Einstellungen“ in der Seitenleiste auf dem Fahrzeugdisplay ka
 einstellen, den „Strompreis“ festlegen (€/kWh, für die Kosten der Fahrten; standardmäßig 0,20) und die genutzte
 Verbindung und Engine sehen. Nutze das nur bei stehendem Fahrzeug.
 
+„Kraftstoff“ (im Fahrzeug unter Einstellungen › Fahrt, auf dem Handy in den Einstellungen): „Benzinpreis“ und
+„Dieselpreis“ (€/l; standardmäßig 1,60 und 1,50), „Vergleichen mit“ (Benziner oder Diesel) und der „Verbrauch des
+Vergleichsautos“ (standardmäßig 6,5 und 5,5 l/100 km). Daraus ergeben sich die Ersparnis gegenüber einem Verbrenner
+(Effizienz, Monatsbericht) und das eingesparte CO₂; beim REEV wird das Benzin des Generators immer zum Benzinpreis
+gerechnet.
+
 „Farbe der Seitenleiste“: „Automatisch“ (nachts dunkel und tagsüber hell, wie das Fahrzeugdisplay) oder eine von 16
 festen Farben, die tagsüber und nachts gleich bleibt. Gilt sofort, und der Text der Seitenleiste wird hell oder dunkel,
 damit er lesbar bleibt.

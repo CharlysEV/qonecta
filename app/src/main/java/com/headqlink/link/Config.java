@@ -542,12 +542,61 @@ final class Config {
         sp.edit().putFloat("price_fast_kwh", (float) Math.max(0, Math.min(1.5, Math.round(eurPerKwh * 100) / 100.0))).apply();
     }
 
+    /** Tope de los precios del combustible (€/l) que se pueden poner. */
+    static final double FUEL_PRICE_MAX = 4.0;
+    /** Consumo del coche de comparación (l/100 km): entre estos dos. */
+    static final double COMPARE_L100_MIN = 2.0;
+    static final double COMPARE_L100_MAX = 20.0;
+
+    /** €/l de gasolina: lo que pone el generador del REEV y, si se compara con gasolina, la comparación. */
     double fuelPrice() {
         return sp.getFloat("price_fuel", 1.60f);
     }
 
+    void setFuelPrice(double eurPerLiter) {
+        sp.edit().putFloat("price_fuel", (float) clampPrice(eurPerLiter, FUEL_PRICE_MAX)).apply();
+    }
+
+    /** €/l de diésel, para comparar con un diésel. */
+    double dieselPrice() {
+        return sp.getFloat("price_diesel", 1.50f);
+    }
+
+    void setDieselPrice(double eurPerLiter) {
+        sp.edit().putFloat("price_diesel", (float) clampPrice(eurPerLiter, FUEL_PRICE_MAX)).apply();
+    }
+
+    private static double clampPrice(double v, double max) {
+        return Math.max(0, Math.min(max, Math.round(v * 100) / 100.0));
+    }
+
+    /** El coche de combustión con el que se compara (ahorro y CO₂): diésel o, de serie, gasolina. */
+    boolean compareDiesel() {
+        return sp.getBoolean("compare_diesel", false);
+    }
+
+    void setCompareDiesel(boolean diesel) {
+        sp.edit().putBoolean("compare_diesel", diesel).apply();
+    }
+
+    /** €/l del coche de comparación (el del combustible elegido). */
+    double comparePrice() {
+        return compareDiesel() ? dieselPrice() : fuelPrice();
+    }
+
+    /** l/100 km del coche de comparación: cada combustible guarda el suyo (de serie, 6,5 en gasolina y 5,5 en diésel). */
     double fuelLitersPer100() {
-        return sp.getFloat("fuel_l100", 6.5f);
+        return compareDiesel() ? sp.getFloat("diesel_l100", 5.5f) : sp.getFloat("fuel_l100", 6.5f);
+    }
+
+    void setFuelLitersPer100(double l100) {
+        double v = Math.max(COMPARE_L100_MIN, Math.min(COMPARE_L100_MAX, Math.round(l100 * 10) / 10.0));
+        sp.edit().putFloat(compareDiesel() ? "diesel_l100" : "fuel_l100", (float) v).apply();
+    }
+
+    /** kg de CO₂ por litro quemado (solo el escape): gasolina 2,31; diésel 2,65. */
+    static double co2KgPerLiter(boolean diesel) {
+        return diesel ? 2.65 : 2.31;
     }
 
     /** Ajuste de la previsión de las rutas (RouteCalibration): las últimas llegadas, en JSON. */

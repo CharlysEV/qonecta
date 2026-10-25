@@ -1268,4 +1268,21 @@
     <string name="hql_energy_none">A medir a partir de agora: dentro de algumas horas verá o que gasta em repouso e em cada viagem.</string>
     <string name="hql_split_aa_right">Ecrã dividido: Android Auto à direita</string>
     <string name="hql_split_swap">Trocar de lado</string>
+    <string name="hql_settings_fuel">Combustível</string>
+    <string name="hql_price_petrol">Preço da gasolina</string>
+    <string name="hql_price_diesel">Preço do gasóleo</string>
+    <string name="hql_price_fuel_help">Para comparar com um carro a combustão (poupança e CO₂) e, no REEV, para a gasolina que o gerador gasta.</string>
+    <string name="hql_compare_with">Comparar com</string>
+    <string name="hql_compare_petrol">Gasolina</string>
+    <string name="hql_compare_diesel">Gasóleo</string>
+    <string name="hql_compare_help">O carro a combustão com que se compara o que gasta: preço por litro e CO₂ desse combustível.</string>
+    <string name="hql_compare_l100">Consumo do carro de comparação</string>
+    <string name="hql_compare_l100_help">Litros aos 100 km do carro usado na comparação (poupança e CO₂).</string>
+    <string name="hql_compare_l100_invalid">Escreva um consumo de 2 a 20 l/100 km</string>
+    <string name="hql_aj_price_invalid_l">Escreva um preço de 0 a %1$s €/l</string>
+    <string name="hql_cost_diesel">A gasóleo, ~%1$s</string>
+    <string name="hql_co2_note_diesel">Face a um carro a gasóleo de %1$.1f l/100 km (%2$.2f kg de CO₂ por litro, só o escape).</string>
+    <string name="hql_report_saved_diesel">Um carro a gasóleo de %2$s L/100 km teria gasto %1$s a %3$s.</string>
+    <string name="hql_report_share_saved_diesel">~%1$s poupados face ao gasóleo</string>
+    <string name="hql_trips_note_diesel">Energia estimada com o modelo do C10 (sem dados do carro). Preços: %1$s; gasóleo %2$.1f l/100 km a %3$s.</string>
 </resources>

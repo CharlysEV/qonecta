@@ -1268,4 +1268,21 @@
     <string name="hql_energy_none">Mesure à partir de maintenant : dans quelques heures, vous verrez ce qu\'elle consomme au repos et à chaque trajet.</string>
     <string name="hql_split_aa_right">Écran partagé : Android Auto à droite</string>
     <string name="hql_split_swap">Inverser les côtés</string>
+    <string name="hql_settings_fuel">Carburant</string>
+    <string name="hql_price_petrol">Prix de l\'essence</string>
+    <string name="hql_price_diesel">Prix du gazole</string>
+    <string name="hql_price_fuel_help">Pour comparer avec une voiture thermique (économies et CO₂) et, sur le REEV, pour l\'essence du générateur.</string>
+    <string name="hql_compare_with">Comparer avec</string>
+    <string name="hql_compare_petrol">Essence</string>
+    <string name="hql_compare_diesel">Diesel</string>
+    <string name="hql_compare_help">La voiture thermique avec laquelle on compare ce que vous dépensez : prix au litre et CO₂ de ce carburant.</string>
+    <string name="hql_compare_l100">Consommation de la voiture de comparaison</string>
+    <string name="hql_compare_l100_help">Litres aux 100 km de la voiture de comparaison (économies et CO₂).</string>
+    <string name="hql_compare_l100_invalid">Saisissez une consommation de 2 à 20 l/100 km</string>
+    <string name="hql_aj_price_invalid_l">Saisissez un prix de 0 à %1$s €/l</string>
+    <string name="hql_cost_diesel">En voiture diesel, ~%1$s</string>
+    <string name="hql_co2_note_diesel">Par rapport à une voiture diesel à %1$.1f l/100 km (%2$.2f kg de CO₂ par litre, à l\'échappement uniquement).</string>
+    <string name="hql_report_saved_diesel">Une voiture diesel à %2$s L/100 km aurait coûté %1$s à %3$s.</string>
+    <string name="hql_report_share_saved_diesel">~%1$s économisés face au diesel</string>
+    <string name="hql_trips_note_diesel">Énergie estimée avec le modèle de la C10 (sans données de la voiture). Prix : %1$s ; diesel %2$.1f l/100 km à %3$s.</string>
 </resources>

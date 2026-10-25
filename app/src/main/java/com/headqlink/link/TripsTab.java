@@ -94,7 +94,8 @@ final class TripsTab implements CarScreen {
             list.addView(new TripCard(ctx, trips.get(i), i), lp);
         }
         if (!trips.isEmpty()) {
-            TextView note = CarStyle.text(ctx, Str.get(R.string.hql_trips_note, Money.per(cfg.electricityPrice(), "kWh"), cfg.fuelLitersPer100(), Money.per(cfg.fuelPrice(), "l")), 20, CarKit.FAINT);
+            TextView note = CarStyle.text(ctx, Str.get(cfg.compareDiesel() ? R.string.hql_trips_note_diesel : R.string.hql_trips_note,
+                    Money.per(cfg.electricityPrice(), "kWh"), cfg.fuelLitersPer100(), Money.per(cfg.comparePrice(), "l")), 20, CarKit.FAINT);
             note.setPadding(8, 16, 8, 8);
             list.addView(note);
         }

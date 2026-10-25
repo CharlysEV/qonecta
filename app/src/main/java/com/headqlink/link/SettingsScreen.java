@@ -528,10 +528,97 @@ final class SettingsScreen implements CarScreen {
         priceRow(c, energy, Str.get(R.string.hql_settings_price_fast), Str.get(R.string.hql_settings_price_fast_help),
                 cfg::fastChargePrice, cfg::setFastChargePrice);
         col.addView(energy, cardLp());
+
+        // Combustible: la comparación con un coche de combustión (ahorro y CO₂) y la gasolina del generador del REEV.
+        LinearLayout fuel = card(c, Str.get(R.string.hql_settings_fuel));
+        priceRow(c, fuel, Str.get(R.string.hql_price_petrol), null, "l", cfg::fuelPrice, cfg::setFuelPrice);
+        fuel.addView(divider(c));
+        priceRow(c, fuel, Str.get(R.string.hql_price_diesel), Str.get(R.string.hql_price_fuel_help), "l", cfg::dieselPrice,
+                cfg::setDieselPrice);
+        fuel.addView(divider(c));
+        TextView cmpLabel = CarStyle.text(c, Str.get(R.string.hql_compare_with), 24, CarStyle.TEXT);
+        cmpLabel.setPadding(0, 16, 0, 0);
+        fuel.addView(cmpLabel);
+        LinearLayout cmp = new LinearLayout(c);
+        cmp.setOrientation(LinearLayout.HORIZONTAL);
+        cmp.setPadding(0, 14, 0, 4);
+        java.util.List<TextView> cmpPills = new java.util.ArrayList<>();
+        TextView[] l100Value = new TextView[1];
+        Runnable markCompare = () -> {
+            for (TextView p : cmpPills) {
+                boolean sel = cfg.compareDiesel() == (boolean) p.getTag();
+                p.setBackground(sel ? CarKit.outlined(CarStyle.ACCENT_BG, CarStyle.ACCENT, 28) : CarStyle.round(CarStyle.PILL_BG, 28));
+                p.setTextColor(sel ? CarStyle.ACCENT : CarStyle.TEXT);
+            }
+            if (l100Value[0] != null) l100Value[0].setText(SettingsRows.l100Text(cfg.fuelLitersPer100(), Str.locale()));
+            refreshSummaries();
+        };
+        for (boolean diesel : new boolean[]{false, true}) {
+            TextView p = CarStyle.pill(c, SettingsActivity.compareLabel(diesel));
+            p.setTag(diesel);
+            p.setPadding(20, 22, 20, 22);
+            p.setOnClickListener(v -> {
+                cfg.setCompareDiesel(diesel);
+                L.i("comparar con un coche " + (diesel ? "diésel" : "de gasolina") + " (desde el coche)");
+                markCompare.run();
+            });
+            LinearLayout.LayoutParams plp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+            plp.rightMargin = 14;
+            cmpPills.add(p);
+            cmp.addView(p, plp);
+        }
+        fuel.addView(cmp);
+        fuel.addView(divider(c));
+        l100Value[0] = stepRow(c, fuel, Str.get(R.string.hql_compare_l100), Str.get(R.string.hql_compare_l100_help), () -> {
+            cfg.setFuelLitersPer100(cfg.fuelLitersPer100() - 0.1);
+            markCompare.run();
+        }, () -> {
+            cfg.setFuelLitersPer100(cfg.fuelLitersPer100() + 0.1);
+            markCompare.run();
+        });
+        markCompare.run();
+        col.addView(fuel, cardLp());
     }
 
     /** Un precio (€/kWh) con − y + de céntimo en céntimo, y su explicación debajo. */
     private void priceRow(Context c, LinearLayout card, String label, String help, java.util.function.DoubleSupplier get,
+                          java.util.function.DoubleConsumer set) {
+        priceRow(c, card, label, help, "kWh", get, set);
+    }
+
+    /** Una fila con − y + (el valor lo pone quien la usa) y su explicación debajo; devuelve la vista del valor. */
+    private TextView stepRow(Context c, LinearLayout card, String label, String help, Runnable down, Runnable up) {
+        LinearLayout row = new LinearLayout(c);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(0, 16, 0, 4);
+        row.addView(CarStyle.text(c, label, 24, CarStyle.TEXT), new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        TextView minus = CarStyle.pill(c, "−");
+        TextView value = CarStyle.text(c, "", 32, CarStyle.TEXT);
+        value.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        value.setGravity(Gravity.CENTER);
+        value.setMinWidth(210);
+        TextView plus = CarStyle.pill(c, "+");
+        for (TextView b : new TextView[]{minus, plus}) {
+            b.setMinWidth(90);
+            b.setPadding(26, 18, 26, 18);
+        }
+        minus.setOnClickListener(v -> down.run());
+        plus.setOnClickListener(v -> up.run());
+        row.addView(minus);
+        row.addView(value);
+        row.addView(plus);
+        card.addView(row);
+        if (help != null) {
+            TextView h = CarStyle.text(c, help, 20, CarStyle.TEXT_DIM);
+            h.setPadding(4, 8, 0, 0);
+            card.addView(h);
+        }
+        return value;
+    }
+
+    /** Un precio (€ por unit: kWh o l) con − y + de céntimo en céntimo, y su explicación debajo (si la hay). */
+    private void priceRow(Context c, LinearLayout card, String label, String help, String unit, java.util.function.DoubleSupplier get,
                           java.util.function.DoubleConsumer set) {
         LinearLayout priceRow = new LinearLayout(c);
         priceRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -553,7 +640,7 @@ final class SettingsScreen implements CarScreen {
         priceRow.addView(value);
         priceRow.addView(plus);
         Runnable showPrice = () -> {
-            value.setText(Money.per(get.getAsDouble(), "kWh"));
+            value.setText(Money.per(get.getAsDouble(), unit));
             refreshSummaries();
         };
         showPrice.run();
@@ -566,6 +653,7 @@ final class SettingsScreen implements CarScreen {
             showPrice.run();
         });
         card.addView(priceRow);
+        if (help == null) return;
         TextView priceHelp = CarStyle.text(c, help, 20, CarStyle.TEXT_DIM);
         priceHelp.setPadding(4, 8, 0, 0);
         card.addView(priceHelp);

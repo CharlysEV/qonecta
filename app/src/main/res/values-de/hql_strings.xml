@@ -1267,4 +1267,21 @@
     <string name="hql_energy_none">Ab jetzt wird gemessen: In ein paar Stunden siehst du den Verbrauch im Ruhezustand und pro Fahrt.</string>
     <string name="hql_split_aa_right">Geteilter Bildschirm: Android Auto rechts</string>
     <string name="hql_split_swap">Seiten tauschen</string>
+    <string name="hql_settings_fuel">Kraftstoff</string>
+    <string name="hql_price_petrol">Benzinpreis</string>
+    <string name="hql_price_diesel">Dieselpreis</string>
+    <string name="hql_price_fuel_help">Für den Vergleich mit einem Verbrenner (Ersparnis und CO₂) und beim REEV für das Benzin des Generators.</string>
+    <string name="hql_compare_with">Vergleichen mit</string>
+    <string name="hql_compare_petrol">Benziner</string>
+    <string name="hql_compare_diesel">Diesel</string>
+    <string name="hql_compare_help">Der Verbrenner, mit dem deine Kosten verglichen werden: Literpreis und CO₂ dieses Kraftstoffs.</string>
+    <string name="hql_compare_l100">Verbrauch des Vergleichsautos</string>
+    <string name="hql_compare_l100_help">Liter pro 100 km des Vergleichsautos (Ersparnis und CO₂).</string>
+    <string name="hql_compare_l100_invalid">Gib einen Verbrauch von 2 bis 20 l/100 km ein</string>
+    <string name="hql_aj_price_invalid_l">Gib einen Preis von 0 bis %1$s €/l ein</string>
+    <string name="hql_cost_diesel">Mit einem Diesel ~%1$s</string>
+    <string name="hql_co2_note_diesel">Gegenüber einem Diesel mit %1$.1f l/100 km (%2$.2f kg CO₂ pro Liter, nur Auspuff).</string>
+    <string name="hql_report_saved_diesel">Ein Diesel mit %2$s L/100 km hätte bei %3$s %1$s gekostet.</string>
+    <string name="hql_report_share_saved_diesel">~%1$s gespart gegenüber Diesel</string>
+    <string name="hql_trips_note_diesel">Energie geschätzt mit dem C10-Modell (ohne Fahrzeugdaten). Preise: %1$s; Diesel %2$.1f l/100 km zu %3$s.</string>
 </resources>

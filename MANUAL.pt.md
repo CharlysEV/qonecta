@@ -717,6 +717,11 @@ O botão «Definições» do painel do carro permite mudar o perfil de imagem e 
 poucos segundos»), ocultar o painel sozinho e as otimizações de latência, o «Preço da eletricidade» (€/kWh, para o custo
 das viagens; 0,20 por omissão), e ver a ligação e o motor em uso. Use-o só com o carro parado.
 
+«Combustível» (no carro, Definições › Viagem; no telemóvel, nas Definições): «Preço da gasolina» e «Preço do gasóleo»
+(€/l; 1,60 e 1,50 por omissão), «Comparar com» (gasolina ou gasóleo) e o «Consumo do carro de comparação» (6,5 e
+5,5 l/100 km por omissão). Com eles saem a poupança face a um carro a combustão (Eficiência, relatório do mês) e o CO₂
+que evita; no REEV, a gasolina que o gerador gasta conta sempre ao preço da gasolina.
+
 «Cor do painel lateral»: «Automático» (escuro à noite e claro de dia, como o ecrã do carro) ou uma de 16 cores fixas,
 que fica igual de dia e de noite. Aplica-se logo, e o texto do painel passa a claro ou escuro para se ler.
 

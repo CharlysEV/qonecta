@@ -28,8 +28,6 @@ import java.util.Locale;
  */
 final class EfficiencyScreen implements CarScreen {
     private static final long TICK_MS = 500;
-    /** CO₂ por litro de gasolina quemado (combustión; sin contar la fabricación del combustible). */
-    static final double CO2_KG_PER_L = 2.31;
     private static final int[] PART_COLORS = {CarKit.BLUE, CarKit.VIOLET, CarKit.AMBER, CarKit.RED, CarKit.ACCENT, CarKit.MUTED};
     private static final int[] PART_NAMES = {R.string.hql_air, R.string.hql_rolling, R.string.hql_climbs, R.string.hql_acceleration,
             R.string.hql_hvac, R.string.hql_electronics};
@@ -375,20 +373,26 @@ final class EfficiencyScreen implements CarScreen {
         double price = cfg.electricityPrice();
         double cost = Math.max(0, s.tripKwh) * price;
         double km = Math.max(0, s.tripKmEnergy);
-        double petrol = km * cfg.fuelLitersPer100() / 100 * cfg.fuelPrice();
+        // Lo mismo en el coche de combustión de Ajustes (gasolina o diésel, con su consumo y su precio).
+        boolean diesel = cfg.compareDiesel();
+        double petrol = km * cfg.fuelLitersPer100() / 100 * cfg.comparePrice();
         CarKit.number(cv, Money.parts(cost)[0], Money.parts(cost)[1], r.left, r.top + 64, 72, CarKit.TEXT, CarKit.REGULAR, p, Paint.Align.LEFT);
         CarKit.text(cv, Str.get(R.string.hql_cost_rate, Money.per(price, "kWh"), Math.max(0, s.tripKwh)), r.left, r.top + 108, 23, CarKit.DIM, CarKit.REGULAR, p, Paint.Align.LEFT);
         if (km > 0.2) {
-            CarKit.text(cv, Str.get(R.string.hql_cost_petrol, Money.format(petrol)), r.left, r.bottom - 2, 25, CarKit.GREEN, CarKit.MEDIUM, p, Paint.Align.LEFT);
+            CarKit.text(cv, Str.get(diesel ? R.string.hql_cost_diesel : R.string.hql_cost_petrol, Money.format(petrol)), r.left,
+                    r.bottom - 2, 25, CarKit.GREEN, CarKit.MEDIUM, p, Paint.Align.LEFT);
         }
     }
 
     private void paintCo2(Canvas cv, RectF r, Paint p) {
         double km = Math.max(0, s.tripKmEnergy);
-        double kg = km * cfg.fuelLitersPer100() / 100 * CO2_KG_PER_L;
+        boolean diesel = cfg.compareDiesel();
+        double perLiter = Config.co2KgPerLiter(diesel);
+        double kg = km * cfg.fuelLitersPer100() / 100 * perLiter;
         CarIcons.leaf(cv, r.left + 26, r.top + 40, 52, CarKit.GREEN, p);
         CarKit.number(cv, num(kg, 1), "kg", r.left + 68, r.top + 62, 64, CarKit.TEXT, CarKit.REGULAR, p, Paint.Align.LEFT);
-        small.draw(cv, Str.get(R.string.hql_co2_note, cfg.fuelLitersPer100(), CO2_KG_PER_L), r.left, r.top + 84, (int) r.width(), false);
+        small.draw(cv, Str.get(diesel ? R.string.hql_co2_note_diesel : R.string.hql_co2_note, cfg.fuelLitersPer100(), perLiter),
+                r.left, r.top + 84, (int) r.width(), false);
     }
 
     private void paintTip(Canvas cv, RectF r, Paint p) {
