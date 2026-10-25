@@ -736,6 +736,11 @@ Paste the URL of an M3U list or tap "Choose file". Without a radio list, the car
 The shortcuts on the car's "Web" screen (YouTube, Google, Wikipedia and Twitch by default). Add your own with a
 name and an address, remove them or reorder them with the arrows; "Defaults" puts back the original four.
 
+### "Aquarium" (Games › For the wait)
+
+For the kids, with the car parked: colourful fish swimming, bubbles, seaweed and rays of light. **Tap the water** and
+food falls for the fish to eat; tap a fish and it darts away. "Another fish" adds one (up to 14).
+
 ### "Games folder": NES, Mega Drive and Super Nintendo ("Auto extended")
 
 ⚙ menu › Games. Pick the phone folder with your games: one folder for every console, and .zip files work as they are

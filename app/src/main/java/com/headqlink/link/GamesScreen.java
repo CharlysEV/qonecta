@@ -27,7 +27,7 @@ import java.util.Random;
 
 /**
  * Juegos con el coche parado: las consolas (NES y Mega Drive, con tus juegos) y juegos rápidos para las esperas: 2048,
- * memoria, tres en raya, Autonomía y coche volador.
+ * memoria, tres en raya, Autonomía, coche volador y el acuario para los niños.
  */
 final class GamesScreen implements CarScreen {
     private Host host;
@@ -42,10 +42,22 @@ final class GamesScreen implements CarScreen {
             {R.string.hql_game_range, R.string.hql_game_range_sub},
             {R.string.hql_game_fly, R.string.hql_game_fly_sub},
             {R.string.hql_nes, R.string.hql_nes_sub},
-            {R.string.hql_md, R.string.hql_md_sub}};
+            {R.string.hql_md, R.string.hql_md_sub},
+            {R.string.hql_game_aquarium, R.string.hql_game_aquarium_sub}};
     private static final int[] ICONS = {R.drawable.hql_ic_game_2048, R.drawable.hql_ic_game_memory, R.drawable.hql_ic_game_ttt,
-            R.drawable.hql_ic_game_range, R.drawable.hql_ic_game_fly, R.drawable.hql_ic_games, R.drawable.hql_ic_games};
-    private static final int[] TINTS = {0xFFFDD663, 0xFF81C995, 0xFF8AB4F8, 0xFFF6AEA9, 0xFFC58AF9, 0xFFE8EAED, 0xFF78D9EC};
+            R.drawable.hql_ic_game_range, R.drawable.hql_ic_game_fly, R.drawable.hql_ic_games, R.drawable.hql_ic_games,
+            R.drawable.hql_ic_game_fish};
+    private static final int[] TINTS = {0xFFFDD663, 0xFF81C995, 0xFF8AB4F8, 0xFFF6AEA9, 0xFFC58AF9, 0xFFE8EAED, 0xFF78D9EC,
+            0xFF7FDBFF};
+    /** El acuario (en open() los números 5-8 son las consolas; en las listas de arriba va en la fila 7). */
+    static final int AQUARIUM = 9;
+    /** Las tarjetas de juegos rápidos, en orden: su número en open(). */
+    private static final int[] QUICK = {0, 1, 2, 3, 4, AQUARIUM};
+
+    /** Fila de GAMES, ICONS y TINTS de un juego. */
+    private static int row(int game) {
+        return game == AQUARIUM ? 7 : game;
+    }
     /** Emuladores (ROMs del usuario): navegador y juego dentro de esta pantalla. */
     /** Una partida (o un juego de espera) no se pierde al pasar de día a noche: el cambio espera a salir de Juegos. */
     @Override
@@ -85,7 +97,7 @@ final class GamesScreen implements CarScreen {
         col.addView(quickLabel);
         LinearLayout quick = new LinearLayout(c);
         quick.setOrientation(LinearLayout.HORIZONTAL);
-        for (int i = 0; i < 5; i++) quick.addView(quickCard(c, i), weighted(230));
+        for (int g : QUICK) quick.addView(quickCard(c, g), weighted(230));
         col.addView(quick);
         ScrollView scroll = new ScrollView(c);
         scroll.setFillViewport(true);
@@ -174,7 +186,8 @@ final class GamesScreen implements CarScreen {
     }
 
     /** Tarjeta de juego rápido: icono en su círculo de color, nombre y una línea. */
-    private View quickCard(Context c, int i) {
+    private View quickCard(Context c, int game) {
+        int i = row(game);
         LinearLayout card = CarStyle.card(c);
         card.setGravity(Gravity.CENTER);
         card.setPadding(16, 20, 16, 20);
@@ -195,7 +208,7 @@ final class GamesScreen implements CarScreen {
         sub.setGravity(Gravity.CENTER);
         sub.setMaxLines(2);
         card.addView(sub);
-        card.setOnClickListener(v -> open(i));
+        card.setOnClickListener(v -> open(game));
         return card;
     }
 
@@ -222,7 +235,7 @@ final class GamesScreen implements CarScreen {
             return;
         }
         Board board = game == 0 ? new Game2048(c) : game == 1 ? new Memory(c) : game == 2 ? new TicTacToe(c)
-                : game == 3 ? new Range(c) : new Flappy(c);
+                : game == 3 ? new Range(c) : game == AQUARIUM ? new AquariumView(c) : new Flappy(c);
         LinearLayout col = new LinearLayout(c);
         col.setOrientation(LinearLayout.VERTICAL);
         LinearLayout header = new LinearLayout(c);
@@ -230,11 +243,11 @@ final class GamesScreen implements CarScreen {
         header.setPadding(24, 18, 24, 6);
         TextView back = CarStyle.pill(c, "‹  " + Str.get(R.string.hql_games));
         // Directamente sobre el fondo de la pantalla (el color del panel, que puede ser fijo): el color que contrasta con él.
-        TextView title = CarStyle.text(c, Str.get(GAMES[game][0]), 30, CarTheme.navText());
+        TextView title = CarStyle.text(c, Str.get(GAMES[row(game)][0]), 30, CarTheme.navText());
         title.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         title.setPadding(16, 0, 24, 0);
         TextView status = CarStyle.text(c, "", 24, CarTheme.navTextDim());
-        TextView again = CarStyle.pill(c, Str.get(R.string.hql_new_game));
+        TextView again = CarStyle.pill(c, board.againLabel());
         header.addView(back);
         header.addView(title);
         header.addView(status, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
@@ -246,7 +259,7 @@ final class GamesScreen implements CarScreen {
             host.setContent(menu);
         });
         again.setOnClickListener(v -> {
-            board.reset();
+            board.again();
             board.invalidate();
         });
         running = true;
@@ -262,7 +275,7 @@ final class GamesScreen implements CarScreen {
     }
 
     /** Base: tablero cuadrado centrado y un texto de estado arriba a la derecha. */
-    private abstract static class Board extends View {
+    abstract static class Board extends View {
         final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
         String status = "";
         RectF board = new RectF();
@@ -280,6 +293,16 @@ final class GamesScreen implements CarScreen {
 
         /** Nueva partida. */
         abstract void reset();
+
+        /** El botón de la cabecera: «Nueva partida» (el acuario: «Otro pez»). */
+        String againLabel() {
+            return Str.get(R.string.hql_new_game);
+        }
+
+        /** Al pulsarlo. */
+        void again() {
+            reset();
+        }
 
         /** Solo la vista previa: un estado de juego que enseñe algo. */
         void demo() {

@@ -761,6 +761,11 @@ Cole o URL de uma lista M3U ou toque em «Escolher ficheiro». Sem lista de rád
 Os atalhos do ecrã «Web» do carro (de origem, YouTube, Google, Wikipedia e Twitch). Adicione os seus com nome e
 endereço, retire-os ou mude a ordem com as setas; «Os de origem» repõe os quatro iniciais.
 
+### «Aquário» (Jogos › Para a espera)
+
+Para as crianças, com o carro parado: peixes coloridos a nadar, bolhas, algas e raios de luz. Ao **tocar na água** cai
+comida e os peixes vão comê-la; se tocar num peixe, assusta-se e foge. «Outro peixe» acrescenta um (até 14).
+
 ### «Pasta de jogos»: NES, Mega Drive e Super Nintendo («Auto estendido»)
 
 Menu ⚙ › Jogos. Escolha a pasta do telemóvel com os seus jogos: uma só pasta para todas as consolas, e os .zip servem

@@ -1312,4 +1312,12 @@
     <string name="hql_live_now_cost">Kosten · %1$s</string>
     <string name="hql_live_now_note">Ook met de app dicht gevolgd: melding met een balk tot het doel (op Android 16 als Live Update).</string>
     <string name="hql_live_pct_at">%1$.0f %% ≈ %2$s (%3$s)</string>
+    <string name="hql_game_aquarium">Aquarium</string>
+    <string name="hql_game_aquarium_sub">Kijken en voeren</string>
+    <string name="hql_aquarium_status">tik op het water om ze te voeren</string>
+    <string name="hql_aquarium_more">Nog een vis</string>
+    <plurals name="hql_aquarium_fish">
+        <item quantity="one">%d vis</item>
+        <item quantity="other">%d vissen</item>
+    </plurals>
 </resources>

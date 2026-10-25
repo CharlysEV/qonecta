@@ -760,6 +760,12 @@ Incolla l'URL di una lista M3U o tocca «Scegli file». Senza una lista radio, l
 Le scorciatoie della schermata «Web» dell'auto (di default YouTube, Google, Wikipedia e Twitch). Aggiungi i tuoi con
 nome e indirizzo, toglili o riordinali con le frecce; «Predefiniti» rimette i quattro originali.
 
+### «Acquario» (Giochi › Per l'attesa)
+
+Per i bambini, ad auto ferma: pesci colorati che nuotano, bolle, alghe e raggi di luce. **Toccando l'acqua** cade il
+cibo e i pesci vanno a mangiarlo; se tocchi un pesce, si spaventa e scappa. «Un altro pesce» ne aggiunge uno
+(fino a 14).
+
 ### «Cartella giochi»: NES, Mega Drive e Super Nintendo («Auto esteso»)
 
 Menu ⚙ › Giochi. Scegli la cartella del telefono con i tuoi giochi: una sola cartella per tutte le console, e i .zip

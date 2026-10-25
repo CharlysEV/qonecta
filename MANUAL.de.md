@@ -808,6 +808,12 @@ Die Verknüpfungen auf dem Bildschirm „Web“ im Fahrzeug (standardmäßig You
 eigene mit Name und Adresse hinzu, entferne sie oder ändere ihre Reihenfolge mit den Pfeilen; „Standard“ stellt den
 Ausgangszustand wieder her.
 
+### „Aquarium“ (Spiele › Für die Wartezeit)
+
+Für die Kinder, bei stehendem Fahrzeug: bunte Fische, die schwimmen, Blasen, Algen und Lichtstrahlen. **Tippst du ins
+Wasser**, fällt Futter, und die Fische holen es sich; tippst du einen Fisch an, erschrickt er und schwimmt davon.
+„Noch ein Fisch“ fügt einen hinzu (bis zu 14).
+
 ### „Spieleordner“: NES, Mega Drive, Super Nintendo und PlayStation („Auto erweitert“)
 
 Menü ⚙ › Spiele. Wähle den Ordner auf dem Handy, in dem deine Spiele liegen: ein einziger Ordner für alle Konsolen, und

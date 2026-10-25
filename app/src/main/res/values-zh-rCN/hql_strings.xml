@@ -1316,4 +1316,11 @@
     <string name="hql_live_now_cost">费用 · %1$s</string>
     <string name="hql_live_now_note">应用关闭时也会跟踪：通知里有到目标的进度条（Android 16 上为实时更新）。</string>
     <string name="hql_live_pct_at">%1$.0f %% ≈ %2$s（%3$s）</string>
+    <string name="hql_game_aquarium">水族箱</string>
+    <string name="hql_game_aquarium_sub">看鱼、喂鱼</string>
+    <string name="hql_aquarium_status">点水面喂鱼</string>
+    <string name="hql_aquarium_more">再来一条</string>
+    <plurals name="hql_aquarium_fish">
+        <item quantity="other">%d 条鱼</item>
+    </plurals>
 </resources>

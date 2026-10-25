@@ -77,6 +77,7 @@ final class PreviewShots {
             new Shot("tv", "tv", 300, 3500),
             new Shot("radio", "radio", 300, 3500),
             new Shot("juegos", "games", 300, 1500),
+            new Shot("juego_acuario", "game-9", 300, 1500),
             new Shot("ajustes", "settings", 300, 1500),
     };
 

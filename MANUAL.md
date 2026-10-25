@@ -751,6 +751,12 @@ populares.
 Los accesos de la pantalla «Web» del coche (de serie, YouTube, Google, Wikipedia y Twitch). Añade los tuyos con
 nombre y dirección, quítalos o cámbialos de orden con las flechas; «Los de serie» los deja como venían.
 
+### «Acuario» (Juegos › Para la espera)
+
+Para los niños, con el coche parado: peces de colores que nadan, burbujas, algas y rayos de luz. Al **tocar el agua**
+cae comida y los peces van a comérsela; si tocas un pez, se asusta y sale disparado. «Otro pez» añade uno
+(hasta 14).
+
 ### «Carpeta de juegos»: NES, Mega Drive, Super Nintendo y PlayStation («Auto extendido»)
 
 Menú ⚙ › Juegos. Elige la carpeta del móvil donde tienes tus juegos: una sola carpeta para todas las consolas, y valen
