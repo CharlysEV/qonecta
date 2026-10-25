@@ -669,7 +669,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         if (ext) {
             menuGroup(sheet, col, 2, Str.get(R.string.hql_menu_content), R.drawable.hql_ic_tv,
                     new int[][]{{2, R.string.hql_tv_list}, {3, R.string.hql_radio_list}, {12, R.string.hql_web_bookmarks},
-                            {16, R.string.hql_ha_menu}, {20, R.string.hql_video_folder}});
+                            {16, R.string.hql_ha_menu}, {20, R.string.hql_video_folder}, {22, R.string.hql_companion_menu}});
             // Una sola carpeta para todas las consolas: cada emulador coge sus archivos.
             menuGroup(sheet, col, 3, Str.get(R.string.hql_games), R.drawable.hql_ic_games, new int[][]{{14, R.string.hql_nes_folder}});
         }
@@ -824,6 +824,9 @@ public class HomeActivity extends Activity implements LinkState.Listener {
                 break;
             case 16:
                 startActivity(new Intent(this, HomeAssistantActivity.class));
+                break;
+            case 22:
+                CompanionSetup.show(this);
                 break;
             case 15:
                 // Acceso a notificaciones para leer la de navegación de Google Maps (ruta en metros y hora de llegada).

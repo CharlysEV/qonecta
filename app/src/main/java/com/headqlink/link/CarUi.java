@@ -565,7 +565,7 @@ final class CarUi {
      */
     static boolean splitCapable(String name) {
         return splitRoom && ("car".equals(name) || "guide".equals(name) || "web".equals(name) || "videos".equals(name)
-                || "tv".equals(name) || "karaoke".equals(name));
+                || "tv".equals(name) || "karaoke".equals(name) || "companion".equals(name));
     }
 
     /**
@@ -2301,6 +2301,7 @@ final class CarUi {
             case "home": return Str.get(R.string.hql_ha_title);
             case "guide": return Str.get(R.string.hql_guide);
             case "karaoke": return Str.get(R.string.hql_karaoke);
+            case "companion": return Str.get(R.string.hql_companion);
             default: return id;
         }
     }
@@ -2317,6 +2318,7 @@ final class CarUi {
             case "home": return R.drawable.hql_ic_home;
             case "guide": return R.drawable.hql_ic_guide;
             case "karaoke": return R.drawable.hql_ic_karaoke;
+            case "companion": return R.drawable.ic_mic;
             default: return R.drawable.hql_ic_settings;
         }
     }
@@ -2534,7 +2536,8 @@ final class CarUi {
         }
         // WhitelistAppOn: Android Auto y la sección Coche son interfaces de conducción; el resto, ocio.
         // La radio también (solo audio, como la música de AA).
-        SspSession.setDrivingUi("aa".equals(name) || "car".equals(name) || "radio".equals(name) || "guide".equals(name));
+        SspSession.setDrivingUi("aa".equals(name) || "car".equals(name) || "radio".equals(name) || "guide".equals(name)
+                || "companion".equals(name));
         stopPanelSlide();
         // Panel y pantalla grande se ajustan junto con la pantalla nueva (applyLayout, abajo), de una vez: antes AA recibía
         // primero los márgenes del panel completo y enseguida los de la pantalla partida, y se recolocaba dos veces.
@@ -2626,6 +2629,8 @@ final class CarUi {
                 return GuideScreen::new;
             case "karaoke":
                 return KaraokeScreen::new;
+            case "companion":
+                return CompanionScreen::new;
             default:
                 return null;
         }

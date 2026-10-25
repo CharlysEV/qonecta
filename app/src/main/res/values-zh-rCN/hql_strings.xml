@@ -1365,4 +1365,35 @@
     <string name="hql_trivia_next">下一题</string>
     <string name="hql_trivia_back">返回导览</string>
     <string name="hql_trivia_none">附近的地点还不够出题。过几公里再试试。</string>
+    <string name="hql_companion">旅伴</string>
+    <string name="hql_companion_title">语音旅伴</string>
+    <string name="hql_companion_menu">语音旅伴（AI）</string>
+    <string name="hql_companion_tap">点按说话</string>
+    <string name="hql_companion_listening">正在聆听…</string>
+    <string name="hql_companion_thinking">思考中…</string>
+    <string name="hql_companion_speaking">正在说话 · 点按停止</string>
+    <string name="hql_companion_new">新对话</string>
+    <string name="hql_companion_you">你：%1$s</string>
+    <string name="hql_companion_nothing">没听清。请点按后再试一次。</string>
+    <string name="hql_companion_no_key">请在手机上填写你的 Claude API 密钥：菜单 ⚙ › 语音旅伴（AI）。</string>
+    <string name="hql_companion_bad_key">API 密钥无效。请在手机上检查：菜单 ⚙ › 语音旅伴（AI）。</string>
+    <string name="hql_companion_rate">提问太频繁了，请稍等。</string>
+    <string name="hql_companion_busy">Claude 现在太忙了，请稍后再试。</string>
+    <string name="hql_companion_offline">无法连接 Claude。请检查手机的移动数据。</string>
+    <string name="hql_companion_refused">这个问题我不便回答。</string>
+    <string name="hql_companion_failed">没能回答，请再试一次。</string>
+    <string name="hql_companion_old_android">语音旅伴需要 Android 8 或更高版本。</string>
+    <string name="hql_companion_note">使用你自己的 API 密钥的 Claude（Anthropic）。你说的话会连同时间、电量和续航发送给 Anthropic，从不发送你的位置。</string>
+    <string name="hql_companion_setup_text">长途旅行时在车里和 Claude 聊天：闲聊、趣闻、给孩子出题或讲故事。点按按钮、说话，回答会被朗读出来。
+
+需要你自己的 Anthropic API 密钥（console.anthropic.com › API Keys）。每个问题都计入你的账户：使用 Claude Opus 5.5 约 1–2 美分，快速模式便宜得多。你说的话会连同时间、电量和续航发送给 Anthropic；从不发送你的位置。密钥加密保存在手机上。</string>
+    <string name="hql_companion_key_hint">API 密钥（sk-ant-…）</string>
+    <string name="hql_companion_key_saved">密钥已保存</string>
+    <string name="hql_companion_key_invalid">这看起来不像 Anthropic API 密钥（应以 sk-ant- 开头）。</string>
+    <string name="hql_companion_fast">更快更便宜（Claude Haiku 5.5）</string>
+    <string name="hql_companion_get_key">获取 API 密钥 ›</string>
+    <string name="hql_companion_enable_hint">在车机上开启：设置 › 侧边面板按钮 › 旅伴。</string>
+    <string name="hql_companion_save">保存</string>
+    <string name="hql_companion_delete">删除密钥</string>
+    <string name="hql_companion_deleted">密钥已删除</string>
 </resources>

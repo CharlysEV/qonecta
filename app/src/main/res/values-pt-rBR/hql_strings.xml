@@ -1364,4 +1364,35 @@
     <string name="hql_trivia_next">Próxima</string>
     <string name="hql_trivia_back">Voltar ao guia</string>
     <string name="hql_trivia_none">Ainda não há lugares suficientes por perto para perguntar. Tente daqui a alguns quilômetros.</string>
+    <string name="hql_companion">Companheiro</string>
+    <string name="hql_companion_title">Companheiro de voz</string>
+    <string name="hql_companion_menu">Companheiro de voz (IA)</string>
+    <string name="hql_companion_tap">Toque para falar</string>
+    <string name="hql_companion_listening">Ouvindo…</string>
+    <string name="hql_companion_thinking">Pensando…</string>
+    <string name="hql_companion_speaking">Falando · toque para parar</string>
+    <string name="hql_companion_new">Nova conversa</string>
+    <string name="hql_companion_you">Você: %1$s</string>
+    <string name="hql_companion_nothing">Não entendi. Toque e tente de novo.</string>
+    <string name="hql_companion_no_key">Coloque sua chave de API do Claude no celular: menu ⚙ › Companheiro de voz (IA).</string>
+    <string name="hql_companion_bad_key">A chave de API não funciona. Verifique no celular: menu ⚙ › Companheiro de voz (IA).</string>
+    <string name="hql_companion_rate">Perguntas demais seguidas. Espere um pouco.</string>
+    <string name="hql_companion_busy">O Claude está sobrecarregado agora. Tente daqui a pouco.</string>
+    <string name="hql_companion_offline">Sem conexão com o Claude. Verifique os dados móveis do celular.</string>
+    <string name="hql_companion_refused">Prefiro não responder a isso.</string>
+    <string name="hql_companion_failed">Não consegui responder. Tente de novo.</string>
+    <string name="hql_companion_old_android">O companheiro de voz precisa do Android 8 ou superior.</string>
+    <string name="hql_companion_note">Claude (Anthropic) com sua própria chave de API. O que você diz vai para a Anthropic com a hora, a bateria e a autonomia; nunca sua localização.</string>
+    <string name="hql_companion_setup_text">Converse com o Claude no carro em viagens longas: bate-papo, curiosidades, perguntas ou histórias para as crianças. Toque no botão, fale e a resposta é lida em voz alta.
+
+Precisa da sua própria chave de API da Anthropic (console.anthropic.com › API Keys). Cada pergunta é cobrada na sua conta: cerca de 1–2 centavos de dólar com o Claude Opus 5.5, bem menos no modo rápido. O que você diz vai para a Anthropic com a hora, a bateria e a autonomia; sua localização, nunca. A chave fica guardada criptografada no celular.</string>
+    <string name="hql_companion_key_hint">Chave de API (sk-ant-…)</string>
+    <string name="hql_companion_key_saved">Chave salva</string>
+    <string name="hql_companion_key_invalid">Isso não parece uma chave de API da Anthropic (começa com sk-ant-).</string>
+    <string name="hql_companion_fast">Mais rápido e barato (Claude Haiku 5.5)</string>
+    <string name="hql_companion_get_key">Obter uma chave de API ›</string>
+    <string name="hql_companion_enable_hint">No carro, ative em Configurações › Botões do painel lateral › Companheiro.</string>
+    <string name="hql_companion_save">Salvar</string>
+    <string name="hql_companion_delete">Apagar a chave</string>
+    <string name="hql_companion_deleted">Chave apagada</string>
 </resources>

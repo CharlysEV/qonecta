@@ -352,7 +352,7 @@ final class TripPostcard {
             L.i("diario: postal compartida");
         } catch (Exception e) {
             L.w("diario: no se pudo compartir (" + e.getClass().getSimpleName() + ")");
-            android.widget.Toast.makeText(a, Str.get(R.string.hql_report_share_failed), android.widget.Toast.LENGTH_LONG).show();
+            com.andrerinas.openheadunit.utils.ToastUtils.showToast(a, Str.get(R.string.hql_report_share_failed), android.widget.Toast.LENGTH_LONG, true);
         }
     }
 

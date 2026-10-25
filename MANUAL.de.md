@@ -645,6 +645,22 @@ Der Liedtext dessen, was in Android Auto läuft (Spotify, YouTube Music…), syn
 - Mit „Bildschirm teilen“ steht es neben Android Auto; wie die übrigen Unterhaltungsfunktionen besser bei stehendem
   Fahrzeug.
 
+### Sprachbegleiter (KI) („Auto erweitert“)
+
+Sprich im Fahrzeug mit Claude (von Anthropic): Unterhaltung, Wissenswertes, Quizfragen oder Geschichten für die
+Kinder auf langen Fahrten. Tippe auf das Mikrofon, sprich, und die kurze Antwort wird vorgelesen und angezeigt.
+
+- **Einrichtung:** auf dem Handy Menü ⚙ › „Sprachbegleiter (KI)“: Füge deinen API-Schlüssel von Anthropic ein
+  (console.anthropic.com › API Keys; er wird verschlüsselt auf dem Handy gespeichert) und, wenn du willst,
+  „Schneller und günstiger“ (Claude Haiku 5.5 statt Claude Opus 5.5). Im Fahrzeug: „Einstellungen“ › „Tasten der
+  Seitenleiste“ › „Begleiter“ (Ja).
+- **Kosten:** Jede Frage wird deinem Anthropic-Konto berechnet, etwa 1–2 Cent mit Opus und viel weniger im schnellen
+  Modus.
+- **Was gesendet wird:** was du sagst, mit Uhrzeit, Akku und Reichweite des Fahrzeugs; dein Standort nie. Das Log der
+  App speichert weder, was du sagst, noch die Antwort.
+- Tippen während er spricht, bringt ihn zum Schweigen; „Neues Gespräch“ beginnt von vorn (alle 12 Fragen beginnt von
+  selbst ein neues). Braucht Android 8 oder neuer und mobile Daten.
+
 ### Automatische Verbindung: „Verbinden, wenn das Bluetooth des Fahrzeugs erkannt wird“
 
 Mit diesem Schalter wartet Qonecta+ auf das Fahrzeug, sobald sich das Handy mit dessen Bluetooth verbindet, ohne dass

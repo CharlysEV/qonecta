@@ -961,10 +961,11 @@ final class Config {
 
     /** Botones del panel que se ven, en su orden (entre «Auto», fijo arriba, y «Ajustes», fijo abajo). */
     static final String PANEL_BUTTONS = "panel_buttons";
-    static final String[] PANEL_BUTTONS_ALL = {"car", "photos", "videos", "web", "tv", "radio", "games", "home", "guide", "karaoke"};
+    static final String[] PANEL_BUTTONS_ALL = {"car", "photos", "videos", "web", "tv", "radio", "games", "home", "guide", "karaoke",
+            "companion"};
     /**
-     * Los de serie: todos menos la guía del camino y el karaoke, que solo salen si el usuario los enciende (Ajustes ›
-     * Botones del panel).
+     * Los de serie: todos menos la guía del camino, el karaoke y el compañero de voz, que solo salen si el usuario los
+     * enciende (Ajustes › Botones del panel).
      */
     static final String[] PANEL_BUTTONS_DEFAULT = {"car", "photos", "videos", "web", "tv", "radio", "games", "home"};
 

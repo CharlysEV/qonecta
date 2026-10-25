@@ -603,6 +603,21 @@ La letra de lo que suena en Android Auto (Spotify, YouTube Music…), sincroniza
   canción no tiene letra sincronizada, sale el texto sin tiempos; si no hay ninguna, lo dice.
 - Con «Partir pantalla» va junto a Android Auto; como el resto del ocio, mejor con el coche parado.
 
+### Compañero de voz (IA) («Auto extendido»)
+
+Habla con Claude (de Anthropic) en el coche: conversación, curiosidades, preguntas o cuentos para los niños en los
+viajes largos. Tocas el micrófono, hablas y la respuesta, corta, se oye en voz alta y se ve en la pantalla.
+
+- **Cómo se configura:** en el móvil, menú ⚙ › «Compañero de voz (IA)»: pega tu clave de API de Anthropic
+  (console.anthropic.com › API Keys; se guarda cifrada en el móvil) y, si quieres, «Más rápido y barato» (Claude Haiku
+  5.5 en vez de Claude Opus 5.5). En el coche, «Ajustes» › «Botones del panel lateral» › «Compañero» (Sí).
+- **Lo que cuesta:** cada pregunta se cobra en tu cuenta de Anthropic, alrededor de 1–2 céntimos con Opus y mucho
+  menos en el modo rápido.
+- **Lo que se manda:** lo que dices, con la hora, la batería y la autonomía del coche; tu posición, nunca. El
+  registro de la app no guarda lo que dices ni lo que contesta.
+- Tocar mientras habla lo calla; «Nueva conversación» empieza de cero (cada 12 preguntas empieza otra sola). Necesita
+  Android 8 o superior y datos móviles.
+
 ### Conexión automática: «Conectar al detectar el Bluetooth del coche»
 
 Con este interruptor, Qonecta+ se pone a esperar al coche en cuanto el móvil se conecta a su Bluetooth, sin que abras

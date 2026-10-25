@@ -589,6 +589,20 @@ The lyrics of what is playing in Android Auto (Spotify, YouTube Music…), synce
   synced lyrics, the plain text is shown; if there are none, it says so.
 - With "Split screen" it sits next to Android Auto; like the rest of the entertainment, better with the car stopped.
 
+### Voice companion (AI) ("Auto extended")
+
+Talk to Claude (by Anthropic) in the car: conversation, curiosities, quizzes or stories for the kids on long trips.
+Tap the microphone, speak, and the short answer is read aloud and shown on the screen.
+
+- **Setup:** on the phone, ⚙ menu › "Voice companion (AI)": paste your Anthropic API key (console.anthropic.com › API
+  Keys; it is stored encrypted on the phone) and, if you like, "Faster and cheaper" (Claude Haiku 5.5 instead of
+  Claude Opus 5.5). In the car, "Settings" › "Side panel buttons" › "Companion" (Yes).
+- **Cost:** each question is charged to your Anthropic account, about 1–2 cents with Opus and much less in fast mode.
+- **What is sent:** what you say, with the time, the battery and the car's range; never your location. The app's log
+  does not keep what you say or the answer.
+- Tapping while it speaks stops it; "New conversation" starts afresh (a new one starts by itself every 12 questions).
+  It needs Android 8 or later and mobile data.
+
 ### Automatic connection: "Connect when the car's Bluetooth is detected"
 
 With this switch, Qonecta+ starts waiting for the car as soon as the phone connects to the car's Bluetooth, without

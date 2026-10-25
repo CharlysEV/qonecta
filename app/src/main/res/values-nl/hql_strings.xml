@@ -1363,4 +1363,35 @@
     <string name="hql_trivia_next">Volgende</string>
     <string name="hql_trivia_back">Terug naar de gids</string>
     <string name="hql_trivia_none">Nog niet genoeg plekken in de buurt om vragen over te stellen. Probeer het over een paar kilometer.</string>
+    <string name="hql_companion">Maatje</string>
+    <string name="hql_companion_title">Spraakmaatje</string>
+    <string name="hql_companion_menu">Spraakmaatje (AI)</string>
+    <string name="hql_companion_tap">Tik om te praten</string>
+    <string name="hql_companion_listening">Ik luister…</string>
+    <string name="hql_companion_thinking">Even denken…</string>
+    <string name="hql_companion_speaking">Aan het praten · tik om te stoppen</string>
+    <string name="hql_companion_new">Nieuw gesprek</string>
+    <string name="hql_companion_you">Jij: %1$s</string>
+    <string name="hql_companion_nothing">Ik heb je niet verstaan. Tik en probeer het opnieuw.</string>
+    <string name="hql_companion_no_key">Voer je Claude-API-sleutel in op de telefoon: menu ⚙ › Spraakmaatje (AI).</string>
+    <string name="hql_companion_bad_key">De API-sleutel werkt niet. Controleer hem op de telefoon: menu ⚙ › Spraakmaatje (AI).</string>
+    <string name="hql_companion_rate">Te veel vragen achter elkaar. Wacht even.</string>
+    <string name="hql_companion_busy">Claude is nu overbelast. Probeer het zo opnieuw.</string>
+    <string name="hql_companion_offline">Geen verbinding met Claude. Controleer de mobiele data van de telefoon.</string>
+    <string name="hql_companion_refused">Daar geef ik liever geen antwoord op.</string>
+    <string name="hql_companion_failed">Ik kon niet antwoorden. Probeer het opnieuw.</string>
+    <string name="hql_companion_old_android">Het spraakmaatje heeft Android 8 of hoger nodig.</string>
+    <string name="hql_companion_note">Claude (Anthropic) met je eigen API-sleutel. Wat je zegt gaat naar Anthropic met de tijd, de accu en de actieradius; nooit je locatie.</string>
+    <string name="hql_companion_setup_text">Praat in de auto met Claude op lange ritten: gesprekken, weetjes, quizvragen of verhalen voor de kinderen. Tik op de knop, praat, en het antwoord wordt voorgelezen.
+
+Hiervoor heb je een eigen API-sleutel van Anthropic nodig (console.anthropic.com › API Keys). Elke vraag wordt op je account gerekend: ongeveer 1–2 cent met Claude Opus 5.5, veel minder in de snelle modus. Wat je zegt gaat naar Anthropic met de tijd, de accu en de actieradius; je locatie nooit. De sleutel wordt versleuteld op de telefoon opgeslagen.</string>
+    <string name="hql_companion_key_hint">API-sleutel (sk-ant-…)</string>
+    <string name="hql_companion_key_saved">Sleutel opgeslagen</string>
+    <string name="hql_companion_key_invalid">Dat lijkt geen Anthropic-API-sleutel (die begint met sk-ant-).</string>
+    <string name="hql_companion_fast">Sneller en goedkoper (Claude Haiku 5.5)</string>
+    <string name="hql_companion_get_key">API-sleutel aanvragen ›</string>
+    <string name="hql_companion_enable_hint">Zet het in de auto aan via Instellingen › Knoppen van het zijpaneel › Maatje.</string>
+    <string name="hql_companion_save">Opslaan</string>
+    <string name="hql_companion_delete">Sleutel wissen</string>
+    <string name="hql_companion_deleted">Sleutel gewist</string>
 </resources>

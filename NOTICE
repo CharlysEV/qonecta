@@ -66,6 +66,11 @@ Audio decoding with FFmpeg (videos and IPTV):
   audio the phone cannot decode (AC-3, E-AC-3, DTS, TrueHD). Dolby, Dolby Digital Plus and DTS are trademarks of their
   owners; Qonecta+ is not affiliated with them.
 
+Voice companion (optional, with the user's own Anthropic API key):
+  The Anthropic Java SDK (com.anthropic:anthropic-java, https://github.com/anthropics/anthropic-sdk-java), MIT License,
+  with its dependencies OkHttp (Apache-2.0), Jackson (Apache-2.0) and Kotlin reflection (Apache-2.0). Questions go to
+  the Claude API (Anthropic) only when the user sets up the companion; Qonecta+ is not affiliated with Anthropic.
+
 three.js (3D car in the Status tab):
   app/src/main/assets/three/three.min.js is three.js r149 (https://threejs.org), Copyright 2010-2023
   three.js authors, MIT License (app/src/main/assets/three/LICENSE).

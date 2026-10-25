@@ -1368,4 +1368,35 @@
     <string name="hql_trivia_next">Next</string>
     <string name="hql_trivia_back">Back to the guide</string>
     <string name="hql_trivia_none">Not enough places around yet to ask about. Try again in a few kilometres.</string>
+    <string name="hql_companion">Companion</string>
+    <string name="hql_companion_title">Voice companion</string>
+    <string name="hql_companion_menu">Voice companion (AI)</string>
+    <string name="hql_companion_tap">Tap to talk</string>
+    <string name="hql_companion_listening">Listening…</string>
+    <string name="hql_companion_thinking">Thinking…</string>
+    <string name="hql_companion_speaking">Speaking · tap to stop</string>
+    <string name="hql_companion_new">New conversation</string>
+    <string name="hql_companion_you">You: %1$s</string>
+    <string name="hql_companion_nothing">I didn\'t catch that. Tap and try again.</string>
+    <string name="hql_companion_no_key">Add your Claude API key on the phone: ⚙ menu › Voice companion (AI).</string>
+    <string name="hql_companion_bad_key">The API key doesn\'t work. Check it on the phone: ⚙ menu › Voice companion (AI).</string>
+    <string name="hql_companion_rate">Too many questions in a row. Wait a moment.</string>
+    <string name="hql_companion_busy">Claude is very busy right now. Try again in a moment.</string>
+    <string name="hql_companion_offline">No connection to Claude. Check the phone\'s mobile data.</string>
+    <string name="hql_companion_refused">I\'d rather not answer that.</string>
+    <string name="hql_companion_failed">I couldn\'t answer. Try again.</string>
+    <string name="hql_companion_old_android">The voice companion needs Android 8 or later.</string>
+    <string name="hql_companion_note">Claude (Anthropic) with your own API key. What you say goes to Anthropic with the time, battery and range; never your location.</string>
+    <string name="hql_companion_setup_text">Talk to Claude in the car on long trips: conversation, curiosities, quizzes or stories for the kids. Tap the button, speak, and the answer is read aloud.
+
+It needs your own Anthropic API key (console.anthropic.com › API Keys). Each question is charged to your account: about 1–2 cents with Claude Opus 5.5, much less in fast mode. What you say goes to Anthropic with the time, the battery and the range; your location is never sent. The key is stored encrypted on the phone.</string>
+    <string name="hql_companion_key_hint">API key (sk-ant-…)</string>
+    <string name="hql_companion_key_saved">Key saved</string>
+    <string name="hql_companion_key_invalid">That doesn\'t look like an Anthropic API key (it starts with sk-ant-).</string>
+    <string name="hql_companion_fast">Faster and cheaper (Claude Haiku 5.5)</string>
+    <string name="hql_companion_get_key">Get an API key ›</string>
+    <string name="hql_companion_enable_hint">In the car, turn it on in Settings › Side panel buttons › Companion.</string>
+    <string name="hql_companion_save">Save</string>
+    <string name="hql_companion_delete">Delete key</string>
+    <string name="hql_companion_deleted">Key deleted</string>
 </resources>

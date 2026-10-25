@@ -321,6 +321,8 @@ dependencies {
     // headqlink: audio que muchos móviles no decodifican (AC-3, E-AC-3/Dolby Digital Plus, DTS, TrueHD) con FFmpeg.
     // La extensión de media3 compilada por Jellyfin (GPL-3.0, compatible con la AGPL de la app); la misma versión que media3.
     implementation("org.jellyfin.media3:media3-ffmpeg-decoder:1.3.1+2")
+    // headqlink: el compañero de voz (con la clave de API de Claude del usuario), con el SDK oficial de Anthropic.
+    implementation("com.anthropic:anthropic-java:3.3.0")
     implementation("com.google.android.material:material:1.14.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     // Material 1.14 ya no lo trae de rebote; lo usa el código de open-headunit (avisos entre pantallas).
