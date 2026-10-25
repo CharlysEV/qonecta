@@ -535,10 +535,10 @@
     <string name="vehicle_type_truck">Lkw</string>
     <string name="vehicle_type_motorcycle">Motorrad</string>
     <string name="vehicle_type_forced_by_microphone">Das Mikrofon der Haupteinheit ist aus, daher wird Android Auto unabhängig von der Auswahl hier mitgeteilt, dass dies ein Motorrad ist. Genau das bringt das Telefon dazu, selbst aufzunehmen.</string>
-    <string name="vehicle_id_description">Nur interne Kennung. Eine Änderung bewirkt, dass Ihr Telefon dies als ein anderes Fahrzeug erkennt und Ihre Android Auto-Einstellungen für dieses Auto zurückgesetzt werden.</string>
+    <string name="vehicle_id_description">Nur interne Kennung. Eine Änderung bewirkt, dass Ihr Telefon dies als ein anderes Fahrzeug erkennt und Ihre Android-Auto-Einstellungen für dieses Auto zurückgesetzt werden.</string>
     <string name="head_unit_make_label">Hersteller</string>
     <string name="head_unit_make_description">Hersteller des Autoradios</string>
-    <string name="head_unit_make_hint">Ihr Telefon zeigt diesen Namen in den Android Auto-Einstellungen an.</string>
+    <string name="head_unit_make_hint">Ihr Telefon zeigt diesen Namen in den Android-Auto-Einstellungen an.</string>
     <string name="head_unit_model_label">Modell</string>
     <string name="head_unit_model_description">Modell des Autoradios</string>
     <string name="vehicle_year_error_invalid">Geben Sie ein gültiges Jahr ein</string>
@@ -553,7 +553,7 @@
     <string name="hotspot_permission_message">Die Hotspot-Funktion benötigt die Berechtigung \"Systemeinstellungen ändern\". Bitte aktivieren Sie diese im nächsten Bildschirm.</string>
 
     <string name="supported_nativeaa">Verbesserte kabellose Unterstützung</string>
-    <string name="supported_nativeaa_desc">Gute Nachrichten! Ihr Gerät unterstützt den Modus „Natives WLAN“, der ein reibungsloseres Android Auto-Erlebnis bietet. \n\nUm dies zu aktivieren, müssen wir Ihren Bluetooth-Cache aktualisieren. Bitte: \n1. Entfernen Sie die vorhandene Kopplung auf Ihrem Telefon \n2. Klicken Sie auf OK, um Bluetooth neu zu starten \n3. Koppeln Sie Ihr Telefon erneut \n\nMöchten Sie jetzt in den nativen AA-Modus wechseln?</string>
+    <string name="supported_nativeaa_desc">Gute Nachrichten! Ihr Gerät unterstützt den Modus „Natives WLAN“, der ein reibungsloseres Android-Auto-Erlebnis bietet. \n\nUm dies zu aktivieren, müssen wir Ihren Bluetooth-Cache aktualisieren. Bitte: \n1. Entfernen Sie die vorhandene Kopplung auf Ihrem Telefon \n2. Klicken Sie auf OK, um Bluetooth neu zu starten \n3. Koppeln Sie Ihr Telefon erneut \n\nMöchten Sie jetzt in den nativen AA-Modus wechseln?</string>
     <string name="native_aa_poke_not_running">Das drahtlose Bluetooth läuft auf dieser Headunit nicht. Sieh in den Einstellungen nach.</string>
     <string name="not_supported_nativeaa">Natives WLAN scheint nicht unterstützt zu werden</string>
     <string name="not_supported_nativeaa_desc">Ihr Gerät unterstützt möglicherweise nicht die erforderlichen Bluetooth- oder WLAN-Funktionen für natives WLAN. Sie können es trotzdem versuchen, aber wenn es fehlschlägt, verwenden Sie bitte stattdessen den „Wireless Helper“ oder den Modus „Auto (Headunit Server)“.</string>
@@ -1124,9 +1124,9 @@
     <string name="five_ghz_channel_auto">Automatisch</string>
     <string name="five_ghz_channel_option">Kanal %1$d (%2$d MHz)</string>
     <string name="five_ghz_channel_hint">Ein Kanal ist eine Anfrage, keine Garantie. Viele Geräte erstellen das Netzwerk nur auf dem Kanal, den ihr eigener WLAN-Treiber wählt, und die App kann dir das erst nach dem Versuch sagen. Wenn kein 5-GHz-Kanal funktioniert und dein Telefon das Netzwerk weiterhin nicht sieht, ist das Band oben die Einstellung, die hilft.</string>
-    <string name="wifi_direct_stable_identity">Dasselbe Wi-Fi Direct-Netzwerk beibehalten</string>
+    <string name="wifi_direct_stable_identity">Dasselbe Wi-Fi-Direct-Netzwerk beibehalten</string>
     <string name="wifi_direct_stable_identity_description">Verwendet jedes Mal denselben Netzwerknamen und dasselbe Passwort, sodass sich dein Smartphone wieder mit einem bekannten Netzwerk verbindet. Nutze die Zeile unten, um beide zu erneuern.</string>
-    <string name="wifi_direct_new_identity">Neue Wi-Fi Direct-Netzwerkidentität</string>
+    <string name="wifi_direct_new_identity">Neue Wi-Fi-Direct-Netzwerkidentität</string>
     <string name="wifi_direct_new_identity_none">Wird bei der nächsten Verbindung festgelegt</string>
     <string name="wifi_direct_new_identity_confirm">Wählt einen neuen Namen und ein neues Passwort für die Gruppe, gültig ab der nächsten Verbindung. Dein Smartphone wird dafür über Bluetooth eingerichtet, als wäre dies ein neues Headunit. Nutze dies, wenn das Smartphone versucht, sich mit einem nicht mehr erreichbaren Netzwerk zu verbinden.</string>
     <string name="wifi_direct_new_identity_done">Ab der nächsten Verbindung wird eine neue Netzwerkidentität verwendet.</string>
@@ -1213,7 +1213,7 @@
     <string name="wifi_direct_last_network_details">Name\n%1$s\n\nPasswort\n%2$s\n\nAdresse\n%3$s</string>
     <string name="wifi_direct_last_network_address_unknown">Konnte nicht gelesen werden</string>
     <string name="wifi_direct_last_network_no_bssid">Die App konnte die Adresse dieses Netzwerks nicht lesen. Das allein hindert ein Handy am Beitreten, und den Standort für dieses Gerät einzuschalten behebt es fast immer.</string>
-    <string name="wifi_direct_last_network_differs">Das ist nicht der Name und das Passwort, um die die App gebeten hat, also hat das System sie überschrieben. Nutze oben \"Neue Wi-Fi Direct-Netzwerkidentität\", damit ein neues Paar übernommen wird.</string>
+    <string name="wifi_direct_last_network_differs">Das ist nicht der Name und das Passwort, um die die App gebeten hat, also hat das System sie überschrieben. Nutze oben \"Neue Wi-Fi-Direct-Netzwerkidentität\", damit ein neues Paar übernommen wird.</string>
     <string name="wifi_direct_last_network_hint">Diesem Netzwerk von Hand auf deinem Handy beizutreten startet Android Auto nicht, denn das Handy tritt ihm selbst bei, sobald es über Bluetooth eingerichtet wurde. Es ist nur eine Möglichkeit zu prüfen, ob das Netzwerk überhaupt funktioniert.</string>
     <string name="wifi_direct_group_identity">WiFi Direct Name und Passwort</string>
     <string name="wifi_direct_group_identity_auto">Von der App gewählt. Zum Festlegen eigener Werte tippen.</string>
