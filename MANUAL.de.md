@@ -462,13 +462,16 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
       dem Ziel („54 % → 64 %“), der Uhrzeit, zu der das Laden fertig ist, und mit wie viel du am nächsten Stopp oder am
       Ziel ankommst; sparst du dir durch etwas mehr Laden den nächsten Stopp, sagt er es dir („Bis 85 % sparst du dir
       den Halt in Lleida (+7 min hier, −23 min dort)“). Die Kurve vergleicht, was geliefert wird (durchgezogene Linie),
-      mit dem, was dein Fahrzeug an dieser Ladestation aufnehmen sollte (gestrichelt), und warnt, wenn es viel
-      langsamer lädt als erwartet. Ist das Ziel erreicht: **„Du kannst weiterfahren“** mit einem Ton auf dem Handy und,
-      wenn du im Fahrzeug bist, einer Sprachansage und einer grünen Karte. Auf einer Reise oder beim Schnellladen
-      überwacht das Handy weiter, **auch wenn das Fahrzeugdisplay ausgeht** (du gehst etwas trinken): eine feste
-      Benachrichtigung mit dem % und der Fertig-Uhrzeit, die beim Ausstecken von selbst verschwindet. Jeder Ladevorgang
-      wird auf dem Handy gespeichert (echte kW, % und Minuten), um nach und nach die echte Ladekurve des Fahrzeugs
-      kennenzulernen.
+      mit dem, was dein Fahrzeug an dieser Ladestation aufnehmen sollte (gestrichelt), und warnt, wenn es viel langsamer
+      lädt als erwartet. Ist das Ziel erreicht: **„Du kannst weiterfahren“** mit einem Ton auf dem Handy und, wenn du im
+      Fahrzeug bist, einer Sprachansage und einer grünen Karte. Das Handy überwacht weiter, **auch wenn das
+      Fahrzeugdisplay ausgeht** (du gehst etwas trinken), auch das langsame Laden zu Hause (alle 5 Minuten eine
+      Abfrage): eine feste Benachrichtigung mit dem %, der Uhrzeit und einem Balken bis zum Ziel (ohne Plan 80 % beim
+      Schnellladen und 100 % beim langsamen Laden), die beim Ausstecken von selbst verschwindet. Ab Android 16 ist sie
+      ein **Live-Update**: ganz oben, und je nach Handy mit dem % in der Statusleiste oder in der Now Bar von Samsung.
+      Auf dem Handy zeigt **Fahrten** oben „Lädt gerade“: das %, die kW, wann das Ziel und 100 % erreicht sind, das
+      Geladene, die Kosten und die Kurve. Jeder Ladevorgang wird auf dem Handy gespeichert (echte kW, % und Minuten), um
+      nach und nach die echte Ladekurve des Fahrzeugs kennenzulernen.
     - **Der Plan wird während der Fahrt von selbst neu berechnet:** Mit dem Leapmotor-Konto vergleicht er, wie viel
       dein Akku wirklich verliert, mit dem, was für diese km erwartet war, und passt den Rest an („An den Verbrauch
       dieser Fahrt angepasst: +12 %“). Die gewählten Stopps bleiben, solange du sie mit Reserve erreichst; wird dein

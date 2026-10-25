@@ -434,15 +434,18 @@ admite.
       mitad. El plan para en los de 800 V (o de 150 kW o más, que casi siempre lo son aunque el registro no lo diga) y
       deja los de 400–500 V de reserva: la lista los marca en ámbar («470 V: tu coche de 800 V carga aquí a la mitad»)
       y el plan dice cuántos hay por el camino. Los Supercharger de Tesla en España son de 400–500 V.
-    - **Carga en directo:** con la cuenta de Leapmotor, al enchufar se ve encima de la ruta un bloque con los kW, el %
-      y el objetivo («54 % → 64 %»), la hora a la que estará lista y con cuánto llegas a la siguiente parada o al
-      destino; si cargando un poco más te ahorras la siguiente parada, lo dice («Hasta 85 % te ahorras la parada de
-      Lleida: +7 min aquí, −23 min allí»). La curva compara lo que va dando (línea llena) con lo que debería admitir tu
-      coche en ese cargador (discontinua), y avisa si carga mucho más lento de lo esperado. Al llegar al objetivo: **«Ya
-      puedes seguir»** con sonido en el móvil y, si estás en el coche, voz y una tarjeta verde. En un viaje o en carga
-      rápida, el móvil sigue vigilando **aunque se apague la pantalla del coche** (te vas a tomar algo): una
-      notificación fija con el % y la hora de lista, que se quita sola al desenchufar. Cada carga se guarda en el móvil
-      (kW reales, % y minutos) para ir conociendo la curva real del coche.
+    - **Carga en directo:** con la cuenta de Leapmotor, al enchufar se ve encima de la ruta un bloque con los kW, el % y
+      el objetivo («54 % → 64 %»), la hora a la que estará lista y con cuánto llegas a la siguiente parada o al destino;
+      si cargando un poco más te ahorras la siguiente parada, lo dice («Hasta 85 % te ahorras la parada de Lleida: +7
+      min aquí, −23 min allí»). La curva compara lo que va dando (línea llena) con lo que debería admitir tu coche en
+      ese cargador (discontinua), y avisa si carga mucho más lento de lo esperado. Al llegar al objetivo: **«Ya puedes
+      seguir»** con sonido en el móvil y, si estás en el coche, voz y una tarjeta verde. El móvil sigue vigilando
+      **aunque se apague la pantalla del coche** (te vas a tomar algo), también la carga lenta en casa (una lectura cada
+      5 min): una notificación fija con el %, la hora y una barra hasta el objetivo (sin plan, el 80 % en carga rápida y
+      el 100 % en la lenta), que se quita sola al desenchufar. En Android 16 es un **Live Update**: arriba del todo, y,
+      según el móvil, con el % en la barra de estado o en la Now Bar de Samsung. En el móvil, **Viajes** muestra arriba
+      «Cargando ahora»: el %, los kW, a qué hora llega al objetivo y al 100 %, lo cargado, lo que cuesta y la curva.
+      Cada carga se guarda en el móvil (kW reales, % y minutos) para ir conociendo la curva real del coche.
     - **El plan se rehace solo durante el viaje:** con la cuenta de Leapmotor compara lo que baja tu batería de verdad
       con lo previsto para esos km y ajusta lo que queda («Ajustado a lo que gastas en este viaje: +12 %»). Las paradas
       elegidas se mantienen mientras llegues a ellas con margen; si te vas quedando sin batería (o te sobra), el plan

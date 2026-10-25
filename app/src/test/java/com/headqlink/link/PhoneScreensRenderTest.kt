@@ -75,6 +75,32 @@ class PhoneScreensRenderTest {
         } finally {
             Config(app).setSetupDone(true)
         }
+        // Viajes con una carga rápida en marcha: la tarjeta «Cargando ahora» arriba.
+        try {
+            val act = Robolectric.buildActivity(Activity::class.java).setup().get()
+            act.setTheme(com.andrerinas.openheadunit.R.style.Theme_HeadQLink)
+            val pi = PhoneInsights(act)
+            val d = PhoneInsights.Data()
+            d.account = true
+            val now = System.currentTimeMillis()
+            val s = ChargeSession(now - 8 * 60_000L, 34.0, true, null, 81.9, 180.0, 800.0)
+            val pts = listOf(34.0 to 120.0, 38.9 to 135.0, 44.4 to 130.0, 49.7 to 110.0, 54.2 to 85.0)
+            for ((i, p) in pts.withIndex()) {
+                val t = now - (pts.size - 1 - i) * 2 * 60_000L
+                s.observe(t, p.first, p.second, true, false, Double.NaN, t)
+            }
+            d.live = s
+            val m = PhoneInsights::class.java.getDeclaredMethod("build", PhoneInsights.Data::class.java)
+            m.isAccessible = true
+            m.invoke(pi, d)
+            act.setContentView(pi.view())
+            idle(300)
+            save(pi.view(), File(dir, "movil_viajes_cargando.png"))
+            println("PhoneScreensRender: movil_viajes_cargando OK")
+        } catch (e: Throwable) {
+            println("PhoneScreensRender: movil_viajes_cargando no se pudo dibujar: $e")
+            e.printStackTrace()
+        }
     }
 
     private fun idle(ms: Long) {

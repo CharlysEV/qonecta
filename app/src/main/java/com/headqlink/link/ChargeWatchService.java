@@ -9,8 +9,9 @@ import android.os.SystemClock;
 
 /**
  * Vigila una carga en directo fuera del coche: con la pantalla del coche apagada (te vas a tomar algo) sigue leyendo la
- * nube de Leapmotor (cada HUB_MS) y avisa en el móvil cuando ya puedes seguir. Notificación fija con el %, los kW y la
- * hora de lista; se para sola al terminar la carga (desenchufar, completa, sin datos o 3 h).
+ * nube de Leapmotor (cada HUB_MS la rápida; cada 5 min la lenta, en casa) y avisa en el móvil cuando ya puedes seguir.
+ * Notificación fija (Live Update en Android 16) con el %, los kW y la hora de lista; se para sola al terminar la carga
+ * (desenchufar, completa, sin datos o el tope de horas).
  */
 public class ChargeWatchService extends Service {
     /** Cada cuánto mira la última lectura de la nube y rehace la notificación. */
@@ -36,7 +37,7 @@ public class ChargeWatchService extends Service {
             running = true;
             ChargeWatch.serviceRunning = true;
             CarCloud.acquire(this, "charge");
-            CarCloud.setChargeWatch(true);
+            CarCloud.setChargeWatch(ChargeWatch.watchMs(ChargeWatch.session()));
             thread = new Thread(this::loop, "hql-charge");
             thread.setDaemon(true);
             thread.start();
@@ -48,7 +49,9 @@ public class ChargeWatchService extends Service {
         NotificationManager nm = getSystemService(NotificationManager.class);
         while (running) {
             ChargeWatch.tick(this, CarCloud.car());
-            if (ChargeWatch.session() == null) break;
+            ChargeSession s = ChargeWatch.session();
+            if (s == null) break;
+            CarCloud.setChargeWatch(ChargeWatch.watchMs(s));
             nm.notify(ChargeWatch.NOTIF_ID, ChargeWatch.ongoing(this));
             SystemClock.sleep(TICK_MS);
         }
@@ -58,8 +61,9 @@ public class ChargeWatchService extends Service {
 
     @Override
     public void onTimeout(int startId, int fgsType) {
-        // Android 15: el tiempo de dataSync se agota (6 h al día); una carga no dura tanto.
-        L.w("carga en directo: Android corta la vigilancia (tiempo agotado)");
+        // Android 15: el tiempo de dataSync se agota (6 h al día). Una rápida no dura tanto; una lenta sí: la siguen las
+        // comprobaciones de fondo (ChargeCheckJob, cada 15 min) con su notificación.
+        L.w("carga en directo: Android corta la vigilancia (tiempo agotado); sigue la comprobación de fondo");
         running = false;
         stopSelf();
     }
@@ -68,7 +72,7 @@ public class ChargeWatchService extends Service {
     public void onDestroy() {
         running = false;
         ChargeWatch.serviceRunning = false;
-        CarCloud.setChargeWatch(false);
+        CarCloud.setChargeWatch(0);
         CarCloud.release("charge");
         getSystemService(NotificationManager.class).cancel(ChargeWatch.NOTIF_ID);
         super.onDestroy();

@@ -203,4 +203,45 @@ class ChargeSessionTest {
         assertFalse(s.dc)
         assertEquals(55.0, s.startSoc, 1e-9)
     }
+
+    @Test
+    fun theBarGoesToThePlanOrTo80FastAnd100Slow() {
+        // Con plan: su %.
+        val a = session(null)
+        a.targetPct = 64.0
+        assertEquals(64.0, ChargeWatch.barTarget(a), 1e-9)
+        // Sin plan: rápida al 80 % y, pasado el 80, al 100; lenta al 100.
+        val b = session(null)
+        assertEquals(80.0, ChargeWatch.barTarget(b), 1e-9)
+        b.observe(10 * min, 85.0, 60.0, true, false, Double.NaN, 10 * min)
+        assertEquals(100.0, ChargeWatch.barTarget(b), 1e-9)
+        assertEquals(100.0, ChargeWatch.barTarget(home()), 1e-9)
+        // Lecturas de la nube: la rápida cada 90 s; la lenta cada 5 min.
+        assertEquals(90_000L, ChargeWatch.watchMs(b))
+        assertEquals(300_000L, ChargeWatch.watchMs(home()))
+        assertEquals(0L, ChargeWatch.watchMs(null))
+        // Sin plan, la notificación dice a qué hora llega hasta donde va la barra.
+        Str.init(org.robolectric.RuntimeEnvironment.getApplication())
+        val c = session(null, 50.0)
+        c.observe(System.currentTimeMillis(), 50.0, 120.0, true, false, Double.NaN, System.currentTimeMillis())
+        assertTrue(ChargeWatch.`when`(c), ChargeWatch.`when`(c).startsWith("80 % ≈ "))
+    }
+
+    @Test
+    fun theTimeToEachPercent() {
+        // Lenta: al 100 % lo que dice el coche; a otro %, al ritmo de ahora.
+        val s = home()
+        s.observe(0, 40.0, 7.0, true, false, 300.0, 0)
+        s.observe(60 * min, 48.5, 7.0, true, false, 240.0, 60 * min)
+        assertEquals(240.0, s.minutesUntil(100.0), 1e-9)
+        assertEquals(60.0, s.minutesUntil(57.0), 1.0)
+        assertEquals(0.0, s.minutesUntil(48.0), 1e-9)
+        assertEquals(60 * min + 240 * min.toDouble(), s.atMs(100.0), 1.0)
+        // Rápida: por la curva, más rato del 80 al 100 que del 60 al 80.
+        val f = session(null, 60.0)
+        f.observe(0, 60.0, 150.0, true, false, Double.NaN, 0)
+        val to80 = f.minutesUntil(80.0)
+        val to100 = f.minutesUntil(100.0) - to80
+        assertTrue("$to80 / $to100", to80 > 0 && to100 > to80)
+    }
 }

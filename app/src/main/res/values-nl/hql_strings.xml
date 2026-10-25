@@ -1306,4 +1306,10 @@
     <string name="hql_radar_voice_help">Standaard uit in Duitsland en Zwitserland, waar de wet flitserwaarschuwingen voor de bestuurder verbiedt. Zet je ze daar aan, dan is dat op eigen verantwoordelijkheid.</string>
     <string name="hql_web_yt_quality">YouTube-kwaliteit: %1$s</string>
     <string name="hql_web_yt_auto">automatisch</string>
+    <string name="hql_live_now_title">Nu aan het laden</string>
+    <string name="hql_live_now_at">Op %1$.0f %%</string>
+    <string name="hql_live_now_added">Geladen</string>
+    <string name="hql_live_now_cost">Kosten · %1$s</string>
+    <string name="hql_live_now_note">Ook met de app dicht gevolgd: melding met een balk tot het doel (op Android 16 als Live Update).</string>
+    <string name="hql_live_pct_at">%1$.0f %% ≈ %2$s (%3$s)</string>
 </resources>

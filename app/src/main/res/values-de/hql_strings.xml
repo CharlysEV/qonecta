@@ -1306,4 +1306,10 @@
     <string name="hql_radar_voice_help">In Deutschland und der Schweiz standardmäßig aus: Dort verbietet das Gesetz dem Fahrer Blitzerwarner. Schaltest du sie dort ein, geschieht das auf eigene Verantwortung.</string>
     <string name="hql_web_yt_quality">YouTube-Qualität: %1$s</string>
     <string name="hql_web_yt_auto">automatisch</string>
+    <string name="hql_live_now_title">Lädt gerade</string>
+    <string name="hql_live_now_at">Bei %1$.0f %%</string>
+    <string name="hql_live_now_added">Geladen</string>
+    <string name="hql_live_now_cost">Kosten · %1$s</string>
+    <string name="hql_live_now_note">Auch bei geschlossener App: Benachrichtigung mit Balken bis zum Ziel (ab Android 16 als Live-Update).</string>
+    <string name="hql_live_pct_at">%1$.0f %% ≈ %2$s (%3$s)</string>
 </resources>

@@ -1307,4 +1307,10 @@
     <string name="hql_radar_voice_help">Spenti di serie in Germania e in Svizzera, dove la legge vieta al conducente gli avvisi degli autovelox. Se li accendi lì, è sotto la tua responsabilità.</string>
     <string name="hql_web_yt_quality">Qualità di YouTube: %1$s</string>
     <string name="hql_web_yt_auto">automatica</string>
+    <string name="hql_live_now_title">In carica ora</string>
+    <string name="hql_live_now_at">Al %1$.0f %%</string>
+    <string name="hql_live_now_added">Caricati</string>
+    <string name="hql_live_now_cost">Costo · %1$s</string>
+    <string name="hql_live_now_note">La segue anche con l\'app chiusa: notifica con la barra fino all\'obiettivo (su Android 16, come Live Update).</string>
+    <string name="hql_live_pct_at">%1$.0f %% ≈ %2$s (%3$s)</string>
 </resources>

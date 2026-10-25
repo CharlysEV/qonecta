@@ -1307,4 +1307,10 @@
     <string name="hql_radar_voice_help">Desligados por omissão na Alemanha e na Suíça, onde a lei proíbe o condutor de usar avisos de radar. Se os ligar lá, é da sua responsabilidade.</string>
     <string name="hql_web_yt_quality">Qualidade do YouTube: %1$s</string>
     <string name="hql_web_yt_auto">automática</string>
+    <string name="hql_live_now_title">A carregar agora</string>
+    <string name="hql_live_now_at">Aos %1$.0f %%</string>
+    <string name="hql_live_now_added">Carregado</string>
+    <string name="hql_live_now_cost">Custo · %1$s</string>
+    <string name="hql_live_now_note">Acompanhada também com a app fechada: notificação com a barra até ao objetivo (no Android 16, como Live Update).</string>
+    <string name="hql_live_pct_at">%1$.0f %% ≈ %2$s (%3$s)</string>
 </resources>

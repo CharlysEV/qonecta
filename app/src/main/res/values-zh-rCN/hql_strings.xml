@@ -1310,4 +1310,10 @@
     <string name="hql_radar_voice_help">在德国和瑞士默认关闭，当地法律禁止驾驶员使用测速提醒。如在当地自行开启，后果自负。</string>
     <string name="hql_web_yt_quality">YouTube 画质：%1$s</string>
     <string name="hql_web_yt_auto">自动</string>
+    <string name="hql_live_now_title">正在充电</string>
+    <string name="hql_live_now_at">充到 %1$.0f %%</string>
+    <string name="hql_live_now_added">已充入</string>
+    <string name="hql_live_now_cost">费用 · %1$s</string>
+    <string name="hql_live_now_note">应用关闭时也会跟踪：通知里有到目标的进度条（Android 16 上为实时更新）。</string>
+    <string name="hql_live_pct_at">%1$.0f %% ≈ %2$s（%3$s）</string>
 </resources>

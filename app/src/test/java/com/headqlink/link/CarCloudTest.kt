@@ -41,6 +41,21 @@ class CarCloudTest {
     }
 
     @Test
+    fun watchingAChargeReadsEvery90sFastOr5MinSlow() {
+        val p = CarCloud.Policy.HUB_MS
+        val ac = CarCloud.Policy.WATCH_AC_MS
+        // Rápida: como con la sección Coche a la vista.
+        assertEquals(90_000L, CarCloud.Policy.delayMs(0, false, 0, false, p, true))
+        // Lenta: cada 5 min con la app cerrada; si alguien más lee, a su ritmo.
+        assertEquals(300_000L, CarCloud.Policy.delayMs(0, false, 0, false, ac, true))
+        assertEquals(120_000L, CarCloud.Policy.delayMs(0, false, 0, false, ac, false))
+        assertEquals(90_000L, CarCloud.Policy.delayMs(0, true, 0, false, ac, true))
+        // Sin vigilar, lo de siempre; los errores, igual.
+        assertEquals(120_000L, CarCloud.Policy.delayMs(0, false, 0, false, 0, false))
+        assertEquals(300_000L, CarCloud.Policy.delayMs(2, false, 0, false, ac, true))
+    }
+
+    @Test
     fun spacesOutWhenTheCarStopsUploading() {
         // Una lectura sin dato nuevo no cambia nada; desde la segunda, 5 min y luego 15 min (aunque se vea la sección).
         assertEquals(90_000L, CarCloud.Policy.delayMs(0, true, 1))

@@ -1307,4 +1307,10 @@
     <string name="hql_radar_voice_help">Désactivés par défaut en Allemagne et en Suisse, où la loi interdit au conducteur les avertisseurs de radars. Si vous les activez là-bas, c\'est sous votre responsabilité.</string>
     <string name="hql_web_yt_quality">Qualité YouTube : %1$s</string>
     <string name="hql_web_yt_auto">automatique</string>
+    <string name="hql_live_now_title">Recharge en cours</string>
+    <string name="hql_live_now_at">À %1$.0f %%</string>
+    <string name="hql_live_now_added">Rechargé</string>
+    <string name="hql_live_now_cost">Coût · %1$s</string>
+    <string name="hql_live_now_note">Suivie aussi app fermée : notification avec la barre jusqu\'à l\'objectif (sous Android 16, en Live Update).</string>
+    <string name="hql_live_pct_at">%1$.0f %% ≈ %2$s (%3$s)</string>
 </resources>

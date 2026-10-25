@@ -2169,11 +2169,9 @@ final class RoutePlanner {
                 for (double[] x : hist) s.observe((long) x[0], x[1], x[2], true, false, Double.NaN, (long) x[0]);
                 s.demo = true;
             }
-            // Fuera del coche solo en un viaje o en carga rápida (en casa, en alterna y sin ruta, no hace falta vigilar
-            // horas); en las capturas de la demostración, nunca.
-            // La demostración nunca vigila fuera del coche (si no, sus avisos seguían en el móvil al salir de ella).
-            // Con el coche virtual, su ruta es de prueba: la carga del coche de verdad no se vigila por ella.
-            ChargeWatch.begin(ctx, s, ((p != null && !testMode) || s.dc) && !cs.demo, cs.demo);
+            // También fuera del coche, la rápida y la lenta (en casa: una lectura cada 5 min, para la notificación con su
+            // barra). La demostración nunca (si no, sus avisos seguían en el móvil al salir de ella).
+            ChargeWatch.begin(ctx, s, !cs.demo, cs.demo);
         }
         // Con el coche virtual, la ruta es de prueba (y su batería, la indicada): el coche de verdad cargando en casa no
         // tiene nada que ver con ella; sin «ya puedes seguir» por esa ruta (18-10: «llegas a Madrid… con 12 %»).

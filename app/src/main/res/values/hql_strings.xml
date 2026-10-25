@@ -1311,4 +1311,10 @@
     <string name="hql_radar_voice_help">Off by default in Germany and Switzerland, where the law forbids the driver from using speed camera warnings. If you turn them on there, it\'s your responsibility.</string>
     <string name="hql_web_yt_quality">YouTube quality: %1$s</string>
     <string name="hql_web_yt_auto">automatic</string>
+    <string name="hql_live_now_title">Charging now</string>
+    <string name="hql_live_now_at">At %1$.0f %%</string>
+    <string name="hql_live_now_added">Added</string>
+    <string name="hql_live_now_cost">Cost · %1$s</string>
+    <string name="hql_live_now_note">Followed with the app closed too: notification with a bar up to the target (on Android 16, as a Live Update).</string>
+    <string name="hql_live_pct_at">%1$.0f %% ≈ %2$s (%3$s)</string>
 </resources>

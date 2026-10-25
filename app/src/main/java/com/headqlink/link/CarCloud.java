@@ -139,6 +139,20 @@ final class CarCloud {
             if (stale >= 2 && !driving) return STALE_MS[Math.min(stale - 2, STALE_MS.length - 1)];
             return hubVisible ? HUB_MS : NORMAL_MS;
         }
+
+        /** Vigilando una carga lenta (en alterna, horas en casa): una lectura cada 5 min basta para la barra y el aviso. */
+        static final long WATCH_AC_MS = 300_000;
+
+        /**
+         * watchMs: vigilando una carga en directo (0: no). La rápida, cada HUB_MS, como con la sección Coche a la vista; la
+         * lenta, cada watchMs si solo la vigila a ella (watchOnly: la app cerrada), y al ritmo normal si alguien más lee.
+         */
+        static long delayMs(int failures, boolean hubVisible, int stale, boolean driving, long watchMs, boolean watchOnly) {
+            boolean fast = hubVisible || (watchMs > 0 && watchMs <= HUB_MS);
+            long d = delayMs(failures, fast, stale, driving);
+            if (failures == 0 && !fast && watchOnly && watchMs > 0 && d == NORMAL_MS) return watchMs;
+            return d;
+        }
     }
 
     /** Cuándo vuelve a leer el historial. Pura: se prueba en el PC. */
@@ -203,8 +217,8 @@ final class CarCloud {
 
     /** Quién lo necesita: «ui» (CarUi: la sesión con el coche) y «charge» (ChargeWatchService: una carga en directo). */
     private static final java.util.Set<String> owners = new java.util.HashSet<>();
-    /** Vigilando una carga: se lee como con la sección Coche a la vista. */
-    private static volatile boolean chargeWatch;
+    /** Vigilando una carga: cada cuánto se lee (0: no se vigila ninguna). */
+    private static volatile long chargeWatchMs;
 
     /** Lo pide alguien (el sondeo sigue mientras alguien lo tenga). */
     static synchronized void acquire(Context ctx, String who) {
@@ -221,11 +235,16 @@ final class CarCloud {
         MateFeed.release(who);
     }
 
-    /** Vigilando una carga en directo (lecturas cada HUB_MS). */
-    static void setChargeWatch(boolean on) {
-        if (chargeWatch == on) return;
-        chargeWatch = on;
+    /** Vigilando una carga en directo: una lectura cada everyMs (HUB_MS la rápida, WATCH_AC_MS la lenta; 0: ya no). */
+    static void setChargeWatch(long everyMs) {
+        if (chargeWatchMs == everyMs) return;
+        chargeWatchMs = everyMs;
         wake();
+    }
+
+    /** Solo la vigilancia de la carga lee (la app cerrada). */
+    private static synchronized boolean onlyChargeWatch() {
+        return owners.size() == 1 && owners.contains("charge");
     }
 
     /** Arranca el sondeo (CarUi.start: modo extendido con el coche o vista previa). */
@@ -333,7 +352,7 @@ final class CarCloud {
                 failures = 0;
             }
             // Espera hasta que toque (se recalcula si la sección Coche aparece o desaparece).
-            long due = lastAttempt == 0 ? 0 : lastAttempt + Policy.delayMs(failures, hubVisible || chargeWatch, staleReads, driving());
+            long due = lastAttempt == 0 ? 0 : lastAttempt + Policy.delayMs(failures, hubVisible, staleReads, driving(), chargeWatchMs, onlyChargeWatch());
             long now = SystemClock.elapsedRealtime();
             if (now < due) {
                 sleep(due - now);
