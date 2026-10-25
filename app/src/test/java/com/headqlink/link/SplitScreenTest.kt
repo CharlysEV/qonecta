@@ -5,7 +5,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/** Pantalla partida: AA junto a la barra y Web, Vídeos o TV al lado. */
+/** Pantalla partida: AA junto a la barra (o en la otra mitad) y Web, Vídeos o TV al lado. */
 class SplitScreenTest {
     @Test
     fun onlyWebVideosAndTvCanSitNextToAndroidAuto() {
@@ -44,6 +44,19 @@ class SplitScreenTest {
         assertEquals(listOf(391, 391), NarrowGrid.split(floatArrayOf(1f, 1f), intArrayOf(0, 0), 800, 18).toList())
         assertEquals(1f, CarUi.narrowScale("car", 1600), 0f)
         assertEquals(1f, CarUi.narrowScale("web", 810), 0f)
+    }
+
+    @Test
+    fun androidAutoCanGoToTheOtherHalf() {
+        // C10: barra de 96 a la izquierda y AA de 1014. De serie, AA junto a la barra y nuestra pantalla detrás.
+        assertEquals(listOf(96, 1110), CarUi.splitPlaces(1920, 96, 1014, false, false).toList())
+        // AA a la derecha: nuestra pantalla junto a la barra (810 px) y AA pegado al borde, con el mismo ancho.
+        assertEquals(listOf(906, 96), CarUi.splitPlaces(1920, 96, 1014, false, true).toList())
+        // Con el panel a la derecha: de serie AA en el borde izquierdo; con la opción, AA junto al panel.
+        assertEquals(listOf(0, 1014), CarUi.splitPlaces(1920, 96, 1014, true, false).toList())
+        assertEquals(listOf(810, 0), CarUi.splitPlaces(1920, 96, 1014, true, true).toList())
+        // Sin partir, la opción no cuenta: AA y nuestra pantalla empiezan tras la barra.
+        assertEquals(listOf(96, 96), CarUi.splitPlaces(1920, 96, 0, false, true).toList())
     }
 
     @Test

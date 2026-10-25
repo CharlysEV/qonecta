@@ -173,7 +173,7 @@ später im Menü ⚙ › „Voraussetzungen prüfen“ findest.
 | „Qonecta+-Bedienungshilfe“ (Pflicht mit Android Auto 17.4 oder neuer; Optional beim manuellen Start) | Qonecta+ nutzt sie, um Android Auto unbemerkt zu starten und die Toucheingaben des Fahrzeugs zu empfangen. In den Android-Einstellungen heißt sie **„Qonecta+ Touch“**. | „Aktivieren“ und „Qonecta+ Touch“ einschalten. Siehe den Hinweis darunter. |
 | „Ohne Bedienungshilfe?“ (Tipp, nur wenn die Bedienungshilfe fehlt) | Du kannst den Android-Auto-Server selbst starten und sie ausgeschaltet lassen. | „Manueller Start“ (siehe [Ohne Bedienungshilfe](#ohne-bedienungshilfe-android-auto-server-manuell-starten)). |
 | „Entwicklermodus von Android Auto“ (Pflicht mit 17.4 oder neuer) | Android Auto akzeptiert ein „Fahrzeugdisplay“ im Handy nur über seinen Entwicklermodus. Er wird einmal aktiviert. | „AA öffnen“ und der Anleitung unten folgen. „Prüfen“ kontrolliert es (braucht die aktivierte Bedienungshilfe). |
-| „Android Auto-Server“ (Info, nur beim manuellen Start) | Was sich **ohne Verbindung zu ihm** sagen lässt (eine Testverbindung würde ihn blockieren): „Von Qonecta+ genutzt“, „Antwortet nicht“ (die Versuche mit dem Fahrzeug schlagen fehl) oder, wenn unbekannt, wie du ihn startest. Er verhindert nie das Verbinden: Antwortet er nicht, sagt Qonecta+ Bescheid und versucht es erneut. | „AA öffnen“ (⋮ › „Server für Infotainmentsystem beenden“, falls vorhanden, und ⋮ › „Server für Infotainmentsystem starten“) oder „Automatischer Modus“. |
+| „Android-Auto-Server“ (Info, nur beim manuellen Start) | Was sich **ohne Verbindung zu ihm** sagen lässt (eine Testverbindung würde ihn blockieren): „Von Qonecta+ genutzt“, „Antwortet nicht“ (die Versuche mit dem Fahrzeug schlagen fehl) oder, wenn unbekannt, wie du ihn startest. Er verhindert nie das Verbinden: Antwortet er nicht, sagt Qonecta+ Bescheid und versucht es erneut. | „AA öffnen“ (⋮ › „Server für Infotainmentsystem beenden“, falls vorhanden, und ⋮ › „Server für Infotainmentsystem starten“) oder „Automatischer Modus“. |
 | „Benachrichtigungen“ (Empfohlen) | Um den Verbindungsstatus und Warnungen zu sehen. | „Zulassen“ (oder „Öffnen“, wenn du sie blockiert hast). |
 | „Keine Akkueinschränkungen“ (Empfohlen) | Damit Android Qonecta+ bei ausgeschaltetem Bildschirm nicht beendet und die automatische Verbindung nicht blockiert. | „Zulassen“ und die Abfrage von Android bestätigen. |
 | „Samsung: nie im Standby“ (Tipp, nur Samsung) | Samsung beendet Apps im Hintergrund auf eigene Faust. Das lässt sich aus der App nicht prüfen. | „Öffnen“ und „Nicht eingeschränkt“ wählen. Außerdem: Einstellungen › Akku › Grenzen der Hintergrundnutzung › Apps, die nie im Standby sind › Qonecta+ hinzufügen. |
@@ -228,7 +228,7 @@ oder „Trotzdem abschließen“ und es später nachholen.
 ### Ohne Bedienungshilfe (Android-Auto-Server manuell starten)
 
 Wenn du die Bedienungshilfe nicht aktivieren willst (oder kannst), wähle **„Bildeinstellungen“ › „Erweitert ▾“ ›
-„Start des Android Auto-Servers“ › „Manuell (ohne Bedienungshilfe)“**, oder tippe unter „Voraussetzungen prüfen“ in der
+„Start des Android-Auto-Servers“ › „Manuell (ohne Bedienungshilfe)“**, oder tippe unter „Voraussetzungen prüfen“ in der
 Zeile „Ohne Bedienungshilfe?“ auf „Manueller Start“. Mit „Auto“ und „Auto erweitert“ braucht Qonecta+ sie dann für
 nichts mehr: Die Bedienungshilfe wird „Optional“ („Nur für den automatischen Modus“), und die Zeile „Android
 Auto-Server“ erscheint.
@@ -249,7 +249,7 @@ Auto-Server“ erscheint.
    verbunden ist, startet Qonecta+ Android Auto und wartet, bis es **antwortet** (höchstens 6 s). Läuft der Server,
    funktioniert das auch **bei gesperrtem Handy**: ohne Entsperren und ohne irgendetwas zu automatisieren.
 3. Antwortet er nicht (aus oder durch eine halb abgebrochene Verbindung blockiert), erscheint die Benachrichtigung
-   **„Starte den Android Auto-Server (neu)“**, und die Zeile „Auto“ (und das Widget) zeigt „Warte auf den Android
+   **„Starte den Android-Auto-Server (neu)“**, und die Zeile „Auto“ (und das Widget) zeigt „Warte auf den Android
    Auto-Server“. Tippe darauf: Android Auto › ⋮ › „Server für Infotainmentsystem beenden“ (falls vorhanden) und ⋮ ›
    „Server für Infotainmentsystem starten“, dann zurück. Qonecta+ versucht es von selbst alle 5 s erneut, solange das
    Fahrzeug verbunden ist; sobald Android Auto antwortet, verschwindet die Benachrichtigung von selbst.
@@ -398,7 +398,8 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
   Spielen…); tippe auf den Bildschirmrand auf der Seite der Leiste, damit sie wiederkommt.
   Fotos, Videos, Web, TV und Spiele sind **nur für das stehende Fahrzeug** gedacht.
 - **Geteilter Bildschirm („Auto erweitert“):** Bei „Fahrzeug“, „Reiseführer“, „Web“, „Videos“ und „TV“ legt die Taste
-  „Bildschirm teilen“ in der Seitenleiste Android Auto nach links, neben die Leiste, und diese Ansicht nach rechts. Mit
+  „Bildschirm teilen“ in der Seitenleiste Android Auto nach links, neben die Leiste, und diese Ansicht nach rechts. Die Taste ⇄ darunter tauscht die Seiten
+  (die Ansicht neben die Leiste, Android Auto nach rechts), ohne Android Auto zu unterbrechen, und merkt sich das. Mit
   „Fahrzeug“ hast du die Instrumente (Verbrauch, Akku, Reichweite, nächster Halt) neben Android Auto, und das auch
   während der Fahrt, ohne Warnhinweis. Android Auto bekommt etwas mehr als die Hälfte, gerade genug, damit sich Google
   Maps verschieben und durchsuchen lässt. Jede Seite reagiert auf ihre eigenen Berührungen. „Vollbild“ zeigt die
@@ -564,7 +565,7 @@ Im Log (Abschnitt 8) siehst du das als `enlace: congestión (outq 96 KB 300 ms, 
   Fahrzeug und nutzt die automatische Verbindung per Bluetooth, ist Android Auto sofort wieder da, ohne „Android Auto
   wird beendet…“. Beim manuellen Start ist das nicht nötig: Android Auto wird gleich beendet, und sein Server bleibt an.
 - „Android Auto wird beendet…“ und „Android Auto startet…“ dauern ein paar Sekunden. Bleiben sie hängen, verschwinden
-  sie nach 15 s von selbst; konnte der Android-Auto-Server an bleiben, siehst du „Der Android Auto-Server läuft noch ·
+  sie nach 15 s von selbst; konnte der Android-Auto-Server an bleiben, siehst du „Der Android-Auto-Server läuft noch ·
   Zum Ausschalten tippen“: Tippe bei entsperrtem Handy darauf.
 - Schalte den Hotspot aus, wenn du ihn nicht brauchst.
 
@@ -741,7 +742,7 @@ von selbst neu.
   weiter auf das Fahrzeug, mit Android Auto in Pause, nachdem die Verbindung verloren gegangen ist (Abschnitt 4). Mehr
   Zeit = nach längeren Stopps ist das Bild sofort wieder da; weniger = der Android-Auto-Server geht früher aus. Gilt
   schon für den nächsten Stopp.
-- „Erweitert ▾“ › „Start des Android Auto-Servers“: „Automatisch (Bedienungshilfe) · Empfohlen“ oder „Manuell (ohne
+- „Erweitert ▾“ › „Start des Android-Auto-Servers“: „Automatisch (Bedienungshilfe) · Empfohlen“ oder „Manuell (ohne
   Bedienungshilfe)“ (Abschnitt 3, [Ohne Bedienungshilfe](#ohne-bedienungshilfe-android-auto-server-manuell-starten)).
   Gilt sofort.
 - Der Rest von „Erweitert“ (fps, kbps, Breite, Höhe, H.264-Profil, Latenzoptimierungen, Drosselung) ist für Tests. Lass
@@ -760,7 +761,7 @@ damit er lesbar bleibt.
 
 Darunter ergeben „Farbton“ und „Hell / Dunkel“ jede beliebige andere Farbe, und „Transparenz“ lässt sie mit dem Schwarz
 des Displays verschmelzen. „Seitenleiste rechts“ setzt die Leiste auf die andere Seite, mit Android Auto direkt am
-linken Rand. „Tasten der Seitenleiste“ legt fest, welche zu sehen sind (Ja / Nein) und in welcher Reihenfolge (Pfeile);
+linken Rand. „Geteilter Bildschirm: Android Auto rechts“ macht dasselbe wie die Taste ⇄ beim geteilten Bildschirm. „Tasten der Seitenleiste“ legt fest, welche zu sehen sind (Ja / Nein) und in welcher Reihenfolge (Pfeile);
 „Auto“ und „Einstellungen“ sind fest. Ist die Leiste auf Symbole verkleinert, erscheinen unten das Wetter (ein Emoji)
 mit der Außentemperatur und der Handy-Akku (wenn Daten da sind); die Uhrzeit nicht, weil LeapOS und Android Auto sie
 schon anzeigen. Und auf dem Hauptbildschirm des Handys erscheint bei einer neuen Version ein Hinweis mit den Neuerungen
@@ -1056,15 +1057,15 @@ Fang immer mit dem Menü ⚙ › „Voraussetzungen prüfen“ an: Jede rote Zei
 | Das Bild ist weniger flüssig als mit dem ursprünglichen HeadQLink | Das Original schickte 60 fps; Qonecta+ schickt 30 (so viel, wie das Fahrzeug anfordert), damit das Handy nicht heiß wird. Oder das Handy ist schon heiß und die Hitzeanpassung hat die fps gesenkt, oder die Verbindung ist knapp und Bitrate oder fps wurden gesenkt. | „Bildeinstellungen“ › „Bildrate“ › „60 fps · maximal flüssig“ (mit dem Profil „Fahrzeug“ oder „Automatisch“). Senkt die Hitze die fps: „Hitzeschutz“ › „Sanft“ (Abschnitt 6). Im Log zeigen die Zeilen „HQL/Térmico“ („estado térmico 2“ oder höher) und „enlace:“, welche der beiden Ursachen zutrifft. |
 | Das Bild friert etwa 10 s ein, dann verbindet es sich neu | In früheren Versionen hat ein vollständiges Bild (Keyframe) von mehr als ~512 KB den Empfänger im Fahrzeug aufgehängt: Er las nichts mehr, bis die Verbindung abbrach. **Behoben**: Qonecta+ schickt keine so großen Bilder mehr und hält sie bei höchstens etwa 300 KB. | Aktualisiere Qonecta+. Passiert es dir mit dem Profil „Basis“ (dort bestimmt Android Auto die Größe), nimm „Automatisch“ oder „Fahrzeug“. Tritt es weiter auf, exportiere das Log (Abschnitt 8). |
 | Die Verbindung bricht oft ab | Automatisches Ausschalten des Hotspots, Energiesparmodus, QDLink offen oder die Spiegelungsapp im Fahrzeug geschlossen. | Kurze Abbrüche verbinden sich von selbst neu („Verbinde erneut…“). Sind sie lang oder häufig: „Keine Akkueinschränkungen“, „Samsung: nie im Standby“, das automatische Ausschalten des Hotspots abschalten und QDLink schließen. Passiert es weiter, exportiere das Log (Abschnitt 8). |
-| Benachrichtigung „Starte den Android Auto-Server (neu)“, oder die Zeile „Auto“ zeigt „Warte auf den Android Auto-Server“ | Manueller Start, und Android Auto antwortet nicht: Sein Server ist aus (nach einem Neustart des Handys oder einem Update von Android Auto) oder blockiert: Eine Verbindung wurde mittendrin abgebrochen (etwas hat sich verbunden und ist ohne Abmeldung wieder verschwunden, oder eine Sitzung wurde abrupt beendet). | Tippe auf die Benachrichtigung oder die Zeile: Android Auto › ⋮ › „Server für Infotainmentsystem beenden“ (falls vorhanden) und ⋮ › „Server für Infotainmentsystem starten“. Qonecta+ versucht es alle 5 s erneut und macht von selbst weiter. |
+| Benachrichtigung „Starte den Android-Auto-Server (neu)“, oder die Zeile „Auto“ zeigt „Warte auf den Android-Auto-Server“ | Manueller Start, und Android Auto antwortet nicht: Sein Server ist aus (nach einem Neustart des Handys oder einem Update von Android Auto) oder blockiert: Eine Verbindung wurde mittendrin abgebrochen (etwas hat sich verbunden und ist ohne Abmeldung wieder verschwunden, oder eine Sitzung wurde abrupt beendet). | Tippe auf die Benachrichtigung oder die Zeile: Android Auto › ⋮ › „Server für Infotainmentsystem beenden“ (falls vorhanden) und ⋮ › „Server für Infotainmentsystem starten“. Qonecta+ versucht es alle 5 s erneut und macht von selbst weiter. |
 | Benachrichtigung „Qonecta+ findet die Servertaste nicht“ | Android Auto wurde aktualisiert und hat sein Menü ⋮ geändert (die Automatisierung sucht die Taste anhand ihres Textes). | „AA öffnen“ und den Server von Hand starten, oder „Manueller Start“. Sieh dir [Android-Auto-Versionen](#android-auto-versionen) an und exportiere das Log (Abschnitt 8). |
 | Benachrichtigung „Android Auto verbindet sich und bricht nach ein paar Sekunden ab“ | Bekanntes Symptom einiger neuer Android-Auto-Versionen (17.8). | Leere den Cache von Android Auto (Einstellungen › Apps › Android Auto › Speicher › Cache leeren), beende seinen Server und starte ihn neu, oder geh zu einer getesteten Version zurück ([Android-Auto-Versionen](#android-auto-versionen)). |
 | Die Bedienungshilfe schaltet sich von selbst aus | Android schaltet sie beim Update der App aus, oder wenn die App abrupt beendet wurde. Manche Hersteller ebenfalls. | „Voraussetzungen prüfen“ › „Aktivieren“. Steht dort „Aktiv, läuft aber nicht“, schalte sie aus und wieder ein. Steht dort „Eingeschränkte Einstellung“: „Eingeschränkte Einstellungen zulassen“ (Abschnitt 3). Entferne die Akkueinschränkungen. |
 | Android Auto bittet dich im Fahrzeug, aufs Handy zu schauen | Android Auto sieht diesen „Fahrzeugbildschirm“ zum ersten Mal, oder es muss eine Berechtigung oder Bestätigung von dir einholen. | Parke, entsperre das Handy und bestätige, was Android Auto verlangt. Normalerweise passiert das nur einmal. |
 | Das Handy wird sehr heiß | Profil „Sehr hoch“ oder „Hoch“, direkte Sonne, Bildschirm an, kabelloses Laden. | Abschnitt 6. |
-| Benachrichtigung „Android Auto-Server ist offen · Entsperre das Handy, um ihn zu schließen“ | Die Sitzung endete bei gesperrtem Handy, und der Android-Auto-Server ist noch offen. | Entsperre das Handy: Qonecta+ schließt ihn. |
+| Benachrichtigung „Android-Auto-Server ist offen · Entsperre das Handy, um ihn zu schließen“ | Die Sitzung endete bei gesperrtem Handy, und der Android-Auto-Server ist noch offen. | Entsperre das Handy: Qonecta+ schließt ihn. |
 | Nach einem Halt dauert es lange, bis das Bild wieder da ist, oder du musst die App schließen und wieder öffnen | Der Halt dauerte länger als „Auf das Fahrzeug warten“, und Qonecta+ hat alles geschlossen; beim Entsperren schließt es zuerst Android Auto („Android Auto wird beendet…“), danach muss es neu gestartet werden. | Stell „Auf das Fahrzeug warten“ auf „15 min“ (Bildeinstellungen › Erweitert) und schalte die automatische Verbindung per Bluetooth ein: Wenn du zurückkommst, ist Android Auto sofort da, ohne Entsperren. Siehst du „Entsperre das Handy, um Android Auto zu starten“, entsperre es und warte: Es startet von selbst, ohne dass du die App öffnest. |
-| „Android Auto wird beendet…“ oder „Android Auto startet…“ verschwindet nicht, oder die Benachrichtigung „Der Android Auto-Server läuft noch · Zum Ausschalten tippen“ | Die Automatisierung in den Einstellungen von Android Auto wurde nicht fertig (zum Beispiel, weil sich das Handy mittendrin gesperrt hat). | Die Einblendung verschwindet nach 15 s von selbst. Tippe bei entsperrtem Handy auf die Benachrichtigung, um den Server auszuschalten. Wiederholt es sich, exportiere das Log (Abschnitt 8): Die Zeilen „ciclo:“ beschreiben jeden Schritt. |
+| „Android Auto wird beendet…“ oder „Android Auto startet…“ verschwindet nicht, oder die Benachrichtigung „Der Android-Auto-Server läuft noch · Zum Ausschalten tippen“ | Die Automatisierung in den Einstellungen von Android Auto wurde nicht fertig (zum Beispiel, weil sich das Handy mittendrin gesperrt hat). | Die Einblendung verschwindet nach 15 s von selbst. Tippe bei entsperrtem Handy auf die Benachrichtigung, um den Server auszuschalten. Wiederholt es sich, exportiere das Log (Abschnitt 8): Die Zeilen „ciclo:“ beschreiben jeden Schritt. |
 | Die Fahrzeugdaten frieren ein, wenn du das Handy sperrst (Tempo, Route, Fahrt, Verbrauch; nach dem Entsperren laufen sie weiter) | Qonecta+ hat den Standort nur „während der Nutzung der App“, und Android entzieht ihm bei gesperrtem Handy das GPS. Das Fahrzeugdisplay und die Bewegungssensoren laufen weiter, das GPS nicht. | „Voraussetzungen prüfen“ › „Standort immer zulassen“ › „Öffnen“ › „Immer zulassen“. Im Log bestätigt „GPS: ubicación todo el tiempo sí · con el móvil bloqueado llega“, dass es funktioniert. |
 | Die automatische Verbindung startet nicht | Der Bluetooth-Name stimmt nicht, oder Android lässt sie nicht im Hintergrund starten. | Prüfe den Text im Dialog „Automatische Verbindung“, entferne die Akkueinschränkungen oder tippe auf die Benachrichtigung „Tippen, um Qonecta+ zu verbinden“. |
 | Die Installation oder das Update klappt nicht | Play Protect, der Auto Blocker von Samsung oder eine Version mit anderer Signatur. | Abschnitt 2. |

@@ -393,6 +393,10 @@ final class SettingsScreen implements CarScreen {
             cfg.putBool(Config.PANEL_RIGHT, on);
             CarUi.applyPanelRight(on);
         }));
+        ui.addView(toggle(c, Str.get(R.string.hql_split_aa_right), null, cfg.splitAaRight(), on -> {
+            cfg.putBool(Config.SPLIT_AA_RIGHT, on);
+            CarUi.applySplitAaRight(on);
+        }));
         col.addView(ui, cardLp());
 
         LinearLayout color = card(c, Str.get(R.string.hql_panel_color));

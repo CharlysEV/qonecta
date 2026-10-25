@@ -760,6 +760,14 @@ final class AaPassthroughSource implements VideoSource {
                 public void onAaRegion(int x, int w) {
                     // Del lienzo de la interfaz a px del coche (hasta el borde derecho sigue siendo hasta el borde).
                     int cx = UiScale.toCar(x, uiScale);
+                    CarUi ui = carUi;
+                    if (x + w >= uiW && ui != null && ui.aaOnFarSide()) {
+                        // Pantalla partida con AA pegado al borde derecho: el mismo ancho que en la otra mitad, contado
+                        // desde el borde, para que al cambiar de lado AA solo se mueva (cada cambio de ancho lo rehace).
+                        int cw = UiScale.toCar(w, uiScale);
+                        setAaRegion(carW - cw, cw);
+                        return;
+                    }
                     setAaRegion(cx, x + w >= uiW ? carW - cx : UiScale.toCar(w, uiScale));
                 }
 
@@ -791,13 +799,15 @@ final class AaPassthroughSource implements VideoSource {
         // Hasta el borde derecho: 0 (sin pantalla partida).
         int aw = x + w >= carW ? 0 : w;
         if (x == panelCarW && aw == aaCarW) return;
+        int oldW = aaVideoW();
         panelCarW = x;
         aaCarW = aw;
         GlFrameRelay r = relay;
         if (r != null) r.setAaRegion(aaVideoX(), aaVideoW());
-        announceTopAlignedMargins();
-        // Pantalla partida: AA acaba antes de donde empezaría el panel (con el panel a la derecha, aw > 0 sin partir).
-        boolean split = aw > 0 && x + aw + panelCar() < carW;
+        // Márgenes nuevos solo si cambia el ancho: AA se rehace con cada cambio, y al cambiar de lado solo se mueve.
+        if (aaVideoW() != oldW) announceTopAlignedMargins();
+        // Pantalla partida: AA y el panel completo no llenan la pantalla (AA a un lado o al otro de nuestra pantalla).
+        boolean split = aaCarW() + panelCar() < carW;
         L.i("AA: panel " + x + " px -> AA en x=" + aaVideoX() + " ancho " + aaVideoW() + " (vídeo)"
                 + (split ? " · pantalla partida" : ""));
     }

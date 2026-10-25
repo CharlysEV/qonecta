@@ -1254,4 +1254,17 @@
     <string name="hql_about_lrclib">Karaoke: gesynchroniseerde songteksten van LRCLIB (lrclib.net)</string>
     <string name="hql_chargers_source_de">Gegevens: in Duitsland het laadpaalregister van de Bundesnetzagentur (Ladesäulenregister, CC BY 4.0); elders © OpenStreetMap-bijdragers (ODbL).</string>
     <string name="hql_about_bnetza">Laadpalen in Duitsland: Ladesäulenregister van de Bundesnetzagentur (CC BY 4.0)</string>
+    <string name="hql_trip_phone_used">Telefoonaccu: −%1$d %%</string>
+    <string name="hql_trip_phone_used_mah">Telefoonaccu: −%1$d %% (%2$d mAh)</string>
+    <string name="hql_trip_phone_charging">Telefoonaccu: %1$d %% → %2$d %% (laadt)</string>
+    <string name="hql_trip_phone_short">📱 −%1$d %%</string>
+    <string name="hql_energy_title">Qonecta+ en de telefoonaccu</string>
+    <string name="hql_energy_idle_today">in rust, vandaag</string>
+    <string name="hql_energy_per_hour">per uur rijden</string>
+    <string name="hql_energy_last_trip">laatste rit (telefoon)</string>
+    <string name="hql_energy_week">Laatste 7 dagen: in rust %1$s · in de auto %2$s in %3$s</string>
+    <string name="hql_energy_note">Geschat met de statistieken die Android over deze app geeft. Zonder het telefoonscherm terwijl je de app gebruikt, en zonder wat Android Auto, Maps of de muziek verbruiken.</string>
+    <string name="hql_energy_none">Vanaf nu wordt gemeten: over een paar uur zie je het verbruik in rust en per rit.</string>
+    <string name="hql_split_aa_right">Gesplitst scherm: Android Auto rechts</string>
+    <string name="hql_split_swap">Kanten wisselen</string>
 </resources>

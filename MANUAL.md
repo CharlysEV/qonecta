@@ -382,7 +382,8 @@ admite.
   Android Auto en pantalla, el panel se recoge solo a los pocos segundos (también en Fotos, TV, Juegos…); toca el borde del lado del panel para que vuelva.
   Fotos, vídeos, web, TV y juegos son **solo para cuando el coche está parado**.
 - **Pantalla partida («Auto extendido»):** en «Coche», «Guía», «Web», «Vídeos» y «TV», el botón «Partir pantalla» del panel
-  pone Android Auto a la izquierda, junto al panel, y esa pantalla a la derecha. Con «Coche» tienes los instrumentos
+  pone Android Auto a la izquierda, junto al panel, y esa pantalla a la derecha. El botón ⇄, debajo, los cambia de
+  lado (esa pantalla junto al panel y Android Auto a la derecha) sin cortar Android Auto, y se queda guardado. Con «Coche» tienes los instrumentos
   (consumo, batería, autonomía, próxima parada) junto a Android Auto, y vale en marcha, sin aviso. Android Auto se queda con algo más de la mitad, lo
   justo para que Google Maps se pueda mover y buscar. Cada lado responde a sus toques. «Pantalla completa» la deja sola
   otra vez. Dura mientras sigas conectado al coche. La primera vez de cada conexión sale un aviso que hay que aceptar:
@@ -709,7 +710,8 @@ fijos, que se queda igual de día y de noche. Se aplica al momento, y el texto d
 se lea.
 
 Debajo, «Tono» y «Claro / oscuro» dan cualquier otro color, y «Transparencia» lo funde con el negro de la pantalla.
-«Panel lateral a la derecha» pone el panel al otro lado, con Android Auto pegado al borde izquierdo. «Botones del panel
+«Panel lateral a la derecha» pone el panel al otro lado, con Android Auto pegado al borde izquierdo. «Pantalla partida: Android Auto a la derecha» hace lo mismo que el botón ⇄
+de la pantalla partida. «Botones del panel
 lateral» elige cuáles se ven (Sí / No) y en qué orden (flechas); «Auto» y «Ajustes» van fijos. Con el panel reducido a
 iconos, abajo salen el tiempo (un emoticono) con la temperatura exterior y la batería del móvil (cuando hay dato); la
 hora no, porque ya la dan LeapOS y Android Auto. Y en la pantalla

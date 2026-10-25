@@ -88,7 +88,7 @@
     <string name="hql_guess_stops_add">Zu Maps hinzufügen</string>
     <string name="hql_guess_stops_no">Ohne Stopps</string>
     <string name="hql_guess_stops_fail_title">Google-Maps-Route konnte nicht geändert werden</string>
-    <string name="hql_guess_stops_fail_text">Maps folgt noch seiner Route. Beende sie mit dem X und tippe auf «Erneut versuchen».</string>
+    <string name="hql_guess_stops_fail_text">Maps folgt noch seiner Route. Beende sie mit dem X und tippe auf „Erneut versuchen“.</string>
     <string name="hql_guess_stops_retry">Erneut versuchen</string>
     <!-- «Ruta en Qonecta+» (ShareDestActivity, SharedDest) -->
     <string name="hql_share_label">Route in Qonecta+</string>

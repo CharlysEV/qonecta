@@ -382,7 +382,8 @@ supporta.
   Auto sullo schermo, il pannello si riduce da solo dopo qualche secondo (anche in Foto, TV, Giochi…); tocca il bordo dal lato del pannello per farlo
   ricomparire. Foto, video, web, TV e giochi sono **solo per quando l'auto è ferma**.
 - **Schermo diviso («Auto esteso»):** in «Veicolo», «Guida», «Web», «Video» e «TV», il pulsante «Dividi schermo» del pannello
-  mette Android Auto a sinistra, accanto al pannello, e quella schermata a destra. Con «Veicolo» hai gli strumenti
+  mette Android Auto a sinistra, accanto al pannello, e quella schermata a destra. Il pulsante ⇄, sotto, scambia i
+  lati (quella schermata accanto al pannello e Android Auto a destra) senza interrompere Android Auto, e resta salvato. Con «Veicolo» hai gli strumenti
   (consumo, batteria, autonomia, prossima sosta) accanto ad Android Auto, e va bene in marcia, senza avviso. Android Auto tiene un po' più della metà, quanto
   basta perché Google Maps si possa spostare e cercare. Ogni lato risponde ai suoi tocchi. «Schermo intero» la lascia di
   nuovo da sola. Dura finché resti collegato all'auto. La prima volta di ogni collegamento compare un avviso da
@@ -720,7 +721,8 @@ colori fissi, che resta uguale di giorno e di notte. Si applica subito, e il tes
 perché si legga.
 
 Sotto, «Tonalità» e «Chiaro / scuro» danno qualsiasi altro colore, e «Trasparenza» lo fonde con il nero dello schermo.
-«Pannello laterale a destra» sposta il pannello dall'altro lato, con Android Auto contro il bordo sinistro. «Pulsanti
+«Pannello laterale a destra» sposta il pannello dall'altro lato, con Android Auto contro il bordo sinistro. «Schermo diviso: Android Auto a destra» fa lo stesso del pulsante ⇄ dello
+schermo diviso. «Pulsanti
 del pannello laterale» sceglie quali si vedono (Sì / No) e in che ordine (frecce); «Auto» e «Impostazioni» restano
 fissi. Con il pannello ridotto a icone, in basso compaiono il tempo (un'emoji) con la temperatura esterna e la batteria del
 telefono (quando c'è il dato); l'ora no, perché la mostrano già LeapOS e Android Auto. E nella schermata principale del telefono, quando esce una versione nuova compare un avviso con le novità

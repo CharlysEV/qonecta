@@ -375,7 +375,8 @@ version). That tells us whether the C10 supports it.
   panel shrinks by itself after a few seconds (also in Photos, TV, Games…); tap the edge on the panel's side to bring it back. Photos, videos, web, TV and games are
   **only for when the car is stopped**.
 - **Split screen ("Auto extended"):** in "Car", "Guide", "Web", "Videos" and "TV", the panel's "Split screen" button puts
-  Android Auto on the left, next to the panel, and that screen on the right. With "Car" you get the gauges (consumption,
+  Android Auto on the left, next to the panel, and that screen on the right. The ⇄ button below it swaps the sides
+  (that screen next to the panel and Android Auto on the right) without interrupting Android Auto, and it is remembered. With "Car" you get the gauges (consumption,
   battery, range, next stop) next to Android Auto, and it is fine while driving, with no notice. Android Auto keeps a bit more than half, just enough for
   Google Maps to pan and search. Each side takes its own touches. "Full screen" shows it alone again. It lasts while you
   stay connected to the car. The first time in each connection, a notice must be accepted: we recommend using it with
@@ -696,7 +697,8 @@ a few seconds"), auto-hide the panel and latency optimizations, the "Electricity
 stays the same day and night. It applies at once, and the panel's text turns light or dark so it stays readable.
 
 Below, "Hue" and "Light / dark" give any other color, and "Transparency" blends it into the black of the screen. "Side
-panel on the right" moves the panel to the other side, with Android Auto against the left edge. "Side panel buttons"
+panel on the right" moves the panel to the other side, with Android Auto against the left edge. "Split screen: Android Auto on the right" does the same as the ⇄ button
+of the split screen. "Side panel buttons"
 picks which ones show (Yes / No) and in what order (arrows); "Auto" and "Settings" stay fixed. With the panel shrunk to
 icons, the weather (an emoji) with the outside temperature and the phone's battery (when known) show at the bottom; not
 the time, since LeapOS and Android Auto already show it. And on the phone's main

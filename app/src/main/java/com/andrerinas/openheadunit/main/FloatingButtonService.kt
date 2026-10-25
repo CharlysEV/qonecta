@@ -29,6 +29,11 @@ class FloatingButtonService : Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    override fun onCreate() {
+        super.onCreate()
+        alive = true
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_STOP) {
             removeOverlay()
@@ -172,6 +177,7 @@ class FloatingButtonService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        alive = false
         mainHandler.removeCallbacksAndMessages(null)
         removeOverlay()
     }
@@ -182,6 +188,13 @@ class FloatingButtonService : Service() {
         @Volatile
         @SuppressLint("StaticFieldLeak")
         private var activeOverlayView: View? = null
+
+        /**
+         * Whether the service exists. stop() runs on every app foreground/background change; starting the service
+         * only to tell it to stop woke the process ~860 times a day with the button off (batterystats, 24-10).
+         */
+        @Volatile
+        private var alive = false
 
         fun removeOverlayDirect(context: Context) {
             val view = activeOverlayView ?: return
@@ -206,6 +219,7 @@ class FloatingButtonService : Service() {
         }
 
         fun stop(context: Context) {
+            if (!alive) return
             val intent = Intent(context, FloatingButtonService::class.java).apply {
                 action = ACTION_STOP
             }

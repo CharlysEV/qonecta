@@ -47,6 +47,27 @@ final class TripNotice {
         return b.toString();
     }
 
+    /**
+     * Puro: lo que gastó la batería del MÓVIL en el viaje: «Batería del móvil: −6 % (312 mAh)», o con el móvil enchufado
+     * «Batería del móvil: 60 % → 68 % (cargando)». "" si no se sabe.
+     */
+    static String phoneText(int pct0, int pct1, double mah, boolean plugged) {
+        if (pct0 < 0 || pct1 < 0) return "";
+        if (plugged) return Str.get(R.string.hql_trip_phone_charging, pct0, pct1);
+        int used = Math.max(0, pct0 - pct1);
+        if (!Double.isNaN(mah) && mah > 0) return Str.get(R.string.hql_trip_phone_used_mah, used, (int) Math.round(mah));
+        return Str.get(R.string.hql_trip_phone_used, used);
+    }
+
+    /** phoneText con dos lecturas de PhoneBattery (inicio y fin), o "". */
+    static String phoneText(long[] b0, long[] b1) {
+        if (b0 == null || b1 == null) return "";
+        boolean plugged = b0[PhoneBattery.PLUGGED] != 0 || b1[PhoneBattery.PLUGGED] != 0;
+        double mah = b0[PhoneBattery.UAH] > 0 && b1[PhoneBattery.UAH] > 0 && b0[PhoneBattery.UAH] >= b1[PhoneBattery.UAH]
+                ? (b0[PhoneBattery.UAH] - b1[PhoneBattery.UAH]) / 1000.0 : Double.NaN;
+        return phoneText((int) b0[PhoneBattery.PCT], (int) b1[PhoneBattery.PCT], mah, plugged);
+    }
+
     static void show(Context c, Config cfg, SessionSummary.TripStats s) {
         try {
             if (s == null || !cfg.tripNotice() || !Config.isAa(cfg.mode())) return;
@@ -56,6 +77,10 @@ final class TripNotice {
             if (a == null) a = new double[]{Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN, Double.NaN};
             String text = text(s, ThermalGuard.tripPeakC(), a);
             if (text == null) return;
+            // Lo que gastó el móvil entero en el viaje (LinkService lo deja al cerrar el viaje).
+            long[][] pb = LinkService.lastTripBattery;
+            String phone = pb == null ? "" : phoneText(pb[0], pb[1]);
+            if (!phone.isEmpty()) text = text + "\n" + phone;
             NotificationManager nm = c.getSystemService(NotificationManager.class);
             if (nm == null) return;
             nm.createNotificationChannel(new NotificationChannel(CHANNEL, Str.get(R.string.hql_trip_notice_channel),

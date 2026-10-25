@@ -147,6 +147,52 @@ final class PhoneInsights {
         chargesCard(d);
         curveCard(d);
         drivesCard(d);
+        energyCard(d);
+    }
+
+    /**
+     * Lo que gasta Qonecta+ de la batería del móvil (AppEnergy): hoy en reposo, por hora de viaje (últimos 7 días) y lo
+     * que bajó el móvil en el último viaje (TripLog). En % si se sabe la capacidad de la batería; si no, en mAh.
+     */
+    private void energyCard(Data d) {
+        LinearLayout c = card(Str.get(R.string.hql_energy_title));
+        double[] today = AppEnergy.lastDays(act, 1);
+        double[] week = AppEnergy.lastDays(act, 7);
+        long[] b = PhoneBattery.read(act);
+        double cap = b == null ? 0 : PhoneBattery.capacityMah(b[PhoneBattery.PCT], b[PhoneBattery.UAH]);
+        TripLog.Trip last = null;
+        for (TripLog.Trip t : d.trips) {
+            if (t.phoneUsedPct() >= 0) {
+                last = t;
+                break;
+            }
+        }
+        if (AppEnergy.daysMeasured(act) == 0 && last == null) {
+            c.addView(note(Str.get(R.string.hql_energy_none)));
+            addCard(c);
+            return;
+        }
+        double perHour = week[2] >= 5 ? week[1] / (week[2] / 60.0) : Double.NaN;
+        LinearLayout big = new LinearLayout(act);
+        big.addView(stat(energyText(today[0], cap), Str.get(R.string.hql_energy_idle_today)), weight());
+        big.addView(stat(Double.isNaN(perHour) ? "—" : energyText(perHour, cap), Str.get(R.string.hql_energy_per_hour)), weight());
+        big.addView(stat(last == null ? "—" : "−" + last.phoneUsedPct() + " %", Str.get(R.string.hql_energy_last_trip)), weight());
+        c.addView(big);
+        TextView w = small(Str.get(R.string.hql_energy_week, energyText(week[0], cap), energyText(week[1], cap),
+                duration(Math.round(week[2]))));
+        w.setPadding(0, dp(8), 0, dp(4));
+        c.addView(w);
+        c.addView(note(Str.get(R.string.hql_energy_note)));
+        addCard(c);
+    }
+
+    /** «0,02 %» (con la capacidad de la batería) o «≈ 3 mAh» (sin ella). */
+    static String energyText(double mah, double capMah) {
+        if (capMah > 0) {
+            double pct = mah / capMah * 100;
+            return String.format(Locale.getDefault(), pct < 1 ? "%.2f %%" : "%.1f %%", pct);
+        }
+        return String.format(Locale.getDefault(), "≈ %.0f mAh", mah);
     }
 
     /** El informe del mes (MonthlyReportActivity): tu mes en cifras, para ver y compartir. */
@@ -551,6 +597,8 @@ final class PhoneInsights {
             String line = Str.get(R.string.hql_ins_drive_line, fmt1(t.km), duration(t.minutes),
                     Double.isNaN(per100) ? "—" : fmt1(per100) + " kWh/100");
             if (!Double.isNaN(cost) && cost > 0) line += " · " + Money.format(cost);
+            // Lo que bajó la batería del móvil en el viaje (sin enchufar).
+            if (t.phoneUsedPct() >= 0) line += " · " + Str.get(R.string.hql_trip_phone_short, t.phoneUsedPct());
             txt.addView(small(line));
             row.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             android.widget.ImageView go = new android.widget.ImageView(act);
