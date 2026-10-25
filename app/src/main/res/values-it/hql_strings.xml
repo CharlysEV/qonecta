@@ -1330,4 +1330,6 @@
         <item quantity="one">%d brano</item>
         <item quantity="other">%d brani</item>
     </plurals>
+    <string name="hql_about_donate">☕ Offrimi un caffè</string>
+    <string name="hql_about_donate_text">Qonecta+ è gratuito e senza pubblicità. Se ti è utile e vuoi sostenerlo, puoi farlo con PayPal.</string>
 </resources>

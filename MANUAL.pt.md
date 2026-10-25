@@ -959,6 +959,10 @@ Não têm emissão aberta na internet, por isso nenhuma lista M3U os traz. Com a
 É o Android, e uma app não o pode impedir. Desde a 0.2.60, durante o jogo o telemóvel mostra uma camada preta com o brilho
 no mínimo; tocar no telemóvel tira-a.
 
+**Posso apoiar o projeto?**
+O Qonecta+ é gratuito e sem anúncios. Se lhe for útil, pode oferecer-me um café com [PayPal](https://www.paypal.me/CharlysEV); também na
+aplicação, em «Acerca e créditos». Obrigado!
+
 **Como peço ajuda?**
 Exporte o registo (secção 8) e conte o que aconteceu e a que horas. Não leva palavras-passe, moradas nem o que escreve.
 Para avisar de uma falha ou propor algo, abra um «Issue» em [github.com/CharlysEV/qonecta/issues](https://github.com/CharlysEV/qonecta/issues). É público: o registo, melhor em privado.

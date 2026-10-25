@@ -962,6 +962,10 @@ Non hanno trasmissione aperta su internet, quindi nessuna lista M3U li porta. Co
 Lo fa Android e un'app non può impedirlo. Dalla 0.2.60, durante il gioco il telefono mostra un velo nero con luminosità
 al minimo; toccare il telefono lo toglie.
 
+**Posso sostenere il progetto?**
+Qonecta+ è gratuito e senza pubblicità. Se ti è utile, puoi offrirmi un caffè con [PayPal](https://www.paypal.me/CharlysEV); anche dall'app,
+in «Informazioni e crediti». Grazie!
+
 **Come chiedo aiuto?**
 Esporta il registro (sezione 8) e racconta cosa è successo e a che ora. Non contiene password, indirizzi né ciò che
 scrivi.

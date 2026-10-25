@@ -1060,6 +1060,10 @@ Qonecta+ wartet, bis sich das Handy mit dem Bluetooth des Fahrzeugs verbindet. V
 neu, verbinde es einmal von Hand und prüfe in den Bluetooth-Einstellungen des Handys, ob das Fahrzeug als
 vertrauenswürdiges Gerät eingetragen ist bzw. sich automatisch verbinden darf.
 
+**Kann ich das Projekt unterstützen?**
+Qonecta+ ist kostenlos und werbefrei. Wenn es dir hilft, kannst du mir per [PayPal](https://www.paypal.me/CharlysEV) einen Kaffee spendieren;
+auch in der App unter „Über und Danksagungen“. Danke!
+
 **Wie melde ich einen Fehler oder schlage etwas vor?**
 Im Thread des LPMFF-Forums: [lpmff.de/thread/3341-qonecta-app](https://www.lpmff.de/thread/3341-qonecta-app/). Bei
 einem Fehler hilft das exportierte Log (Abschnitt 8); teile es lieber privat als offen im Thread.

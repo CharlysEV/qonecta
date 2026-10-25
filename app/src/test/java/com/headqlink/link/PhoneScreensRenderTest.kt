@@ -75,6 +75,20 @@ class PhoneScreensRenderTest {
         } finally {
             Config(app).setSetupDone(true)
         }
+        // «Acerca de y créditos», con «Invítame a un café».
+        try {
+            val act = Robolectric.buildActivity(Activity::class.java).setup().get()
+            act.setTheme(com.andrerinas.openheadunit.R.style.Theme_HeadQLink)
+            val sv = android.widget.ScrollView(act)
+            sv.setBackgroundColor(0xFF111821.toInt())
+            sv.addView(About.view(act))
+            act.setContentView(sv)
+            idle(300)
+            save(sv, File(dir, "movil_acerca.png"))
+            println("PhoneScreensRender: movil_acerca OK")
+        } catch (e: Throwable) {
+            println("PhoneScreensRender: movil_acerca no se pudo dibujar: $e")
+        }
         // Viajes con una carga rápida en marcha: la tarjeta «Cargando ahora» arriba.
         try {
             val act = Robolectric.buildActivity(Activity::class.java).setup().get()

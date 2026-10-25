@@ -949,6 +949,10 @@ No tienen emisión abierta por internet, así que ninguna lista M3U los trae. Co
 Lo hace Android, y una app no puede impedirlo. Desde la 0.2.60, durante el juego el móvil muestra una capa negra con el
 brillo al mínimo para que no pase; tocar el móvil la quita.
 
+**¿Puedo apoyar el proyecto?**
+Qonecta+ es gratis y sin anuncios. Si te resulta útil, puedes invitarme a un café con
+[PayPal](https://www.paypal.me/CharlysEV); también desde la app, en «Acerca de y créditos». ¡Gracias!
+
 **¿Cómo pido ayuda?**
 Exporta el log (sección 8) y cuenta qué pasó y a qué hora. No lleva contraseñas, direcciones ni lo que escribes.
 Para avisar de un fallo o proponer algo, abre un aviso («Issue») en [github.com/CharlysEV/qonecta/issues](https://github.com/CharlysEV/qonecta/issues). Es público: el log, mejor por privado.

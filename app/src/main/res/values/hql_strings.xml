@@ -1334,4 +1334,6 @@
         <item quantity="one">%d song</item>
         <item quantity="other">%d songs</item>
     </plurals>
+    <string name="hql_about_donate">☕ Buy me a coffee</string>
+    <string name="hql_about_donate_text">Qonecta+ is free and has no ads. If it\'s useful to you and you\'d like to support it, you can do so with PayPal.</string>
 </resources>

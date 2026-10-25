@@ -1330,4 +1330,6 @@
         <item quantity="one">%d morceau</item>
         <item quantity="other">%d morceaux</item>
     </plurals>
+    <string name="hql_about_donate">☕ Offre-moi un café</string>
+    <string name="hql_about_donate_text">Qonecta+ est gratuit et sans publicité. S\'il t\'est utile et que tu veux le soutenir, tu peux le faire avec PayPal.</string>
 </resources>

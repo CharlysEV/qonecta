@@ -31,6 +31,8 @@ final class About {
     static final String AUTHOR = "CharlysEV";
     static final String AUTHOR_URL = "https://github.com/CharlysEV";
     static final String REPO_URL = "https://github.com/CharlysEV/qonecta";
+    /** Donaciones (PayPal.Me de CharlysEV): «Invítame a un café». */
+    static final String DONATE_URL = "https://www.paypal.me/CharlysEV";
     /** El HeadQLink original del que parte Qonecta+. */
     static final String BASE_AUTHOR = "ryazrm";
     static final String BASE_URL = "https://github.com/ryazrm/headqlink";
@@ -117,6 +119,16 @@ final class About {
         head.addView(names);
         col.addView(head);
         col.addView(text(c, Str.get(R.string.hql_about_tagline), R.color.hql_text_dim, 14), gap(c, 10));
+        // Apoyar el proyecto: una línea y un botón, sin insistir en ningún otro sitio.
+        col.addView(text(c, Str.get(R.string.hql_about_donate_text), R.color.hql_text_dim, 13), gap(c, 14));
+        com.google.android.material.button.MaterialButton donate = new com.google.android.material.button.MaterialButton(c, null,
+                com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        donate.setText(Str.get(R.string.hql_about_donate));
+        donate.setOnClickListener(v -> open(c, DONATE_URL));
+        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        dlp.topMargin = Math.round(6 * dp);
+        col.addView(donate, dlp);
 
         section(c, col, R.string.hql_about_based,
                 "HeadQLink · " + BASE_AUTHOR,

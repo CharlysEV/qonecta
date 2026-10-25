@@ -1330,4 +1330,6 @@
         <item quantity="one">%d música</item>
         <item quantity="other">%d músicas</item>
     </plurals>
+    <string name="hql_about_donate">☕ Me pague um café</string>
+    <string name="hql_about_donate_text">O Qonecta+ é gratuito e sem anúncios. Se for útil para você e quiser apoiá-lo, pode fazer isso pelo PayPal.</string>
 </resources>

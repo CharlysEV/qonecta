@@ -1331,4 +1331,6 @@
     <plurals name="hql_music_songs">
         <item quantity="other">%d 首歌曲</item>
     </plurals>
+    <string name="hql_about_donate">☕ 请我喝杯咖啡</string>
+    <string name="hql_about_donate_text">Qonecta+ 免费且无广告。如果它对你有用并想支持它，可以通过 PayPal 支持。</string>
 </resources>

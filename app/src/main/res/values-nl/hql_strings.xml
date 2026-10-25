@@ -1329,4 +1329,6 @@
         <item quantity="one">%d nummer</item>
         <item quantity="other">%d nummers</item>
     </plurals>
+    <string name="hql_about_donate">☕ Trakteer me op een koffie</string>
+    <string name="hql_about_donate_text">Qonecta+ is gratis en zonder advertenties. Heb je er iets aan en wil je het steunen, dan kan dat via PayPal.</string>
 </resources>

@@ -1329,4 +1329,6 @@
         <item quantity="one">%d Titel</item>
         <item quantity="other">%d Titel</item>
     </plurals>
+    <string name="hql_about_donate">☕ Spendier mir einen Kaffee</string>
+    <string name="hql_about_donate_text">Qonecta+ ist kostenlos und werbefrei. Wenn es dir hilft und du es unterstützen möchtest, geht das per PayPal.</string>
 </resources>

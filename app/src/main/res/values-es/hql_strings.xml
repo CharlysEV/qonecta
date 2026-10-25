@@ -1335,4 +1335,6 @@
         <item quantity="one">%d canción</item>
         <item quantity="other">%d canciones</item>
     </plurals>
+    <string name="hql_about_donate">☕ Invítame a un café</string>
+    <string name="hql_about_donate_text">Qonecta+ es gratis y sin anuncios. Si te resulta útil y quieres apoyarlo, puedes hacerlo con PayPal.</string>
 </resources>
