@@ -75,6 +75,36 @@ class PhoneScreensRenderTest {
         } finally {
             Config(app).setSetupDone(true)
         }
+        // El diario del viaje: la postal, sin fotos y con fotos (de colores, inventadas).
+        try {
+            val t = TripLog.Trip()
+            t.startMs = 1_760_000_000_000L
+            t.minutes = 192
+            t.km = 312.4
+            t.climb = 1240.0
+            t.descent = 980.0
+            val pts = ArrayList<DoubleArray>()
+            for (i in 0..400) {
+                val f = i / 400.0
+                pts.add(doubleArrayOf(40.4 + f * 1.2 + Math.sin(f * 9) * 0.08, -3.7 + f * 2.1 + Math.cos(f * 7) * 0.1, f * 192 * 60 + if (f > 0.55) 1500.0 else 0.0))
+            }
+            // Una parada de 25 min a mitad de camino (para la marca ámbar).
+            val stopAt = pts[220]
+            for (k in 0..10) pts.add(221 + k, doubleArrayOf(stopAt[0], stopAt[1], stopAt[2] + k * 150))
+            t.track = pts.toTypedArray()
+            t.places = arrayOf("Castillo de Almonacid", "Embalse de Buendía", "Ciudad Encantada", "Catedral de Cuenca")
+            val photos = listOf(0xFF3A7BD5.toInt(), 0xFFE8505B.toInt(), 0xFF4CAF50.toInt()).map { col ->
+                android.graphics.Bitmap.createBitmap(400, 300, android.graphics.Bitmap.Config.ARGB_8888).apply { eraseColor(col) }
+            }
+            for ((name, ph) in listOf("movil_postal" to emptyList(), "movil_postal_fotos" to photos)) {
+                val bmp = TripPostcard.render(app, t, emptyList(), ph)
+                FileOutputStream(File(dir, "$name.png")).use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                println("PhoneScreensRender: $name OK")
+            }
+        } catch (e: Throwable) {
+            println("PhoneScreensRender: movil_postal no se pudo dibujar: $e")
+            e.printStackTrace()
+        }
         // «Acerca de y créditos», con «Invítame a un café».
         try {
             val act = Robolectric.buildActivity(Activity::class.java).setup().get()

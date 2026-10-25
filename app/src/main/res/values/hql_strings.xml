@@ -1340,4 +1340,14 @@
     <string name="hql_ghost_ahead">Ghost: %1$s ahead of your best time (%2$s)</string>
     <string name="hql_ghost_even">Ghost: level with your best time (%2$s)</string>
     <string name="hql_record_route">Route record</string>
+    <string name="hql_diary_title">Trip diary</string>
+    <string name="hql_diary_open">Trip postcard</string>
+    <string name="hql_diary_share">Share</string>
+    <string name="hql_diary_no_photos">Without photos</string>
+    <string name="hql_diary_with_photos">With photos</string>
+    <string name="hql_diary_places">Along the way: %1$s</string>
+    <string name="hql_diary_ready">Your %1$.0f km trip: tap to see its postcard</string>
+    <string name="hql_diary_cost">cost</string>
+    <string name="hql_diary_climb">climb</string>
+    <string name="hql_diary_stops">stops</string>
 </resources>

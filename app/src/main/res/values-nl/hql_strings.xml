@@ -1335,4 +1335,14 @@
     <string name="hql_ghost_ahead">Spook: %1$s voor op je beste tijd (%2$s)</string>
     <string name="hql_ghost_even">Spook: gelijk met je beste tijd (%2$s)</string>
     <string name="hql_record_route">Routerecord</string>
+    <string name="hql_diary_title">Reisdagboek</string>
+    <string name="hql_diary_open">Ansichtkaart van de rit</string>
+    <string name="hql_diary_share">Delen</string>
+    <string name="hql_diary_no_photos">Zonder foto\'s</string>
+    <string name="hql_diary_with_photos">Met foto\'s</string>
+    <string name="hql_diary_places">Onderweg: %1$s</string>
+    <string name="hql_diary_ready">Je rit van %1$.0f km: tik om de ansichtkaart te zien</string>
+    <string name="hql_diary_cost">kosten</string>
+    <string name="hql_diary_climb">hoogtemeters</string>
+    <string name="hql_diary_stops">stops</string>
 </resources>

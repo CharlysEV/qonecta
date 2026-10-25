@@ -1336,4 +1336,14 @@
     <string name="hql_ghost_ahead">Fantôme : %1$s devant ton meilleur temps (%2$s)</string>
     <string name="hql_ghost_even">Fantôme : à égalité avec ton meilleur temps (%2$s)</string>
     <string name="hql_record_route">Record du trajet</string>
+    <string name="hql_diary_title">Carnet de voyage</string>
+    <string name="hql_diary_open">Carte postale du trajet</string>
+    <string name="hql_diary_share">Partager</string>
+    <string name="hql_diary_no_photos">Sans photos</string>
+    <string name="hql_diary_with_photos">Avec photos</string>
+    <string name="hql_diary_places">En chemin : %1$s</string>
+    <string name="hql_diary_ready">Ton trajet de %1$.0f km : touche pour voir sa carte postale</string>
+    <string name="hql_diary_cost">coût</string>
+    <string name="hql_diary_climb">dénivelé</string>
+    <string name="hql_diary_stops">arrêts</string>
 </resources>

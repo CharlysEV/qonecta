@@ -578,6 +578,14 @@ Im Log (Abschnitt 8) siehst du das als `enlace: congestión (outq 96 KB 300 ms, 
   Zum Ausschalten tippen“: Tippe bei entsperrtem Handy darauf.
 - Schalte den Hotspot aus, wenn du ihn nicht brauchst.
 
+### Reisetagebuch
+
+Im Tab „Fahrten“ auf dem Handy › „Strecken“ öffnest du eine Fahrt und tippst auf **„Postkarte der Fahrt“**: ein
+Bild mit Datum, km und Zeit, der Strecke mit den Stopps, Verbrauch, Kosten, Höhenmetern, bis zu drei Fotos, die du
+unterwegs mit dem Handy gemacht hast, und den Orten, die dir der Reiseführer erzählt hat. Zuerst siehst du sie;
+„Ohne Fotos“ entfernt sie, und „Teilen“ schickt sie, wohin du willst. Sie verlässt das Handy nur, wenn du sie
+teilst. Nach einer Fahrt ab 50 km bietet eine dezente Benachrichtigung sie an.
+
 ### Monatsbericht
 
 Dein Monat in Zahlen, im Tab „Fahrten“ auf dem Handy › „Bericht ansehen“. Mit ‹ und › wechselst du zwischen den

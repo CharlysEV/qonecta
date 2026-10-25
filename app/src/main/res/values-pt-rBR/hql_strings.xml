@@ -1336,4 +1336,14 @@
     <string name="hql_ghost_ahead">Fantasma: %1$s à frente do seu melhor tempo (%2$s)</string>
     <string name="hql_ghost_even">Fantasma: empatado com seu melhor tempo (%2$s)</string>
     <string name="hql_record_route">Recorde da rota</string>
+    <string name="hql_diary_title">Diário da viagem</string>
+    <string name="hql_diary_open">Postal da viagem</string>
+    <string name="hql_diary_share">Compartilhar</string>
+    <string name="hql_diary_no_photos">Sem fotos</string>
+    <string name="hql_diary_with_photos">Com fotos</string>
+    <string name="hql_diary_places">Pelo caminho: %1$s</string>
+    <string name="hql_diary_ready">Sua viagem de %1$.0f km: toque para ver o postal</string>
+    <string name="hql_diary_cost">custo</string>
+    <string name="hql_diary_climb">desnível</string>
+    <string name="hql_diary_stops">paradas</string>
 </resources>

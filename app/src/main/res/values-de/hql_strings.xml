@@ -1335,4 +1335,14 @@
     <string name="hql_ghost_ahead">Geist: %1$s vor deiner Bestzeit (%2$s)</string>
     <string name="hql_ghost_even">Geist: gleichauf mit deiner Bestzeit (%2$s)</string>
     <string name="hql_record_route">Streckenrekord</string>
+    <string name="hql_diary_title">Reisetagebuch</string>
+    <string name="hql_diary_open">Postkarte der Fahrt</string>
+    <string name="hql_diary_share">Teilen</string>
+    <string name="hql_diary_no_photos">Ohne Fotos</string>
+    <string name="hql_diary_with_photos">Mit Fotos</string>
+    <string name="hql_diary_places">Unterwegs: %1$s</string>
+    <string name="hql_diary_ready">Deine Fahrt über %1$.0f km: Tippe, um die Postkarte zu sehen</string>
+    <string name="hql_diary_cost">Kosten</string>
+    <string name="hql_diary_climb">Höhenmeter</string>
+    <string name="hql_diary_stops">Stopps</string>
 </resources>

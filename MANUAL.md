@@ -542,6 +542,14 @@ congestiones 4`.
   apagarlo»: tócala con el móvil desbloqueado.
 - Apaga la zona Wi-Fi si no la necesitas.
 
+### Diario del viaje
+
+En la pestaña «Viajes» del móvil › «Recorridos», abre un viaje y pulsa **«Postal del viaje»**: una imagen con la
+fecha, los km y el tiempo, el trazado con las paradas, el consumo, el coste, el desnivel, hasta tres fotos que
+hiciste con el móvil durante el viaje y los sitios que te contó la Guía del camino. Primero la ves; «Sin fotos» las
+quita, y «Compartir» la manda a donde quieras. No sale del móvil si no la compartes. Tras un viaje de 50 km o más, un
+aviso discreto te la ofrece.
+
 ### Informe del mes
 
 Tu mes en cifras, en la pestaña «Viajes» del móvil › «Ver el informe». Con ‹ y › pasas de un mes a otro.

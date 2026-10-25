@@ -27,6 +27,8 @@ import java.util.Locale;
  */
 public class TripMapActivity extends Activity {
     static final String EXTRA_START = "start";
+    /** Abrir directamente la postal del viaje (el aviso tras un viaje largo). */
+    static final String EXTRA_POSTCARD = "postcard";
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -86,6 +88,16 @@ public class TripMapActivity extends Activity {
         if (trip.maxKmh > 0) line.append(String.format(Locale.getDefault(), " · %s %.0f km/h", Str.get(R.string.hql_ins_max), trip.maxKmh));
         if (!stops.isEmpty()) line.append(" · ").append(Str.plural(R.plurals.hql_ins_stops, stops.size()));
         card.addView(text(line.toString(), 14, PhoneCharts.DIM));
+        // El diario del viaje: la postal para guardar o compartir.
+        TripLog.Trip forCard = trip;
+        com.google.android.material.button.MaterialButton postcard = new com.google.android.material.button.MaterialButton(this, null,
+                com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        postcard.setText(Str.get(R.string.hql_diary_open));
+        postcard.setOnClickListener(v -> TripPostcard.show(this, forCard));
+        LinearLayout.LayoutParams plp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        plp.topMargin = dp(6);
+        card.addView(postcard, plp);
+        if (getIntent().getBooleanExtra(EXTRA_POSTCARD, false)) root.post(() -> TripPostcard.show(this, forCard));
         FrameLayout.LayoutParams clp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
                 Gravity.TOP);
         clp.setMargins(dp(12), dp(12), dp(12), 0);

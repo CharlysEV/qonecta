@@ -1337,4 +1337,14 @@
     <string name="hql_ghost_ahead">幽灵：比你的最佳成绩快 %1$s（%2$s）</string>
     <string name="hql_ghost_even">幽灵：与你的最佳成绩持平（%2$s）</string>
     <string name="hql_record_route">路线纪录</string>
+    <string name="hql_diary_title">旅途日记</string>
+    <string name="hql_diary_open">旅途明信片</string>
+    <string name="hql_diary_share">分享</string>
+    <string name="hql_diary_no_photos">不含照片</string>
+    <string name="hql_diary_with_photos">含照片</string>
+    <string name="hql_diary_places">沿途：%1$s</string>
+    <string name="hql_diary_ready">你的 %1$.0f 公里旅途：点按查看明信片</string>
+    <string name="hql_diary_cost">费用</string>
+    <string name="hql_diary_climb">爬升</string>
+    <string name="hql_diary_stops">停靠</string>
 </resources>

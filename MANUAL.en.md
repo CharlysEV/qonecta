@@ -527,6 +527,14 @@ congestiones 4`.
   turn it off": tap it with the phone unlocked.
 - Turn the hotspot off if you don't need it.
 
+### Trip diary
+
+In the phone's "Trips" tab › "Drives", open a trip and tap **"Trip postcard"**: an image with the date, the km and
+the time, the route with its stops, consumption, cost, climb, up to three photos you took with the phone during the
+trip and the places the Road guide told you about. You see it first; "Without photos" removes them and "Share"
+sends it wherever you like. It does not leave the phone unless you share it. After a trip of 50 km or more, a
+discreet notification offers it.
+
 ### Monthly report
 
 Your month in figures, in the phone's "Trips" tab › "See the report". Use ‹ and › to move between months.

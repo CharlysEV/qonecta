@@ -670,6 +670,8 @@ final class RoadGuide {
         if (text.isEmpty()) return;
         VoiceAlert.say(ctx, text, VOICE);
         told.add(p.id);
+        // Al diario del viaje (solo el título, en el fichero del viaje; el registro sigue sin sitios).
+        TripLog.notePlace(p.title);
         said = p;
         if (!asked) lastSaidMs = SystemClock.elapsedRealtime();
         L.i("guía: " + (asked ? "contado a petición" : "contado") + " (" + text.length() + " caracteres)");

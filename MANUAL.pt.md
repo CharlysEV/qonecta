@@ -550,6 +550,14 @@ congestiones 4`.
   para o desligar»: toque nela com o telemóvel desbloqueado.
 - Desligue o hotspot se não precisar dele.
 
+### Diário da viagem
+
+No separador «Viagens» do telemóvel › «Percursos», abra uma viagem e toque em **«Postal da viagem»**: uma imagem
+com a data, os km e o tempo, o percurso com as paragens, o consumo, o custo, o desnível, até três fotos que tirou
+com o telemóvel durante a viagem e os sítios que a Guia da estrada lhe contou. Primeiro vê-a; «Sem fotos» tira-as e
+«Partilhar» envia-a para onde quiser. Não sai do telemóvel se não a partilhar. Depois de uma viagem de 50 km ou
+mais, um aviso discreto oferece-a.
+
 ### Relatório do mês
 
 O seu mês em números, no separador «Viagens» do telemóvel › «Ver o relatório». Com ‹ e › passa de um mês para outro.

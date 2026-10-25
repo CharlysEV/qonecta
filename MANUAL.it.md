@@ -547,6 +547,14 @@ congestiones 4`.
   attivo · Tocca per spegnerlo»: toccala con il telefono sbloccato.
 - Spegni l'hotspot se non ti serve.
 
+### Diario del viaggio
+
+Nella scheda «Viaggi» del telefono › «Percorsi», apri un viaggio e tocca **«Cartolina del viaggio»**: un'immagine
+con la data, i km e il tempo, il percorso con le soste, il consumo, il costo, il dislivello, fino a tre foto che hai
+scattato con il telefono durante il viaggio e i luoghi che ti ha raccontato la Guida di viaggio. Prima la vedi;
+«Senza foto» le toglie e «Condividi» la invia dove vuoi. Non esce dal telefono se non la condividi. Dopo un viaggio
+di 50 km o più, un avviso discreto te la propone.
+
 ### Resoconto del mese
 
 Il tuo mese in cifre, nella scheda «Viaggi» del telefono › «Vedi il resoconto». Con ‹ e › passi da un mese all'altro.
