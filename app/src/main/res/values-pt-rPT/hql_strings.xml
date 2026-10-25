@@ -1294,4 +1294,7 @@
     <string name="hql_cc_trunk_title">Mala</string>
     <string name="hql_cc_trunk_was_open">Segundo o último dado, está aberta.</string>
     <string name="hql_cc_trunk_was_closed">Segundo o último dado, está fechada.</string>
+    <string name="hql_usb_hung_title">A app do carro bloqueou</string>
+    <string name="hql_usb_hung_text">Deixou de responder com o cabo ligado e não recupera sozinha. Desligue o cabo, volte a ligá-lo e abra o QDLink no ecrã do carro. «Desligar» e «Ligar» no telemóvel não resolvem.</string>
+    <string name="hql_usb_hung_voice">A app do carro bloqueou. Desligue o cabo, volte a ligá-lo e abra o QDLink.</string>
 </resources>

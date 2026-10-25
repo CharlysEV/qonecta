@@ -1294,4 +1294,7 @@
     <string name="hql_cc_trunk_title">Coffre</string>
     <string name="hql_cc_trunk_was_open">D\'après la dernière donnée, il est ouvert.</string>
     <string name="hql_cc_trunk_was_closed">D\'après la dernière donnée, il est fermé.</string>
+    <string name="hql_usb_hung_title">L\'app de la voiture s\'est figée</string>
+    <string name="hql_usb_hung_text">Elle ne répond plus avec le câble branché et ne revient pas seule. Débranchez le câble, rebranchez-le et ouvrez QDLink sur l\'écran de la voiture. « Déconnecter » et « Connecter » sur le téléphone ne règlent rien.</string>
+    <string name="hql_usb_hung_voice">L\'app de la voiture s\'est figée. Débranchez le câble, rebranchez-le et ouvrez QDLink.</string>
 </resources>

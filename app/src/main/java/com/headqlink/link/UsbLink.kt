@@ -545,7 +545,8 @@ internal class UsbLink(
         val reasonText = describe(reason)
         submit {
             val d = reopen.onSessionEnd(carMessages, carInfo, lived, reasonText)
-            UsbDiagnosis.sessionEnd(ctx, UsbReopenPolicy.isAccessoryGone(reasonText), carInfo, lived, reopen.failures)
+            UsbDiagnosis.sessionEnd(ctx, UsbReopenPolicy.isAccessoryGone(reasonText), carInfo, lived, reopen.failures,
+                reason.kind == CloseReason.Kind.WATCHDOG)
             network(LinkState.Level.BUSY, Str.get(R.string.hql_usb_net_waiting))
             if (!d.reopen) {
                 retry?.cancel(false)

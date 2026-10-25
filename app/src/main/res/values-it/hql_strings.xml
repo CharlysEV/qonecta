@@ -1294,4 +1294,7 @@
     <string name="hql_cc_trunk_title">Bagagliaio</string>
     <string name="hql_cc_trunk_was_open">Secondo l\'ultimo dato, è aperto.</string>
     <string name="hql_cc_trunk_was_closed">Secondo l\'ultimo dato, è chiuso.</string>
+    <string name="hql_usb_hung_title">L\'app dell\'auto si è bloccata</string>
+    <string name="hql_usb_hung_text">Ha smesso di rispondere con il cavo collegato e non si riprende da sola. Scollega il cavo, ricollegalo e apri QDLink sullo schermo dell\'auto. «Disconnetti» e «Connetti» sul telefono non risolvono.</string>
+    <string name="hql_usb_hung_voice">L\'app dell\'auto si è bloccata. Scollega il cavo, ricollegalo e apri QDLink.</string>
 </resources>

@@ -1297,4 +1297,7 @@
     <string name="hql_cc_trunk_title">后备箱</string>
     <string name="hql_cc_trunk_was_open">根据最新数据，后备箱已打开。</string>
     <string name="hql_cc_trunk_was_closed">根据最新数据，后备箱已关闭。</string>
+    <string name="hql_usb_hung_title">车机应用卡住了</string>
+    <string name="hql_usb_hung_text">插着数据线时车机应用停止响应，且不会自行恢复。请拔下数据线、重新插上，然后在车机屏幕上打开 QDLink。在手机上点“断开连接”和“连接”无法解决。</string>
+    <string name="hql_usb_hung_voice">车机应用卡住了。请拔下数据线，重新插上，然后打开 QDLink。</string>
 </resources>

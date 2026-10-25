@@ -1298,4 +1298,7 @@
     <string name="hql_cc_trunk_title">Trunk</string>
     <string name="hql_cc_trunk_was_open">According to the latest data, it is open.</string>
     <string name="hql_cc_trunk_was_closed">According to the latest data, it is closed.</string>
+    <string name="hql_usb_hung_title">The car\'s app has frozen</string>
+    <string name="hql_usb_hung_text">It stopped responding with the cable plugged in and won\'t recover by itself. Unplug the cable, plug it back in and open QDLink on the car\'s screen. “Disconnect” and “Connect” on the phone don\'t fix it.</string>
+    <string name="hql_usb_hung_voice">The car\'s app has frozen. Unplug the cable, plug it back in and open QDLink.</string>
 </resources>

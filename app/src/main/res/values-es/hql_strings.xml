@@ -1299,4 +1299,7 @@
     <string name="hql_cc_trunk_title">Maletero</string>
     <string name="hql_cc_trunk_was_open">Según el último dato, está abierto.</string>
     <string name="hql_cc_trunk_was_closed">Según el último dato, está cerrado.</string>
+    <string name="hql_usb_hung_title">La app del coche se ha colgado</string>
+    <string name="hql_usb_hung_text">Dejó de responder con el cable puesto y no se recupera sola. Desenchufa el cable, vuelve a enchufarlo y abre QDLink en la pantalla del coche. «Desconectar» y «Conectar» en el móvil no lo arreglan.</string>
+    <string name="hql_usb_hung_voice">La app del coche se ha colgado. Desenchufa el cable, vuelve a enchufarlo y abre QDLink.</string>
 </resources>

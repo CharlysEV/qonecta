@@ -1294,4 +1294,7 @@
     <string name="hql_cc_trunk_title">Porta-malas</string>
     <string name="hql_cc_trunk_was_open">Pelo último dado, está aberto.</string>
     <string name="hql_cc_trunk_was_closed">Pelo último dado, está fechado.</string>
+    <string name="hql_usb_hung_title">O app do carro travou</string>
+    <string name="hql_usb_hung_text">Parou de responder com o cabo conectado e não volta sozinho. Desconecte o cabo, conecte de novo e abra o QDLink na tela do carro. «Desconectar» e «Conectar» no celular não resolvem.</string>
+    <string name="hql_usb_hung_voice">O app do carro travou. Desconecte o cabo, conecte de novo e abra o QDLink.</string>
 </resources>

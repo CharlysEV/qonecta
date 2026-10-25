@@ -1293,4 +1293,7 @@
     <string name="hql_cc_trunk_title">Kofferbak</string>
     <string name="hql_cc_trunk_was_open">Volgens de laatste gegevens staat hij open.</string>
     <string name="hql_cc_trunk_was_closed">Volgens de laatste gegevens is hij dicht.</string>
+    <string name="hql_usb_hung_title">De app in de auto is vastgelopen</string>
+    <string name="hql_usb_hung_text">Hij reageert niet meer terwijl de kabel erin zit en herstelt niet vanzelf. Trek de kabel eruit, steek hem er weer in en open QDLink op het scherm van de auto. „Verbinding verbreken” en „Verbinden” op de telefoon helpen niet.</string>
+    <string name="hql_usb_hung_voice">De app in de auto is vastgelopen. Trek de kabel eruit, steek hem er weer in en open QDLink.</string>
 </resources>

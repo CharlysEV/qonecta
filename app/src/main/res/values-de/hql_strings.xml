@@ -1293,4 +1293,7 @@
     <string name="hql_cc_trunk_title">Kofferraum</string>
     <string name="hql_cc_trunk_was_open">Laut den letzten Daten ist er offen.</string>
     <string name="hql_cc_trunk_was_closed">Laut den letzten Daten ist er geschlossen.</string>
+    <string name="hql_usb_hung_title">Die App im Auto hängt</string>
+    <string name="hql_usb_hung_text">Sie reagiert bei eingestecktem Kabel nicht mehr und erholt sich nicht von selbst. Zieh das Kabel ab, steck es wieder ein und öffne QDLink auf dem Fahrzeugdisplay. „Trennen“ und „Verbinden“ auf dem Handy helfen nicht.</string>
+    <string name="hql_usb_hung_voice">Die App im Auto hängt. Zieh das Kabel ab, steck es wieder ein und öffne QDLink.</string>
 </resources>

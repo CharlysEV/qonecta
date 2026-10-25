@@ -11,7 +11,16 @@ import java.util.EnumSet;
  * Cada aviso sale una vez por viaje (reset al arrancar el servicio).
  */
 final class UsbDiagnosis {
-    enum Kind { NONE, POWER_CUT, SILENT, EARLY_CUTS }
+    enum Kind { NONE, POWER_CUT, SILENT, EARLY_CUTS, CAR_HUNG }
+
+    /**
+     * La app del coche colgada (C10, 2026-10-25): tras 16 min bien, el coche se calló con el cable puesto (WATCHDOG) y en
+     * las sesiones siguientes ni leía; Desconectar y Conectar en el móvil no servían, y volvió al desenchufar y enchufar
+     * el cable y abrir QDLink. Una sesión larga que acaba en silencio del coche deja esta sospecha durante HANG_WINDOW_MS
+     * (también si se para y vuelve a arrancar el servicio); si la siguiente no recibe nada del coche, se avisa.
+     */
+    static final long HANG_WINDOW_MS = 10 * 60_000;
+    private long hangSuspectMs = Long.MIN_VALUE / 2;
 
     /** Un corte de lectura (EIO/ENODEV) y perder la corriente, con menos de esto entre medias: el coche cortó el USB. */
     static final long POWER_WINDOW_MS = 5_000;
@@ -35,9 +44,21 @@ final class UsbDiagnosis {
 
     /** Fin de una sesión por cable. gone: el accesorio desapareció (EIO/ENODEV). */
     Kind onSessionEnd(long nowMs, boolean gone, boolean gotCarInfo, long livedMs, int consecutiveFailures) {
+        return onSessionEnd(nowMs, gone, gotCarInfo, livedMs, consecutiveFailures, false);
+    }
+
+    /** Como el otro, con carSilent: la sesión acabó porque el coche dejó de mandar nada (WATCHDOG), con el cable puesto. */
+    Kind onSessionEnd(long nowMs, boolean gone, boolean gotCarInfo, long livedMs, int consecutiveFailures, boolean carSilent) {
         if (gone) {
             lastGoneMs = nowMs;
             if (nowMs - lastPowerLostMs <= POWER_WINDOW_MS) pendingCutMs = nowMs;
+            // Desenchufado (o el coche se fue): lo que arregla el cuelgue.
+            hangSuspectMs = Long.MIN_VALUE / 2;
+        } else if (gotCarInfo && livedMs >= LONG_MS && carSilent) {
+            hangSuspectMs = nowMs;
+            return Kind.NONE;
+        } else if (!gotCarInfo && nowMs - hangSuspectMs <= HANG_WINDOW_MS) {
+            return once(Kind.CAR_HUNG);
         }
         if (gotCarInfo && livedMs >= LONG_MS) earlyCuts = 0;
         if (gone && gotCarInfo && livedMs < EARLY_MS) {
@@ -57,6 +78,9 @@ final class UsbDiagnosis {
 
     /** El coche vuelve a hablar (CAR_INFO): si venía de un corte de corriente reciente, fue el coche. */
     Kind onCarInfo(long nowMs) {
+        // Ya no está colgada: si vuelve a pasar en este viaje, se avisa otra vez.
+        hangSuspectMs = Long.MIN_VALUE / 2;
+        shown.remove(Kind.CAR_HUNG);
         if (pendingCutMs > Long.MIN_VALUE / 4 && nowMs - pendingCutMs <= RETURN_WINDOW_MS) {
             lastCutSeconds = Math.max(1, (nowMs - pendingCutMs) / 1000);
             pendingCutMs = Long.MIN_VALUE / 2;
@@ -81,8 +105,8 @@ final class UsbDiagnosis {
         CURRENT.pendingCutMs = Long.MIN_VALUE / 2;
     }
 
-    static synchronized void sessionEnd(Context c, boolean gone, boolean gotCarInfo, long livedMs, int failures) {
-        notice(c, CURRENT.onSessionEnd(System.currentTimeMillis(), gone, gotCarInfo, livedMs, failures));
+    static synchronized void sessionEnd(Context c, boolean gone, boolean gotCarInfo, long livedMs, int failures, boolean carSilent) {
+        notice(c, CURRENT.onSessionEnd(System.currentTimeMillis(), gone, gotCarInfo, livedMs, failures, carSilent));
     }
 
     static synchronized void powerLost(Context c) {
@@ -105,6 +129,12 @@ final class UsbDiagnosis {
             case SILENT:
                 title = Str.get(com.andrerinas.openheadunit.R.string.hql_usb_silent_title);
                 text = Str.get(com.andrerinas.openheadunit.R.string.hql_usb_silent_text);
+                break;
+            case CAR_HUNG:
+                title = Str.get(com.andrerinas.openheadunit.R.string.hql_usb_hung_title);
+                text = Str.get(com.andrerinas.openheadunit.R.string.hql_usb_hung_text);
+                // La pantalla del coche se queda congelada: también por voz (el audio va por el Bluetooth del coche).
+                VoiceAlert.say(c, Str.get(com.andrerinas.openheadunit.R.string.hql_usb_hung_voice), "usb");
                 break;
             default:
                 title = Str.get(com.andrerinas.openheadunit.R.string.hql_usb_early_title);
