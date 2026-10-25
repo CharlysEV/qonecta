@@ -661,12 +661,13 @@ Per connetterti senza aprire l'app:
 | Profilo | Cosa fa |
 |---|---|
 | «Automatico (…)» | Segue quello consigliato per questo telefono. **La scelta migliore se non sei sicuro.** |
-| «Veicolo» (consigliato) | Quello che chiede l'auto (30 fps e circa 5 Mbit/s), senza sforzare il telefono. Parte a 720p e, se il telefono resta fresco per 10 minuti, sale alla risoluzione piena (si riconnette: 2-4 s di nero); con molto caldo torna a 720p. Nel pannello un piccolo avviso mostra risoluzione, fps e temperatura del telefono. Il minimo di calore e di batteria. |
-| «Molto alto» | Risoluzione piena a 60 fps con la latenza più bassa. Consuma di più. La C10 non mostra più di 30 fps. |
-| «Alto» | Risoluzione piena a 60 fps senza sforzare il telefono: meno batteria e calore, un po' più di ritardo. |
-| «Medio» | 720p a 45 fps costanti, ricodificato sul telefono. |
-| «Base» | 720p a 30 fps, senza ricodifica: il più leggero per il telefono. In «Auto esteso» si comporta come «Medio». |
-| «Molto basso» | 720p a 20 fps e bitrate basso: il minimo per batteria e connessione. |
+| «Veicolo» (consigliato) | Quello che chiede l'auto: 30 fps (60 con «Fluidità») e circa 5 Mbit/s. Risoluzione piena se il telefono è rimasto fresco nei viaggi precedenti e 720p se si è scaldato; in marcia scende a 720p solo se si scalda (si riconnette: 2-4 s di nero). Nel pannello compare un riquadro con risoluzione, fps e temperatura del telefono. Il più fresco a risoluzione piena. |
+| «Massimo (cavo)» | Per il cavo: 60 fps a risoluzione piena e l'immagine più nitida (H.264 High, codificatore al massimo). Via Wi-Fi, 30 fps. È quello che scalda di più il telefono. Se lo schermo dell'auto resta nero, torna a «Veicolo». |
+| «Molto alto» | Via cavo, 60 fps a risoluzione piena con il ritardo minimo (codificatore al massimo). Via Wi-Fi, 30 fps. Scalda parecchio. |
+| «Alto» | Via cavo, 60 fps a risoluzione piena senza forzare il telefono (un po' più di ritardo di «Molto alto»). Via Wi-Fi, 30 fps. |
+| «Medio» | 720p a 45 fps costanti, senza forzare il telefono. |
+| «Base» | 720p a 30 fps e poco bitrate: più leggero di «Veicolo». |
+| «Molto basso» | 720p a 20 fps e pochissimo bitrate: il minimo per la batteria e la connessione. |
 
 Se sei connesso, salvando un altro profilo l'auto e Android Auto si riconnettono da soli in pochi secondi.
 

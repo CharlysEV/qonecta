@@ -297,12 +297,14 @@ final class VideoPipeline {
         // Tamaño de los IDR: QP mínimo de los I-frames de partida (Android 12+); lo ajusta IdrSizeController.
         // Pruebas («qp N»): otro suelo para ver cuánto gana la nitidez (por cable sobra ancho de banda).
         int labQp = LabControl.enabled() ? LabControl.qpFloor : 0;
-        vp.qpIMin = labQp > 0 ? labQp : IdrSizeController.QP_START;
+        // Máximo por cable, más nítido (VideoProfile.qpFloorFor); los demás, el de siempre.
+        int profQp = cfg.videoProfile().qpFloorFor(plan.car.argsFps);
+        vp.qpIMin = labQp > 0 ? labQp : Math.min(IdrSizeController.QP_START, profQp);
         vp.qpIMax = IdrSizeController.QP_MAX;
         // Suelo de QP de los P-frames al configurar, el mismo que el del IDR (docs §23): sin él, el P-frame que sigue a
         // cada IDR afinaba la imagen entera y pesaba de mediana 2,3 veces el IDR (hasta 250-335 KB a 1,2-2,5 Mbit/s). El
         // c2.qti no hace caso de los cambios de QP en marcha, así que tiene que ir aquí.
-        vp.qpPMin = labQp > 0 ? labQp : PFrameSizeController.QP_FLOOR;
+        vp.qpPMin = labQp > 0 ? labQp : profQp;
         boolean latestFrame = source instanceof AaPassthroughSource;
         if (latestFrame) {
             // Como SspSession: sin IDR periódicos (el coche pide uno cuando lo necesita), intra-refresh. VBR en todos los
@@ -617,7 +619,10 @@ final class VideoPipeline {
         // Solo Coche a 30 se queda en 30 aunque el coche pida 60; los demás perfiles (Máximo, Muy alto…), a sus fps.
         VideoProfile prof = cfg.videoProfile();
         boolean full = gameMode || !prof.capsContentTo30();
-        int content = interactiveCap(prof.best(), gameMode, touchBoost, contentCap(full, cfg.fluidity(), plan.fps));
+        // Máximo, a los fps de la sesión todo el rato (antes, 30 sin tocar la pantalla: menos que Muy alto, en contra de su
+        // nombre). La variante de pruebas puede volver a probar el empujón con los toques (LabControl.touchBoost).
+        boolean touchCap = prof.best() && Boolean.TRUE.equals(LabControl.touchBoost);
+        int content = interactiveCap(touchCap, gameMode, touchBoost, contentCap(full, cfg.fluidity(), plan.fps));
         int fps = Math.min(Math.min(thermalFpsCap, linkFpsCap), content);
         // Variante de pruebas: el tope de Claude (LabControl), si lo hay.
         if (LabControl.fpsCap > 0) fps = Math.min(fps, LabControl.fpsCap);

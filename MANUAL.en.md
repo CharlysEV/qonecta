@@ -640,12 +640,13 @@ Everything is in the ⚙ menu on the main screen, a panel that slides up from th
 | Profile | What it does |
 |---|---|
 | "Automatic (…)" | Follows the recommended one for this phone. **The best choice if you're not sure.** |
-| "Car" (recommended) | What the car asks for (30 fps and about 5 Mbit/s), without pushing the phone. It starts at 720p and, if the phone has stayed cool for 10 minutes, goes up to full resolution (it reconnects: 2-4 s of black); when it gets really hot it goes back to 720p. A small sign in the panel shows the resolution, fps and phone temperature. The least heat and battery. |
-| "Very high" | Full resolution at 60 fps with the lowest latency. Uses more power. The C10 doesn't show more than 30 fps. |
-| "High" | Full resolution at 60 fps without pushing the phone: less battery and heat, a little more delay. |
-| "Medium" | 720p at a steady 45 fps, re-encoded on the phone. |
-| "Basic" | 720p at 30 fps, not re-encoded: the lightest for the phone. In "Auto extended" it behaves like "Medium". |
-| "Very low" | 720p at 20 fps and low bitrate: the minimum for battery and connection. |
+| "Car" (recommended) | What the car asks for: 30 fps (60 with "Smoothness") and about 5 Mbit/s. Full resolution if the phone stayed cool on previous trips and 720p if it got hot; while driving it only drops to 720p if it heats up (reconnects: 2-4 s of black). The panel shows a label with the resolution, the fps and the phone's temperature. The coolest at full resolution. |
+| "Maximum (cable)" | For the cable: 60 fps at full resolution and the sharpest picture (H.264 High, encoder at full power). On Wi-Fi, 30 fps. Heats the phone the most. If the car's screen stays black, go back to "Car". |
+| "Very high" | On the cable, 60 fps at full resolution with the lowest delay (encoder at full power). On Wi-Fi, 30 fps. Heats the phone quite a bit. |
+| "High" | On the cable, 60 fps at full resolution without pushing the phone (a little more delay than "Very high"). On Wi-Fi, 30 fps. |
+| "Medium" | 720p at a steady 45 fps, without pushing the phone. |
+| "Basic" | 720p at 30 fps and a low bitrate: lighter than "Car". |
+| "Very low" | 720p at 20 fps and a very low bitrate: the least for the battery and the connection. |
 
 If you're connected, saving another profile makes the car and Android Auto reconnect by themselves in a few seconds.
 

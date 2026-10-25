@@ -698,12 +698,13 @@ leistungsstarken Handys ist das „Fahrzeug“.
 | Profil | Was es macht |
 |---|---|
 | „Automatisch (…)“ | Folgt dem empfohlenen Profil für dieses Handy. **Die beste Wahl, wenn du nicht weißt, welches du nehmen sollst.** |
-| „Fahrzeug“ (empfohlen) | Das, was das Fahrzeug anfordert (30 fps und ca. 5 Mbit/s), ohne das Handy zu fordern. Startet mit 720p und wechselt auf volle Auflösung, wenn das Handy 10 Minuten lang kühl bleibt (verbindet neu: 2–4 s schwarz); bei echter Hitze geht es zurück auf 720p. In der Seitenleiste erscheint eine Anzeige mit Auflösung, fps und Temperatur des Handys. Erzeugt am wenigsten Hitze und braucht am wenigsten Akku. |
-| „Sehr hoch“ | Volle Auflösung mit 60 fps und minimaler Latenz. Braucht mehr Akku. Der C10 zeigt nicht mehr als 30 fps an. |
-| „Hoch“ | Volle Auflösung mit 60 fps, ohne das Handy zu fordern: weniger Akkuverbrauch und Hitze, etwas mehr Verzögerung. |
-| „Mittel“ | 720p mit konstant 45 fps, auf dem Handy neu kodiert. |
-| „Basis“ | 720p mit 30 fps, ohne Neukodierung: am schonendsten fürs Handy. In „Auto erweitert“ verhält es sich wie „Mittel“. |
-| „Sehr niedrig“ | 720p mit 20 fps und niedriger Bitrate: das Minimum für Akku und Verbindung. |
+| „Fahrzeug“ (empfohlen) | Was das Fahrzeug verlangt: 30 fps (60 mit „Bildrate“) und etwa 5 Mbit/s. Volle Auflösung, wenn das Handy bei den letzten Fahrten kühl blieb, und 720p, wenn es warm wurde; während der Fahrt geht es nur auf 720p herunter, wenn es warm wird (verbindet neu: 2-4 s schwarz). In der Seitenleiste erscheint ein Hinweis mit Auflösung, fps und Handytemperatur. Das kühlste bei voller Auflösung. |
+| „Maximum (Kabel)“ | Fürs Kabel: 60 fps in voller Auflösung und das schärfste Bild (H.264 High, Encoder auf Maximum). Per WLAN 30 fps. Erwärmt das Handy am stärksten. Bleibt das Fahrzeugdisplay schwarz, zurück zu „Fahrzeug“. |
+| „Sehr hoch“ | Per Kabel 60 fps in voller Auflösung mit der geringsten Verzögerung (Encoder auf Maximum). Per WLAN 30 fps. Erwärmt das Handy deutlich. |
+| „Hoch“ | Per Kabel 60 fps in voller Auflösung, ohne das Handy zu fordern (etwas mehr Verzögerung als „Sehr hoch“). Per WLAN 30 fps. |
+| „Mittel“ | 720p mit konstant 45 fps, ohne das Handy zu fordern. |
+| „Basis“ | 720p mit 30 fps und wenig Bitrate: leichter als „Fahrzeug“. |
+| „Sehr niedrig“ | 720p mit 20 fps und sehr wenig Bitrate: das Minimum für Akku und Verbindung. |
 
 Wenn du verbunden bist und ein anderes Profil speicherst, verbinden sich Fahrzeug und Android Auto in ein paar Sekunden
 von selbst neu.

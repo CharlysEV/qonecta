@@ -663,12 +663,13 @@ potentes é «Carro».
 | Perfil | O que faz |
 |---|---|
 | «Automático (…)» | Segue o recomendado para este telemóvel. **É a melhor opção se não sabe qual escolher.** |
-| «Carro» (recomendado) | O que o carro pede (30 fps e cerca de 5 Mbit/s), sem forçar o telemóvel. Começa em 720p e, se o telemóvel estiver fresco 10 minutos, sobe para a resolução completa (volta a ligar: 2-4 s a negro); com muito calor volta a 720p. No painel aparece um aviso pequeno com a resolução, os fps e a temperatura do telemóvel. É o que menos aquece e menos bateria gasta. |
-| «Muito alto» | Resolução completa a 60 fps com a latência mínima. Gasta mais. O C10 não mostra mais de 30 fps. |
-| «Alto» | Resolução completa a 60 fps sem forçar o telemóvel: menos bateria e calor, um pouco mais de atraso. |
-| «Médio» | 720p a 45 fps constantes, recodificado no telemóvel. |
-| «Básico» | 720p a 30 fps, sem recodificação: o mais leve para o telemóvel. No «Auto estendido» funciona como «Médio». |
-| «Muito baixo» | 720p a 20 fps e taxa de bits baixa: o mínimo para a bateria e a ligação. |
+| «Carro» (recomendado) | O que o carro pede: 30 fps (60 com «Fluidez») e cerca de 5 Mbit/s. Resolução completa se o telemóvel se manteve fresco nas viagens anteriores e 720p se aqueceu; em andamento só desce para 720p se aquecer (volta a ligar: 2-4 s a preto). No painel aparece um aviso com a resolução, os fps e a temperatura do telemóvel. O que menos aquece em resolução completa. |
+| «Máximo (cabo)» | Para o cabo: 60 fps em resolução completa e a imagem mais nítida (H.264 High, codificador no máximo). Por Wi-Fi, 30 fps. O que mais aquece o telemóvel. Se o ecrã do carro ficar preto, volte a «Carro». |
+| «Muito alto» | Por cabo, 60 fps em resolução completa com o menor atraso (codificador no máximo). Por Wi-Fi, 30 fps. Aquece bastante. |
+| «Alto» | Por cabo, 60 fps em resolução completa sem forçar o telemóvel (um pouco mais de atraso que «Muito alto»). Por Wi-Fi, 30 fps. |
+| «Médio» | 720p a 45 fps constantes, sem forçar o telemóvel. |
+| «Básico» | 720p a 30 fps e pouca taxa de bits: mais leve que «Carro». |
+| «Muito baixo» | 720p a 20 fps e muito pouca taxa de bits: o mínimo para a bateria e a ligação. |
 
 Se estiver ligado, ao guardar outro perfil o carro e o Android Auto voltam a ligar-se sozinhos em poucos segundos.
 

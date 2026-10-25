@@ -652,12 +652,13 @@ Todo está en el menú ⚙ de la pantalla principal, un panel que sube desde aba
 | Perfil | Qué hace |
 |---|---|
 | «Automático (…)» | Sigue al recomendado para este móvil. **Es la mejor opción si no sabes cuál elegir.** |
-| «Coche» (recomendado) | Lo que pide el coche (30 fps y unos 5 Mbit/s), sin forzar el móvil. Empieza en 720p y, si el móvil lleva 10 minutos fresco, sube a la resolución completa (reconecta: 2-4 s en negro); con calor de verdad vuelve a 720p. En el panel sale un cartel con la resolución, los fps y la temperatura del móvil. Es el que menos calienta y menos batería gasta. |
-| «Muy alto» | Resolución completa a 60 fps con la mínima latencia. Gasta más. El C10 no muestra más de 30 fps. |
-| «Alto» | Resolución completa a 60 fps sin forzar el móvil: menos batería y calor, algo más de retraso. |
-| «Medio» | 720p a 45 fps constantes, recodificado en el móvil. |
-| «Básico» | 720p a 30 fps, sin recodificar: lo más ligero para el móvil. En «Auto extendido» funciona como «Medio». |
-| «Muy bajo» | 720p a 20 fps y poco bitrate: lo mínimo para la batería y la conexión. |
+| «Coche» (recomendado) | Lo que pide el coche: 30 fps (60 con «Fluidez») y unos 5 Mbit/s. Resolución completa si el móvil aguantó fresco en los viajes anteriores y 720p si se calentó; en marcha solo baja a 720p si se calienta (reconecta: 2-4 s en negro). En el panel sale un cartel con la resolución, los fps y la temperatura del móvil. El que menos calienta a resolución completa. |
+| «Máximo (cable)» | Para el cable: 60 fps a resolución completa y la imagen más nítida (H.264 High, codificador al máximo). Por Wi-Fi, 30 fps. El que más calienta el móvil. Si el coche se queda en negro, vuelve a «Coche». |
+| «Muy alto» | Por cable, 60 fps a resolución completa con el mínimo retraso (codificador al máximo). Por Wi-Fi, 30 fps. Calienta bastante. |
+| «Alto» | Por cable, 60 fps a resolución completa sin forzar el móvil (algo más de retraso que «Muy alto»). Por Wi-Fi, 30 fps. |
+| «Medio» | 720p a 45 fps constantes, sin forzar el móvil. |
+| «Básico» | 720p a 30 fps y poco bitrate: más ligero que «Coche». |
+| «Muy bajo» | 720p a 20 fps y muy poco bitrate: lo mínimo para la batería y la conexión. |
 
 Si estás conectado, al guardar otro perfil el coche y Android Auto se reconectan solos en unos segundos.
 

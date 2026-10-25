@@ -29,9 +29,10 @@ class BestProfileTest {
         assertEquals(VideoProfile.BEST_MIN_BPS, p.minBitrateFor(60))
         assertEquals(VideoProfile.BEST_MAX_BPS, p.maxBitrateFor(60))
         assertEquals(VideoProfile.BEST_MAX_BPS, p.maxBitrateFor(0))
-        // Los demás perfiles, igual por Wi-Fi y por cable.
+        // Muy alto y Alto por Wi-Fi, frenados como Máximo (antes 60 fps y hasta 14-16 Mbit/s); por cable, los suyos.
         val high = VideoProfile.of(VideoProfile.HIGH)
-        assertEquals(high.maxBitrate, high.maxBitrateFor(30))
+        assertEquals(8_000_000, high.maxBitrateFor(30))
+        assertEquals(high.maxBitrate, high.maxBitrateFor(60))
         assertTrue(p.adaptiveBitrate())
         assertEquals("high", p.h264())
         // Siempre a resolución completa (la protección térmica no la baja a 720p).
