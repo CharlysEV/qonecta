@@ -779,14 +779,14 @@ und „Herunterladen und installieren“ (die App lädt die APK herunter und öf
 musst du Qonecta+ erlauben, unbekannte Apps zu installieren); beim ersten Start einer frisch installierten Version
 werden ihre Neuerungen angezeigt. Im Menü ⚙ prüft „Nach neuer Version suchen“ das sofort.
 
-„Blitzer-Sprachwarnungen“ (standardmäßig an): Wenn du dich einem Blitzer näherst, „Blitzer in 700 Metern, Limit 80“,
+„Blitzer-Sprachwarnungen“ (standardmäßig an, außer in Deutschland und der Schweiz, wo sie aus bleiben, bis du sie selbst einschaltest): Wenn du dich einem Blitzer näherst, „Blitzer in 700 Metern, Limit 80“,
 einmal pro Blitzer; und wenn du 400 Meter davor oder näher schneller fährst als erlaubt, „Du fährst 95, Limit 80“. Die
 Blitzer stammen aus OpenStreetMap, es kann also einer fehlen.
 
 > [!CAUTION]
 > In **Deutschland** ist es dem Fahrer verboten, während der Fahrt Blitzerwarner zu nutzen, auch als App auf dem
-> Handy (§ 23 Abs. 1c StVO); in der **Schweiz** ebenso. Schalte dort die „Blitzer-Sprachwarnungen“ aus. Die
-> Verantwortung für die Nutzung liegt bei dir.
+> Handy (§ 23 Abs. 1c StVO); in der **Schweiz** ebenso. Deshalb schaltet Qonecta+ die „Blitzer-Sprachwarnungen“ dort
+> von selbst aus (es erkennt das Land am Mobilfunknetz). Schaltest du sie selbst ein, liegt die Verantwortung bei dir.
 
 ### „Sprache“
 
@@ -1050,6 +1050,7 @@ einem Fehler hilft das exportierte Log (Abschnitt 8); teile es lieber privat als
 **Wie bekomme ich Hilfe?**
 Exportiere das Log (Abschnitt 8) und schreib dazu, was passiert ist und um wie viel Uhr. Es enthält keine Passwörter,
 keine Anschriften und nichts von dem, was du eintippst.
+Um einen Fehler zu melden oder etwas vorzuschlagen, eröffne ein „Issue“ unter [github.com/CharlysEV/qonecta/issues](https://github.com/CharlysEV/qonecta/issues). Das ist öffentlich: das Log lieber privat teilen.
 
 ---
 

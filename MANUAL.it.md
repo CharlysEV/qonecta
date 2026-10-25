@@ -738,7 +738,7 @@ e «Scarica e installa» (l'app scarica l'APK e apre l'installer di Android; la 
 Qonecta+ di installare app sconosciute); la prima volta che si avvia una versione appena installata, si mostrano le
 sue novità. Nel menu ⚙, «Cerca nuova versione» controlla subito.
 
-«Avvisi autovelox a voce» (attivo di default): avvicinandoti a un autovelox, «Autovelox a 700 metri, limite 80», una
+«Avvisi autovelox a voce» (attivo di default, tranne in Germania e in Svizzera, dove la legge vieta al conducente gli avvisi degli autovelox; lì restano spenti finché non li accendi tu): avvicinandoti a un autovelox, «Autovelox a 700 metri, limite 80», una
 volta per autovelox; e se a 400 metri o meno vai oltre il limite, «Vai a 95, limite 80». Gli autovelox vengono da
 OpenStreetMap, quindi qualcuno può mancare.
 
@@ -949,6 +949,7 @@ al minimo; toccare il telefono lo toglie.
 **Come chiedo aiuto?**
 Esporta il registro (sezione 8) e racconta cosa è successo e a che ora. Non contiene password, indirizzi né ciò che
 scrivi.
+Per segnalare un errore o proporre qualcosa, apri una segnalazione («Issue») su [github.com/CharlysEV/qonecta/issues](https://github.com/CharlysEV/qonecta/issues). È pubblica: il registro, meglio in privato.
 
 ---
 

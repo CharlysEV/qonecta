@@ -40,6 +40,8 @@ final class RoadInfo {
     private static RoadInfo instance;
     private final android.content.Context ctx;
     private final RadarVoice radarVoice = new RadarVoice();
+    /** Ya se apuntó en este viaje que los avisos de radar van apagados por el país. */
+    private boolean radarCountryLogged;
     private final CarSensors sensors;
     private volatile boolean running;
     private volatile State state = new State();
@@ -294,10 +296,17 @@ final class RoadInfo {
         // Aviso por voz (una vez por radar, y una vez si se va por encima del límite cerca de él).
         RadarVoice.Alert alert = radarVoice.onTick(st.cameraM, st.cameraLimit, nearest != null ? nearest[0] : 0,
                 nearest != null ? nearest[1] : 0, s.speedKmh);
-        if (alert != null && new Config(ctx).radarVoice()) {
-            String text = Str.get(alert.text, alert.args);
-            L.i("vía: aviso por voz: " + text);
-            VoiceAlert.say(ctx, text);
+        if (alert != null) {
+            Config cfg = new Config(ctx);
+            if (cfg.radarVoice()) {
+                String text = Str.get(alert.text, alert.args);
+                L.i("vía: aviso por voz: " + text);
+                VoiceAlert.say(ctx, text);
+            } else if (cfg.radarVoiceOffByCountry() && !radarCountryLogged) {
+                radarCountryLogged = true;
+                L.i("vía: avisos de radar por voz apagados de serie en " + Country.current(ctx)
+                        + " (la ley los prohíbe al conductor; se pueden encender en Ajustes)");
+            }
         }
         double[] sun = sunPosition(s.lat, s.lon, System.currentTimeMillis());
         st.sunElevation = sun[0];

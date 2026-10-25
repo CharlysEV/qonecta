@@ -234,7 +234,7 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
             cfg.putBool(Config.DGT_TRAFFIC, on);
             L.i("tráfico DGT: " + (on ? "activado" : "desactivado"));
         });
-        switchRow(Str.get(R.string.hql_radar_voice), null, cfg::radarVoice, on -> {
+        switchRow(Str.get(R.string.hql_radar_voice), () -> Str.get(R.string.hql_radar_voice_help), cfg::radarVoice, on -> {
             cfg.putBool(Config.RADAR_VOICE, on);
             L.i("avisos de radar por voz: " + (on ? "sí" : "no"));
         });

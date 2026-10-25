@@ -834,8 +834,18 @@ final class Config {
     /** Avisos de radar por voz (RadarVoice): radar delante y exceso de velocidad junto a él. */
     static final String RADAR_VOICE = "radar_voice";
 
+    /**
+     * Avisos de radar por voz: lo que se eligió en Ajustes o, sin elegir, de serie sí, salvo en los países donde la ley se
+     * los prohíbe al conductor (Country: Alemania y Suiza).
+     */
     boolean radarVoice() {
-        return sp.getBoolean(RADAR_VOICE, true);
+        if (sp.contains(RADAR_VOICE)) return sp.getBoolean(RADAR_VOICE, true);
+        return !Country.radarWarningsForbidden(Country.current(app));
+    }
+
+    /** Los avisos de radar están apagados solo porque se está en un país que los prohíbe (no se eligió nada). */
+    boolean radarVoiceOffByCountry() {
+        return !sp.contains(RADAR_VOICE) && Country.radarWarningsForbidden(Country.current(app));
     }
 
     /** Tarjeta flotante con la próxima parada sobre Android Auto (CarUi/FloatCard). */

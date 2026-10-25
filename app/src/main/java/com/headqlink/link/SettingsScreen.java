@@ -494,7 +494,7 @@ final class SettingsScreen implements CarScreen {
 
     private void buildTrip(Context c, LinearLayout col) {
         LinearLayout alerts = card(c, null);
-        alerts.addView(toggle(c, Str.get(R.string.hql_radar_voice), null, cfg.radarVoice(), on -> {
+        alerts.addView(toggle(c, Str.get(R.string.hql_radar_voice), Str.get(R.string.hql_radar_voice_help), cfg.radarVoice(), on -> {
             cfg.putBool(Config.RADAR_VOICE, on);
             refreshSummaries();
         }));

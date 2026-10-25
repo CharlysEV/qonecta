@@ -476,7 +476,7 @@
     <string name="hql_req_gaccuracy_ok">Off: Android doesn\'t scan for Wi-Fi networks while you drive. GPS works the same.</string>
     <string name="hql_star_badge">★ STAR FEATURE ★</string>
     <string name="hql_star_title">Fewer Wi-Fi dropouts</string>
-    <string name="hql_star_body">We found that, with «Google Location Accuracy» on, Google scans for Wi-Fi networks every 9 seconds while you use Android Auto. Each scan briefly cuts the connection to the car: picture jumps and touches that lag, above all with Hotspot.\n\nTurn it off and the phone stops those scans. In our tests, the dropouts they caused went away.</string>
+    <string name="hql_star_body">We found that, with “Google Location Accuracy” on, Google scans for Wi-Fi networks every 9 seconds while you use Android Auto. Each scan briefly cuts the connection to the car: picture jumps and touches that lag, above all with Hotspot.\n\nTurn it off and the phone stops those scans. In our tests, the dropouts they caused went away.</string>
     <string name="hql_star_gps">GPS keeps working the same: Maps, the route and the speed cameras don\'t need it. It only takes a little longer to locate you inside garages or buildings.</string>
     <string name="hql_star_state_on">You have it on right now</string>
     <string name="hql_star_state_off">You already have it off ✓</string>
@@ -486,7 +486,7 @@
     <string name="hql_star_also">You can also find it in Requirements check, as optional.</string>
     <string name="hql_req_port_title">Port 18463</string>
     <string name="hql_req_port_busy">Busy: QDLink (or another app) is open and the car can\'t find Qonecta+. Force stop it.</string>
-    <string name="hql_req_qdlink_why">Installed: close it before connecting (it takes port 18463). App info › Force stop. If you plug in the car cable, Android may hand it to QDLink: pick Qonecta+ and «Always».</string>
+    <string name="hql_req_qdlink_why">Installed: close it before connecting (it takes port 18463). App info › Force stop. If you plug in the car cable, Android may hand it to QDLink: pick Qonecta+ and “Always”.</string>
     <string name="hql_req_force_stop">Force stop</string>
     <string name="hql_req_bt">Bluetooth (nearby devices)</string>
     <string name="hql_req_bt_why">To recognise the car\'s Bluetooth and connect by itself</string>
@@ -525,9 +525,9 @@
     <string name="hql_experimental">Experimental</string>
     <string name="hql_req_usb">USB data cable</string>
     <string name="hql_req_usb_why">Connect the phone to the car\'s USB data port with a data cable (not a charge-only one). The car has to switch the phone to accessory mode: if nothing happens, export the log and send it to us (HQL/USB lines).</string>
-    <string name="hql_req_usb_chooser">With QDLink installed, Android may ask which app opens «QDriveLink» when you plug in the cable: choose Qonecta+ and «Always», or uninstall QDLink.</string>
+    <string name="hql_req_usb_chooser">With QDLink installed, Android may ask which app opens “QDriveLink” when you plug in the cable: choose Qonecta+ and “Always”, or uninstall QDLink.</string>
     <string name="hql_usb_guide_title">USB cable connection</string>
-    <string name="hql_usb_guide">1. Connect the phone to the car\'s USB data port with a data cable.\n2. Open the mirroring app on the car\'s screen.\n3. If Android asks which app opens «QDriveLink», choose Qonecta+ and «Always».\nQonecta+ starts on its own when the car switches the phone to accessory mode, whatever connection is chosen; when you unplug the cable it goes back to Wi-Fi. If nothing happens, export the log (Diagnostics) and send it to us.</string>
+    <string name="hql_usb_guide">1. Connect the phone to the car\'s USB data port with a data cable.\n2. Open the mirroring app on the car\'s screen.\n3. If Android asks which app opens “QDriveLink”, choose Qonecta+ and “Always”.\nQonecta+ starts on its own when the car switches the phone to accessory mode, whatever connection is chosen; when you unplug the cable it goes back to Wi-Fi. If nothing happens, export the log (Diagnostics) and send it to us.</string>
     <string name="hql_usb_net_waiting">USB cable: waiting for the car (data cable in the car\'s USB data port)</string>
     <string name="hql_usb_net_connected">USB cable: connected</string>
     <string name="hql_usb_net_permission">USB cable: allow Qonecta+ to open %1$s</string>
@@ -731,7 +731,7 @@
     <string name="hql_route_reev_fuel">The generator adds ~%1$.1f L of petrol</string>
     <string name="hql_search_listening">Listening… say the destination</string>
     <string name="hql_search_recent">Recent destinations</string>
-    <string name="hql_search_tip">Type and the results appear as you go (places too: «petrol station», «supermarket»…), or press Speak and say it.</string>
+    <string name="hql_search_tip">Type and the results appear as you go (places too: “petrol station”, “supermarket”…), or press Speak and say it.</string>
     <string name="hql_search_voice">Speak</string>
     <string name="hql_search_voice_none">Voice search isn\'t available on this phone.</string>
     <string name="hql_search_voice_nothing">Didn\'t catch that: try again or type it.</string>
@@ -965,12 +965,12 @@
     <string name="hql_settings_reconnect_note">Changing the profile or the smoothness reconnects the car and Android Auto (a few seconds).</string>
     <string name="hql_usb_busy_channel">Car cable</string>
     <string name="hql_usb_busy_title">The car cable is taken by another app</string>
-    <string name="hql_usb_busy_qdlink">The original QDLink app probably has it. Tap, then «Force stop», and Qonecta+ will take the cable.</string>
+    <string name="hql_usb_busy_qdlink">The original QDLink app probably has it. Tap, then “Force stop”, and Qonecta+ will take the cable.</string>
     <string name="hql_usb_busy_other">Close the app that is using it, or unplug and plug the cable back in.</string>
     <string name="hql_float_card">Next stop card over Android Auto</string>
     <string name="hql_float_card_help">Tap it to open the route; press and hold to move it.</string>
     <string name="hql_maps_planner">Planner from Google Maps</string>
-    <string name="hql_maps_planner_help">When you navigate with Google Maps, the app reads the destination from Maps on the car screen and works out the charging stops on its own. A card shows the route it read: «That\'s not it» removes it from the planner.</string>
+    <string name="hql_maps_planner_help">When you navigate with Google Maps, the app reads the destination from Maps on the car screen and works out the charging stops on its own. A card shows the route it read: “That\'s not it” removes it from the planner.</string>
     <string name="hql_gal_all">All</string>
     <string name="hql_gal_camera">Camera</string>
     <string name="hql_gal_downloads">Downloads</string>
@@ -1026,7 +1026,7 @@
     <string name="hql_setup_car_t03_detail">The city car: 45 kW fast charging, 265 km WLTP and a 10.1\" screen (the car display adapts).</string>
     <string name="hql_tips_channel">Tips</string>
     <string name="hql_charge_heat_title">The phone is getting hot while charging</string>
-    <string name="hql_charge_heat_text">It is charging at %1$d %% with the battery at %2$s °C. Turn on «Protect battery» (charges up to 80 %%) so it heats up less in the car.</string>
+    <string name="hql_charge_heat_text">It is charging at %1$d %% with the battery at %2$s °C. Turn on “Protect battery” (charges up to 80 %%) so it heats up less in the car.</string>
     <string name="hql_charge_heat_action">Battery settings</string>
     <string name="hql_res_going_up">Phone cool: going up to 1080p…</string>
     <string name="hql_res_going_down">Too hot: going down to 720p…</string>
@@ -1066,7 +1066,7 @@
     <string name="hql_android_car_mode">Android car mode while projecting (not needed; leaving it makes the phone reload every app, like a soft reset)</string>
     <string name="hql_update_acc_channel">Qonecta+ updated</string>
     <string name="hql_update_acc_title">Qonecta+ was updated</string>
-    <string name="hql_update_acc_text">Android turned off the «Qonecta+ touch» accessibility service with the update. Tap to turn it on again; without it the car screen stays black.</string>
+    <string name="hql_update_acc_text">Android turned off the “Qonecta+ touch” accessibility service with the update. Tap to turn it on again; without it the car screen stays black.</string>
     <string name="hql_epg_until">until %1$s</string>
     <string name="hql_backup_menu">Settings backup</string>
     <string name="hql_backup_help">Saves your TV and radio lists, favourites, web bookmarks, prices, charger filters, route planner, picture and panel settings and the car model to a file. Use it to move to a new phone or to share your setup with someone else.\n\nIt never includes your Leapmotor account, Home Assistant, web history or recent places. Lists opened from a file on this phone stay out. If a TV list has a username or password in its address, it goes in the file.</string>
@@ -1083,15 +1083,15 @@
     <string name="hql_v_invalid">Advanced: a value out of range was ignored (fps 0-120, kbps 0-100000, width and height 0-4096, window 0-64; empty = automatic)</string>
     <string name="hql_acc_lost_channel">Accessibility</string>
     <string name="hql_acc_lost_title">Qonecta+ lost its accessibility</string>
-    <string name="hql_acc_lost_text">Android turned off «Qonecta+ touch» (it usually happens when it force-closes the app). Without it the car screen stays black. Tap to turn it back on.</string>
+    <string name="hql_acc_lost_text">Android turned off “Qonecta+ touch” (it usually happens when it force-closes the app). Without it the car screen stays black. Tap to turn it back on.</string>
     <string name="hql_acc_prevent">Stop it happening again</string>
     <string name="hql_acc_guide_title">Keep Android from turning it off</string>
-    <string name="hql_acc_guide">Android turns accessibility off when it force-closes Qonecta+ to save battery or memory. To avoid it:\n\n• Qonecta+ battery: «Unrestricted».\n• %1$s\n• Never use «Force stop» on Qonecta+.</string>
-    <string name="hql_acc_guide_samsung">Samsung: Settings › Battery › Background usage limits: remove Qonecta+ from the sleeping apps and add it to «Never sleeping apps».</string>
-    <string name="hql_acc_guide_honor">%1$s: Settings › Battery › App launch › Qonecta+ › «Manage manually», with all three options on.</string>
-    <string name="hql_acc_guide_xiaomi">Xiaomi: turn on «Autostart» for Qonecta+ and set its Battery saver to «No restrictions».</string>
+    <string name="hql_acc_guide">Android turns accessibility off when it force-closes Qonecta+ to save battery or memory. To avoid it:\n\n• Qonecta+ battery: “Unrestricted”.\n• %1$s\n• Never use “Force stop” on Qonecta+.</string>
+    <string name="hql_acc_guide_samsung">Samsung: Settings › Battery › Background usage limits: remove Qonecta+ from the sleeping apps and add it to “Never sleeping apps”.</string>
+    <string name="hql_acc_guide_honor">%1$s: Settings › Battery › App launch › Qonecta+ › “Manage manually”, with all three options on.</string>
+    <string name="hql_acc_guide_xiaomi">Xiaomi: turn on “Autostart” for Qonecta+ and set its Battery saver to “No restrictions”.</string>
     <string name="hql_acc_guide_other">The manufacturer\'s battery manager: let Qonecta+ run in the background.</string>
-    <string name="hql_acc_guide_restricted">If Android won\'t let you turn it on: App info › ⋮ › «Allow restricted settings».</string>
+    <string name="hql_acc_guide_restricted">If Android won\'t let you turn it on: App info › ⋮ › “Allow restricted settings”.</string>
     <string name="hql_acc_guide_battery">Battery</string>
     <string name="hql_psx_enhanced">Enhanced PlayStation picture</string>
     <string name="hql_psx_enhanced_sum">Double internal resolution and no dithering: fewer jagged edges and smoother colours. Uses more battery and heat; applies to the next game you open.</string>
@@ -1215,7 +1215,7 @@
     <string name="hql_about_radio">Radio: radio-browser.info</string>
     <string name="hql_about_adblock">Ad blocking: HaGeZi Pro mini list (GPL-3.0)</string>
     <string name="hql_about_libs">Libraries and resources</string>
-    <string name="hql_about_3d">3D car: three.js (MIT) and «LEAPMOTORS C10» by vinishows-1753d1 (CC BY 4.0, modified)</string>
+    <string name="hql_about_3d">3D car: three.js (MIT) and “LEAPMOTORS C10” by vinishows-1753d1 (CC BY 4.0, modified)</string>
     <string name="hql_about_leaflet">Maps: Leaflet (BSD 2-Clause)</string>
     <string name="hql_about_emulators">Emulators: Nestopia, halfNES, bsnes, ClownMDEmu and PCSX ReARMed. Every licence, in the NOTICE file on GitHub.</string>
     <string name="hql_about_license">Licence GNU AGPL-3.0: free software, with its source code on GitHub and no warranty.</string>
@@ -1308,4 +1308,5 @@
     <string name="hql_trip_energy_fuel">Petrol: %1$.1f L · %2$.1f L/100 km</string>
     <string name="hql_trip_energy_battery">Battery: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km in total (to compare with electric trips)</string>
+    <string name="hql_radar_voice_help">Off by default in Germany and Switzerland, where the law forbids the driver from using speed camera warnings. If you turn them on there, it\'s your responsibility.</string>
 </resources>

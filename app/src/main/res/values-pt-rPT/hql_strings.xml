@@ -1304,4 +1304,5 @@
     <string name="hql_trip_energy_fuel">Gasolina: %1$.1f L · %2$.1f L/100 km</string>
     <string name="hql_trip_energy_battery">Bateria: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km no total (para comparar com as viagens em elétrico)</string>
+    <string name="hql_radar_voice_help">Desligados por omissão na Alemanha e na Suíça, onde a lei proíbe o condutor de usar avisos de radar. Se os ligar lá, é da sua responsabilidade.</string>
 </resources>

@@ -1304,4 +1304,5 @@
     <string name="hql_trip_energy_fuel">Benzina: %1$.1f L · %2$.1f L/100 km</string>
     <string name="hql_trip_energy_battery">Batteria: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km in totale (per il confronto con i viaggi in elettrico)</string>
+    <string name="hql_radar_voice_help">Spenti di serie in Germania e in Svizzera, dove la legge vieta al conducente gli avvisi degli autovelox. Se li accendi lì, è sotto la tua responsabilità.</string>
 </resources>

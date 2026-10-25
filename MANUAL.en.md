@@ -714,7 +714,7 @@ screen, when a new version is out a notice shows its news and "Download and inst
 first time it asks to allow Qonecta+ to install unknown apps); the first time a freshly installed
 version starts, its news is shown. In the ⚙ menu, "Check for new version" checks right away.
 
-"Speed camera voice alerts" (on by default): when you approach a camera, "Speed camera in 700 meters, limit 80",
+"Speed camera voice alerts" (on by default, except in Germany and Switzerland, where the law forbids the driver from using speed camera warnings; there they stay off unless you turn them on yourself): when you approach a camera, "Speed camera in 700 meters, limit 80",
 once per camera; and if at 400 meters or less you are over the limit, "You are doing 95, limit 80". Cameras come
 from OpenStreetMap, so some may be missing.
 
@@ -921,6 +921,7 @@ you play; touching the phone removes it.
 
 **How do I ask for help?**
 Export the log (section 8) and say what happened and when. It carries no passwords, addresses or typed text.
+To report a bug or suggest something, open an issue at [github.com/CharlysEV/qonecta/issues](https://github.com/CharlysEV/qonecta/issues). It's public: better share the log privately.
 
 ---
 

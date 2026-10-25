@@ -728,7 +728,7 @@ primera vez pide permitir a Qonecta+ instalar apps desconocidas); la primera
 vez que arranca una versión recién instalada, se enseñan sus novedades. En el menú ⚙, «Buscar versión nueva» lo
 comprueba al momento.
 
-«Avisos de radar por voz» (activado de serie): al acercarte a un radar, «Radar a 700 metros, límite 80», una vez por
+«Avisos de radar por voz» (activado de serie, salvo en Alemania y Suiza, donde la ley prohíbe al conductor usar avisadores de radar; allí van apagados mientras no los enciendas tú): al acercarte a un radar, «Radar a 700 metros, límite 80», una vez por
 radar; y si a 400 metros o menos vas por encima del límite, «Vas a 95, límite 80». Los radares salen de
 OpenStreetMap, así que puede faltar alguno.
 
@@ -935,6 +935,7 @@ brillo al mínimo para que no pase; tocar el móvil la quita.
 
 **¿Cómo pido ayuda?**
 Exporta el log (sección 8) y cuenta qué pasó y a qué hora. No lleva contraseñas, direcciones ni lo que escribes.
+Para avisar de un fallo o proponer algo, abre un aviso («Issue») en [github.com/CharlysEV/qonecta/issues](https://github.com/CharlysEV/qonecta/issues). Es público: el log, mejor por privado.
 
 ---
 

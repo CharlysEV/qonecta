@@ -89,7 +89,7 @@
     <string name="hql_guess_stops_add">Adicionar ao Maps</string>
     <string name="hql_guess_stops_no">Sem paradas</string>
     <string name="hql_guess_stops_fail_title">Não consegui mudar a rota do Google Maps</string>
-    <string name="hql_guess_stops_fail_text">O Maps continua com a rota dele. Encerre com o X e toque em «Tentar de novo».</string>
+    <string name="hql_guess_stops_fail_text">O Maps continua com a rota dele. Encerre com o X e toque em “Tentar de novo”.</string>
     <string name="hql_guess_stops_retry">Tentar de novo</string>
     <!-- «Ruta en Qonecta+» (ShareDestActivity, SharedDest) -->
     <string name="hql_share_label">Rota no Qonecta+</string>

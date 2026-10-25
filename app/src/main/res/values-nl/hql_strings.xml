@@ -476,7 +476,7 @@
     <string name="hql_req_gaccuracy_ok">Uit: Android zoekt niet naar wifinetwerken terwijl je rijdt. De gps werkt hetzelfde.</string>
     <string name="hql_star_badge">★ TOPNIEUWS ★</string>
     <string name="hql_star_title">Minder haperingen via wifi</string>
-    <string name="hql_star_body">We ontdekten dat Google met «Google-locatienauwkeurigheid» aan elke 9 seconden naar wifinetwerken zoekt terwijl je Android Auto gebruikt. Elke zoekactie onderbreekt even de verbinding met de auto: beeldsprongen en trage aanrakingen, vooral met hotspot.\n\nZet je het uit, dan stopt de telefoon met die zoekacties. In onze tests verdwenen de haperingen die ze veroorzaakten.</string>
+    <string name="hql_star_body">We ontdekten dat Google met „Google-locatienauwkeurigheid” aan elke 9 seconden naar wifinetwerken zoekt terwijl je Android Auto gebruikt. Elke zoekactie onderbreekt even de verbinding met de auto: beeldsprongen en trage aanrakingen, vooral met hotspot.\n\nZet je het uit, dan stopt de telefoon met die zoekacties. In onze tests verdwenen de haperingen die ze veroorzaakten.</string>
     <string name="hql_star_gps">De gps blijft hetzelfde werken: Maps, de route en de flitspalen hebben het niet nodig. Alleen in garages of gebouwen duurt het iets langer om je te vinden.</string>
     <string name="hql_star_state_on">Het staat nu aan</string>
     <string name="hql_star_state_off">Het staat al uit ✓</string>
@@ -965,7 +965,7 @@
     <string name="hql_float_card">Kaart met de volgende stop boven Android Auto</string>
     <string name="hql_float_card_help">Tik om de route te openen; houd ingedrukt om hem te verplaatsen.</string>
     <string name="hql_maps_planner">Planner vanuit Google Maps</string>
-    <string name="hql_maps_planner_help">Als je met Google Maps navigeert, leest de app de bestemming uit Maps op het autoscherm en plant hij zelf de laadstops. Een kaart toont de gelezen route: «Klopt niet» haalt hem uit de planner.</string>
+    <string name="hql_maps_planner_help">Als je met Google Maps navigeert, leest de app de bestemming uit Maps op het autoscherm en plant hij zelf de laadstops. Een kaart toont de gelezen route: „Klopt niet” haalt hem uit de planner.</string>
     <string name="hql_gal_all">Alle</string>
     <string name="hql_gal_camera">Camera</string>
     <string name="hql_gal_downloads">Downloads</string>
@@ -1061,7 +1061,7 @@
     <string name="hql_android_car_mode">Android-automodus tijdens projecteren (niet nodig; bij het verlaten laadt de telefoon alle apps opnieuw, als een zachte herstart)</string>
     <string name="hql_update_acc_channel">Qonecta+ bijgewerkt</string>
     <string name="hql_update_acc_title">Qonecta+ is bijgewerkt</string>
-    <string name="hql_update_acc_text">Android heeft de toegankelijkheidsservice «Qonecta+ aanraking» bij de update uitgeschakeld. Tik om hem weer in te schakelen; zonder blijft het autoscherm zwart.</string>
+    <string name="hql_update_acc_text">Android heeft de toegankelijkheidsservice „Qonecta+ aanraking” bij de update uitgeschakeld. Tik om hem weer in te schakelen; zonder blijft het autoscherm zwart.</string>
     <string name="hql_epg_until">tot %1$s</string>
     <string name="hql_backup_menu">Back-up van instellingen</string>
     <string name="hql_backup_help">Slaat je tv- en radiolijsten, favorieten, webbladwijzers, prijzen, laadpaalfilters, routeplanner, beeld- en paneelinstellingen en het automodel op in een bestand. Handig bij een nieuwe telefoon of om je instellingen te delen.\n\nNooit inbegrepen: je Leapmotor-account, Home Assistant, webgeschiedenis en recente plaatsen. Lijsten uit een bestand op deze telefoon blijven buiten. Staat er een gebruikersnaam of wachtwoord in het adres van een tv-lijst, dan gaat dat mee.</string>
@@ -1078,15 +1078,15 @@
     <string name="hql_v_invalid">Geavanceerd: een waarde buiten bereik is genegeerd (fps 0-120, kbps 0-100000, breedte en hoogte 0-4096, venster 0-64; leeg = automatisch)</string>
     <string name="hql_acc_lost_channel">Toegankelijkheid</string>
     <string name="hql_acc_lost_title">Qonecta+ is de toegankelijkheid kwijt</string>
-    <string name="hql_acc_lost_text">Android heeft «Qonecta+ aanraking» uitgezet (meestal als het de app geforceerd sluit). Zonder blijft het autoscherm zwart. Tik om hem weer aan te zetten.</string>
+    <string name="hql_acc_lost_text">Android heeft „Qonecta+ aanraking” uitgezet (meestal als het de app geforceerd sluit). Zonder blijft het autoscherm zwart. Tik om hem weer aan te zetten.</string>
     <string name="hql_acc_prevent">Voorkomen dat het weer gebeurt</string>
     <string name="hql_acc_guide_title">Zodat Android hem niet weer uitzet</string>
-    <string name="hql_acc_guide">Android zet de toegankelijkheid uit als het Qonecta+ geforceerd sluit om batterij of geheugen te sparen. Zo voorkom je dat:\n\n• Batterij van Qonecta+: «Onbeperkt».\n• %1$s\n• Gebruik nooit «Gedwongen stoppen» bij Qonecta+.</string>
-    <string name="hql_acc_guide_samsung">Samsung: Instellingen › Batterij › Limieten achtergrondgebruik: haal Qonecta+ uit de slapende apps en voeg hem toe aan «Nooit slapende apps».</string>
-    <string name="hql_acc_guide_honor">%1$s: Instellingen › Batterij › App starten › Qonecta+ › «Handmatig beheren», met alle drie de opties aan.</string>
-    <string name="hql_acc_guide_xiaomi">Xiaomi: zet «Autostart» aan voor Qonecta+ en zet de batterijbesparing op «Geen beperkingen».</string>
+    <string name="hql_acc_guide">Android zet de toegankelijkheid uit als het Qonecta+ geforceerd sluit om batterij of geheugen te sparen. Zo voorkom je dat:\n\n• Batterij van Qonecta+: „Onbeperkt”.\n• %1$s\n• Gebruik nooit „Gedwongen stoppen” bij Qonecta+.</string>
+    <string name="hql_acc_guide_samsung">Samsung: Instellingen › Batterij › Limieten achtergrondgebruik: haal Qonecta+ uit de slapende apps en voeg hem toe aan „Nooit slapende apps”.</string>
+    <string name="hql_acc_guide_honor">%1$s: Instellingen › Batterij › App starten › Qonecta+ › „Handmatig beheren”, met alle drie de opties aan.</string>
+    <string name="hql_acc_guide_xiaomi">Xiaomi: zet „Autostart” aan voor Qonecta+ en zet de batterijbesparing op „Geen beperkingen”.</string>
     <string name="hql_acc_guide_other">De batterijbeheerder van de fabrikant: laat Qonecta+ op de achtergrond werken.</string>
-    <string name="hql_acc_guide_restricted">Als Android het aanzetten niet toestaat: App-info › ⋮ › «Beperkte instellingen toestaan».</string>
+    <string name="hql_acc_guide_restricted">Als Android het aanzetten niet toestaat: App-info › ⋮ › „Beperkte instellingen toestaan”.</string>
     <string name="hql_acc_guide_battery">Batterij</string>
     <string name="hql_psx_enhanced">Verbeterd PlayStation-beeld</string>
     <string name="hql_psx_enhanced_sum">Dubbele interne resolutie en geen dithering: minder kartelranden en vloeiendere kleuren. Kost iets meer batterij en wordt warmer; geldt vanaf het volgende spel.</string>
@@ -1303,4 +1303,5 @@
     <string name="hql_trip_energy_fuel">Benzine: %1$.1f L · %2$.1f L/100 km</string>
     <string name="hql_trip_energy_battery">Accu: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km in totaal (om te vergelijken met elektrische ritten)</string>
+    <string name="hql_radar_voice_help">Standaard uit in Duitsland en Zwitserland, waar de wet flitserwaarschuwingen voor de bestuurder verbiedt. Zet je ze daar aan, dan is dat op eigen verantwoordelijkheid.</string>
 </resources>
