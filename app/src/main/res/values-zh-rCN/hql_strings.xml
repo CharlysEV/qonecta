@@ -307,8 +307,8 @@
     <string name="hql_setup_diag_body">在车机上显示测试图像，实时显示流畅度和触摸。适合在使用 Android Auto 之前检查连接。</string>
     <string name="hql_setup_guide">1.  点按“打开 AA”（如果没有显示，请先点按“检查”）。\n2.  滑到 Android Auto 设置的底部。\n3.  点按“版本”10 次并接受警告。\n4.  回到 Qonecta+：它会自动检查。</string>
     <string name="hql_setup_guide_title">如何开启开发者模式</string>
-    <string name="hql_setup_media">照片、视频和位置信息</string>
-    <string name="hql_setup_media_why">用于车机上的图库和驾驶面板</string>
+    <string name="hql_setup_media">照片、视频、音乐和位置信息</string>
+    <string name="hql_setup_media_why">用于车机上的图库、你的音乐和驾驶面板</string>
     <string name="hql_setup_missing_msg">%1$s\n\n你仍然可以完成设置，之后在“更改”中补全。</string>
     <string name="hql_setup_missing_title">还差一步</string>
     <string name="hql_setup_overlay">显示在其他应用上层</string>
@@ -1322,5 +1322,13 @@
     <string name="hql_aquarium_more">再来一条</string>
     <plurals name="hql_aquarium_fish">
         <item quantity="other">%d 条鱼</item>
+    </plurals>
+    <string name="hql_music_mine">我的音乐</string>
+    <string name="hql_music_perm">请在手机上授予 Qonecta+ 音乐和音频权限（Android 13 或更高版本）：⚙ › 检查。</string>
+    <string name="hql_music_loading">正在读取你的音乐…</string>
+    <string name="hql_music_none">手机上没有歌曲。请把 MP3 或 FLAC 复制到“音乐”文件夹。</string>
+    <string name="hql_music_shuffle">随机播放</string>
+    <plurals name="hql_music_songs">
+        <item quantity="other">%d 首歌曲</item>
     </plurals>
 </resources>

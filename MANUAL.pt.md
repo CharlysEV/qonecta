@@ -143,7 +143,7 @@ Ecrã «O seu telemóvel, no ecrã do C10», com o que é preciso «Antes de com
 > **Privacidade no «Auto estendido».** Os painéis usam a localização do telemóvel, se der autorização, e serviços
 > abertos da internet: OpenStreetMap e OSRM para a rota e os carregadores, Open-Meteo para a meteorologia e o vento, e
 > radio-browser.info para a rádio. Para fazer as contas, a esses serviços chega a sua posição ou o seu destino. Se não
-> quiser, escolha «Auto» ou não conceda a autorização «Fotos, vídeos e localização».
+> quiser, escolha «Auto» ou não conceda a autorização «Fotos, vídeos, música e localização».
 
 **«Ligação ao carro»**
 
@@ -196,7 +196,7 @@ Aqui está a **Verificação**: uma lista com tudo o que a sua configuração pr
 | «QDLink» ou «Porta 18463» a vermelho («Ocupada») | O QDLink (ou outra aplicação) está aberto neste momento. | «Forçar paragem». |
 | «Bluetooth (dispositivos próximos)» (Obrigatório se ativar a ligação automática) | Para reconhecer o Bluetooth do carro e ligar sozinho. | «Permitir». |
 | «Apresentar sobre outras aplicações» (Opcional) | Para abrir o Android Auto com o telemóvel em segundo plano. | «Permitir». |
-| «Fotos, vídeos e localização» (Opcional, «Auto estendido») | Para a galeria e os painéis de condução no carro. | «Permitir». |
+| «Fotos, vídeos, música e localização» (Opcional, «Auto estendido») | Para a galeria, a sua música e os painéis de condução no carro. | «Permitir». |
 | «Localização sempre» (Recomendado, «Auto estendido») | Para que os dados do carro continuem com o telemóvel bloqueado (ver [O que vê e como se usa](#o-que-vê-e-como-se-usa)). | «Abrir»: explica porquê e abre a página do Android; escolha «Permitir sempre» («Permitir o tempo todo» no Brasil). Se ainda não tiver a localização, pede-a antes. |
 
 > [!IMPORTANT]
@@ -756,6 +756,13 @@ sistema.
 
 Cole o URL de uma lista M3U ou toque em «Escolher ficheiro». Sem lista de rádio, o carro mostra as estações populares.
 
+### «A minha música» (Rádio, «Auto estendido»)
+
+No carro, Rádio › «♪ A minha música» mostra as músicas do telemóvel (MP3, FLAC, OGG, M4A… as que o Android tem na
+biblioteca: pasta Música, Transferências ou uma pen USB), por artista e álbum. Toque numa e seguem-se as outras;
+«Aleatório» mistura-as. Toca como a rádio: continua ao mudar de ecrã, com o mini leitor do painel e os comandos do
+volante. Precisa da permissão «Fotos, vídeos, música e localização» (Android 13 ou superior).
+
 ### «Marcadores web» («Auto estendido»)
 
 Os atalhos do ecrã «Web» do carro (de origem, YouTube, Google, Wikipedia e Twitch). Adicione os seus com nome e
@@ -1036,7 +1043,7 @@ Pode pedir ajuda na página do projeto no GitHub: [CharlysEV/qonecta](https://gi
 | Bluetooth (dispositivos próximos) | Reconhecer o Bluetooth do carro. | Só com a ligação automática |
 | Sem restrições de bateria | Continuar a funcionar com o ecrã desligado. | Recomendado |
 | Apresentar sobre outras aplicações | Abrir o Android Auto com o telemóvel em segundo plano. | Opcional |
-| Fotos, vídeos e localização | Galeria e painéis de condução. | Opcional, «Auto estendido» |
+| Fotos, vídeos, música e localização | Galeria, a sua música e painéis de condução. | Opcional, «Auto estendido» |
 | Localização sempre | Que os painéis de «Carro» continuem com o telemóvel bloqueado. Só se usa com a ligação em curso ou os ecrãs «Carro» abertos. | Recomendado, «Auto estendido» |
 | Microfone | «Falar» em «Procurar destino»: entende-o o reconhecimento de voz do telemóvel. | Opcional, «Auto estendido» |
 | Internet | Serviços do «Auto estendido» (OpenStreetMap, OSRM, Open-Meteo, radio-browser.info), a procura de destinos (Photon e a pesquisa de moradas do Android, da Google: recebem o que escreve), o mapa das viagens (mosaicos do OpenStreetMap), as suas listas de TV e rádio e, se a configurar, a nuvem da Leapmotor (dados reais do carro, só de leitura). | Só essas funções |

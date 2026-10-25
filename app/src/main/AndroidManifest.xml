@@ -137,6 +137,8 @@
     <!-- headqlink: fotos y vídeos del móvil en la pantalla del coche (modo Android Auto ampliado) -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <!-- headqlink: tu música del móvil en Radio › Mi música (MusicLibrary). -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <!-- headqlink: el sitio de cada foto en el pase de diapositivas (su GPS); sin él, solo la fecha. -->
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <!--

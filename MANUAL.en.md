@@ -126,7 +126,7 @@ The "Your phone, on the C10's screen" screen, with what you need "Before you sta
 > **Privacy in "Auto extended".** Its panels use the phone's location, if you allow it, and open internet services:
 > OpenStreetMap and OSRM for routes and chargers, Open-Meteo for weather and wind, and radio-browser.info for radio. To
 > work these out, those services receive your position or your destination. If you don't want that, choose "Auto" or
-> don't grant the "Photos, videos and location" permission.
+> don't grant the "Photos, videos, music and location" permission.
 
 **"Connection to the car"**
 
@@ -179,7 +179,7 @@ This is the **requirements check**: a list of everything your setup needs. It's 
 | "QDLink" or "Port 18463" in red ("Busy") | QDLink (or another app) is open right now. | "Force stop". |
 | "Bluetooth (nearby devices)" (Required if you turn on the automatic connection) | To recognise the car's Bluetooth and connect by itself. | "Allow". |
 | "Display over other apps" (Optional) | To open Android Auto with the phone in the background. | "Allow". |
-| "Photos, videos and location" (Optional, "Auto extended") | For the gallery and the driving panels in the car. | "Allow". |
+| "Photos, videos, music and location" (Optional, "Auto extended") | For the gallery, your music and the driving panels in the car. | "Allow". |
 | "Location all the time" (Recommended, "Auto extended") | So the car data keeps going with the phone locked (see [What you see and how to use it](#what-you-see-and-how-to-use-it)). | "Open": explains why and opens Android's page; choose "Allow all the time". If it doesn't have the location yet, it asks for it first. |
 
 > [!IMPORTANT]
@@ -731,6 +731,13 @@ language.
 
 Paste the URL of an M3U list or tap "Choose file". Without a radio list, the car shows the popular stations.
 
+### "My music" (Radio, "Auto extended")
+
+In the car, Radio › "♪ My music" shows the songs on the phone (MP3, FLAC, OGG, M4A… the ones in Android's library:
+the Music folder, Downloads or a USB drive), by artist and album. Tap one and the rest follow; "Shuffle" mixes them.
+It plays like the radio: it keeps going when you change screen, with the panel's mini player and the steering
+wheel buttons. It needs the "Photos, videos, music and location" permission (Android 13 or later).
+
 ### "Web bookmarks" ("Auto extended")
 
 The shortcuts on the car's "Web" screen (YouTube, Google, Wikipedia and Twitch by default). Add your own with a
@@ -1010,7 +1017,7 @@ You can ask for help on the project's GitHub page: [CharlysEV/qonecta](https://g
 | Bluetooth (nearby devices) | Recognising the car's Bluetooth. | Only with the automatic connection |
 | No battery restrictions | Keeping it running with the screen off. | Recommended |
 | Display over other apps | Opening Android Auto with the phone in the background. | Optional |
-| Photos, videos and location | Gallery and driving panels. | Optional, "Auto extended" |
+| Photos, videos, music and location | Gallery, your music and driving panels. | Optional, "Auto extended" |
 | Location all the time | Keeping the "Car" panels going with the phone locked. Only used with the link running or the "Car" screens open. | Recommended, "Auto extended" |
 | Microphone | "Speak" in "Search destination": the phone's speech recognition understands it. | Optional, "Auto extended" |
 | Internet | "Auto extended" services (OpenStreetMap, OSRM, Open-Meteo, radio-browser.info), the destination search (Photon and Android's address search, Google's: they receive what you type), the trip map (OpenStreetMap tiles), your TV and radio lists and, if you set it up, the Leapmotor cloud (real car data, read-only). | Only those features |

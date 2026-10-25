@@ -134,7 +134,7 @@ Bildschirm „Dein Handy auf dem Display des C10“ mit allem, was du brauchst, 
 > **Datenschutz bei „Auto erweitert“.** Seine Ansichten nutzen den Standort des Handys, wenn du es erlaubst, und offene
 > Internetdienste: OpenStreetMap und OSRM für Route und Ladestationen, Open-Meteo für Wetter und Wind und
 > radio-browser.info für das Radio. Für die Berechnung erhalten diese Dienste deine Position oder dein Ziel. Wenn du das
-> nicht willst, wähle „Auto“ oder erteile die Berechtigung „Fotos, Videos und Standort“ nicht.
+> nicht willst, wähle „Auto“ oder erteile die Berechtigung „Fotos, Videos, Musik und Standort“ nicht.
 
 **„Verbindung zum Fahrzeug“**
 
@@ -187,7 +187,7 @@ später im Menü ⚙ › „Voraussetzungen prüfen“ findest.
 | „QDLink“ oder „Port 18463“ in Rot („Belegt“) | QDLink (oder eine andere App) ist gerade geöffnet. | „Beenden erzwingen“. |
 | „Bluetooth (Geräte in der Nähe)“ (Pflicht, wenn du die automatische Verbindung einschaltest) | Um das Bluetooth des Fahrzeugs zu erkennen und von selbst zu verbinden. | „Zulassen“. |
 | „Über anderen Apps einblenden“ (Optional) | Damit Android Auto auch aus dem Hintergrund geöffnet werden kann. | „Zulassen“. |
-| „Fotos, Videos und Standort“ (Optional, „Auto erweitert“) | Für die Galerie und die Fahrtanzeigen im Fahrzeug. | „Zulassen“. |
+| „Fotos, Videos, Musik und Standort“ (Optional, „Auto erweitert“) | Für die Galerie, deine Musik und die Fahrtanzeigen im Fahrzeug. | „Zulassen“. |
 | „Standort immer zulassen“ (Empfohlen, „Auto erweitert“) | Damit die Fahrzeugdaten bei gesperrtem Handy weiterlaufen (siehe [Was du siehst und wie du es bedienst](#was-du-siehst-und-wie-du-es-bedienst)). | „Öffnen“: erklärt den Grund und öffnet die Android-Seite; wähle „Immer zulassen“. Hat die App noch gar keinen Standortzugriff, fragt sie vorher danach. |
 
 > [!IMPORTANT]
@@ -802,6 +802,14 @@ Verbindung. Unter Android 12 oder älter nutzt die App die Systemsprache.
 Füge die URL einer M3U-Liste ein oder tippe auf „Datei wählen“. Wenn du keine Radioliste angibst, erscheinen im
 Fahrzeug die beliebtesten Sender.
 
+### „Meine Musik“ (Radio, „Auto erweitert“)
+
+Im Fahrzeug zeigt Radio › „♪ Meine Musik“ die Titel auf dem Handy (MP3, FLAC, OGG, M4A … die in der Mediathek von
+Android: Ordner „Music“, Downloads oder ein USB-Stick), nach Interpret und Album. Tippst du einen an, laufen die
+anderen danach; „Zufällig“ mischt sie. Es spielt wie das Radio: läuft beim Bildschirmwechsel weiter, mit dem
+Mini-Player im Panel und den Lenkradtasten. Dafür braucht es die Berechtigung „Fotos, Videos, Musik und Standort“
+(ab Android 13).
+
 ### „Web-Lesezeichen“ („Auto erweitert“)
 
 Die Verknüpfungen auf dem Bildschirm „Web“ im Fahrzeug (standardmäßig YouTube, Google, Wikipedia und Twitch). Füge
@@ -1142,7 +1150,7 @@ Hilfe bekommst du auch auf der Projektseite bei GitHub: [CharlysEV/qonecta](http
 | Bluetooth (Geräte in der Nähe) | Das Bluetooth des Fahrzeugs erkennen. | Nur mit der automatischen Verbindung |
 | Keine Akkueinschränkungen | Bei ausgeschaltetem Bildschirm weiterlaufen. | Empfohlen |
 | Über anderen Apps einblenden | Android Auto öffnen, während die App im Hintergrund läuft. | Optional |
-| Fotos, Videos und Standort | Galerie und Fahransichten. | Optional, „Auto erweitert“ |
+| Fotos, Videos, Musik und Standort | Galerie, deine Musik und Fahransichten. | Optional, „Auto erweitert“ |
 | Standort immer zulassen | Damit die Fahrzeug-Ansichten bei gesperrtem Handy weiterlaufen. Wird nur genutzt, solange die Verbindung läuft oder die Fahrzeug-Ansichten offen sind. | Empfohlen, „Auto erweitert“ |
 | Mikrofon | „Sprechen“ in „Ziel suchen“: Die Spracherkennung des Handys wertet es aus. | Optional, „Auto erweitert“ |
 | Internet | Dienste von „Auto erweitert“ (OpenStreetMap, OSRM, Open-Meteo, radio-browser.info), die Zielsuche (Photon und die Adresssuche von Android, also von Google: Beide erhalten, was du eintippst), die Karte der Fahrten (Kacheln von OpenStreetMap), deine TV- und Radiolisten und, wenn du sie einrichtest, die Leapmotor-Cloud (echte Fahrzeugdaten, nur lesend). | Nur für diese Funktionen |

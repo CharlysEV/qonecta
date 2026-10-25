@@ -96,9 +96,9 @@ final class Ui {
                 ? dot.getContext().getColor(R.color.hql_idle) : levelColor(dot.getContext(), level)));
     }
 
-    /** Modo ampliado: fotos y vídeos, y ubicación para los paneles Instrumentos y Eficiencia. */
+    /** Modo ampliado: fotos, vídeos y música, y ubicación para los paneles Instrumentos y Eficiencia. */
     static final String[] MEDIA_PERMS = {Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO,
-            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+            Manifest.permission.READ_MEDIA_AUDIO, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
     static boolean mediaPermsGranted(Context ctx) {
         for (String p : MEDIA_PERMS) {

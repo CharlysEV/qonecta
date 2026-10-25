@@ -307,8 +307,8 @@
     <string name="hql_setup_diag_body">Affiche dans la voiture une image de test avec la fluidité et les appuis en temps réel. Utile pour vérifier la connexion avant d\'utiliser Android Auto.</string>
     <string name="hql_setup_guide">1.  Appuyez sur « Ouvrir AA » (s\'il n\'apparaît pas, appuyez d\'abord sur « Vérifier »).\n2.  Faites défiler jusqu\'en bas des paramètres d\'Android Auto.\n3.  Appuyez 10 fois sur « Version » et acceptez l\'avertissement.\n4.  Revenez à Qonecta+ : la vérification est automatique.</string>
     <string name="hql_setup_guide_title">Comment activer le mode développeur</string>
-    <string name="hql_setup_media">Photos, vidéos et position</string>
-    <string name="hql_setup_media_why">Pour la galerie et les panneaux de conduite dans la voiture</string>
+    <string name="hql_setup_media">Photos, vidéos, musique et position</string>
+    <string name="hql_setup_media_why">Pour la galerie, ta musique et les panneaux de conduite dans la voiture</string>
     <string name="hql_setup_missing_msg">%1$s\n\nVous pouvez terminer quand même et compléter plus tard depuis « Modifier ».</string>
     <string name="hql_setup_missing_title">Il reste une étape</string>
     <string name="hql_setup_overlay">Affichage par-dessus les autres applis</string>
@@ -1320,5 +1320,14 @@
     <plurals name="hql_aquarium_fish">
         <item quantity="one">%d poisson</item>
         <item quantity="other">%d poissons</item>
+    </plurals>
+    <string name="hql_music_mine">Ma musique</string>
+    <string name="hql_music_perm">Accorde à Qonecta+ l\'autorisation musique et audio sur le téléphone (Android 13 ou plus) : ⚙ › Vérification.</string>
+    <string name="hql_music_loading">Lecture de ta musique…</string>
+    <string name="hql_music_none">Aucun morceau sur le téléphone. Copie tes MP3 ou FLAC dans le dossier Musique.</string>
+    <string name="hql_music_shuffle">Aléatoire</string>
+    <plurals name="hql_music_songs">
+        <item quantity="one">%d morceau</item>
+        <item quantity="other">%d morceaux</item>
     </plurals>
 </resources>

@@ -127,7 +127,7 @@ Pantalla «Tu móvil, en la pantalla del C10», con lo que hace falta «Antes de
 > **Privacidad en «Auto extendido».** Sus paneles usan la ubicación del móvil, si le das permiso, y servicios abiertos
 > de internet: OpenStreetMap y OSRM para la ruta y los cargadores, Open-Meteo para el tiempo y el viento, y
 > radio-browser.info para la radio. Para calcularlo, a esos servicios les llega tu posición o tu destino. Si no lo
-> quieres, elige «Auto» o no concedas el permiso «Fotos, vídeos y ubicación».
+> quieres, elige «Auto» o no concedas el permiso «Fotos, vídeos, música y ubicación».
 
 **«Conexión con el coche»**
 
@@ -180,7 +180,7 @@ menú ⚙ › «Comprobación».
 | «QDLink» o «Puerto 18463» en rojo («Ocupado») | QDLink (u otra app) está abierta ahora mismo. | «Forzar detención». |
 | «Bluetooth (dispositivos cercanos)» (Obligatorio si activas la conexión automática) | Para reconocer el Bluetooth del coche y conectar sola. | «Permitir». |
 | «Mostrar sobre otras apps» (Opcional) | Para abrir Android Auto con el móvil en segundo plano. | «Permitir». |
-| «Fotos, vídeos y ubicación» (Opcional, «Auto extendido») | Para la galería y los paneles de conducción del coche. | «Permitir». |
+| «Fotos, vídeos, música y ubicación» (Opcional, «Auto extendido») | Para la galería, tu música y los paneles de conducción del coche. | «Permitir». |
 | «Ubicación todo el tiempo» (Recomendado, «Auto extendido») | Para que los datos del coche sigan con el móvil bloqueado (ver [Qué ves y cómo se maneja](#qué-ves-y-cómo-se-maneja)). | «Abrir»: explica el porqué y abre la página de Android; elige «Permitir todo el tiempo». Si aún no tiene la ubicación, la pide antes. |
 
 > [!IMPORTANT]
@@ -746,6 +746,13 @@ Android 12 o anterior, la app usa el idioma del sistema.
 Pega la URL de una lista M3U o pulsa «Elegir archivo». Si no pones lista de radio, en el coche salen las emisoras
 populares.
 
+### «Mi música» (Radio, «Auto extendido»)
+
+En el coche, Radio › «♪ Mi música» enseña las canciones del móvil (MP3, FLAC, OGG, M4A… las que Android tiene en
+su biblioteca: carpeta Música, Descargas o un USB), por artista y álbum. Toca una y sigue con las demás;
+«Aleatorio» las mezcla. Suena como la radio: sigue al cambiar de pantalla, con el mini reproductor del panel y los
+mandos del volante. Necesita el permiso «Fotos, vídeos, música y ubicación» (Android 13 o superior).
+
 ### «Marcadores web» («Auto extendido»)
 
 Los accesos de la pantalla «Web» del coche (de serie, YouTube, Google, Wikipedia y Twitch). Añade los tuyos con
@@ -1025,7 +1032,7 @@ Puedes pedir ayuda en la página del proyecto en GitHub: [CharlysEV/qonecta](htt
 | Bluetooth (dispositivos cercanos) | Reconocer el Bluetooth del coche. | Solo con la conexión automática |
 | Batería sin restricciones | Seguir funcionando con la pantalla apagada. | Recomendado |
 | Mostrar sobre otras apps | Abrir Android Auto con el móvil en segundo plano. | Opcional |
-| Fotos, vídeos y ubicación | Galería y paneles de conducción. | Opcional, «Auto extendido» |
+| Fotos, vídeos, música y ubicación | Galería, tu música y paneles de conducción. | Opcional, «Auto extendido» |
 | Ubicación todo el tiempo | Que los paneles de «Coche» sigan con el móvil bloqueado. Solo se usa con el enlace en marcha o las pantallas «Coche» abiertas. | Recomendado, «Auto extendido» |
 | Micrófono | «Hablar» en «Buscar destino»: lo entiende el reconocimiento de voz del móvil. | Opcional, «Auto extendido» |
 | Internet | Servicios de «Auto extendido» (OpenStreetMap, OSRM, Open-Meteo, radio-browser.info), el buscador de destinos (Photon y el de direcciones de Android, de Google: reciben lo que escribes), el mapa de los viajes (teselas de OpenStreetMap), tus listas de TV y radio y, si la configuras, la nube de Leapmotor (datos reales del coche, solo lectura). | Solo esas funciones |

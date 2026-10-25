@@ -307,8 +307,8 @@
     <string name="hql_setup_diag_body">Toont in de auto een testbeeld met de vloeiendheid en de aanrakingen in realtime. Handig om de verbinding te controleren voordat je Android Auto gebruikt.</string>
     <string name="hql_setup_guide">1.  Tik op ‘AA openen’ (staat die er niet, tik dan eerst op ‘Controleren’).\n2.  Scrol helemaal naar beneden in de instellingen van Android Auto.\n3.  Tik 10 keer op ‘Versie’ en accepteer de waarschuwing.\n4.  Ga terug naar Qonecta+: het controleert dit vanzelf.</string>
     <string name="hql_setup_guide_title">Ontwikkelaarsmodus aanzetten</string>
-    <string name="hql_setup_media">Foto\'s, video\'s en locatie</string>
-    <string name="hql_setup_media_why">Voor de galerij en de rijgegevens in de auto</string>
+    <string name="hql_setup_media">Foto\'s, video\'s, muziek en locatie</string>
+    <string name="hql_setup_media_why">Voor de galerij, je muziek en de rijgegevens in de auto</string>
     <string name="hql_setup_missing_msg">%1$s\n\nJe kunt toch afronden en het later aanvullen via ‘Wijzigen’.</string>
     <string name="hql_setup_missing_title">Nog één stap</string>
     <string name="hql_setup_overlay">Weergeven vóór andere apps</string>
@@ -1319,5 +1319,14 @@
     <plurals name="hql_aquarium_fish">
         <item quantity="one">%d vis</item>
         <item quantity="other">%d vissen</item>
+    </plurals>
+    <string name="hql_music_mine">Mijn muziek</string>
+    <string name="hql_music_perm">Geef Qonecta+ op de telefoon toestemming voor muziek en audio (Android 13 of hoger): ⚙ › Controle.</string>
+    <string name="hql_music_loading">Je muziek wordt gelezen…</string>
+    <string name="hql_music_none">Geen nummers op de telefoon. Kopieer je MP3- of FLAC-bestanden naar de map Muziek.</string>
+    <string name="hql_music_shuffle">Shuffle</string>
+    <plurals name="hql_music_songs">
+        <item quantity="one">%d nummer</item>
+        <item quantity="other">%d nummers</item>
     </plurals>
 </resources>

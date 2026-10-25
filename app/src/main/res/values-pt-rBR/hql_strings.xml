@@ -307,8 +307,8 @@
     <string name="hql_setup_diag_body">Mostra no carro uma imagem de teste com a fluidez e os toques em tempo real. Útil para verificar a conexão antes de usar o Android Auto.</string>
     <string name="hql_setup_guide">1.  Toque em \"Abrir AA\" (se não aparecer, toque primeiro em \"Verificar\").\n2.  Role até o final das configurações do Android Auto.\n3.  Toque 10 vezes em \"Versão\" e aceite o aviso.\n4.  Volte ao Qonecta+: ele verifica sozinho.</string>
     <string name="hql_setup_guide_title">Como ativar o modo de desenvolvedor</string>
-    <string name="hql_setup_media">Fotos, vídeos e localização</string>
-    <string name="hql_setup_media_why">Para a galeria e os painéis de direção no carro</string>
+    <string name="hql_setup_media">Fotos, vídeos, música e localização</string>
+    <string name="hql_setup_media_why">Para a galeria, suas músicas e os painéis de direção no carro</string>
     <string name="hql_setup_missing_msg">%1$s\n\nVocê pode concluir mesmo assim e completar depois em \"Alterar\".</string>
     <string name="hql_setup_missing_title">Falta um passo</string>
     <string name="hql_setup_overlay">Sobrepor a outros apps</string>
@@ -1320,5 +1320,14 @@
     <plurals name="hql_aquarium_fish">
         <item quantity="one">%d peixe</item>
         <item quantity="other">%d peixes</item>
+    </plurals>
+    <string name="hql_music_mine">Minhas músicas</string>
+    <string name="hql_music_perm">Conceda ao Qonecta+ a permissão de música e áudio no celular (Android 13 ou superior): ⚙ › Verificação.</string>
+    <string name="hql_music_loading">Lendo suas músicas…</string>
+    <string name="hql_music_none">Não há músicas no celular. Copie seus MP3 ou FLAC para a pasta Música.</string>
+    <string name="hql_music_shuffle">Aleatório</string>
+    <plurals name="hql_music_songs">
+        <item quantity="one">%d música</item>
+        <item quantity="other">%d músicas</item>
     </plurals>
 </resources>
