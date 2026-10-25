@@ -1347,4 +1347,22 @@
     <string name="hql_diary_cost">费用</string>
     <string name="hql_diary_climb">爬升</string>
     <string name="hql_diary_stops">停靠</string>
+    <string name="hql_trivia">问答</string>
+    <string name="hql_trivia_q_century">“%1$s”是哪个世纪的？</string>
+    <string name="hql_trivia_q_what">“%1$s”是什么？</string>
+    <string name="hql_trivia_q_nearest">现在哪个地方离你最近？</string>
+    <string name="hql_trivia_q_famous">哪个在维基百科上的浏览量最多？</string>
+    <string name="hql_trivia_a_city">城镇</string>
+    <string name="hql_trivia_a_landmark">古迹或建筑</string>
+    <string name="hql_trivia_a_mountain">山或山脉</string>
+    <string name="hql_trivia_a_water">湖泊或水库</string>
+    <string name="hql_trivia_a_river">河流</string>
+    <string name="hql_trivia_a_isle">岛屿</string>
+    <string name="hql_trivia_a_forest">森林或自然公园</string>
+    <string name="hql_trivia_right">答对了！</string>
+    <string name="hql_trivia_wrong">不对，答案是：%1$s</string>
+    <string name="hql_trivia_score">答对 %1$d / %2$d</string>
+    <string name="hql_trivia_next">下一题</string>
+    <string name="hql_trivia_back">返回导览</string>
+    <string name="hql_trivia_none">附近的地点还不够出题。过几公里再试试。</string>
 </resources>

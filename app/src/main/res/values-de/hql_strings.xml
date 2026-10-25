@@ -1345,4 +1345,22 @@
     <string name="hql_diary_cost">Kosten</string>
     <string name="hql_diary_climb">Höhenmeter</string>
     <string name="hql_diary_stops">Stopps</string>
+    <string name="hql_trivia">Quiz</string>
+    <string name="hql_trivia_q_century">Aus welchem Jahrhundert stammt „%1$s“?</string>
+    <string name="hql_trivia_q_what">Was ist „%1$s“?</string>
+    <string name="hql_trivia_q_nearest">Welcher dieser Orte ist gerade am nächsten?</string>
+    <string name="hql_trivia_q_famous">Welcher Artikel hat die meisten Aufrufe in Wikipedia?</string>
+    <string name="hql_trivia_a_city">Ein Ort oder eine Stadt</string>
+    <string name="hql_trivia_a_landmark">Ein Denkmal oder Bauwerk</string>
+    <string name="hql_trivia_a_mountain">Ein Berg oder Gebirge</string>
+    <string name="hql_trivia_a_water">Ein See oder Stausee</string>
+    <string name="hql_trivia_a_river">Ein Fluss</string>
+    <string name="hql_trivia_a_isle">Eine Insel</string>
+    <string name="hql_trivia_a_forest">Ein Wald oder Naturpark</string>
+    <string name="hql_trivia_right">Richtig!</string>
+    <string name="hql_trivia_wrong">Nein, richtig war: %1$s</string>
+    <string name="hql_trivia_score">%1$d von %2$d richtig</string>
+    <string name="hql_trivia_next">Weiter</string>
+    <string name="hql_trivia_back">Zurück zum Reiseführer</string>
+    <string name="hql_trivia_none">Noch nicht genug Orte in der Nähe für Fragen. Versuch es in ein paar Kilometern noch einmal.</string>
 </resources>

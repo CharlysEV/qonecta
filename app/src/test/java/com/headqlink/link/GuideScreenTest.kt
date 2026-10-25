@@ -63,6 +63,8 @@ class GuideScreenTest {
                 "Conserva la muralla, la torre del homenaje y un aljibe. Fue declarado Bien de Interés Cultural en 1949.")
         it.list.add(place(2, "Ermita de Ejemplo", 5.0, -1.5, "Una ermita románica."))
         it.list.add(place(3, "Embalse de Ejemplo", 9.0, 0.5, "Un embalse."))
+        it.pool.add(it.current!!)
+        it.pool.addAll(it.list)
     }
 
     private fun build(w: Int, s: RoadGuide.State): Pair<GuideScreen, View> {
@@ -162,12 +164,34 @@ class GuideScreenTest {
     }
 
     @Test
+    fun theTriviaAsksAboutNearbyPlacesAndSaysIfYouGotItRight() {
+        val (_, v) = build(full, moving())
+        views(v).first { it.text.toString() == "?  Trivial" }.performClick()
+        val t = texts(v)
+        assertTrue(t.toString(), t.any { it.startsWith("¿") } && t.contains("0 de 0 aciertos"))
+        // Se toca la respuesta buena (la de «más cerca» es el castillo; la del siglo, el XII; etc.): se buscan las tres y se
+        // prueba la primera; el resultado sale en verde o con la buena.
+        val opts = views(v).filter { it.isClickable && it.text.isNotEmpty() && !it.text.startsWith("?") && !it.text.startsWith("‹") &&
+            !it.text.startsWith("Siguiente") && it.text.toString() !in listOf("Voz", "Sin voz", "■  Parar", "Contar", "Llévame") }
+        assertTrue(opts.toString(), opts.size >= 3)
+        opts[0].performClick()
+        val after = texts(v)
+        assertTrue(after.toString(), after.contains("¡Correcto!") || after.any { it.startsWith("No, era: ") })
+        assertTrue(after.toString(), after.any { it.endsWith("de 1 aciertos") })
+    }
+
+    @Test
     fun render() {
         org.junit.Assume.assumeTrue(System.getProperty("hql.preview") == "1")
         val dir = File(System.getProperty("hql.preview.dir")!!)
         dir.mkdirs()
-        for ((name, w) in listOf("guia" to full, "guia_partida" to split)) {
+        for ((name, w) in listOf("guia" to full, "guia_partida" to split, "guia_trivial" to full)) {
             val v = build(w, moving()).second
+            if (name == "guia_trivial") {
+                views(v).first { it.text.toString() == "?  Trivial" }.performClick()
+                v.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY))
+                v.layout(0, 0, w, height)
+            }
             val b = Bitmap.createBitmap(w, height, Bitmap.Config.ARGB_8888)
             val c = Canvas(b)
             c.drawColor(CarStyle.BG)

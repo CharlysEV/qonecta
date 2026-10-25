@@ -566,6 +566,10 @@ comes from Wikipedia, in the app's language.
   one once and at most one every 4 minutes. It never talks over a call, the navigator's directions or another alert,
   and the music is lowered for a moment while it speaks. While it speaks, "Stop" cuts it off at once. "No
   voice": cards only (and it cuts off what it is saying).
+- **Trivia:** "? Trivia" (top) asks three-answer questions about the places around, for those in the car: which
+  century it is from, what it is (a town, a monument, a reservoir…), which one is closest and which one gets the
+  most Wikipedia visits. The right one turns green and, with "Voice", it is said aloud; it keeps the score. "Back to
+  the guide" closes it.
 - **Stopped:** after a minute stopped (for example, charging), it shows what is nearby on foot, with the walking time.
 - **Split screen:** with "Split screen", the guide sits next to Android Auto, in one column, and can be used while
   driving, with no warning.

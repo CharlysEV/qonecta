@@ -58,6 +58,8 @@ final class RoadGuide {
     static final double AHEAD_DEG = 75;
     static final double BESIDE_DEG = 100;
     static final double BESIDE_KM = 2;
+    /** El trivial pregunta por lo que hay a esta distancia o menos. */
+    static final double TRIVIA_KM = 25;
     /** Lo que se enseña, como mucho. */
     static final double LIST_KM = 15;
     static final int LIST_MAX = 8;
@@ -133,6 +135,8 @@ final class RoadGuide {
         Place current;
         /** Más adelante (en marcha) o cerca a pie (parado), por distancia y sin la de la tarjeta. */
         final List<Place> list = new ArrayList<>();
+        /** Todo lo que merece la pena alrededor (cargado), para el trivial del camino (RoadTrivia). */
+        final List<Place> pool = new ArrayList<>();
     }
 
     interface Listener {
@@ -622,6 +626,7 @@ final class RoadGuide {
         else cur = best(list);
         st.current = cur;
         for (Place p : list) if (p != cur) st.list.add(p);
+        for (Place p : places.values()) if (worth(p) && km(s.lat, s.lon, p) <= TRIVIA_KM) st.pool.add(p);
         st.talking = VoiceAlert.speaking(VOICE);
         st.status = cur != null ? Status.READY : offline ? Status.OFFLINE : searched ? Status.READY : Status.LOADING;
         return st;

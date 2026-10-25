@@ -619,6 +619,10 @@ Gebirge… Die Infos stammen aus Wikipedia, in der Sprache der App.
   liegen, von jedem nur einmal und höchstens alle 4 Minuten von einem. Er spricht nie über einen Anruf, die Ansagen
   der Navigation oder einen anderen Hinweis hinweg, und die Musik wird leiser, solange er spricht. Während er spricht,
   erscheint „Stopp“, das ihn sofort unterbricht. „Ohne Stimme“: nur die Karten (und was er gerade erzählt, bricht ab).
+- **Quiz:** „? Quiz“ (oben) stellt Fragen mit drei Antworten zu den Orten in der Nähe, für die Mitfahrer: aus
+  welchem Jahrhundert, was es ist (ein Ort, ein Denkmal, ein Stausee …), was am nächsten liegt und was die meisten
+  Aufrufe in Wikipedia hat. Die richtige wird grün und, mit „Stimme“, laut gesagt; die Treffer werden gezählt.
+  „Zurück zum Reiseführer“ schließt es.
 - **Im Stand:** Nach einer Minute Stillstand (zum Beispiel beim Laden) zeigt er, was du zu Fuß in der Nähe hast, mit
   der Gehzeit in Minuten.
 - **Geteilter Bildschirm:** Mit „Bildschirm teilen“ steht der Reiseführer in einer Spalte neben Android Auto, und das

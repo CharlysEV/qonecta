@@ -586,6 +586,9 @@ da Wikipedia, nella lingua dell'app.
   una volta e al massimo uno ogni 4 minuti. Non parla mai sopra una chiamata, le indicazioni del navigatore o un altro
   avviso, e la musica si abbassa un momento mentre parla. Mentre parla compare «Ferma», che la interrompe
   subito. «Senza voce»: solo le schede (e interrompe quello che sta raccontando).
+- **Quiz:** «? Quiz» (in alto) fa domande a tre risposte sui luoghi intorno, per chi è in auto: di che secolo è,
+  che cos'è (un paese, un monumento, un bacino…), quale è più vicino e quale ha più visite su Wikipedia. Quella
+  giusta diventa verde e, con «Voce», lo dice ad alta voce; tiene il conto. «Torna alla guida» lo chiude.
 - **Da fermo:** dopo un minuto da fermo (per esempio in ricarica), mostra cosa c'è vicino a piedi, con i minuti a piedi.
 - **Schermo diviso:** con «Dividi schermo», la guida sta accanto ad Android Auto, in una colonna, e si può usare in
   marcia, senza avviso.

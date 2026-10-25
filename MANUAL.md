@@ -580,6 +580,10 @@ Lo saca de Wikipedia, en el idioma de la app.
   por delante, cada uno una vez y como mucho uno cada 4 minutos. Nunca habla encima de una llamada, de las indicaciones
   del navegador ni de otro aviso, y la música baja un momento mientras habla. Mientras habla sale «Parar»,
   que la corta al momento. «Sin voz»: solo las tarjetas (y corta lo que esté contando).
+- **Trivial:** «? Trivial» (arriba) hace preguntas de tres respuestas sobre los sitios de alrededor, para los que
+  van en el coche: de qué siglo es, qué es (un pueblo, un monumento, un embalse…), cuál está más cerca y cuál tiene
+  más visitas en Wikipedia. La buena se pone en verde y, con «Voz», lo dice en voz alta; lleva la cuenta de
+  aciertos. «Volver a la guía» lo cierra.
 - **Parado:** tras un minuto parado (por ejemplo, cargando), enseña lo que tienes cerca a pie, con los minutos andando.
 - **Pantalla partida:** con «Partir pantalla», la guía va junto a Android Auto, en una columna, y vale en marcha, sin
   aviso.

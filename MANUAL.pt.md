@@ -588,6 +588,9 @@ Wikipédia, no idioma da aplicação.
   uma vez e no máximo um a cada 4 minutos. Nunca fala por cima de uma chamada, das indicações do navegador nem de outro
   aviso, e a música baixa um momento enquanto fala. Enquanto fala aparece «Parar», que a corta logo. «Sem
   voz»: só os cartões (e corta o que estiver a contar).
+- **Quiz:** «? Quiz» (em cima) faz perguntas de três respostas sobre os sítios à volta, para quem vai no carro: de
+  que século é, o que é (uma vila, um monumento, uma albufeira…), qual está mais perto e qual tem mais visitas na
+  Wikipédia. A certa fica a verde e, com «Voz», diz-se em voz alta; conta os acertos. «Voltar à guia» fecha-o.
 - **Parado:** após um minuto parado (por exemplo, a carregar), mostra o que tem perto a pé, com os minutos a andar.
 - **Ecrã dividido:** com «Dividir ecrã», o guia fica ao lado do Android Auto, numa coluna, e pode ser usado em
   andamento, sem aviso.
