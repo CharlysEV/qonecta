@@ -175,6 +175,17 @@ class CarCloudTest {
     }
 
     @Test
+    fun theTokenIsRenewedBeforeItExpires() {
+        val now = 1_761_400_000_000L
+        // Le queda una hora o menos (o ya caducó): se renueva; más, o sin saberlo, no se toca.
+        assertTrue(CarCloudSession.refreshDue(now + 30 * 60_000L, now))
+        assertTrue(CarCloudSession.refreshDue(now + CarCloudSession.REFRESH_AHEAD_MS, now))
+        assertTrue(CarCloudSession.refreshDue(now - 1, now))
+        assertFalse(CarCloudSession.refreshDue(now + 2 * 3_600_000L, now))
+        assertFalse(CarCloudSession.refreshDue(0, now))
+    }
+
+    @Test
     fun batteryProfiles() {
         assertEquals(69.9, CarCloudStore.capacityFor("", 0.0), 0.0)
         assertEquals(69.9, CarCloudStore.capacityFor(CarCloudStore.PROFILE_C10_LIFE, 0.0), 0.0)

@@ -216,7 +216,9 @@ public class CarCloudActivity extends Activity {
                 : hasCert ? R.string.hql_cloud_cert_replace : R.string.hql_cloud_cert_import);
         certRestart.setVisibility(half.kind == CertPick.Step.Kind.NEED_KEY || half.kind == CertPick.Step.Kind.NEED_CERT
                 ? View.VISIBLE : View.GONE);
-        loginBox.setVisibility(hasSession ? View.GONE : View.VISIBLE);
+        // Sesión caducada: el formulario (con el correo puesto) sin tener que cerrar sesión antes.
+        boolean expired = hasSession && CarCloud.snapshot().state == CarCloud.State.EXPIRED;
+        loginBox.setVisibility(hasSession && !expired ? View.GONE : View.VISIBLE);
         sessionBox.setVisibility(hasSession ? View.VISIBLE : View.GONE);
         session.setText(Str.get(R.string.hql_cloud_logged_in, store.maskedEmail()));
         String type = store.carType();

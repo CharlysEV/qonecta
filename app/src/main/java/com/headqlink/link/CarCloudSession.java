@@ -113,11 +113,53 @@ final class CarCloudSession {
     /** El último token del que se apuntó la caducidad. */
     private static String loggedToken;
 
+    /** Se renueva el token cuando le queda menos de esto (antes, solo cuando la nube ya lo rechazaba, a veces horas tarde). */
+    static final long REFRESH_AHEAD_MS = 60 * 60_000;
+
+    /** Puro: ¿toca renovar ya? expMs: cuándo caduca el token (ms; 0 si no se sabe: no se toca). */
+    static boolean refreshDue(long expMs, long nowMs) {
+        return expMs > 0 && expMs - nowMs <= REFRESH_AHEAD_MS;
+    }
+
+    /** Con el cliente cargado: renueva el token si caduca pronto. true si lo renovó. */
+    private static boolean refreshIfDue(CarCloudStore st) throws IOException, GeneralSecurityException {
+        LeapApi.Session s = api.session();
+        if (s == null || !refreshDue(LeapCrypto.tokenExpiryMs(s.token), System.currentTimeMillis())) return false;
+        try {
+            api.refresh();
+        } catch (LeapApi.SessionExpiredException e) {
+            // La nube ya no lo renueva: lo dirá la llamada siguiente (y el log lleva lo que contestó, LeapApi.refresh).
+            L.w("nube Leapmotor: no se pudo renovar antes de caducar: " + e.getMessage());
+            return false;
+        }
+        persist(st);
+        L.i("nube Leapmotor: token renovado antes de caducar");
+        return true;
+    }
+
+    /**
+     * Mantiene la sesión viva sin abrir la app: la comprobación de fondo (ChargeCheckJob, ~15 min) la llama y el token se
+     * renueva antes de caducar, para no tener que volver a poner la contraseña tras unas horas sin leer el coche.
+     */
+    static synchronized void keepAlive(Context ctx) {
+        try {
+            CarCloudStore st = new CarCloudStore(ctx);
+            if (!st.hasSession()) return;
+            ensure(st);
+            refreshIfDue(st);
+        } catch (NotConfiguredException ignored) {
+            // Sin cuenta: nada que mantener.
+        } catch (IOException | GeneralSecurityException | RuntimeException e) {
+            L.w("nube Leapmotor: mantener la sesión: " + Http.safeError(e));
+        }
+    }
+
     /** Estado del coche elegido (lo usan el sondeo y «Leer estado ahora»). */
     static synchronized LeapStatus readStatus(Context ctx) throws IOException, GeneralSecurityException {
         CarCloudStore st = new CarCloudStore(ctx);
         ensure(st);
         if (saved.vin.isEmpty()) throw new NotConfiguredException("sin coche elegido");
+        refreshIfDue(st);
         int v0 = api.sessionVersion();
         JSONObject data;
         try {
