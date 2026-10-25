@@ -1304,4 +1304,6 @@
     <string name="hql_trip_energy_battery">Accu: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km in totaal (om te vergelijken met elektrische ritten)</string>
     <string name="hql_radar_voice_help">Standaard uit in Duitsland en Zwitserland, waar de wet flitserwaarschuwingen voor de bestuurder verbiedt. Zet je ze daar aan, dan is dat op eigen verantwoordelijkheid.</string>
+    <string name="hql_web_yt_quality">YouTube-kwaliteit: %1$s</string>
+    <string name="hql_web_yt_auto">automatisch</string>
 </resources>

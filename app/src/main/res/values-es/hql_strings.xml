@@ -1310,4 +1310,6 @@
     <string name="hql_trip_energy_battery">Batería: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km en total (para comparar con los viajes en eléctrico)</string>
     <string name="hql_radar_voice_help">De serie, apagados en Alemania y Suiza, donde la ley prohíbe al conductor usar avisadores de radar. Si los enciendes allí, es bajo tu responsabilidad.</string>
+    <string name="hql_web_yt_quality">Calidad de YouTube: %1$s</string>
+    <string name="hql_web_yt_auto">automática</string>
 </resources>

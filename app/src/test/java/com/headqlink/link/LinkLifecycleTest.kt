@@ -237,6 +237,55 @@ class LinkLifecycleTest {
     }
 
     @Test
+    fun bluetoothGoneJustBeforeLosingTheCarClosesEverything() {
+        // Al apagar el coche, a veces el Bluetooth se va antes que la sesión: antes se olvidaba y se esperaban 5 min.
+        connectedAt10s()
+        assertTrue(life.btGone(99 * sec, aaLive()).actions().isEmpty())
+        val lost = life.carLost(100 * sec, aaLive(), grace, wait)
+        assertEquals(listOf(Action.SHUTDOWN), lost.actions())
+        assertEquals(Phase.CLOSED, life.phase())
+        // Un Bluetooth que se fue hace rato (y volvió con el coche en marcha) no cierra nada.
+        val other = LinkLifecycle()
+        other.start(0, Trigger.USER, aaLive(), wait)
+        other.carConnected(10 * sec, aaLive())
+        other.btGone(20 * sec, aaLive())
+        assertTrue(other.carLost(20 * sec + LinkLifecycle.BT_GONE_RECENT_MS + sec, aaLive(), grace, wait).actions().isEmpty())
+        assertEquals(Phase.GRACE, other.phase())
+    }
+
+    @Test
+    fun unpluggingTheCableShortensTheWait() {
+        // Por cable: el cable fuera llega después de perder la sesión. La espera baja de 5 min a 2 desde la pérdida.
+        connectedAt10s()
+        life.carLost(100 * sec, aaLive(), grace, wait)
+        life.cableGone(101 * sec)
+        life.timer(130 * sec, aaLive())
+        val parked = aaLive().parked(true)
+        assertEquals(100 * sec + LinkLifecycle.UNPLUGGED_WAIT_MS, life.deadlineMs())
+        assertEquals(listOf(Action.SHUTDOWN), life.timer(100 * sec + LinkLifecycle.UNPLUGGED_WAIT_MS, parked).actions())
+        // Si llega antes de perder la sesión (ENODEV), se aplica al perderla.
+        val early = LinkLifecycle()
+        early.start(0, Trigger.USER, aaLive(), wait)
+        early.carConnected(10 * sec, aaLive())
+        early.cableGone(99 * sec)
+        early.carLost(100 * sec, aaLive(), grace, wait)
+        early.timer(130 * sec, aaLive())
+        assertEquals(100 * sec + LinkLifecycle.UNPLUGGED_WAIT_MS, early.deadlineMs())
+        // El corte de corriente del T03 (~30 s): vuelve y sigue como siempre, sin cerrar.
+        val t03 = LinkLifecycle()
+        t03.start(0, Trigger.USER, aaLive(), wait)
+        t03.carConnected(10 * sec, aaLive())
+        t03.carLost(100 * sec, aaLive(), grace, wait)
+        t03.cableGone(100 * sec)
+        t03.carConnected(130 * sec, aaLive())
+        assertEquals(Phase.CONNECTED, t03.phase())
+        // Y la pérdida siguiente, ya sin cable fuera, vuelve a esperar los 5 min.
+        t03.carLost(500 * sec, aaLive(), grace, wait)
+        t03.timer(530 * sec, aaLive())
+        assertEquals(500 * sec + wait, t03.deadlineMs())
+    }
+
+    @Test
     fun bluetoothGoneWhileParkedClosesEverything() {
         connectedAt10s()
         life.carLost(100 * sec, aaLive(), grace, wait)

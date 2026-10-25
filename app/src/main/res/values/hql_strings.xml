@@ -1309,4 +1309,6 @@
     <string name="hql_trip_energy_battery">Battery: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km in total (to compare with electric trips)</string>
     <string name="hql_radar_voice_help">Off by default in Germany and Switzerland, where the law forbids the driver from using speed camera warnings. If you turn them on there, it\'s your responsibility.</string>
+    <string name="hql_web_yt_quality">YouTube quality: %1$s</string>
+    <string name="hql_web_yt_auto">automatic</string>
 </resources>
