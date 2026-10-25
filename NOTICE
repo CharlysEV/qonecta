@@ -59,6 +59,13 @@ Maps, routes, search, weather and elevation (online services the app queries):
   Karaoke: song lyrics from LRCLIB (https://lrclib.net), fetched on demand for the song that is playing and kept only
   in memory; not bundled. The lyrics belong to their authors.
 
+Audio decoding with FFmpeg (videos and IPTV):
+  org.jellyfin.media3:media3-ffmpeg-decoder 1.3.1+2 (https://github.com/jellyfin/jellyfin-androidx-media), the AndroidX
+  Media3 FFmpeg extension built by the Jellyfin project, GNU General Public License v3.0, combined with Qonecta+ under
+  section 13 of the AGPL v3. It contains FFmpeg (https://ffmpeg.org, LGPL/GPL, see its sources) and is used only for
+  audio the phone cannot decode (AC-3, E-AC-3, DTS, TrueHD). Dolby, Dolby Digital Plus and DTS are trademarks of their
+  owners; Qonecta+ is not affiliated with them.
+
 three.js (3D car in the Status tab):
   app/src/main/assets/three/three.min.js is three.js r149 (https://threejs.org), Copyright 2010-2023
   three.js authors, MIT License (app/src/main/assets/three/LICENSE).

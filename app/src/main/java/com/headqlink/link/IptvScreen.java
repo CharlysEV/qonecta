@@ -377,7 +377,8 @@ final class IptvScreen implements CarScreen {
         }
         FrameLayout f = new FrameLayout(c);
         f.setBackgroundColor(Color.BLACK);
-        player = new ExoPlayer.Builder(c.getApplicationContext()).build();
+        // Con FFmpeg de reserva para el audio: hay canales con AC-3 o E-AC-3 que el móvil no sabe decodificar.
+        player = VideoPlayer.newPlayer(c);
         player.setAudioAttributes(new androidx.media3.common.AudioAttributes.Builder()
                 .setUsage(androidx.media3.common.C.USAGE_MEDIA)
                 .setContentType(androidx.media3.common.C.AUDIO_CONTENT_TYPE_MUSIC).build(), false);

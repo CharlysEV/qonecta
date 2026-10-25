@@ -105,7 +105,7 @@ final class VideoPlayer {
         MediaLibrary.Item it = items.get(i);
         FrameLayout f = new FrameLayout(c);
         f.setBackgroundColor(Color.BLACK);
-        player = new ExoPlayer.Builder(c.getApplicationContext()).build();
+        player = newPlayer(c);
         player.setAudioAttributes(new androidx.media3.common.AudioAttributes.Builder()
                 .setUsage(C.USAGE_MEDIA).setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(), false);
         focus = MediaFocus.bind(c, player);
@@ -190,6 +190,57 @@ final class VideoPlayer {
             player.play();
             showControls();
         }
+    }
+
+    /**
+     * Un reproductor con FFmpeg de reserva para el audio (vídeos e IPTV): primero los decodificadores del móvil y, si no
+     * saben (AC-3, E-AC-3/DD+, DTS, TrueHD en muchos), FFmpeg. Antes, esos vídeos se veían sin sonido.
+     */
+    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+    static ExoPlayer newPlayer(Context c) {
+        Context app = c.getApplicationContext();
+        logFfmpeg();
+        androidx.media3.exoplayer.DefaultRenderersFactory r = new androidx.media3.exoplayer.DefaultRenderersFactory(app)
+                .setExtensionRendererMode(androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON);
+        return new ExoPlayer.Builder(app, r).build();
+    }
+
+    private static boolean ffmpegLogged;
+
+    /** Una vez por proceso, al log: si FFmpeg está y qué audio sabe (AC-3, E-AC-3…). */
+    private static synchronized void logFfmpeg() {
+        if (ffmpegLogged) return;
+        ffmpegLogged = true;
+        L.i("vídeos: FFmpeg para el audio " + ffmpegInfo());
+    }
+
+    /**
+     * «6.0 (E-AC-3 sí, AC-3 sí, DTS sí; renderizador sí)» o «no disponible». El renderizador es la clase que media3
+     * busca por su nombre: si R8 se lo cambiara, FFmpeg no se usaría.
+     */
+    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+    static String ffmpegInfo() {
+        try {
+            if (!androidx.media3.decoder.ffmpeg.FfmpegLibrary.isAvailable()) return "no disponible";
+            boolean renderer;
+            try {
+                Class.forName("androidx.media3.decoder.ffmpeg.FfmpegAudioRenderer");
+                renderer = true;
+            } catch (ClassNotFoundException e) {
+                renderer = false;
+            }
+            return androidx.media3.decoder.ffmpeg.FfmpegLibrary.getVersion() + " (E-AC-3 "
+                    + yes(androidx.media3.decoder.ffmpeg.FfmpegLibrary.supportsFormat(MimeTypes.AUDIO_E_AC3)) + ", AC-3 "
+                    + yes(androidx.media3.decoder.ffmpeg.FfmpegLibrary.supportsFormat(MimeTypes.AUDIO_AC3)) + ", DTS "
+                    + yes(androidx.media3.decoder.ffmpeg.FfmpegLibrary.supportsFormat(MimeTypes.AUDIO_DTS)) + "; renderizador "
+                    + yes(renderer) + ")";
+        } catch (Throwable t) {
+            return "no disponible (" + t.getClass().getSimpleName() + ")";
+        }
+    }
+
+    private static String yes(boolean b) {
+        return b ? "sí" : "no";
     }
 
     /** Los formatos de las pistas de audio («audio/eac3»), para el aviso y el log. */

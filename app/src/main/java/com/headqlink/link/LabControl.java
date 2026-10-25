@@ -16,7 +16,7 @@ import java.util.Locale;
  * Órdenes (una por petición, en minúsculas): estado · msg TEXTO · fps N|auto · kbps N|auto · cable N|auto · qp N|auto ·
  * boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto ·
  * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra) · carga demo|off
- * (la notificación de una carga inventada, para ver el Live Update).
+ * (la notificación de una carga inventada, para ver el Live Update) · ffmpeg (si el audio por FFmpeg está listo).
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
@@ -158,6 +158,9 @@ final class LabControl {
                 reconnect(ctx);
                 break;
             }
+            case "ffmpeg":
+                done = "FFmpeg para el audio: " + VideoPlayer.ffmpegInfo();
+                break;
             case "carga":
                 done = ChargeWatch.labNotify(ctx, !a.equals("off"));
                 break;
@@ -175,7 +178,7 @@ final class LabControl {
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, alemania, carga, boost, termica, noche, hud, perfil, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, alemania, carga, ffmpeg, boost, termica, noche, hud, perfil, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);
