@@ -1297,4 +1297,11 @@
     <string name="hql_usb_hung_title">L\'app de la voiture s\'est figée</string>
     <string name="hql_usb_hung_text">Elle ne répond plus avec le câble branché et ne revient pas seule. Débranchez le câble, rebranchez-le et ouvrez QDLink sur l\'écran de la voiture. « Déconnecter » et « Connecter » sur le téléphone ne règlent rien.</string>
     <string name="hql_usb_hung_voice">L\'app de la voiture s\'est figée. Débranchez le câble, rebranchez-le et ouvrez QDLink.</string>
+    <string name="hql_trip_energy">Énergie du trajet</string>
+    <string name="hql_trip_mode_fuel">mode carburant</string>
+    <string name="hql_trip_mode_mixed">batterie et essence</string>
+    <string name="hql_trip_energy_share">essence %1$d %% · batterie %2$d %%</string>
+    <string name="hql_trip_energy_fuel">Essence : %1$.1f L · %2$.1f L/100 km</string>
+    <string name="hql_trip_energy_battery">Batterie : %1$.2f kWh · %2$.1f kWh/100 km</string>
+    <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km au total (à comparer avec les trajets en électrique)</string>
 </resources>

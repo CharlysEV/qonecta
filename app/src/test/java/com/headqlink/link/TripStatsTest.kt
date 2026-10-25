@@ -117,13 +117,38 @@ class TripStatsTest {
         val h = listOf(CloudHistory.Trip(t.startMs + 60_000, t.endMs() - 60_000, 77.0, 15.0, 4.9, 120.0))
         assertEquals(4.9, TripStats.fuelL(t, h), 1e-9)
         assertEquals(4.9 / 77 * 100, TripStats.litersPer100(t, h), 1e-9)
-        // Coste: la luz que no dio el generador (15 − 4,9 × 3 kWh) y la gasolina.
-        assertEquals((15.0 - 4.9 * TripStats.KWH_PER_LITER) * 0.2 + 4.9 * 1.6, TripStats.cost(t, h, 0.2, 1.6), 1e-9)
+        // Coste: la batería (lo que dice el coche es solo lo que salió de ella) y la gasolina.
+        assertEquals(15.0 * 0.2 + 4.9 * 1.6, TripStats.cost(t, h, 0.2, 1.6), 1e-9)
+        // Sin el coche, lo estimado menos lo que dio el generador (4,4 L del depósito × 3 kWh).
+        assertEquals((15.0 - 4.4 * TripStats.KWH_PER_LITER) * 0.2 + 4.4 * 1.6, TripStats.cost(t, emptyList(), 0.2, 1.6), 1e-9)
         // Un eléctrico: solo la luz.
         val e = trip(DemoDrive.BASE_MS, 10.0, 1.5, 15)
         assertEquals(1.5 * 0.2, TripStats.cost(e, emptyList(), 0.2, 1.6), 1e-9)
         // Repostar por el camino no es un consumo.
         t.fuelStartL = 10.0; t.fuelEndL = 40.0
         assertTrue(t.fuelUsedL().isNaN())
+    }
+
+    @Test
+    fun reevInFuelModeIsNotASuperEfficientTrip() {
+        // El viaje de un C10 REEV del 24-10 en modo combustible: 68,7 km, 0,07 kWh de la batería y 4,1 L de gasolina.
+        val t = trip(DemoDrive.BASE_MS, 68.7, 12.0, 52)
+        val h = listOf(CloudHistory.Trip(t.startMs + 60_000, t.endMs() - 60_000, 68.7, 0.07, 4.1, 125.0))
+        val e = TripStats.energy(t, h)!!
+        assertEquals(TripStats.Drive.FUEL, e.drive())
+        assertEquals(0.1, e.batteryPer100(), 0.01)
+        assertEquals(6.0, e.litersPer100(), 0.05)
+        // Total: 4,1 L × 3 kWh + 0,07 = 12,37 kWh → 18,0 kWh/100 km, lo que se compara con un viaje en eléctrico.
+        assertEquals(18.0, e.totalPer100(), 0.05)
+        assertEquals(0.994, e.fuelShare(), 0.001)
+        assertEquals(18.0, TripStats.comparableKwhPer100(t, h), 0.05)
+        assertEquals(4.1 * 1.6 + 0.07 * 0.2, TripStats.cost(t, h, 0.2, 1.6), 1e-9)
+        // Con la batería y la gasolina a medias: mixto; sin gasolina: eléctrico; y un eléctrico no tiene «energía por fuente».
+        assertEquals(TripStats.Drive.MIXED, TripStats.Energy(2.0, 6.0, 60.0).drive())
+        assertEquals(TripStats.Drive.ELECTRIC, TripStats.Energy(0.0, 9.0, 60.0).drive())
+        assertEquals(null, TripStats.energy(trip(DemoDrive.BASE_MS, 10.0, 1.5, 15), emptyList()))
+        // No gana el récord de eficiencia frente a un viaje eléctrico normal.
+        val ev = trip(DemoDrive.BASE_MS + 86_400_000, 30.0, 5.1, 30)
+        assertEquals(1, TripStats.mostEfficient(listOf(t, ev), h))
     }
 }

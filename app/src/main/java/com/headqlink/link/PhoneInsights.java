@@ -594,8 +594,11 @@ final class PhoneInsights {
             txt.addView(title(day(t.startMs) + " · " + time(t.startMs)));
             double per100 = TripStats.bestKwhPer100(t, d.history);
             double cost = TripStats.cost(t, d.history, d.price, new Config(act).fuelPrice());
-            String line = Str.get(R.string.hql_ins_drive_line, fmt1(t.km), duration(t.minutes),
-                    Double.isNaN(per100) ? "—" : fmt1(per100) + " kWh/100");
+            // REEV en modo combustible: los litros, no los 0,1 kWh/100 km de la batería.
+            TripStats.Energy en = TripStats.energy(t, d.history);
+            String use = en != null && en.drive() == TripStats.Drive.FUEL ? fmt1(en.litersPer100()) + " L/100"
+                    : Double.isNaN(per100) ? "—" : fmt1(per100) + " kWh/100";
+            String line = Str.get(R.string.hql_ins_drive_line, fmt1(t.km), duration(t.minutes), use);
             if (!Double.isNaN(cost) && cost > 0) line += " · " + Money.format(cost);
             // Lo que bajó la batería del móvil en el viaje (sin enchufar).
             if (t.phoneUsedPct() >= 0) line += " · " + Str.get(R.string.hql_trip_phone_short, t.phoneUsedPct());

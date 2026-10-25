@@ -1297,4 +1297,11 @@
     <string name="hql_usb_hung_title">A app do carro bloqueou</string>
     <string name="hql_usb_hung_text">Deixou de responder com o cabo ligado e não recupera sozinha. Desligue o cabo, volte a ligá-lo e abra o QDLink no ecrã do carro. «Desligar» e «Ligar» no telemóvel não resolvem.</string>
     <string name="hql_usb_hung_voice">A app do carro bloqueou. Desligue o cabo, volte a ligá-lo e abra o QDLink.</string>
+    <string name="hql_trip_energy">Energia da viagem</string>
+    <string name="hql_trip_mode_fuel">modo combustível</string>
+    <string name="hql_trip_mode_mixed">bateria e gasolina</string>
+    <string name="hql_trip_energy_share">gasolina %1$d %% · bateria %2$d %%</string>
+    <string name="hql_trip_energy_fuel">Gasolina: %1$.1f L · %2$.1f L/100 km</string>
+    <string name="hql_trip_energy_battery">Bateria: %1$.2f kWh · %2$.1f kWh/100 km</string>
+    <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km no total (para comparar com as viagens em elétrico)</string>
 </resources>

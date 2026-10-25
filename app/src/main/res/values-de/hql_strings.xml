@@ -1296,4 +1296,11 @@
     <string name="hql_usb_hung_title">Die App im Auto hängt</string>
     <string name="hql_usb_hung_text">Sie reagiert bei eingestecktem Kabel nicht mehr und erholt sich nicht von selbst. Zieh das Kabel ab, steck es wieder ein und öffne QDLink auf dem Fahrzeugdisplay. „Trennen“ und „Verbinden“ auf dem Handy helfen nicht.</string>
     <string name="hql_usb_hung_voice">Die App im Auto hängt. Zieh das Kabel ab, steck es wieder ein und öffne QDLink.</string>
+    <string name="hql_trip_energy">Energie der Fahrt</string>
+    <string name="hql_trip_mode_fuel">Verbrennermodus</string>
+    <string name="hql_trip_mode_mixed">Akku und Benzin</string>
+    <string name="hql_trip_energy_share">Benzin %1$d %% · Akku %2$d %%</string>
+    <string name="hql_trip_energy_fuel">Benzin: %1$.1f L · %2$.1f L/100 km</string>
+    <string name="hql_trip_energy_battery">Akku: %1$.2f kWh · %2$.1f kWh/100 km</string>
+    <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km insgesamt (zum Vergleich mit elektrischen Fahrten)</string>
 </resources>

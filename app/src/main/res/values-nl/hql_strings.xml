@@ -1296,4 +1296,11 @@
     <string name="hql_usb_hung_title">De app in de auto is vastgelopen</string>
     <string name="hql_usb_hung_text">Hij reageert niet meer terwijl de kabel erin zit en herstelt niet vanzelf. Trek de kabel eruit, steek hem er weer in en open QDLink op het scherm van de auto. „Verbinding verbreken” en „Verbinden” op de telefoon helpen niet.</string>
     <string name="hql_usb_hung_voice">De app in de auto is vastgelopen. Trek de kabel eruit, steek hem er weer in en open QDLink.</string>
+    <string name="hql_trip_energy">Energie van de rit</string>
+    <string name="hql_trip_mode_fuel">brandstofmodus</string>
+    <string name="hql_trip_mode_mixed">accu en benzine</string>
+    <string name="hql_trip_energy_share">benzine %1$d %% · accu %2$d %%</string>
+    <string name="hql_trip_energy_fuel">Benzine: %1$.1f L · %2$.1f L/100 km</string>
+    <string name="hql_trip_energy_battery">Accu: %1$.2f kWh · %2$.1f kWh/100 km</string>
+    <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km in totaal (om te vergelijken met elektrische ritten)</string>
 </resources>

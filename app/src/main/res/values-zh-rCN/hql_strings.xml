@@ -1300,4 +1300,11 @@
     <string name="hql_usb_hung_title">车机应用卡住了</string>
     <string name="hql_usb_hung_text">插着数据线时车机应用停止响应，且不会自行恢复。请拔下数据线、重新插上，然后在车机屏幕上打开 QDLink。在手机上点“断开连接”和“连接”无法解决。</string>
     <string name="hql_usb_hung_voice">车机应用卡住了。请拔下数据线，重新插上，然后打开 QDLink。</string>
+    <string name="hql_trip_energy">行程能耗</string>
+    <string name="hql_trip_mode_fuel">燃油模式</string>
+    <string name="hql_trip_mode_mixed">电池和汽油</string>
+    <string name="hql_trip_energy_share">汽油 %1$d%% · 电池 %2$d%%</string>
+    <string name="hql_trip_energy_fuel">汽油：%1$.1f L · %2$.1f L/100 km</string>
+    <string name="hql_trip_energy_battery">电池：%1$.2f kWh · %2$.1f kWh/100 km</string>
+    <string name="hql_trip_energy_total">≈ 总计 %1$.1f kWh/100 km（可与纯电行程比较）</string>
 </resources>

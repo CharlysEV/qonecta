@@ -334,10 +334,19 @@ final class TripsTab implements CarScreen {
             double per100 = TripStats.bestKwhPer100(t, history);
             float y = getHeight() - pad - 4;
             float cx = x;
-            CarIcons.leaf(cv, cx + 12, y - 12, 26, useColor(per100), p);
-            cx += 32;
-            cx += CarKit.number(cv, Double.isNaN(per100) ? "—" : String.format(Locale.getDefault(), "%.1f", per100), "kWh/100", cx, y, 32,
-                    useColor(per100), CarKit.MEDIUM, p, Paint.Align.LEFT) + 14;
+            // REEV en modo combustible: los litros (la batería apenas se usó: 0,1 kWh/100 km no dice nada).
+            TripStats.Energy en = TripStats.energy(t, history);
+            if (en != null && en.drive() == TripStats.Drive.FUEL) {
+                CarIcons.fuel(cv, cx + 12, y - 12, 26, CarKit.AMBER, p);
+                cx += 32;
+                cx += CarKit.number(cv, String.format(Locale.getDefault(), "%.1f", en.litersPer100()), "L/100", cx, y, 32,
+                        CarKit.AMBER, CarKit.MEDIUM, p, Paint.Align.LEFT) + 14;
+            } else {
+                CarIcons.leaf(cv, cx + 12, y - 12, 26, useColor(per100), p);
+                cx += 32;
+                cx += CarKit.number(cv, Double.isNaN(per100) ? "—" : String.format(Locale.getDefault(), "%.1f", per100), "kWh/100", cx, y, 32,
+                        useColor(per100), CarKit.MEDIUM, p, Paint.Align.LEFT) + 14;
+            }
             if (src == TripStats.Source.CAR) cx += tag(cv, Str.get(R.string.hql_cloud_car_tag), cx, y - 2, Paint.Align.LEFT, p);
             else if (src == TripStats.Source.REAL) cx += realTag(cv, cx, y - 2, Paint.Align.LEFT, p);
             cx += 26;
@@ -442,7 +451,7 @@ final class TripsTab implements CarScreen {
         }
         if (efficient >= 0) {
             TripLog.Trip t = trips.get(efficient);
-            record(cv, r, y + step, 1, Str.get(R.string.hql_record_efficient), String.format(Locale.getDefault(), "%.1f", TripStats.bestKwhPer100(t, history)),
+            record(cv, r, y + step, 1, Str.get(R.string.hql_record_efficient), String.format(Locale.getDefault(), "%.1f", TripStats.comparableKwhPer100(t, history)),
                     "kWh/100 km", day(t.startMs), p);
         }
         if (climb >= 0) {

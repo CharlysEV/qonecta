@@ -83,22 +83,98 @@ final class TripStats {
     }
 
     /**
-     * Coste del viaje: la electricidad de la red (la bajada del % si se midió; si no, la energía menos la que dio el
-     * generador) por su precio, más la gasolina (REEV) por la suya.
+     * Coste del viaje: la electricidad de la red (la bajada del % si se midió; si no, la del coche o la estimada) por su
+     * precio; en un REEV, la de la batería (energy) por su precio más la gasolina por la suya.
      */
     static double cost(TripLog.Trip t, List<CloudHistory.Trip> history, double elecPrice, double fuelPrice) {
-        double fuel = fuelL(t, history);
-        double litres = Double.isNaN(fuel) ? 0 : fuel;
+        Energy e = energy(t, history);
+        if (e != null) return e.batteryKwh * elecPrice + e.fuelL * fuelPrice;
         CloudEnergy.Result r = real(t);
-        double grid;
-        if (r.ok()) {
-            grid = r.kwh;
-        } else {
-            CloudHistory.Match m = car(t, history);
-            double kwh = m != null && m.km >= 0.5 ? m.kwh : t.kwh;
-            grid = Math.max(0, kwh - litres * KWH_PER_LITER);
+        if (r.ok()) return r.kwh * elecPrice;
+        CloudHistory.Match m = car(t, history);
+        return (m != null && m.km >= 0.5 ? m.kwh : t.kwh) * elecPrice;
+    }
+
+    /** Cómo se movió un REEV en el viaje: solo con la batería, con las dos o casi todo con gasolina. */
+    enum Drive {ELECTRIC, MIXED, FUEL}
+
+    /** Por debajo de esta parte de la energía, la batería apenas aportó: «modo combustible». */
+    static final double FUEL_MODE_BATTERY_SHARE = 0.10;
+
+    /**
+     * La energía de un viaje de un REEV por fuente: la batería (lo que dice el coche, que es solo lo que salió de ella:
+     * 0,07 kWh en 68,7 km en modo combustible, 25-10) y la gasolina (litros y su electricidad en el generador,
+     * KWH_PER_LITER). Lo que se puede comparar con un viaje en eléctrico es el total.
+     */
+    static final class Energy {
+        final double fuelL;
+        final double fuelKwh;
+        final double batteryKwh;
+        final double km;
+
+        Energy(double fuelL, double batteryKwh, double km) {
+            this.fuelL = Math.max(0, fuelL);
+            this.fuelKwh = this.fuelL * KWH_PER_LITER;
+            this.batteryKwh = Math.max(0, batteryKwh);
+            this.km = km;
         }
-        return grid * elecPrice + litres * fuelPrice;
+
+        double totalKwh() {
+            return fuelKwh + batteryKwh;
+        }
+
+        private double per100(double v) {
+            return km >= 0.5 ? v / km * 100 : Double.NaN;
+        }
+
+        double totalPer100() {
+            return per100(totalKwh());
+        }
+
+        double batteryPer100() {
+            return per100(batteryKwh);
+        }
+
+        double litersPer100() {
+            return per100(fuelL);
+        }
+
+        /** Parte de la energía que vino de la gasolina (0-1). */
+        double fuelShare() {
+            double tot = totalKwh();
+            return tot > 0 ? fuelKwh / tot : 0;
+        }
+
+        Drive drive() {
+            if (fuelL < 0.05) return Drive.ELECTRIC;
+            return 1 - fuelShare() < FUEL_MODE_BATTERY_SHARE ? Drive.FUEL : Drive.MIXED;
+        }
+    }
+
+    /**
+     * La energía del viaje por fuente si es de un REEV (hay litros), o null. La batería: la del coche si la dice; si no, la
+     * bajada del %; si no, lo estimado menos lo que dio el generador.
+     */
+    static Energy energy(TripLog.Trip t, List<CloudHistory.Trip> history) {
+        double fuel = fuelL(t, history);
+        if (Double.isNaN(fuel)) return null;
+        double litres = Math.max(0, fuel);
+        CloudHistory.Match m = car(t, history);
+        double battery;
+        if (m != null && m.km >= 0.5) {
+            battery = m.kwh;
+        } else {
+            CloudEnergy.Result r = real(t);
+            battery = r.ok() ? r.kwh : t.kwh - litres * KWH_PER_LITER;
+        }
+        return new Energy(litres, battery, t.km);
+    }
+
+    /** kWh/100 km para comparar viajes: en un REEV con gasolina, el total (batería y generador); si no, el mejor dato. */
+    static double comparableKwhPer100(TripLog.Trip t, List<CloudHistory.Trip> history) {
+        Energy e = energy(t, history);
+        if (e != null && e.drive() != Drive.ELECTRIC) return e.totalPer100();
+        return bestKwhPer100(t, history);
     }
 
     /** Índice del viaje de menos kWh/100 km (el del coche o el real si lo tiene) entre los de al menos MIN_KM_FOR_RECORD. */
@@ -107,7 +183,8 @@ final class TripStats {
         double bestV = Double.MAX_VALUE;
         for (int i = 0; i < trips.size(); i++) {
             TripLog.Trip t = trips.get(i);
-            double v = bestKwhPer100(t, history);
+            // En un REEV, con la gasolina incluida: si no, un viaje en modo combustible (0,1 kWh/100 km) sería el récord.
+            double v = comparableKwhPer100(t, history);
             if (t.km < MIN_KM_FOR_RECORD || Double.isNaN(v) || v <= 0) continue;
             if (v < bestV) {
                 bestV = v;

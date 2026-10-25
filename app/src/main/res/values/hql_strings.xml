@@ -1301,4 +1301,11 @@
     <string name="hql_usb_hung_title">The car\'s app has frozen</string>
     <string name="hql_usb_hung_text">It stopped responding with the cable plugged in and won\'t recover by itself. Unplug the cable, plug it back in and open QDLink on the car\'s screen. “Disconnect” and “Connect” on the phone don\'t fix it.</string>
     <string name="hql_usb_hung_voice">The car\'s app has frozen. Unplug the cable, plug it back in and open QDLink.</string>
+    <string name="hql_trip_energy">Trip energy</string>
+    <string name="hql_trip_mode_fuel">fuel mode</string>
+    <string name="hql_trip_mode_mixed">battery and petrol</string>
+    <string name="hql_trip_energy_share">petrol %1$d %% · battery %2$d %%</string>
+    <string name="hql_trip_energy_fuel">Petrol: %1$.1f L · %2$.1f L/100 km</string>
+    <string name="hql_trip_energy_battery">Battery: %1$.2f kWh · %2$.1f kWh/100 km</string>
+    <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km in total (to compare with electric trips)</string>
 </resources>

@@ -166,8 +166,70 @@ final class TripDetail {
         float w = CarKit.number(cv, String.format(Locale.getDefault(), "%.1f", t.km), "km", x, y, 64, CarKit.TEXT, CarKit.REGULAR, p,
                 Paint.Align.LEFT);
         CarKit.text(cv, DriveTab.duration(t.minutes * 60), x + w + 28, y - 4, r.width() < 480 ? 26 : 32, CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.LEFT);
-        // Consumo: el del coche, el real o el estimado, con su fuente.
         y += 70;
+        // REEV con gasolina: la energía por fuente (con solo «Consumo», un viaje en modo combustible salía a 0,1 kWh/100 km).
+        TripStats.Energy energy = TripStats.energy(t, history);
+        if (energy != null && energy.drive() != TripStats.Drive.ELECTRIC) {
+            y = paintEnergy(cv, r, x, y, energy, p);
+        } else {
+            y = paintConsumption(cv, x, y, p);
+        }
+        // Lo que gastó la batería del móvil en el viaje.
+        String phone = TripNotice.phoneText(t.phonePct0, t.phonePct1, t.phoneMah, t.phonePlugged);
+        if (!phone.isEmpty()) {
+            y += 46;
+            CarKit.text(cv, phone, x, y, 24, CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.LEFT);
+        }
+        paintFigures(cv, r, x, y, p);
+    }
+
+    /**
+     * REEV con gasolina: «Energía del viaje» con el modo (combustible o batería y gasolina), una barra con la parte de cada
+     * fuente, la gasolina y la batería con su consumo y su coste, y el total en kWh/100 km para comparar con los viajes en
+     * eléctrico. Devuelve la y de la última línea.
+     */
+    private float paintEnergy(Canvas cv, RectF r, float x, float y, TripStats.Energy e, Paint p) {
+        CarKit.label(cv, Str.get(R.string.hql_trip_energy), x, y, p);
+        boolean fuelMode = e.drive() == TripStats.Drive.FUEL;
+        CarKit.text(cv, Str.get(fuelMode ? R.string.hql_trip_mode_fuel : R.string.hql_trip_mode_mixed), r.right, y, 22, CarKit.AMBER,
+                CarKit.MEDIUM, p, Paint.Align.RIGHT);
+        // La barra: gasolina (ámbar) y batería (verde), en proporción a la energía de cada una.
+        float top = y + 20;
+        float bottom = top + 16;
+        p.setColor(CarKit.ACCENT);
+        cv.drawRoundRect(new RectF(x, top, r.right, bottom), 8, 8, p);
+        float fuelW = (float) ((r.right - x) * e.fuelShare());
+        p.setColor(CarKit.AMBER);
+        cv.drawRoundRect(new RectF(x, top, x + fuelW, bottom), 8, 8, p);
+        int fuelPct = (int) Math.round(e.fuelShare() * 100);
+        y = bottom + 32;
+        CarKit.text(cv, Str.get(R.string.hql_trip_energy_share, fuelPct, 100 - fuelPct), x, y, 21, CarKit.DIM, CarKit.MEDIUM, p,
+                Paint.Align.LEFT);
+        // Gasolina y batería, cada una con su consumo y su coste (recortadas al ancho: en la pantalla partida es estrecho).
+        y += 48;
+        CarIcons.fuel(cv, x + 14, y - 12, 28, CarKit.AMBER, p);
+        sourceLine(cv, Str.get(R.string.hql_trip_energy_fuel, e.fuelL, e.litersPer100()) + " · " + Money.format(e.fuelL * cfg.fuelPrice()),
+                x + 40, y, r.right - x - 40, p);
+        y += 44;
+        CarIcons.bolt(cv, x + 14, y - 12, 28, CarKit.ACCENT, p);
+        sourceLine(cv, Str.get(R.string.hql_trip_energy_battery, e.batteryKwh, e.batteryPer100()) + " · "
+                + Money.format(e.batteryKwh * cfg.electricityPrice()), x + 40, y, r.right - x - 40, p);
+        // El total, comparable con un viaje en eléctrico (en dos líneas si no cabe).
+        y += 18;
+        y += energyNote.draw(cv, Str.get(R.string.hql_trip_energy_total, e.totalPer100()), x, y, (int) (r.right - x), false) - 6;
+        return y;
+    }
+
+    private final CarKit.Para energyNote = new CarKit.Para(22, CarKit.DIM, CarKit.MEDIUM);
+
+    private static void sourceLine(Canvas cv, String s, float x, float y, float maxW, Paint p) {
+        p.setTypeface(CarKit.MEDIUM);
+        p.setTextSize(25);
+        CarKit.text(cv, CarKit.ellipsize(s, maxW, p), x, y, 25, CarKit.TEXT, CarKit.MEDIUM, p, Paint.Align.LEFT);
+    }
+
+    /** Consumo: el del coche, el real o el estimado, con su fuente; en un REEV sin gasolina, «0 L de gasolina». */
+    private float paintConsumption(Canvas cv, float x, float y, Paint p) {
         TripStats.Source src = TripStats.source(t, history);
         double per100 = TripStats.bestKwhPer100(t, history);
         int src1 = src == TripStats.Source.CAR ? R.string.hql_trip_source_car : src == TripStats.Source.REAL
@@ -187,12 +249,11 @@ final class TripDetail {
                     : Str.get(R.string.hql_trip_fuel, fuel, TripStats.litersPer100(t, history));
             CarKit.text(cv, ft, x + 40, y, 27, fuel < 0.05 ? CarKit.DIM : CarKit.TEXT, CarKit.MEDIUM, p, Paint.Align.LEFT);
         }
-        // Lo que gastó la batería del móvil en el viaje.
-        String phone = TripNotice.phoneText(t.phonePct0, t.phonePct1, t.phoneMah, t.phonePlugged);
-        if (!phone.isEmpty()) {
-            y += 46;
-            CarKit.text(cv, phone, x, y, 24, CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.LEFT);
-        }
+        return y;
+    }
+
+    /** Cifras (velocidad media, máxima, desnivel y coste) y paradas, desde y. */
+    private void paintFigures(Canvas cv, RectF r, float x, float y, Paint p) {
         // Cifras: velocidad media, máxima, desnivel y coste (en una fila; en una columna estrecha, en dos de dos).
         y += 70;
         double avg = TripStats.avgKmh(t);
