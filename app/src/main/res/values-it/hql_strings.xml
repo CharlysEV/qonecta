@@ -1291,4 +1291,7 @@
     <string name="hql_disconnect_car_help">Chiude la connessione con l\'auto e salva il viaggio, senza toccare il telefono. Se togli solo il cavo, il viaggio viene salvato lo stesso, ma Qonecta+ aspetta che l\'auto torni («Attesa dell\'auto»).</string>
     <string name="hql_pl_save_here">Salva qui</string>
     <string name="hql_video_audio_unsupported">Senza audio: questo telefono non riesce a decodificare l\'audio di questo video (%1$s).</string>
+    <string name="hql_cc_trunk_title">Bagagliaio</string>
+    <string name="hql_cc_trunk_was_open">Secondo l\'ultimo dato, è aperto.</string>
+    <string name="hql_cc_trunk_was_closed">Secondo l\'ultimo dato, è chiuso.</string>
 </resources>

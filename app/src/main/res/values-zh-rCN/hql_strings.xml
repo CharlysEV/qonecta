@@ -1294,4 +1294,7 @@
     <string name="hql_disconnect_car_help">断开与车辆的连接并保存行程，无需操作手机。如果只拔掉数据线，行程也会保存，但 Qonecta+ 会继续等待车辆（“等待车辆”）。</string>
     <string name="hql_pl_save_here">保存当前位置</string>
     <string name="hql_video_audio_unsupported">无声音：此手机无法解码该视频的音频（%1$s）。</string>
+    <string name="hql_cc_trunk_title">后备箱</string>
+    <string name="hql_cc_trunk_was_open">根据最新数据，后备箱已打开。</string>
+    <string name="hql_cc_trunk_was_closed">根据最新数据，后备箱已关闭。</string>
 </resources>

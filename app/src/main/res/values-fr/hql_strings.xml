@@ -1291,4 +1291,7 @@
     <string name="hql_disconnect_car_help">Ferme la connexion avec la voiture et enregistre le trajet, sans toucher au téléphone. Si vous débranchez seulement le câble, le trajet est aussi enregistré, mais Qonecta+ attend le retour de la voiture (« Attendre la voiture »).</string>
     <string name="hql_pl_save_here">Enregistrer ici</string>
     <string name="hql_video_audio_unsupported">Pas de son : ce téléphone ne sait pas décoder l\'audio de cette vidéo (%1$s).</string>
+    <string name="hql_cc_trunk_title">Coffre</string>
+    <string name="hql_cc_trunk_was_open">D\'après la dernière donnée, il est ouvert.</string>
+    <string name="hql_cc_trunk_was_closed">D\'après la dernière donnée, il est fermé.</string>
 </resources>

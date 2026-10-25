@@ -1291,4 +1291,7 @@
     <string name="hql_disconnect_car_help">Fecha a conexão com o carro e salva a viagem, sem mexer no celular. Se você só tirar o cabo, a viagem também é salva, mas o Qonecta+ espera o carro voltar («Esperar o carro»).</string>
     <string name="hql_pl_save_here">Salvar aqui</string>
     <string name="hql_video_audio_unsupported">Sem som: este celular não consegue decodificar o áudio deste vídeo (%1$s).</string>
+    <string name="hql_cc_trunk_title">Porta-malas</string>
+    <string name="hql_cc_trunk_was_open">Pelo último dado, está aberto.</string>
+    <string name="hql_cc_trunk_was_closed">Pelo último dado, está fechado.</string>
 </resources>
