@@ -558,7 +558,10 @@ Im Log (Abschnitt 8) siehst du das als `enlace: congestión (outq 96 KB 300 ms, 
 ### Am Ende der Fahrt
 
 - Schalte das Fahrzeug aus (Qonecta+ beendet sich von selbst, wenn „Auf das Fahrzeug warten“ abläuft, standardmäßig
-  nach 5 Minuten) oder tippe auf „Trennen“, um die App sofort zu beenden.
+  nach 5 Minuten) oder tippe auf „Trennen“, um die App sofort zu beenden. Ohne das Handy anzufassen: im Fahrzeug
+  Einstellungen › Verbindung › „Trennen“ (fragt nach einem zweiten Tippen) oder die Kachel in den Schnelleinstellungen,
+  die auch bei gesperrtem Handy funktioniert. Ziehst du nur das Kabel ab, wird die Fahrt trotzdem gespeichert; die App
+  beendet sich, wenn „Auf das Fahrzeug warten“ abläuft.
 - War das Handy beim Beenden gesperrt, siehst du die Benachrichtigung „Android Auto wartet, bis du das Handy
   entsperrst (dann schließt es sich von selbst)“. **Entsperre das Handy einmal**, damit es sich ganz schließt: Du
   siehst ein paar Sekunden lang „Android Auto wird beendet…“ (Abschnitt 9). Kommst du vor dem Entsperren zurück ins

@@ -1053,7 +1053,8 @@ final class RouteTab implements CarScreen {
             if (SavedPlaces.tagged(sv, SavedPlaces.WORK) == null) {
                 top.addView(chip("💼 " + Str.get(R.string.hql_pl_set_work), false, () -> openSearch(S_WORK)), chipParams());
             }
-            if (top.getChildCount() > 0) body.addView(top);
+            top.addView(chip("📍 " + Str.get(R.string.hql_pl_save_here), false, () -> saveHere(build[0])), chipParams());
+            body.addView(top);
             if (sv.isEmpty()) body.addView(hint(Str.get(R.string.hql_pl_saved_empty)));
             for (int i = 0; i < sv.size(); i++) body.addView(savedRow(sv.get(i), i, build[0], () -> root.removeView(panel)), itemParams());
         };
@@ -1062,6 +1063,58 @@ final class RouteTab implements CarScreen {
         };
         build[0].run();
         root.addView(panel, CarStyle.match());
+    }
+
+    /**
+     * «Guardar aquí»: el sitio donde está el coche ahora, sin pasar por el buscador. Se llama como su calle (el Geocoder
+     * de Android) o, si no la da, con la fecha y la hora; «Renombrar» le pone otro.
+     */
+    private void saveHere(Runnable rebuild) {
+        double[] pos = planner.position();
+        if (Double.isNaN(pos[0])) {
+            flash(Str.get(R.string.hql_waiting_gps));
+            return;
+        }
+        double lat = pos[0];
+        double lon = pos[1];
+        new Thread(() -> {
+            String name = streetName(lat, lon);
+            if (name == null) {
+                name = "📍 " + new java.text.SimpleDateFormat("d MMM HH:mm", Str.locale()).format(new java.util.Date());
+            }
+            String n = name;
+            root.post(() -> {
+                RoutePlanner.Place p = new RoutePlanner.Place();
+                p.name = n;
+                p.detail = "";
+                p.lat = lat;
+                p.lon = lon;
+                Config c = new Config(ctx);
+                c.setSavedPlaces(SavedPlaces.add(c.savedPlaces(), p, null, false, n));
+                // Sin el sitio ni el nombre: el log se exporta.
+                L.i("ruta: guardado el sitio actual");
+                flash(Str.get(R.string.hql_pl_saved_ok, n));
+                rebuild.run();
+            });
+        }, "guardar-aqui").start();
+    }
+
+    /** La calle (y el número) o el pueblo de esa posición, del Geocoder de Android; null si no lo da (sin red, sin servicio). */
+    private String streetName(double lat, double lon) {
+        try {
+            if (!android.location.Geocoder.isPresent()) return null;
+            @SuppressWarnings("deprecation")
+            java.util.List<android.location.Address> a = new android.location.Geocoder(ctx, Str.locale()).getFromLocation(lat, lon, 1);
+            if (a == null || a.isEmpty()) return null;
+            android.location.Address ad = a.get(0);
+            String street = ad.getThoroughfare();
+            if (street != null && ad.getSubThoroughfare() != null) street += " " + ad.getSubThoroughfare();
+            String town = ad.getLocality();
+            if (street != null) return town != null ? street + ", " + town : street;
+            return town;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /** Una fila de los guardados: el nombre (y Casa o Trabajo), «Ir», «Renombrar» y «Borrar» (con un segundo toque). */

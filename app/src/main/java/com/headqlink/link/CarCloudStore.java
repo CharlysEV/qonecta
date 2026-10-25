@@ -322,6 +322,17 @@ final class CarCloudStore {
         wipeFile(F_PIN);
     }
 
+    private static final String K_DEVICE_ID = "device_id";
+
+    /** El deviceId de la última sesión (sobrevive a «Cerrar sesión»; «borrar datos» lo quita), o null. */
+    String lastDeviceId() {
+        return sp.getString(K_DEVICE_ID, null);
+    }
+
+    void rememberDeviceId(String id) {
+        if (id != null && !id.isEmpty() && !id.equals(lastDeviceId())) sp.edit().putString(K_DEVICE_ID, id).apply();
+    }
+
     /** Cerrar sesión: fuera la sesión (y el coche y el correo). El certificado se queda. */
     void deleteSession() {
         wipeFile(F_SESSION);

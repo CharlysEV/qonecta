@@ -509,7 +509,9 @@ congestiones 4`.
 ### At the end of the trip
 
 - Switch the car off (Qonecta+ closes by itself when "Wait for the car" runs out, 5 minutes by default) or tap
-  "Disconnect" to close it now.
+  "Disconnect" to close it now. Without touching the phone: in the car, Settings › Connection › "Disconnect" (it asks
+  for a second tap), or the quick settings tile, which works with the phone locked. If you just unplug the cable, the
+  trip is saved anyway; the app closes when "Wait for the car" runs out.
 - If the phone was locked when it closed, you'll see the "Auto on hold until you unlock the phone (then it closes by
   itself)" notification. **Unlock the phone once** so it closes completely: you'll see "Closing Auto…" for a few
   seconds (section 9). If you get back in the car before unlocking it and use the Bluetooth automatic connection,

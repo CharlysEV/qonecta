@@ -528,7 +528,9 @@ congestiones 4`.
 ### Alla fine del viaggio
 
 - Spegni l'auto (Qonecta+ si chiude da solo quando scade «Attesa dell'auto», 5 minuti di default) o tocca
-  «Disconnetti» per chiuderlo subito.
+  «Disconnetti» per chiuderlo subito. Senza toccare il telefono: nell'auto, Impostazioni › Connessione › «Disconnetti»
+  (chiede un secondo tocco), o il riquadro delle impostazioni rapide, che funziona col telefono bloccato. Se togli solo
+  il cavo, il viaggio viene salvato lo stesso; l'app si chiude quando scade «Attesa dell'auto».
 - Se il telefono era bloccato quando si è chiuso, vedrai la notifica «Android Auto in attesa finché non sblocchi il
   telefono (poi si chiude da solo)». **Sblocca il telefono una volta** perché si chiuda del tutto: vedrai per qualche
   secondo «Chiusura di Android Auto…» (sezione 9). Se torni in auto prima di sbloccarlo e usi la connessione automatica

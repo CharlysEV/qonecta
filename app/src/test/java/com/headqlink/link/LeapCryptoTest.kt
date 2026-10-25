@@ -120,6 +120,17 @@ class LeapCryptoTest {
     }
 
     @Test
+    fun tokenExpiryAndCloudMessagesForTheLog() {
+        val jwt = "a." + java.util.Base64.getUrlEncoder().withoutPadding().encodeToString("""{"exp":1761400000}""".toByteArray()) + ".b"
+        assertEquals(1_761_400_000_000L, LeapCrypto.tokenExpiryMs(jwt))
+        assertEquals(0L, LeapCrypto.tokenExpiryMs("not-a-jwt"))
+        assertEquals(0L, LeapCrypto.tokenExpiryMs(null))
+        // El mensaje de la nube, en una línea y corto.
+        assertEquals("token expired", LeapApi.shortMessage("  token\n expired "))
+        assertEquals(81, LeapApi.shortMessage("x".repeat(200)).length)
+    }
+
+    @Test
     fun encodeComponentLikeDart() {
         assertEquals("a%20b%2Bc%40d.e%2F~*'()!-_", LeapCrypto.encodeComponent("a b+c@d.e/~*'()!-_"))
         assertEquals("%C3%B1%26%3D", LeapCrypto.encodeComponent("ñ&="))

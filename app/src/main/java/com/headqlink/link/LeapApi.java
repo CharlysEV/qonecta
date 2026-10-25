@@ -310,7 +310,11 @@ final class LeapApi {
             res = parse(call(accountIdentity, PATH_REFRESH, h, "refreshToken=" + LeapCrypto.encodeComponent(s.refreshToken)),
                     "token refresh");
         } catch (ApiException e) {
-            throw new SessionExpiredException("refresco rechazado (" + e.apiCode + ")");
+            // Para el log: lo que contestó la nube al refresco y a la llamada que lo pidió (qué significa el 17).
+            String why = lastTokenProblem;
+            throw new SessionExpiredException("refresco rechazado (" + e.apiCode + ", HTTP " + e.httpCode
+                    + (e.serverMessage.isEmpty() ? "" : ": " + shortMessage(e.serverMessage)) + ")"
+                    + (why == null ? "" : " tras «" + why + "»"));
         }
         JSONObject d = res.optJSONObject("data");
         String token = d == null ? "" : str(d, "token");
@@ -422,9 +426,20 @@ final class LeapApi {
             return c.run();
         } catch (ApiException e) {
             if (!e.tokenProblem()) throw e;
+            lastTokenProblem = "HTTP " + e.httpCode + ", código " + e.apiCode
+                    + (e.serverMessage.isEmpty() ? "" : ": " + shortMessage(e.serverMessage));
             refresh();
             return c.run();
         }
+    }
+
+    /** Lo que contestó la nube a la llamada que pidió el último refresco (para el log si el refresco falla). */
+    private String lastTokenProblem;
+
+    /** Puro: el mensaje de la nube recortado para el log (una línea, como mucho 80 caracteres). */
+    static String shortMessage(String m) {
+        String s = m.replaceAll("\\s+", " ").trim();
+        return s.length() > 80 ? s.substring(0, 80) + "…" : s;
     }
 
     /**

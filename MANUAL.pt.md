@@ -532,7 +532,9 @@ congestiones 4`.
 ### No fim da viagem
 
 - Desligue o carro (o Qonecta+ fecha-se sozinho quando termina «Esperar pelo carro», 5 minutos por predefinição) ou
-  toque em «Desligar» para o fechar já.
+  toque em «Desligar» para o fechar já. Sem mexer no telemóvel: no carro, Definições › Ligação › «Desligar» (pede um
+  segundo toque), ou o botão das definições rápidas, que funciona com o telemóvel bloqueado. Se só tirar o cabo, a
+  viagem fica guardada na mesma; a app fecha-se quando termina «Esperar pelo carro».
 - Se o telemóvel estava bloqueado quando se fechou, verá a notificação «Auto em espera até desbloquear o telemóvel
   (depois fecha-se sozinho)». **Desbloqueie o telemóvel uma vez** para que feche de vez: verá durante uns segundos «A
   fechar o Auto…» (secção 9). Se voltar ao carro antes de o desbloquear e usar a ligação automática por Bluetooth, o

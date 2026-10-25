@@ -1284,4 +1284,10 @@
     <string name="hql_report_saved_diesel">Een dieselauto met %2$s L/100 km had %1$s gekost bij %3$s.</string>
     <string name="hql_report_share_saved_diesel">~%1$s bespaard t.o.v. diesel</string>
     <string name="hql_trips_note_diesel">Energie geschat met het C10-model (zonder autogegevens). Prijzen: %1$s; diesel %2$.1f l/100 km à %3$s.</string>
+    <string name="hql_wind_gusts">windstoten</string>
+    <string name="hql_disconnect_confirm">Tik nogmaals om de verbinding te verbreken</string>
+    <string name="hql_disconnecting">Verbinding verbreken…</string>
+    <string name="hql_disconnect_car_help">Verbreekt de verbinding met de auto en slaat de rit op, zonder de telefoon aan te raken. Trek je alleen de kabel eruit, dan wordt de rit ook opgeslagen, maar Qonecta+ wacht nog op de auto („Wachten op de auto”).</string>
+    <string name="hql_pl_save_here">Hier opslaan</string>
+    <string name="hql_video_audio_unsupported">Geen geluid: deze telefoon kan het geluid van deze video niet decoderen (%1$s).</string>
 </resources>

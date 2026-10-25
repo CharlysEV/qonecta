@@ -160,14 +160,17 @@ class CarCloudTest {
         // En claro solo lo que no es secreto: el modelo y el correo enmascarado.
         assertEquals("C10", st.carType())
         assertEquals("c***@e***.com", st.maskedEmail())
-        // Cerrar sesión deja el certificado; borrar datos, nada.
+        // Cerrar sesión deja el certificado (y el deviceId, para volver a entrar como el mismo móvil); borrar datos, nada.
+        st.rememberDeviceId("dev-abc")
         st.deleteSession()
         assertFalse(st.hasSession())
         assertTrue(st.hasIdentity())
+        assertEquals("dev-abc", st.lastDeviceId())
         st.wipeAll()
         assertFalse(st.hasIdentity())
         assertTrue(box.destroyed)
         assertEquals("", st.maskedEmail())
+        assertEquals(null, st.lastDeviceId())
         dir.deleteRecursively()
     }
 

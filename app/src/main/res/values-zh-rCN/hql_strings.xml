@@ -1288,4 +1288,10 @@
     <string name="hql_report_saved_diesel">油耗 %2$s L/100 km 的柴油车按 %3$s 计算需花费 %1$s。</string>
     <string name="hql_report_share_saved_diesel">比柴油车节省约 %1$s</string>
     <string name="hql_trips_note_diesel">能耗按 C10 模型估算（无车辆数据）。价格：%1$s；柴油 %2$.1f l/100 km，单价 %3$s。</string>
+    <string name="hql_wind_gusts">阵风</string>
+    <string name="hql_disconnect_confirm">再点一次断开连接</string>
+    <string name="hql_disconnecting">正在断开…</string>
+    <string name="hql_disconnect_car_help">断开与车辆的连接并保存行程，无需操作手机。如果只拔掉数据线，行程也会保存，但 Qonecta+ 会继续等待车辆（“等待车辆”）。</string>
+    <string name="hql_pl_save_here">保存当前位置</string>
+    <string name="hql_video_audio_unsupported">无声音：此手机无法解码该视频的音频（%1$s）。</string>
 </resources>

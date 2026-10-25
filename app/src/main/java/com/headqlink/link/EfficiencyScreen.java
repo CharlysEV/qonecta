@@ -256,13 +256,30 @@ final class EfficiencyScreen implements CarScreen {
         float tx = cx + rad + 26;
         float y = r.top + 22;
         float step = (r.height() - 22) / 4f;
-        row(cv, tx, y, Str.get(R.string.hql_wind), wind ? String.format(Locale.getDefault(), "%.0f km/h %s", Math.abs(s.headwindKmh),
-                s.headwindKmh >= 0 ? Str.get(R.string.hql_headwind) : Str.get(R.string.hql_tailwind)) : "—", wind && s.headwindKmh > 3 ? CarKit.AMBER : CarKit.TEXT, p);
+        // El viento del parte con sus rachas; en la etiqueta, lo que te da de cara o de cola (del viento real).
+        boolean real = wind && !Double.isNaN(s.windRealKmh);
+        String label = Str.get(R.string.hql_wind);
+        if (real) {
+            double head = s.headwindKmh / CarSensors.WIND_AT_CAR;
+            if (Math.abs(head) >= 1) {
+                label += String.format(Locale.getDefault(), " · %.0f %s", Math.abs(head),
+                        Str.get(head >= 0 ? R.string.hql_headwind : R.string.hql_tailwind));
+            }
+        }
+        row(cv, tx, y, label, real ? windText(s.windRealKmh, s.gustKmh, Str.get(R.string.hql_wind_gusts), Locale.getDefault()) : "—",
+                wind && s.headwindKmh > 3 ? CarKit.AMBER : CarKit.TEXT, p);
         row(cv, tx, y + step, Str.get(R.string.hql_temperature), Double.isNaN(s.tempC) ? "—" : String.format(Locale.getDefault(), "%.0f °C", s.tempC), CarKit.TEXT, p);
         int gc = s.gradePct > 2.5 ? CarKit.AMBER : s.gradePct < -2.5 ? CarKit.GREEN : CarKit.TEXT;
         row(cv, tx, y + 2 * step, Str.get(R.string.hql_grade), String.format(Locale.getDefault(), "%+.1f %%", s.gradePct), gc, p);
         row(cv, tx, y + 3 * step, Str.get(R.string.hql_altitude), Double.isNaN(s.altitudeM) ? "—"
                 : String.format(Locale.getDefault(), "%.0f m · ↑%.0f ↓%.0f", s.altitudeM, s.climbM, s.descentM), CarKit.TEXT, p);
+    }
+
+    /** Puro: el viento como se enseña: «35 km/h · rachas 70» (las rachas, solo si soplan bastante más que el viento). */
+    static String windText(double realKmh, double gustKmh, String gustsWord, Locale loc) {
+        String w = String.format(loc, "%.0f km/h", realKmh);
+        if (!Double.isNaN(gustKmh) && gustKmh >= realKmh + 10) w += String.format(loc, " · %s %.0f", gustsWord, gustKmh);
+        return w;
     }
 
     private void row(Canvas cv, float x, float y, String label, String value, int color, Paint p) {

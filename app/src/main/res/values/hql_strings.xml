@@ -1289,4 +1289,10 @@
     <string name="hql_report_saved_diesel">A diesel car using %2$s L/100 km would have cost %1$s at %3$s.</string>
     <string name="hql_report_share_saved_diesel">~%1$s saved vs diesel</string>
     <string name="hql_trips_note_diesel">Energy estimated with the C10 model (no car data). Prices: %1$s; diesel %2$.1f l/100 km at %3$s.</string>
+    <string name="hql_wind_gusts">gusts</string>
+    <string name="hql_disconnect_confirm">Tap again to disconnect</string>
+    <string name="hql_disconnecting">Disconnecting…</string>
+    <string name="hql_disconnect_car_help">Closes the connection to the car and saves the trip, without touching the phone. If you just unplug the cable, the trip is saved too, but Qonecta+ waits for the car to come back (“Wait for the car”).</string>
+    <string name="hql_pl_save_here">Save here</string>
+    <string name="hql_video_audio_unsupported">No sound: this phone can\'t decode this video\'s audio (%1$s).</string>
 </resources>

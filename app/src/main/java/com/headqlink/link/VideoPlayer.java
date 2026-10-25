@@ -156,12 +156,28 @@ final class VideoPlayer {
         player.setMediaItem(mb.build());
         player.setPlaybackParameters(new PlaybackParameters(SPEEDS[speed]));
         applySubs();
+        boolean[] audioWarned = {false};
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int state) {
                 if (state == Player.STATE_ENDED) ended();
             }
+
+            @Override
+            public void onTracksChanged(androidx.media3.common.Tracks tracks) {
+                // Audio que el móvil no sabe decodificar (DD+/E-AC-3 en muchos): ExoPlayer lo salta sin decir nada.
+                if (audioWarned[0] || !tracks.containsType(C.TRACK_TYPE_AUDIO) || tracks.isTypeSupported(C.TRACK_TYPE_AUDIO)) return;
+                audioWarned[0] = true;
+                L.w("vídeos: sin sonido, el móvil no decodifica su audio (" + audioMimes(tracks) + ")");
+                notice(f, Str.get(R.string.hql_video_audio_unsupported, audioMimes(tracks)));
+            }
+
+            @Override
+            public void onPlayerError(androidx.media3.common.PlaybackException e) {
+                L.w("vídeos: error al reproducir (" + e.getErrorCodeName() + ")");
+            }
         });
+        diagnostics(player);
         player.prepare();
         host.setContent(f);
         host.setFullscreen(true);
@@ -174,6 +190,65 @@ final class VideoPlayer {
             player.play();
             showControls();
         }
+    }
+
+    /** Los formatos de las pistas de audio («audio/eac3»), para el aviso y el log. */
+    static String audioMimes(androidx.media3.common.Tracks tracks) {
+        java.util.LinkedHashSet<String> mimes = new java.util.LinkedHashSet<>();
+        for (androidx.media3.common.Tracks.Group g : tracks.getGroups()) {
+            if (g.getType() != C.TRACK_TYPE_AUDIO) continue;
+            for (int i = 0; i < g.length; i++) {
+                String m = g.getTrackFormat(i).sampleMimeType;
+                if (m != null) mimes.add(m.replace("audio/", ""));
+            }
+        }
+        return mimes.isEmpty() ? "?" : android.text.TextUtils.join(", ", mimes);
+    }
+
+    /** Un aviso sobre el vídeo, arriba, que se quita solo a los NOTICE_MS. */
+    private void notice(FrameLayout f, String text) {
+        TextView t = CarStyle.text(f.getContext(), text, 24, Color.WHITE);
+        t.setBackground(CarStyle.round(0xCC000000, 18));
+        t.setPadding(26, 16, 26, 16);
+        t.setGravity(Gravity.CENTER);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        lp.topMargin = 24;
+        f.addView(t, lp);
+        main.postDelayed(() -> f.removeView(t), NOTICE_MS);
+    }
+
+    static final long NOTICE_MS = 8000;
+
+    /**
+     * Para el log: con qué decodificador y en qué formato va el vídeo (códec, tamaño, fps; un decodificador
+     * «c2.android.*» es por software) y los fotogramas que se pierden. Así se ve por qué un HEVC va a tirones.
+     */
+    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+    private static void diagnostics(ExoPlayer p) {
+        p.addAnalyticsListener(new androidx.media3.exoplayer.analytics.AnalyticsListener() {
+            @Override
+            public void onVideoDecoderInitialized(EventTime t, String name, long initializedMs, long durationMs) {
+                L.i("vídeos: decodificador de vídeo " + name);
+            }
+
+            @Override
+            public void onAudioDecoderInitialized(EventTime t, String name, long initializedMs, long durationMs) {
+                L.i("vídeos: decodificador de audio " + name);
+            }
+
+            @Override
+            public void onVideoInputFormatChanged(EventTime t, androidx.media3.common.Format f,
+                                                  androidx.media3.exoplayer.DecoderReuseEvaluation reuse) {
+                L.i(String.format(java.util.Locale.US, "vídeos: %s (%s) %dx%d a %.3f fps", f.sampleMimeType, f.codecs, f.width,
+                        f.height, f.frameRate));
+            }
+
+            @Override
+            public void onDroppedVideoFrames(EventTime t, int dropped, long elapsedMs) {
+                L.i("vídeos: " + dropped + " fotogramas perdidos en " + elapsedMs + " ms");
+            }
+        });
     }
 
     /** «¿Seguir desde 12:34?»: Seguir / Desde el principio; sin respuesta en RESUME_ASK_MS, sigue. */

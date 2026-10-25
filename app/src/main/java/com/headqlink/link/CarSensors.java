@@ -66,9 +66,13 @@ final class CarSensors implements SensorEventListener, LocationListener {
         double descentM;
         double tripKm;
         long tripSec;
+        /** El viento que nota el coche (el real × WIND_AT_CAR): el del consumo y el de cara o de cola. */
         double windKmh = Double.NaN;
         double windFromDeg;
         double headwindKmh = Double.NaN;
+        /** El viento del parte (a 10 m, km/h) y sus rachas: lo que se enseña. NaN si no se sabe. */
+        double windRealKmh = Double.NaN;
+        double gustKmh = Double.NaN;
         double tempC = Double.NaN;
         /** Tipo de tiempo de ahora (código WMO de Open-Meteo, como RouteTab.weatherText), o -1 si no se sabe. */
         int weatherCode = -1;
@@ -144,6 +148,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
     private boolean tripStarted;
     private long lastWeatherMs;
     private Location lastWeatherLoc;
+    /** A la altura del coche el viento es menor que a 10 m, la del parte (perfil logarítmico, ~0,7). */
+    static final double WIND_AT_CAR = 0.7;
     // Cronómetro 0-50 / 0-100.
     private long launchStartMs;
     private boolean launchArmed;
@@ -317,6 +323,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
         c.windKmh = s.windKmh;
         c.windFromDeg = s.windFromDeg;
         c.headwindKmh = s.headwindKmh;
+        c.windRealKmh = s.windRealKmh;
+        c.gustKmh = s.gustKmh;
         c.tempC = s.tempC;
         c.weatherCode = s.weatherCode;
         c.day = s.day;
@@ -828,6 +836,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
         DemoDrive d = demo;
         demoNs = Math.round(k * DemoDrive.DT * 1e9);
         s.windKmh = DemoDrive.WIND_KMH;
+        s.windRealKmh = DemoDrive.WIND_KMH / WIND_AT_CAR;
+        s.gustKmh = Math.round(s.windRealKmh * 1.8);
         s.windFromDeg = DemoDrive.WIND_FROM_DEG;
         s.tempC = DemoDrive.TEMP_C;
         s.weatherCode = DemoDrive.WEATHER_CODE;
@@ -872,8 +882,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
         new Thread(() -> {
             try {
                 String url = String.format(Locale.US, "https://api.open-meteo.com/v1/forecast?latitude=%.4f&longitude=%.4f"
-                        + "&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code,is_day&wind_speed_unit=kmh",
-                        lat, lon);
+                        + "&current=temperature_2m,wind_speed_10m,wind_gusts_10m,wind_direction_10m,weather_code,is_day"
+                        + "&wind_speed_unit=kmh", lat, lon);
                 HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
                 con.setConnectTimeout(10_000);
                 con.setReadTimeout(10_000);
@@ -886,8 +896,10 @@ final class CarSensors implements SensorEventListener, LocationListener {
                 }
                 JSONObject cur = new JSONObject(body).getJSONObject("current");
                 synchronized (this) {
-                    // A la altura del coche el viento es menor que a 10 m (perfil logarítmico, ~0,7).
-                    s.windKmh = cur.getDouble("wind_speed_10m") * 0.7;
+                    // Se enseña el del parte (y sus rachas); el consumo usa el de la altura del coche, menor que a 10 m.
+                    s.windRealKmh = cur.getDouble("wind_speed_10m");
+                    s.gustKmh = cur.optDouble("wind_gusts_10m", Double.NaN);
+                    s.windKmh = s.windRealKmh * WIND_AT_CAR;
                     s.windFromDeg = cur.getDouble("wind_direction_10m");
                     s.tempC = cur.getDouble("temperature_2m");
                     s.weatherCode = cur.optInt("weather_code", -1);
@@ -896,6 +908,10 @@ final class CarSensors implements SensorEventListener, LocationListener {
                 }
             } catch (Exception e) {
                 L.w("sensores: sin datos de viento: " + Http.safeError(e));
+                // Se reintenta en un minuto, no a los 5 (si no, el dato viejo se queda como si fuera de ahora).
+                synchronized (this) {
+                    lastWeatherMs = SystemClock.elapsedRealtime() - 4 * 60_000;
+                }
             }
         }, "weather").start();
     }

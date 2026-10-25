@@ -680,6 +680,58 @@ final class SettingsScreen implements CarScreen {
         TextView info = CarStyle.text(c, Str.get(R.string.hql_settings_info, LinkState.video.isEmpty() ? "—" : LinkState.video, VideoProfile.reason()), 20, CarStyle.TEXT_DIM);
         info.setPadding(8, 0, 8, 0);
         col.addView(info);
+        col.addView(disconnectButton(c));
+        TextView stopHelp = CarStyle.text(c, Str.get(R.string.hql_disconnect_car_help), 20, CarStyle.TEXT_DIM);
+        stopHelp.setPadding(8, 10, 8, 0);
+        col.addView(stopHelp);
+    }
+
+    /** Lo que espera «Desconectar» el segundo toque que lo confirma. */
+    static final long DISCONNECT_CONFIRM_MS = 4000;
+
+    /**
+     * «Desconectar» desde el coche: lo mismo que el botón de ajustes rápidos (LinkControl.stop), que vale con el móvil
+     * bloqueado; el viaje se guarda. Pide un segundo toque en DISCONNECT_CONFIRM_MS, para que no se haga sin querer.
+     */
+    private View disconnectButton(Context c) {
+        TextView b = CarStyle.pill(c, Str.get(R.string.hql_disconnect));
+        b.setPadding(36, 22, 36, 22);
+        b.setGravity(Gravity.CENTER);
+        long[] armedAt = {0};
+        Runnable disarm = () -> {
+            armedAt[0] = 0;
+            b.setText(Str.get(R.string.hql_disconnect));
+            b.setTextColor(CarStyle.TEXT);
+        };
+        b.setOnClickListener(v -> {
+            long now = android.os.SystemClock.uptimeMillis();
+            if (armedAt[0] == 0 || now - armedAt[0] > DISCONNECT_CONFIRM_MS) {
+                armedAt[0] = now;
+                b.setText(Str.get(R.string.hql_disconnect_confirm));
+                b.setTextColor(CarKit.AMBER);
+                long armed = now;
+                b.postDelayed(() -> {
+                    if (armedAt[0] == armed) disarm.run();
+                }, DISCONNECT_CONFIRM_MS);
+                return;
+            }
+            L.i("ajustes desde el coche: Desconectar");
+            if (DemoMode.active()) {
+                // Vista previa: no hay sesión que cerrar.
+                disarm.run();
+                return;
+            }
+            armedAt[0] = 0;
+            b.setText(Str.get(R.string.hql_disconnecting));
+            b.setEnabled(false);
+            Context app = c.getApplicationContext();
+            host.post(() -> LinkControl.stop(app, "pantalla del coche"));
+        });
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = 22;
+        lp.leftMargin = 8;
+        b.setLayoutParams(lp);
+        return b;
     }
 
     /**

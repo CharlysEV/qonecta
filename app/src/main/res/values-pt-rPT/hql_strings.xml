@@ -1285,4 +1285,10 @@
     <string name="hql_report_saved_diesel">Um carro a gasóleo de %2$s L/100 km teria gasto %1$s a %3$s.</string>
     <string name="hql_report_share_saved_diesel">~%1$s poupados face ao gasóleo</string>
     <string name="hql_trips_note_diesel">Energia estimada com o modelo do C10 (sem dados do carro). Preços: %1$s; gasóleo %2$.1f l/100 km a %3$s.</string>
+    <string name="hql_wind_gusts">rajadas</string>
+    <string name="hql_disconnect_confirm">Toque outra vez para desligar</string>
+    <string name="hql_disconnecting">A desligar…</string>
+    <string name="hql_disconnect_car_help">Fecha a ligação ao carro e guarda a viagem, sem mexer no telemóvel. Se só tirar o cabo, a viagem também fica guardada, mas o Qonecta+ espera que o carro volte («Esperar pelo carro»).</string>
+    <string name="hql_pl_save_here">Guardar aqui</string>
+    <string name="hql_video_audio_unsupported">Sem som: este telemóvel não consegue descodificar o áudio deste vídeo (%1$s).</string>
 </resources>

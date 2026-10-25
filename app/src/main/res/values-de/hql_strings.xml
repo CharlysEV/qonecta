@@ -1284,4 +1284,10 @@
     <string name="hql_report_saved_diesel">Ein Diesel mit %2$s L/100 km hätte bei %3$s %1$s gekostet.</string>
     <string name="hql_report_share_saved_diesel">~%1$s gespart gegenüber Diesel</string>
     <string name="hql_trips_note_diesel">Energie geschätzt mit dem C10-Modell (ohne Fahrzeugdaten). Preise: %1$s; Diesel %2$.1f l/100 km zu %3$s.</string>
+    <string name="hql_wind_gusts">Böen</string>
+    <string name="hql_disconnect_confirm">Zum Trennen erneut tippen</string>
+    <string name="hql_disconnecting">Wird getrennt…</string>
+    <string name="hql_disconnect_car_help">Beendet die Verbindung zum Fahrzeug und speichert die Fahrt, ohne das Handy anzufassen. Ziehst du nur das Kabel ab, wird die Fahrt auch gespeichert, aber Qonecta+ wartet noch auf das Fahrzeug („Auf das Fahrzeug warten“).</string>
+    <string name="hql_pl_save_here">Hier speichern</string>
+    <string name="hql_video_audio_unsupported">Kein Ton: Dieses Handy kann den Ton dieses Videos nicht decodieren (%1$s).</string>
 </resources>

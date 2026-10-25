@@ -95,7 +95,23 @@ final class CarCloudSession {
         if (api == null || saved == null) return;
         saved.session = api.session();
         st.saveSession(saved);
+        if (saved.session == null) return;
+        // Se vuelve a entrar como el mismo móvil aunque se cierre la sesión (como la app oficial).
+        st.rememberDeviceId(saved.session.deviceId);
+        // Para el log, una vez por token: cuándo caduca (para saber si la nube lo rechaza por caducado o antes).
+        String tok = saved.session.token;
+        if (tok != null && !tok.equals(loggedToken)) {
+            loggedToken = tok;
+            long exp = LeapCrypto.tokenExpiryMs(tok);
+            if (exp > 0) {
+                L.i(String.format(java.util.Locale.US, "nube Leapmotor: token en uso, caduca en %.1f h",
+                        (exp - System.currentTimeMillis()) / 3_600_000.0));
+            }
+        }
     }
+
+    /** El último token del que se apuntó la caducidad. */
+    private static String loggedToken;
 
     /** Estado del coche elegido (lo usan el sondeo y «Leer estado ahora»). */
     static synchronized LeapStatus readStatus(Context ctx) throws IOException, GeneralSecurityException {
@@ -243,6 +259,8 @@ final class CarCloudSession {
         } catch (IOException | GeneralSecurityException ignored) {
             // Sesión vieja ilegible: se empieza de cero.
         }
+        // Tras «Cerrar sesión» ya no hay sesión: el deviceId de la anterior, para no estrenar móvil en cada entrada.
+        if (deviceId == null) deviceId = st.lastDeviceId();
         api = null;
         saved = null;
         LeapApi a = newApi(st, deviceId);

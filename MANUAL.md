@@ -523,7 +523,9 @@ congestiones 4`.
 ### Al terminar el viaje
 
 - Apaga el coche (Qonecta+ se cierra sola cuando vence «Esperar al coche», a los 5 minutos por defecto) o pulsa
-  «Desconectar» para cerrarla ya.
+  «Desconectar» para cerrarla ya. Sin tocar el móvil: en el coche, Ajustes › Conexión › «Desconectar» (pide un segundo
+  toque), o el botón de ajustes rápidos, que vale con el móvil bloqueado. Si solo quitas el cable, el viaje se guarda
+  igual; la app se cierra al vencer «Esperar al coche».
 - Si el móvil estaba bloqueado al cerrarse, verás la notificación «Auto en espera hasta que desbloquees el móvil
   (después se cierra solo)». **Desbloquea el móvil una vez** para que se cierre del todo: verás unos segundos «Cerrando
   Auto…» (sección 9). Si vuelves al coche antes de desbloquearlo y tienes la conexión automática por Bluetooth, Android

@@ -1290,4 +1290,10 @@
     <string name="hql_report_saved_diesel">Un coche diésel de %2$s L/100 km habría gastado %1$s a %3$s.</string>
     <string name="hql_report_share_saved_diesel">~%1$s ahorrados frente a diésel</string>
     <string name="hql_trips_note_diesel">Energía estimada con el modelo del C10 (sin datos del coche). Precios: %1$s; diésel %2$.1f l/100 km a %3$s.</string>
+    <string name="hql_wind_gusts">rachas</string>
+    <string name="hql_disconnect_confirm">Toca otra vez para desconectar</string>
+    <string name="hql_disconnecting">Desconectando…</string>
+    <string name="hql_disconnect_car_help">Cierra la conexión con el coche y guarda el viaje, sin tocar el móvil. Si solo quitas el cable, el viaje también se guarda, pero Qonecta+ espera a que vuelva el coche («Esperar al coche»).</string>
+    <string name="hql_pl_save_here">Guardar aquí</string>
+    <string name="hql_video_audio_unsupported">Sin sonido: este móvil no puede decodificar el audio de este vídeo (%1$s).</string>
 </resources>
