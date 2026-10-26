@@ -31,8 +31,12 @@ final class About {
     static final String AUTHOR = "CharlysEV";
     static final String AUTHOR_URL = "https://github.com/CharlysEV";
     static final String REPO_URL = "https://github.com/CharlysEV/qonecta";
-    /** Donaciones (PayPal.Me de CharlysEV): «Invítame a un café». */
-    static final String DONATE_URL = "https://www.paypal.me/CharlysEV";
+    /**
+     * Donaciones: «Invítame a un café» abre Ko-fi (con tarjeta o PayPal, sin cuenta) y al lado va PayPal.Me. Ko-fi desde
+     * el 26-10: a algunos no les dejaba PayPal pagar con «Amigos y familiares»; las dos vías siguen abiertas.
+     */
+    static final String DONATE_URL = "https://ko-fi.com/charlysev";
+    static final String PAYPAL_URL = "https://www.paypal.me/CharlysEV";
     /** El HeadQLink original del que parte Qonecta+. */
     static final String BASE_AUTHOR = "ryazrm";
     static final String BASE_URL = "https://github.com/ryazrm/headqlink";
@@ -119,16 +123,29 @@ final class About {
         head.addView(names);
         col.addView(head);
         col.addView(text(c, Str.get(R.string.hql_about_tagline), R.color.hql_text_dim, 14), gap(c, 10));
-        // Apoyar el proyecto: una línea y un botón, sin insistir en ningún otro sitio.
+        // Apoyar el proyecto: una línea y dos botones (Ko-fi y PayPal), sin insistir en ningún otro sitio.
         col.addView(text(c, Str.get(R.string.hql_about_donate_text), R.color.hql_text_dim, 13), gap(c, 14));
+        // Uno debajo del otro: al lado, «Invítame a un café» deja a PayPal sin sitio en un móvil.
+        LinearLayout donateRow = new LinearLayout(c);
+        donateRow.setOrientation(LinearLayout.VERTICAL);
         com.google.android.material.button.MaterialButton donate = new com.google.android.material.button.MaterialButton(c, null,
                 com.google.android.material.R.attr.materialButtonOutlinedStyle);
         donate.setText(Str.get(R.string.hql_about_donate));
         donate.setOnClickListener(v -> open(c, DONATE_URL));
-        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+        donateRow.addView(donate, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT));
+        com.google.android.material.button.MaterialButton paypal = new com.google.android.material.button.MaterialButton(c, null,
+                com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        paypal.setText("PayPal");
+        paypal.setOnClickListener(v -> open(c, PAYPAL_URL));
+        LinearLayout.LayoutParams plp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        plp.topMargin = Math.round(2 * dp);
+        donateRow.addView(paypal, plp);
+        LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
         dlp.topMargin = Math.round(6 * dp);
-        col.addView(donate, dlp);
+        col.addView(donateRow, dlp);
 
         section(c, col, R.string.hql_about_based,
                 "HeadQLink · " + BASE_AUTHOR,

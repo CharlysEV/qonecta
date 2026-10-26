@@ -35,8 +35,8 @@ cómo exportar el log.
 
 ## Apoyar el proyecto
 
-Qonecta+ es gratis y sin anuncios. Si te resulta útil y quieres apoyarlo, puedes invitarme a un café con
-[PayPal](https://www.paypal.me/CharlysEV). ¡Gracias!
+Qonecta+ es gratis y sin anuncios. Si te resulta útil y quieres apoyarlo, puedes invitarme a un café en
+[Ko-fi](https://ko-fi.com/charlysev) (con tarjeta o PayPal) o con [PayPal](https://www.paypal.me/CharlysEV). ¡Gracias!
 
 
 Android app that brings **Android Auto** and a custom side panel with extra features to the

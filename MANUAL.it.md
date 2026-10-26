@@ -998,8 +998,8 @@ Lo fa Android e un'app non può impedirlo. Dalla 0.2.60, durante il gioco il tel
 al minimo; toccare il telefono lo toglie.
 
 **Posso sostenere il progetto?**
-Qonecta+ è gratuito e senza pubblicità. Se ti è utile, puoi offrirmi un caffè con [PayPal](https://www.paypal.me/CharlysEV); anche dall'app,
-in «Informazioni e crediti». Grazie!
+Qonecta+ è gratuito e senza pubblicità. Se ti è utile, puoi offrirmi un caffè su [Ko-fi](https://ko-fi.com/charlysev)
+(carta o PayPal) o con [PayPal](https://www.paypal.me/CharlysEV); anche dall'app, in «Informazioni e crediti». Grazie!
 
 **Come chiedo aiuto?**
 Esporta il registro (sezione 8) e racconta cosa è successo e a che ora. Non contiene password, indirizzi né ciò che

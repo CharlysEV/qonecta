@@ -986,8 +986,9 @@ Lo hace Android, y una app no puede impedirlo. Desde la 0.2.60, durante el juego
 brillo al mínimo para que no pase; tocar el móvil la quita.
 
 **¿Puedo apoyar el proyecto?**
-Qonecta+ es gratis y sin anuncios. Si te resulta útil, puedes invitarme a un café con
-[PayPal](https://www.paypal.me/CharlysEV); también desde la app, en «Acerca de y créditos». ¡Gracias!
+Qonecta+ es gratis y sin anuncios. Si te resulta útil, puedes invitarme a un café en
+[Ko-fi](https://ko-fi.com/charlysev) (con tarjeta o PayPal) o con [PayPal](https://www.paypal.me/CharlysEV); también
+desde la app, en «Acerca de y créditos». ¡Gracias!
 
 **¿Cómo pido ayuda?**
 Exporta el log (sección 8) y cuenta qué pasó y a qué hora. No lleva contraseñas, direcciones ni lo que escribes.

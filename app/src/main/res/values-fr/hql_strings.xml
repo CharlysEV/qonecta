@@ -1331,7 +1331,7 @@
         <item quantity="other">%d morceaux</item>
     </plurals>
     <string name="hql_about_donate">☕ Offre-moi un café</string>
-    <string name="hql_about_donate_text">Qonecta+ est gratuit et sans publicité. S\'il t\'est utile et que tu veux le soutenir, tu peux le faire avec PayPal.</string>
+    <string name="hql_about_donate_text">Qonecta+ est gratuit et sans publicité. S\'il t\'est utile et que tu veux le soutenir, tu peux le faire sur Ko-fi (carte ou PayPal) ou directement avec PayPal.</string>
     <string name="hql_ghost_behind">Fantôme : %1$s derrière ton meilleur temps (%2$s)</string>
     <string name="hql_ghost_ahead">Fantôme : %1$s devant ton meilleur temps (%2$s)</string>
     <string name="hql_ghost_even">Fantôme : à égalité avec ton meilleur temps (%2$s)</string>

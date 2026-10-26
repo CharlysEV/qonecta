@@ -994,8 +994,9 @@ Não têm emissão aberta na internet, por isso nenhuma lista M3U os traz. Com a
 no mínimo; tocar no telemóvel tira-a.
 
 **Posso apoiar o projeto?**
-O Qonecta+ é gratuito e sem anúncios. Se lhe for útil, pode oferecer-me um café com [PayPal](https://www.paypal.me/CharlysEV); também na
-aplicação, em «Acerca e créditos». Obrigado!
+O Qonecta+ é gratuito e sem anúncios. Se lhe for útil, pode oferecer-me um café no [Ko-fi](https://ko-fi.com/charlysev)
+(cartão ou PayPal) ou com [PayPal](https://www.paypal.me/CharlysEV); também na aplicação, em «Acerca e créditos».
+Obrigado!
 
 **Como peço ajuda?**
 Exporte o registo (secção 8) e conte o que aconteceu e a que horas. Não leva palavras-passe, moradas nem o que escreve.

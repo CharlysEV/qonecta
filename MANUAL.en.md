@@ -968,8 +968,9 @@ Android does that and an app cannot prevent it. Since 0.2.60 the phone shows a b
 you play; touching the phone removes it.
 
 **Can I support the project?**
-Qonecta+ is free and has no ads. If it's useful to you, you can buy me a coffee with [PayPal](https://www.paypal.me/CharlysEV); also from the
-app, in "About and credits". Thank you!
+Qonecta+ is free and has no ads. If it's useful to you, you can buy me a coffee on [Ko-fi](https://ko-fi.com/charlysev)
+(card or PayPal) or with [PayPal](https://www.paypal.me/CharlysEV); also from the app, in "About and credits". Thank
+you!
 
 **How do I ask for help?**
 Export the log (section 8) and say what happened and when. It carries no passwords, addresses or typed text.
