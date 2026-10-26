@@ -14,7 +14,7 @@ import java.util.Locale;
  * false: el canal no acepta órdenes y nada de esto se usa.
  *
  * Órdenes (una por petición, en minúsculas): estado · msg TEXTO · fps N|auto · kbps N|auto · cable N|auto · qp N|auto ·
- * boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto ·
+ * cola N|auto · boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto ·
  * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra) · carga demo|off
  * (la notificación de una carga inventada, para ver el Live Update) · ffmpeg (si el audio por FFmpeg está listo) · ia [hola]
  * (el SDK de Anthropic con una clave falsa; «hola»: una pregunta de verdad con la clave guardada).
@@ -37,6 +37,12 @@ final class LabControl {
      * configurar, así que vale desde la siguiente conexión («reconectar»).
      */
     static volatile int qpFloor;
+    /**
+     * Puerta «último frame» en KB (0: la de siempre, VideoPipeline.GATE_OUTQ). Más alta aguanta los microcortes de radio
+     * del Wi-Fi Direct sin tirar frames (a ~4 Mbit/s, 200 ms son ~100 KB) a cambio de imagen algo retrasada tras cada
+     * corte. Vale al momento.
+     */
+    static volatile int gateKb;
 
     private LabControl() {
     }
@@ -65,6 +71,7 @@ final class LabControl {
         }
         if (touchBoost != null) b.append(b.length() > 0 ? ", " : "").append(touchBoost ? "salto a 60 al tocar" : "sin salto a 60");
         if (qpFloor > 0) b.append(b.length() > 0 ? ", " : "").append("QP ").append(qpFloor);
+        if (gateKb > 0) b.append(b.length() > 0 ? ", " : "").append("cola ").append(gateKb).append(" KB");
         return b.toString();
     }
 
@@ -120,6 +127,11 @@ final class LabControl {
                 qpFloor = "auto".equals(a) ? 0 : clamp(parse(a), 12, 30);
                 done = (qpFloor == 0 ? "calidad mínima: la de siempre (QP 24)" : "calidad mínima QP " + qpFloor)
                         + " · vale al reconectar (orden «reconectar»)";
+                break;
+            case "cola":
+                gateKb = "auto".equals(a) ? 0 : clamp(parse(a), 16, 256);
+                done = gateKb == 0 ? "cola del kernel: la de siempre (" + VideoPipeline.GATE_OUTQ / 1024 + " KB)"
+                        : "cola del kernel hasta " + gateKb + " KB antes de tirar frames";
                 break;
             case "boost":
                 touchBoost = "auto".equals(a) ? null : "on".equals(a) ? Boolean.TRUE : Boolean.FALSE;
@@ -184,11 +196,12 @@ final class LabControl {
                 cableKbps = 0;
                 touchBoost = null;
                 qpFloor = 0;
+                gateKb = 0;
                 VideoPipeline.labApply();
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, alemania, carga, ffmpeg, ia, boost, termica, noche, hud, perfil, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, carga, ffmpeg, ia, boost, termica, noche, hud, perfil, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);

@@ -508,7 +508,8 @@ final class VideoPipeline {
             return false;
         }
         int q = p.gateOutq();
-        if (q >= gateOutq) {
+        int lab = LabControl.gateKb;
+        if (q >= (lab > 0 ? lab * 1024 : gateOutq)) {
             denyKernel++;
             abrDenies++;
             linkWaits++;
