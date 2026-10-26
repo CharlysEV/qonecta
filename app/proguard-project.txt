@@ -53,3 +53,9 @@
 # headqlink: DefaultRenderersFactory (EXTENSION_RENDERER_MODE_ON) busca por su nombre el renderizador de audio de
 # FFmpeg (AC-3, E-AC-3/DD+, DTS): con otro nombre no lo encuentra y esos vídeos siguen sin sonido.
 -keep class androidx.media3.decoder.ffmpeg.FfmpegAudioRenderer { <init>(...); }
+
+# headqlink: el SDK de Anthropic (compañero de voz) se lee con la reflexión de Kotlin (jackson-module-kotlin), que busca
+# las clases por los nombres de sus metadatos: con los nombres cambiados por R8, leer una respuesta buena tumbaba la app
+# («Unresolved class com.anthropic.models.beta.messages.hz$c», 26-10). Se conservan los nombres; lo que no se usa se
+# sigue quitando.
+-keepnames class com.anthropic.** { *; }

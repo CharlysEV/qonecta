@@ -220,13 +220,20 @@ final class CompanionScreen implements CarScreen {
         setStatus(R.string.hql_companion_thinking);
         String ctx = ClaudeCompanion.context(c);
         new Thread(() -> {
-            ClaudeCompanion.Reply r = ClaudeCompanion.ask(c, said, ctx);
+            ClaudeCompanion.Reply r;
+            try {
+                r = ClaudeCompanion.ask(c, said, ctx);
+            } catch (Throwable t) {
+                L.w("compañero: fallo (" + t.getClass().getName() + ")");
+                r = new ClaudeCompanion.Reply(ClaudeCompanion.Outcome.FAILED, Str.get(R.string.hql_companion_failed));
+            }
+            ClaudeCompanion.Reply reply = r;
             host.post(() -> {
                 busy = false;
                 if (destroyed) return;
-                answer.setText(r.text);
-                answer.setTextColor(r.outcome == ClaudeCompanion.Outcome.OK ? CarStyle.TEXT : CarStyle.BAD);
-                VoiceAlert.say(c, r.text, VOICE);
+                answer.setText(reply.text);
+                answer.setTextColor(reply.outcome == ClaudeCompanion.Outcome.OK ? CarStyle.TEXT : CarStyle.BAD);
+                VoiceAlert.say(c, reply.text, VOICE);
                 talking = true;
                 setStatus(R.string.hql_companion_speaking);
             });

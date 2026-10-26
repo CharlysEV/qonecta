@@ -202,8 +202,9 @@ final class ClaudeCompanion {
         } catch (AnthropicIoException e) {
             L.w("compañero: sin conexión con Claude (" + e.getClass().getSimpleName() + ")");
             return new Reply(Outcome.OFFLINE, Str.get(R.string.hql_companion_offline));
-        } catch (RuntimeException e) {
-            L.w("compañero: fallo (" + e.getClass().getSimpleName() + ")");
+        } catch (Throwable e) {
+            // También los Error (la reflexión de Kotlin del SDK lanza KotlinReflectionInternalError): nunca tumban la app.
+            L.w("compañero: fallo (" + e.getClass().getName() + ": " + e.getMessage() + ")");
             return new Reply(Outcome.FAILED, Str.get(R.string.hql_companion_failed));
         }
     }

@@ -16,7 +16,8 @@ import java.util.Locale;
  * Órdenes (una por petición, en minúsculas): estado · msg TEXTO · fps N|auto · kbps N|auto · cable N|auto · qp N|auto ·
  * boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto ·
  * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra) · carga demo|off
- * (la notificación de una carga inventada, para ver el Live Update) · ffmpeg (si el audio por FFmpeg está listo).
+ * (la notificación de una carga inventada, para ver el Live Update) · ffmpeg (si el audio por FFmpeg está listo) · ia [hola]
+ * (el SDK de Anthropic con una clave falsa; «hola»: una pregunta de verdad con la clave guardada).
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
@@ -159,7 +160,13 @@ final class LabControl {
                 break;
             }
             case "ia":
-                done = "compañero: " + labCompanion(ctx);
+                if (a.equals("hola")) {
+                    // Una pregunta de verdad con la clave guardada (cuesta una fracción de céntimo): la respuesta entera.
+                    ClaudeCompanion.Reply r = ClaudeCompanion.ask(ctx, "Hola, ¿me oyes? Preséntate en una frase.", ClaudeCompanion.context(ctx));
+                    done = "compañero: " + r.outcome + " · " + r.text;
+                } else {
+                    done = "compañero: " + labCompanion(ctx);
+                }
                 break;
             case "ffmpeg":
                 done = "FFmpeg para el audio: " + VideoPlayer.ffmpegInfo();
