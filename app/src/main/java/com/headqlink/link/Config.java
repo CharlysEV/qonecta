@@ -395,6 +395,17 @@ final class Config {
         sp.edit().putString(BT_AUTO_NAME, s == null ? "" : s.trim()).apply();
     }
 
+    /** Direcciones Bluetooth de los coches aprendidos (CarBluetooth), separadas por comas; el último, primero. */
+    static final String CAR_BT_ADDRS = "car_bt_addrs";
+
+    String carBtAddresses() {
+        return sp.getString(CAR_BT_ADDRS, "");
+    }
+
+    void setCarBtAddresses(String s) {
+        sp.edit().putString(CAR_BT_ADDRS, s == null ? "" : s).apply();
+    }
+
     /** El marcador de la imagen arriba a la derecha de la pantalla del coche (VideoHud): de serie, encendido. */
     static final String VIDEO_HUD = "video_hud";
 

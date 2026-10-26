@@ -610,7 +610,8 @@ you opening the app.
 
 1. Turn it on on the main screen.
 2. In the "Automatic connection" prompt, type text contained in the **car's Bluetooth name** (the default is
-   `Leapmotor_BT`; not case-sensitive) and tap "Save".
+   `Leapmotor_BT`; not case-sensitive) and tap "Save". If your car's Bluetooth has another name, you don't need to
+   change it: after the first session with the car, Qonecta+ recognises it by its address.
 3. Grant the Bluetooth permission and remove the battery restrictions when asked. Otherwise Android won't let it start
    in the background.
 

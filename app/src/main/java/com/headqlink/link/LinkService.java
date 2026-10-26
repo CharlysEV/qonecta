@@ -1236,6 +1236,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
     /** El coche (otra vez) en sesión: el juego en pausa por haberlo perdido sigue. */
     private LinkLifecycle.Decision carConnectedNow() {
         NesScreen.carPresent(true);
+        // El Bluetooth del coche, por su dirección (para reconocerlo aunque se llame de otra forma).
+        CarBluetooth.learn(this);
         return life.carConnected(now(), env());
     }
 

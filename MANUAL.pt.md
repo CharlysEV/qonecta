@@ -632,7 +632,8 @@ a aplicação.
 
 1. Ative-o no ecrã principal.
 2. No aviso «Ligação automática», escreva um texto contido no **nome Bluetooth do carro** (vem `Leapmotor_BT`; não
-   distingue maiúsculas) e toque em «Guardar».
+   distingue maiúsculas) e toque em «Guardar». Se o Bluetooth do seu carro tiver outro nome, não é preciso mudá-lo:
+   depois da primeira sessão com o carro, o Qonecta+ reconhece-o pelo endereço.
 3. Conceda a autorização de Bluetooth e retire as restrições de bateria quando lhe for pedido. Caso contrário, o
    Android não o deixa arrancar em segundo plano.
 
