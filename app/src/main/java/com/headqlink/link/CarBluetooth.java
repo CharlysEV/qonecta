@@ -65,7 +65,7 @@ final class CarBluetooth {
         return out;
     }
 
-    /** «…:B7:D6» para el registro. */
+    /** «…:12:34» para el registro. */
     static String masked(String addr) {
         if (addr == null || addr.length() < 5) return "…";
         return "…" + addr.substring(addr.length() - 6);
