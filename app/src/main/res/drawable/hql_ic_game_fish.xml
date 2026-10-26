@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pez (acuario de Juegos, propio de HeadQLink) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M3,7.5l3.2,3.1C7.6,8.4 10,7 13,7c4,0 7,2.4 8,5c-1,2.6 -4,5 -8,5c-3,0 -5.4,-1.4 -6.8,-3.6L3,16.5c0.4,-1.5 0.9,-3 0.9,-4.5S3.4,9 3,7.5zM16.5,10.2a1.1,1.1 0,1 0,0 2.2a1.1,1.1 0,1 0,0 -2.2z" />
+</vector>

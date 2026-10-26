@@ -33,6 +33,11 @@ cómo exportar el log.
 - **Italiano:** [MANUAL.it.md](MANUAL.it.md)
 - **Deutsch:** [MANUAL.de.md](MANUAL.de.md)
 
+## Apoyar el proyecto
+
+Qonecta+ es gratis y sin anuncios. Si te resulta útil y quieres apoyarlo, puedes invitarme a un café con
+[PayPal](https://www.paypal.me/CharlysEV). ¡Gracias!
+
 
 Android app that brings **Android Auto** and a custom side panel with extra features to the
 **Leapmotor C10** screen, using the car's built-in mirroring connection (SSPLink over WiFi Direct).

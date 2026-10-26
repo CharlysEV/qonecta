@@ -63,7 +63,26 @@ public final class CarControlActivity extends AppCompatActivity {
         }
         if (c.kind == CarCommand.Kind.FIND) locate();
         else if (c.kind == CarCommand.Kind.CLIMATE_ON) climateDialog();
+        else if (c.kind == CarCommand.Kind.TRUNK_OPEN) trunkDialog();
         else confirmAndSend(c);
+    }
+
+    /**
+     * El botón del maletero: abrir o cerrar. Antes solo abría (con el maletero abierto no hacía nada; la voz sí sabía
+     * cerrarlo). Con el último dato de la nube, lo que toca va en el botón principal y se dice cómo estaba.
+     */
+    private void trunkDialog() {
+        CarCloud.Snapshot s = CarCloud.car();
+        Boolean open = s == null || s.status == null ? null : s.status.bootOpen;
+        boolean closeFirst = Boolean.TRUE.equals(open);
+        CarCommand primary = new CarCommand(closeFirst ? CarCommand.Kind.TRUNK_CLOSE : CarCommand.Kind.TRUNK_OPEN);
+        CarCommand other = new CarCommand(closeFirst ? CarCommand.Kind.TRUNK_OPEN : CarCommand.Kind.TRUNK_CLOSE);
+        MaterialAlertDialogBuilder b = new MaterialAlertDialogBuilder(this).setTitle(R.string.hql_cc_trunk_title);
+        if (open != null) b.setMessage(open ? R.string.hql_cc_trunk_was_open : R.string.hql_cc_trunk_was_closed);
+        b.setPositiveButton(primary.label(), (d, w) -> send(primary));
+        b.setNeutralButton(other.label(), (d, w) -> send(other));
+        b.setNegativeButton(android.R.string.cancel, (d, w) -> finish());
+        show(b);
     }
 
     /** Config: la última temperatura y el modo del clima. */

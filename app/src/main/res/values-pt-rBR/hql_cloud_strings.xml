@@ -117,8 +117,8 @@
     <string name="hql_cloud_cert_pick_cert">Escolher o certificado…</string>
     <string name="hql_cloud_cert_restart">Começar de novo</string>
     <string name="hql_cloud_cert_reading">Lendo o certificado…</string>
-    <string name="hql_cloud_cert_err_read">Não foi possível ler «%1$s». Copie-o para o celular (Downloads) e escolha-o de lá.</string>
-    <string name="hql_cloud_cert_err_unknown">«%1$s» não é um certificado nem uma chave (PEM, DER ou PKCS#12).</string>
+    <string name="hql_cloud_cert_err_read">Não foi possível ler “%1$s”. Copie-o para o celular (Downloads) e escolha-o de lá.</string>
+    <string name="hql_cloud_cert_err_unknown">“%1$s” não é um certificado nem uma chave (PEM, DER ou PKCS#12).</string>
     <string name="hql_cloud_cert_err_no_picker">Não foi possível abrir o seletor de arquivos deste celular.</string>
     <string name="hql_cloud_cert_err_save">Não foi possível salvar o certificado (%1$s).</string>
     <string name="hql_cloud_step_account">2 · Conta Leapmotor</string>
@@ -168,7 +168,7 @@
     <string name="hql_cloud_profile_reev">C10 REEV · 28,4 kWh + gasolina</string>
     <string name="hql_cloud_3d_hint">Gire com o dedo</string>
     <string name="hql_cloud_step_pin">5 · PIN do carro</string>
-    <string name="hql_cloud_pin_note">Opcional. Com o PIN do carro salvo aqui (cifrado no celular), e se você ativar abaixo os comandos do widget «Carro», o Qonecta+ pode trancar, destrancar, abrir o porta-malas, ligar a climatização e localizar o carro. Sem PIN, tudo continua só leitura.</string>
+    <string name="hql_cloud_pin_note">Opcional. Com o PIN do carro salvo aqui (cifrado no celular), e se você ativar abaixo os comandos do widget “Carro”, o Qonecta+ pode trancar, destrancar, abrir o porta-malas, ligar a climatização e localizar o carro. Sem PIN, tudo continua só leitura.</string>
     <string name="hql_cloud_pin_hint">PIN do carro (o do app da Leapmotor)</string>
     <string name="hql_cloud_pin_save">Salvar PIN</string>
     <string name="hql_cloud_pin_forget">Esquecer PIN</string>
@@ -198,7 +198,7 @@
     <string name="hql_cc_open_settings">Abrir ajustes</string>
     <string name="hql_cc_voice_prompt">Diga: tranca, abre, porta-malas, clima a 21, desembaça, desliga o clima ou localiza o carro</string>
     <string name="hql_cc_no_voice">Este celular não tem reconhecimento de voz.</string>
-    <string name="hql_cc_not_understood">Não entendi: «%1$s»</string>
+    <string name="hql_cc_not_understood">Não entendi: “%1$s”</string>
     <string name="hql_cc_retry">Repetir</string>
     <string name="hql_cc_confirm_unlock">Destrancar o carro?</string>
     <string name="hql_cc_confirm_trunk">Abrir o porta-malas?</string>

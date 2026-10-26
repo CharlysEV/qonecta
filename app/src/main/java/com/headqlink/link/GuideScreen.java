@@ -97,12 +97,23 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
         voice = CarStyle.pill(c, "");
         voice.setOnClickListener(v -> RoadGuide.setVoice(c, !RoadGuide.voiceOn(c)));
         head.addView(voice);
+        // El trivial del camino: preguntas sobre los sitios de alrededor, encima de la guía.
+        TextView trivia = CarStyle.pill(c, "?  " + Str.get(R.string.hql_trivia));
+        trivia.setOnClickListener(v -> openTrivia(c));
+        head.addView(trivia);
         col.addView(head);
 
         bodyHost = new FrameLayout(c);
+        FrameLayout stack = new FrameLayout(c);
+        stack.addView(bodyHost, CarStyle.match());
+        triviaBox = new FrameLayout(c);
+        triviaBox.setBackgroundColor(CarKit.BG);
+        triviaBox.setVisibility(View.GONE);
+        triviaBox.setClickable(true);
+        stack.addView(triviaBox, CarStyle.match());
         LinearLayout.LayoutParams bodyLp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f);
         bodyLp.topMargin = 16;
-        col.addView(bodyHost, bodyLp);
+        col.addView(stack, bodyLp);
         buildBody(c);
         // Al partir la pantalla (o volver a completa) cambia el ancho sin rehacer la pantalla: se recoloca.
         col.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
@@ -165,6 +176,103 @@ final class GuideScreen implements CarScreen, RoadGuide.Listener {
             sv.addView(inner);
             bodyHost.addView(sv, CarStyle.match());
         }
+    }
+
+    // ------------------------------------------------------------------ trivial del camino
+
+    private FrameLayout triviaBox;
+    private final java.util.Set<Long> asked = new java.util.HashSet<>();
+    private final java.util.Random rnd = new java.util.Random();
+    private int right;
+    private int total;
+    private RoadTrivia.Question question;
+    private boolean answered;
+
+    private void openTrivia(Context c) {
+        triviaBox.setVisibility(View.VISIBLE);
+        nextQuestion(c);
+    }
+
+    private void closeTrivia() {
+        triviaBox.setVisibility(View.GONE);
+        triviaBox.removeAllViews();
+    }
+
+    /** Una pregunta nueva (sin repetir sitio) con lo que la guía tiene alrededor; si no hay bastante, lo dice. */
+    private void nextQuestion(Context c) {
+        RoadGuide.State s = shown;
+        question = RoadTrivia.next(s.pool, s.lat, s.lon, asked, rnd, Str.locale());
+        answered = false;
+        triviaBox.removeAllViews();
+        LinearLayout col = new LinearLayout(c);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setPadding(12, 8, 12, 8);
+        TextView back = CarStyle.pill(c, "‹  " + Str.get(R.string.hql_trivia_back));
+        back.setOnClickListener(v -> closeTrivia());
+        if (question == null) {
+            col.addView(CarStyle.message(c, Str.get(R.string.hql_trivia_none)));
+            col.addView(back);
+            triviaBox.addView(col, CarStyle.match());
+            return;
+        }
+        asked.add(question.placeId);
+        TextView score = CarStyle.text(c, Str.get(R.string.hql_trivia_score, right, total), 22, CarStyle.TEXT_DIM);
+        col.addView(score);
+        TextView q = CarStyle.text(c, question.text, 36, CarStyle.TEXT);
+        q.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        q.setPadding(0, 10, 0, 18);
+        col.addView(q);
+        TextView[] opts = new TextView[question.options.length];
+        TextView result = CarStyle.text(c, "", 28, CarStyle.TEXT);
+        for (int i = 0; i < opts.length; i++) {
+            TextView o = CarStyle.pill(c, question.options[i]);
+            o.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, o.getTextSize() * 1.2f);
+            o.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
+            o.setPadding(30, 22, 30, 22);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            lp.bottomMargin = 12;
+            int idx = i;
+            o.setOnClickListener(v -> answer(c, idx, opts, result, score));
+            col.addView(o, lp);
+            opts[i] = o;
+        }
+        result.setPadding(4, 6, 0, 10);
+        col.addView(result);
+        LinearLayout row = new LinearLayout(c);
+        TextView next = CarStyle.pill(c, Str.get(R.string.hql_trivia_next) + "  ›");
+        next.setOnClickListener(v -> nextQuestion(c));
+        row.addView(next);
+        row.addView(back);
+        col.addView(row);
+        ScrollView sv = new ScrollView(c);
+        sv.addView(col);
+        triviaBox.addView(sv, CarStyle.match());
+        // En voz alta la pregunta y las respuestas (si la voz de la guía está encendida): para los de atrás.
+        if (RoadGuide.voiceOn(c)) {
+            VoiceAlert.say(c, question.text + " " + android.text.TextUtils.join(", ", question.options), RoadGuide.VOICE);
+        }
+    }
+
+    /** Toca una respuesta: la buena en verde, la elegida (si no lo era) en rojo, y la voz dice si ha acertado. */
+    private void answer(Context c, int i, TextView[] opts, TextView result, TextView score) {
+        if (answered || question == null) return;
+        answered = true;
+        total++;
+        boolean ok = i == question.answer;
+        if (ok) right++;
+        opts[question.answer].setBackground(CarStyle.round(CarStyle.GOOD, 28));
+        opts[question.answer].setTextColor(CarStyle.ON_ACCENT);
+        if (!ok) {
+            opts[i].setBackground(CarStyle.round(CarStyle.BAD, 28));
+            opts[i].setTextColor(CarStyle.ON_ACCENT);
+        }
+        String text = ok ? Str.get(R.string.hql_trivia_right) : Str.get(R.string.hql_trivia_wrong, question.options[question.answer]);
+        result.setText(text);
+        result.setTextColor(ok ? CarStyle.GOOD : CarStyle.BAD);
+        score.setText(Str.get(R.string.hql_trivia_score, right, total));
+        if (RoadGuide.voiceOn(c)) VoiceAlert.say(c, text, RoadGuide.VOICE);
+        L.i("trivial: " + (ok ? "acierto" : "fallo") + " (" + right + " de " + total + ")");
     }
 
     @Override

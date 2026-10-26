@@ -127,7 +127,7 @@ La schermata «Il tuo telefono, sullo schermo della C10», con quello che serve 
 > **Privacy in «Auto esteso».** I suoi pannelli usano la posizione del telefono, se la consenti, e servizi internet
 > aperti: OpenStreetMap e OSRM per percorsi e colonnine, Open-Meteo per meteo e vento, e radio-browser.info per la
 > radio. Per fare questi calcoli, quei servizi ricevono la tua posizione o la tua destinazione. Se non vuoi, scegli
-> «Auto» o non concedere l'autorizzazione «Foto, video e posizione».
+> «Auto» o non concedere l'autorizzazione «Foto, video, musica e posizione».
 
 **«Connessione all'auto»**
 
@@ -181,7 +181,7 @@ troverai poi nel menu ⚙ › «Verifica requisiti».
 | «QDLink» o «Porta 18463» in rosso («Occupata») | QDLink (o un'altra app) è aperta in questo momento. | «Forza interruzione». |
 | «Bluetooth (dispositivi nelle vicinanze)» (Obbligatorio se attivi la connessione automatica) | Per riconoscere il Bluetooth dell'auto e connettersi da sola. | «Consenti». |
 | «Mostra sopra altre app» (Facoltativo) | Per aprire Android Auto con il telefono in background. | «Consenti». |
-| «Foto, video e posizione» (Facoltativo, «Auto esteso») | Per la galleria e i pannelli di guida in auto. | «Consenti». |
+| «Foto, video, musica e posizione» (Facoltativo, «Auto esteso») | Per la galleria, la tua musica e i pannelli di guida in auto. | «Consenti». |
 | «Posizione sempre consentita» (Consigliato, «Auto esteso») | Perché i dati dell'auto continuino con il telefono bloccato (vedi [Cosa vedi e come si usa](#cosa-vedi-e-come-si-usa)). | «Apri»: spiega il perché e apre la pagina di Android; scegli «Consenti sempre». Se l'app non ha ancora la posizione, prima te la chiede. |
 
 > [!IMPORTANT]
@@ -434,16 +434,19 @@ supporta.
       lo dice) e tiene di riserva quelle a 400–500 V: l'elenco le segna in ambra («470 V: la tua auto a 800 V qui
       carica a metà potenza») e il piano dice quante ce ne sono lungo il percorso. I Supercharger Tesla in Spagna sono
       a 400–500 V.
-    - **Ricarica in diretta:** con l'account Leapmotor, quando colleghi la spina sopra il percorso compare un blocco
-      con i kW, la % e l'obiettivo («54 % → 64 %»), l'ora in cui sarà pronta e con quanto arrivi alla prossima sosta o a
+    - **Ricarica in diretta:** con l'account Leapmotor, quando colleghi la spina sopra il percorso compare un blocco con
+      i kW, la % e l'obiettivo («54 % → 64 %»), l'ora in cui sarà pronta e con quanto arrivi alla prossima sosta o a
       destinazione; se ricaricando un po' di più eviti la prossima sosta, te lo dice («Fino al 85 % eviti la sosta a
       Lleida: +7 min qui, −23 min là»). La curva confronta quello che sta dando (linea continua) con quello che la tua
-      auto dovrebbe accettare su quella colonnina (tratteggiata) e avvisa se ricarica molto più lentamente del
-      previsto. All'obiettivo: **«Puoi ripartire»** con un suono sul telefono e, se sei in auto, voce e una scheda
-      verde. In viaggio o su una colonnina rapida, il telefono continua a controllare **anche se lo schermo dell'auto si
-      spegne** (vai a prendere un caffè): una notifica fissa con la % e l'ora in cui sarà pronta, che sparisce da sola
-      quando stacchi. Ogni ricarica viene salvata sul telefono (kW reali, % e minuti) per conoscere la curva reale
-      dell'auto.
+      auto dovrebbe accettare su quella colonnina (tratteggiata) e avvisa se ricarica molto più lentamente del previsto.
+      All'obiettivo: **«Puoi ripartire»** con un suono sul telefono e, se sei in auto, voce e una scheda verde. Il
+      telefono continua a controllare **anche se lo schermo dell'auto si spegne** (vai a prendere un caffè), anche la
+      ricarica lenta a casa (una lettura ogni 5 min): una notifica fissa con la %, l'ora e una barra fino all'obiettivo
+      (senza piano, 80 % in ricarica rapida e 100 % in quella lenta), che sparisce da sola quando stacchi. Su Android 16
+      è un **Live Update**: in cima, e, a seconda del telefono, con la % nella barra di stato o nella Now Bar di
+      Samsung. Sul telefono, **Viaggi** mostra in alto «In carica ora»: la %, i kW, a che ora arriva all'obiettivo e al
+      100 %, quanto ha caricato, quanto costa e la curva. Ogni ricarica viene salvata sul telefono (kW reali, % e
+      minuti) per conoscere la curva reale dell'auto.
     - **Il piano si rifà da solo durante il viaggio:** con l'account Leapmotor confronta quanto scende davvero la
       batteria con quanto previsto per quei km e adatta il resto («Adattato al consumo di questo viaggio: +12 %»). Le
       soste scelte restano finché le raggiungi con margine; se stai restando senza batteria (o ne avanza), il piano cambia
@@ -455,9 +458,12 @@ supporta.
     successiva; la velocità con il cartello del limite, la direzione, l'altitudine, la pendenza e il sole fino al
     tramonto.
   - «Viaggi»: il viaggio in corso e quelli salvati, con percorso, consumo, dislivello e costo; i km degli ultimi 14
-    giorni e i record. **Tocca un viaggio** per aprirlo in grande: il percorso su una mappa (OpenStreetMap), la partenza,
-    l'arrivo e **le soste** (2 minuti o più nello stesso posto, con durata, ora e km), e i suoi dati. Le soste sono note
-    per i viaggi dalla 0.2.7 in poi.
+    giorni e i record. **Tocca un viaggio** per aprirlo in grande: il percorso su una mappa (OpenStreetMap), la
+    partenza, l'arrivo e **le soste** (2 minuti o più nello stesso posto, con durata, ora e km), e i suoi dati. Le soste
+    sono note per i viaggi dalla 0.2.7 in poi. **Il fantasma:** se ripeti un percorso (stessa partenza, stessa strada),
+    «Viaggio in corso» ti dice in diretta quanto sei avanti o indietro rispetto al tuo tempo migliore fin qui
+    («Fantasma: 1:20 dietro il tuo tempo migliore»), e il viaggio più veloce di ogni percorso ripetuto ha «Record del
+    percorso».
   - «Strumenti»: tachimetro con il limite e la velocità massima, forze G con la scia degli ultimi secondi e i picchi,
     inclinazione e un punteggio di dolcezza di guida (0-100) in base agli strappi in accelerazione, frenata e sterzata.
   - «Efficienza»: la potenza degli ultimi 2 minuti (in verde quella recuperata), il consumo attuale, del viaggio e
@@ -528,7 +534,9 @@ congestiones 4`.
 ### Alla fine del viaggio
 
 - Spegni l'auto (Qonecta+ si chiude da solo quando scade «Attesa dell'auto», 5 minuti di default) o tocca
-  «Disconnetti» per chiuderlo subito.
+  «Disconnetti» per chiuderlo subito. Senza toccare il telefono: nell'auto, Impostazioni › Connessione › «Disconnetti»
+  (chiede un secondo tocco), o il riquadro delle impostazioni rapide, che funziona col telefono bloccato. Se togli solo
+  il cavo, il viaggio viene salvato lo stesso; l'app si chiude quando scade «Attesa dell'auto».
 - Se il telefono era bloccato quando si è chiuso, vedrai la notifica «Android Auto in attesa finché non sblocchi il
   telefono (poi si chiude da solo)». **Sblocca il telefono una volta** perché si chiuda del tutto: vedrai per qualche
   secondo «Chiusura di Android Auto…» (sezione 9). Se torni in auto prima di sbloccarlo e usi la connessione automatica
@@ -538,6 +546,14 @@ congestiones 4`.
   soli dopo 15 s; se il server di Android Auto potrebbe essere rimasto acceso, vedrai «Il server di Android Auto è ancora
   attivo · Tocca per spegnerlo»: toccala con il telefono sbloccato.
 - Spegni l'hotspot se non ti serve.
+
+### Diario del viaggio
+
+Nella scheda «Viaggi» del telefono › «Percorsi», apri un viaggio e tocca **«Cartolina del viaggio»**: un'immagine
+con la data, i km e il tempo, il percorso con le soste, il consumo, il costo, il dislivello, fino a tre foto che hai
+scattato con il telefono durante il viaggio e i luoghi che ti ha raccontato la Guida di viaggio. Prima la vedi;
+«Senza foto» le toglie e «Condividi» la invia dove vuoi. Non esce dal telefono se non la condividi. Dopo un viaggio
+di 50 km o più, un avviso discreto te la propone.
 
 ### Resoconto del mese
 
@@ -570,6 +586,9 @@ da Wikipedia, nella lingua dell'app.
   una volta e al massimo uno ogni 4 minuti. Non parla mai sopra una chiamata, le indicazioni del navigatore o un altro
   avviso, e la musica si abbassa un momento mentre parla. Mentre parla compare «Ferma», che la interrompe
   subito. «Senza voce»: solo le schede (e interrompe quello che sta raccontando).
+- **Quiz:** «? Quiz» (in alto) fa domande a tre risposte sui luoghi intorno, per chi è in auto: di che secolo è,
+  che cos'è (un paese, un monumento, un bacino…), quale è più vicino e quale ha più visite su Wikipedia. Quella
+  giusta diventa verde e, con «Voce», lo dice ad alta voce; tiene il conto. «Torna alla guida» lo chiude.
 - **Da fermo:** dopo un minuto da fermo (per esempio in ricarica), mostra cosa c'è vicino a piedi, con i minuti a piedi.
 - **Schermo diviso:** con «Dividi schermo», la guida sta accanto ad Android Auto, in una colonna, e si può usare in
   marcia, senza avviso.
@@ -589,6 +608,21 @@ Il testo di ciò che suona su Android Auto (Spotify, YouTube Music…), sincroni
   canzone non ha il testo sincronizzato, compare il testo senza tempi; se non c'è, lo dice.
 - Con «Dividi schermo» sta accanto ad Android Auto; come il resto dell'intrattenimento, meglio ad auto ferma.
 
+### Compagno vocale (IA) («Auto esteso»)
+
+Parla con Claude (di Anthropic) in auto: conversazione, curiosità, quiz o storie per i bambini nei viaggi lunghi.
+Tocchi il microfono, parli e la risposta, breve, si sente ad alta voce e si vede sullo schermo.
+
+- **Configurazione:** sul telefono, menu ⚙ › «Compagno vocale (IA)»: incolla la tua chiave API di Anthropic
+  (console.anthropic.com › API Keys; è salvata cifrata sul telefono) e, se vuoi, «Più veloce ed economico» (Claude
+  Haiku 5.5 invece di Claude Opus 5.5). In auto, «Impostazioni» › «Pulsanti del pannello laterale» › «Compagno» (Sì).
+- **Costo:** ogni domanda viene addebitata sul tuo account Anthropic, circa 1–2 centesimi con Opus e molto meno in
+  modalità rapida.
+- **Cosa viene inviato:** ciò che dici, con l'ora, la batteria e l'autonomia dell'auto; mai la tua posizione. Il log
+  dell'app non conserva ciò che dici né la risposta.
+- Toccare mentre parla lo zittisce; «Nuova conversazione» ricomincia da zero (ogni 12 domande ne inizia una nuova da
+  sola). Richiede Android 8 o successivo e dati mobili.
+
 ### Connessione automatica: «Connetti al rilevamento del Bluetooth dell'auto»
 
 Con questo interruttore, Qonecta+ inizia ad aspettare l'auto appena il telefono si connette al Bluetooth dell'auto,
@@ -596,7 +630,8 @@ senza che tu apra l'app.
 
 1. Attivalo nella schermata principale.
 2. Nella finestra «Connessione automatica», scrivi un testo contenuto nel **nome Bluetooth dell'auto** (quello
-   predefinito è `Leapmotor_BT`; maiuscole e minuscole non contano) e tocca «Salva».
+   predefinito è `Leapmotor_BT`; maiuscole e minuscole non contano) e tocca «Salva». Se il Bluetooth della tua auto ha
+   un altro nome, non serve cambiarlo: dopo la prima sessione con l'auto, Qonecta+ lo riconosce dal suo indirizzo.
 3. Concedi l'autorizzazione Bluetooth e togli le restrizioni di batteria quando te lo chiede. Altrimenti Android non la
    lascia avviarsi in background.
 
@@ -659,12 +694,13 @@ Per connetterti senza aprire l'app:
 | Profilo | Cosa fa |
 |---|---|
 | «Automatico (…)» | Segue quello consigliato per questo telefono. **La scelta migliore se non sei sicuro.** |
-| «Veicolo» (consigliato) | Quello che chiede l'auto (30 fps e circa 5 Mbit/s), senza sforzare il telefono. Parte a 720p e, se il telefono resta fresco per 10 minuti, sale alla risoluzione piena (si riconnette: 2-4 s di nero); con molto caldo torna a 720p. Nel pannello un piccolo avviso mostra risoluzione, fps e temperatura del telefono. Il minimo di calore e di batteria. |
-| «Molto alto» | Risoluzione piena a 60 fps con la latenza più bassa. Consuma di più. La C10 non mostra più di 30 fps. |
-| «Alto» | Risoluzione piena a 60 fps senza sforzare il telefono: meno batteria e calore, un po' più di ritardo. |
-| «Medio» | 720p a 45 fps costanti, ricodificato sul telefono. |
-| «Base» | 720p a 30 fps, senza ricodifica: il più leggero per il telefono. In «Auto esteso» si comporta come «Medio». |
-| «Molto basso» | 720p a 20 fps e bitrate basso: il minimo per batteria e connessione. |
+| «Veicolo» (consigliato) | Quello che chiede l'auto: 30 fps (60 con «Fluidità») e circa 5 Mbit/s. Risoluzione piena se il telefono è rimasto fresco nei viaggi precedenti e 720p se si è scaldato; in marcia scende a 720p solo se si scalda (si riconnette: 2-4 s di nero). Nel pannello compare un riquadro con risoluzione, fps e temperatura del telefono. Il più fresco a risoluzione piena. |
+| «Massimo (cavo)» | Per il cavo: 60 fps a risoluzione piena e l'immagine più nitida (H.264 High, codificatore al massimo). Via Wi-Fi, 30 fps. È quello che scalda di più il telefono. Se lo schermo dell'auto resta nero, torna a «Veicolo». |
+| «Molto alto» | Via cavo, 60 fps a risoluzione piena con il ritardo minimo (codificatore al massimo). Via Wi-Fi, 30 fps. Scalda parecchio. |
+| «Alto» | Via cavo, 60 fps a risoluzione piena senza forzare il telefono (un po' più di ritardo di «Molto alto»). Via Wi-Fi, 30 fps. |
+| «Medio» | 720p a 45 fps costanti, senza forzare il telefono. |
+| «Base» | 720p a 30 fps e poco bitrate: più leggero di «Veicolo». |
+| «Molto basso» | 720p a 20 fps e pochissimo bitrate: il minimo per la batteria e la connessione. |
 
 Se sei connesso, salvando un altro profilo l'auto e Android Auto si riconnettono da soli in pochi secondi.
 
@@ -716,6 +752,11 @@ si riconnette in pochi secondi»), l'occultamento automatico del pannello e le o
 dell'elettricità» (€/kWh, per il costo dei viaggi; 0,20 di default), e di vedere la connessione e il motore in uso. Usalo
 solo con l'auto ferma.
 
+«Carburante» (nell'auto, Impostazioni › Viaggio; sul telefono, nelle Impostazioni): «Prezzo della benzina» e «Prezzo
+del gasolio» (€/l; 1,60 e 1,50 di default), «Confronta con» (benzina o diesel) e il «Consumo dell'auto di confronto»
+(6,5 e 5,5 l/100 km di default). Da qui escono il risparmio rispetto a un'auto a combustione (Efficienza, resoconto del
+mese) e la CO₂ evitata; sulla REEV, la benzina del generatore si conta sempre al prezzo della benzina.
+
 «Colore del pannello laterale»: «Automatico» (scuro di notte e chiaro di giorno, come lo schermo dell'auto) o uno di 16
 colori fissi, che resta uguale di giorno e di notte. Si applica subito, e il testo del pannello diventa chiaro o scuro
 perché si legga.
@@ -730,7 +771,7 @@ e «Scarica e installa» (l'app scarica l'APK e apre l'installer di Android; la 
 Qonecta+ di installare app sconosciute); la prima volta che si avvia una versione appena installata, si mostrano le
 sue novità. Nel menu ⚙, «Cerca nuova versione» controlla subito.
 
-«Avvisi autovelox a voce» (attivo di default): avvicinandoti a un autovelox, «Autovelox a 700 metri, limite 80», una
+«Avvisi autovelox a voce» (attivo di default, tranne in Germania e in Svizzera, dove la legge vieta al conducente gli avvisi degli autovelox; lì restano spenti finché non li accendi tu): avvicinandoti a un autovelox, «Autovelox a 700 metri, limite 80», una
 volta per autovelox; e se a 400 metri o meno vai oltre il limite, «Vai a 95, limite 80». Gli autovelox vengono da
 OpenStreetMap, quindi qualcuno può mancare.
 
@@ -744,10 +785,23 @@ Su Android 12 o precedente, l'app usa la lingua del sistema.
 
 Incolla l'URL di una lista M3U o tocca «Scegli file». Senza una lista radio, l'auto mostra le stazioni popolari.
 
+### «La mia musica» (Radio, «Auto esteso»)
+
+In auto, Radio › «♪ La mia musica» mostra i brani del telefono (MP3, FLAC, OGG, M4A… quelli nella libreria di
+Android: cartella Musica, Download o una chiavetta USB), per artista e album. Toccane uno e seguono gli altri;
+«Casuale» li mescola. Suona come la radio: continua cambiando schermata, con il mini lettore del pannello e i comandi
+al volante. Serve il permesso «Foto, video, musica e posizione» (Android 13 o successivo).
+
 ### «Segnalibri web» («Auto esteso»)
 
 Le scorciatoie della schermata «Web» dell'auto (di default YouTube, Google, Wikipedia e Twitch). Aggiungi i tuoi con
 nome e indirizzo, toglili o riordinali con le frecce; «Predefiniti» rimette i quattro originali.
+
+### «Acquario» (Giochi › Per l'attesa)
+
+Per i bambini, ad auto ferma: pesci colorati che nuotano, bolle, alghe e raggi di luce. **Toccando l'acqua** cade il
+cibo e i pesci vanno a mangiarlo; se tocchi un pesce, si spaventa e scappa. «Un altro pesce» ne aggiunge uno
+(fino a 14).
 
 ### «Cartella giochi»: NES, Mega Drive e Super Nintendo («Auto esteso»)
 
@@ -938,9 +992,14 @@ Non hanno trasmissione aperta su internet, quindi nessuna lista M3U li porta. Co
 Lo fa Android e un'app non può impedirlo. Dalla 0.2.60, durante il gioco il telefono mostra un velo nero con luminosità
 al minimo; toccare il telefono lo toglie.
 
+**Posso sostenere il progetto?**
+Qonecta+ è gratuito e senza pubblicità. Se ti è utile, puoi offrirmi un caffè con [PayPal](https://www.paypal.me/CharlysEV); anche dall'app,
+in «Informazioni e crediti». Grazie!
+
 **Come chiedo aiuto?**
 Esporta il registro (sezione 8) e racconta cosa è successo e a che ora. Non contiene password, indirizzi né ciò che
 scrivi.
+Per segnalare un errore o proporre qualcosa, apri una segnalazione («Issue») su [github.com/CharlysEV/qonecta/issues](https://github.com/CharlysEV/qonecta/issues). È pubblica: il registro, meglio in privato.
 
 ---
 
@@ -950,6 +1009,7 @@ Comincia sempre dal menu ⚙ › «Verifica requisiti»: ogni riga rossa ha il s
 
 | Sintomo | Causa probabile | Cosa fare |
 |---|---|---|
+| Via cavo, lo schermo dell'auto si blocca e «Disconnetti» e «Connetti» non risolvono | L'app di mirroring dell'auto (QDLink) si è bloccata con il cavo collegato: smette di rispondere e non legge nemmeno ciò che riceve. È l'auto, non il telefono. | Scollega il cavo, ricollegalo e apri QDLink sullo schermo dell'auto; Qonecta+ si riconnette da solo. Te lo dice a voce e con un avviso sul telefono («L'app dell'auto si è bloccata»). |
 | L'auto non viene trovata («Ricerca…» tutto il tempo) | L'auto non è collegata all'hotspot del telefono, l'hotspot si è spento da solo, o l'app di mirroring non è aperta in auto. Con Wi-Fi Direct: l'hotspot è acceso o il Wi-Fi è spento. | Guarda la riga «Rete»: dovrebbe dire «Hotspot attivo (…)». Collega l'auto all'hotspot (Impostazioni › Wi-Fi dell'auto) e apri l'app di mirroring. Disattiva lo spegnimento automatico dell'hotspot. Dopo 5 minuti senza che l'auto si annunci, Qonecta+ si ferma: tocca di nuovo «Connetti». |
 | «La porta 18463 è occupata (QDLink è aperta?)», o «Porta 18463 · Occupata» nella «Verifica requisiti» | L'app QDLink (o un'altra) è aperta sul telefono e tiene occupata la porta. | «Forza interruzione» di QDLink. Qonecta+ riprova ogni 5 s e l'avviso sparisce da solo. |
 | Schermo nero in auto, o un errore nella riga «Auto» | Android Auto non si è avviato: il telefono era bloccato («Non si avvia: sblocca il telefono»), o mancano la modalità sviluppatore o l'accessibilità. | Sblocca il telefono (con la notifica «Sblocca il telefono per avviare Android Auto», si avvia da solo quando sblocchi). Se non va ancora, controlla la «Verifica requisiti» e tocca «Disconnetti» e «Connetti». Per capire cosa non va, attiva Diagnostica › «Test senza Android Auto (immagine di prova)»: se vedi l'immagine di prova, la connessione va bene e il problema è Android Auto (disattivalo dopo). Se niente funziona, prova il motore «headqlink originale». |
@@ -957,6 +1017,7 @@ Comincia sempre dal menu ⚙ › «Verifica requisiti»: ogni riga rossa ha il s
 | Molte cadute della radio (l'immagine si ferma per mezzo secondo più e più volte; nel log, righe «Corte … RADIO» e «enlace muy congestionado») | La radio tra il telefono e l'auto non regge di più: hotspot a 2,4 GHz, il telefono in tasca, in un vano metallico o lontano dallo schermo. Qonecta+ abbassa già la qualità quanto può (fino a 1,2 Mbit/s e 20 fps), ma con la radio satura non basta. | Metti l'hotspot a **5 GHz** (Impostazioni › Hotspot › Banda). Tieni il telefono fuori da tasche e vani metallici e vicino allo schermo dell'auto. Il **cavo USB** è il più stabile. Nel log, la riga «radio de la zona Wi-Fi» indica banda e canale quando Android lascia leggerli. |
 | L'immagine è meno fluida che con l'HeadQLink originale | L'originale inviava 60 fps; Qonecta+ ne invia 30 (quello che chiede l'auto) perché il telefono non si surriscaldi. Oppure il telefono è già caldo e l'adattamento al calore ha abbassato gli fps, o il collegamento è al limite e sono stati abbassati il bitrate o gli fps. | «Impostazioni immagine» › «Fluidità» › «60 fps · massima fluidità» (con il profilo «Veicolo» o «Automatico»). Se è il calore ad abbassare gli fps, «Protezione dal calore» › «Leggera» (sezione 6). Nel log, le righe «HQL/Térmico» («estado térmico 2» o più) e «enlace:» dicono quale delle due cose succede. |
 | L'immagine si blocca per circa 10 s e poi si riconnette | Nelle versioni precedenti, un fotogramma completo più grande di ~512 KB bloccava il ricevitore dell'auto, che smetteva di leggere finché la connessione non cadeva. **Corretto**: Qonecta+ non ne invia più di così grandi e li tiene intorno ai 300 KB al massimo. | Aggiorna Qonecta+. Se succede con il profilo «Base» (lì la dimensione la decide Android Auto), usa «Automatico» o «Veicolo». Se continua, esporta il log (sezione 8). |
+| Un video o un canale TV si vede senza audio | L'audio è AC-3, E-AC-3 (Dolby Digital Plus) o DTS, che molti telefoni non sanno decodificare. **Corretto**: Qonecta+ lo decodifica con FFmpeg quando il telefono non ci riesce. | Aggiorna Qonecta+. Se compare ancora «Senza audio: questo telefono non riesce a decodificare l'audio…», esporta il log (sezione 8). |
 | Si disconnette spesso | Spegnimento automatico dell'hotspot, risparmio batteria, QDLink aperta o l'app di mirroring dell'auto chiusa. | Le cadute brevi si riconnettono da sole («Riconnessione…»). Se sono lunghe o frequenti: «Batteria senza restrizioni», «Samsung: app mai in sospensione», disattiva lo spegnimento automatico dell'hotspot e chiudi QDLink. Se continua, esporta il log (sezione 8). |
 | Notifica «Avvia (o riavvia) il server di Android Auto», o la riga «Auto» dice «In attesa del server di Android Auto» | Avvio manuale, e Android Auto non risponde: il suo server è spento (dopo un riavvio del telefono o un aggiornamento di Android Auto) o bloccato: una connessione si è interrotta a metà (qualcosa si è connesso e se n'è andato senza dire nulla, o una sessione è caduta di colpo). | Tocca la notifica o la riga: Android Auto › ⋮ › «Arresta server unità principale» (se compare) e ⋮ › «Avvia server unità principale». Qonecta+ riprova ogni 5 s e prosegue da solo. |
 | Notifica «Qonecta+ non trova il pulsante del server» | Android Auto si è aggiornato e ha cambiato il suo menu ⋮ (l'automazione lo cerca per il testo). | «Apri AA» e avvialo a mano, oppure «Avvio manuale». Vedi [Versioni di Android Auto](#versioni-di-android-auto) ed esporta il log (sezione 8). |
@@ -1021,7 +1082,7 @@ Puoi chiedere aiuto sulla pagina GitHub del progetto: [CharlysEV/qonecta](https:
 | Bluetooth (dispositivi nelle vicinanze) | Riconoscere il Bluetooth dell'auto. | Solo con la connessione automatica |
 | Batteria senza restrizioni | Restare in funzione con lo schermo spento. | Consigliato |
 | Mostra sopra altre app | Aprire Android Auto con il telefono in background. | Facoltativo |
-| Foto, video e posizione | Galleria e pannelli di guida. | Facoltativo, «Auto esteso» |
+| Foto, video, musica e posizione | Galleria, la tua musica e pannelli di guida. | Facoltativo, «Auto esteso» |
 | Posizione sempre consentita | Far continuare i pannelli «Veicolo» con il telefono bloccato. Si usa solo con il collegamento attivo o con le schermate «Veicolo» aperte. | Consigliato, «Auto esteso» |
 | Microfono | «Parla» in «Cerca destinazione»: lo capisce il riconoscimento vocale del telefono. | Facoltativo, «Auto esteso» |
 | Internet | Servizi di «Auto esteso» (OpenStreetMap, OSRM, Open-Meteo, radio-browser.info), la ricerca della destinazione (Photon e la ricerca di indirizzi di Android, quella di Google: ricevono quello che scrivi), la mappa dei viaggi (le tessere della mappa di OpenStreetMap), le tue liste TV e radio e, se lo configuri, il cloud di Leapmotor (dati reali dell'auto, sola lettura). | Solo per quelle funzioni |

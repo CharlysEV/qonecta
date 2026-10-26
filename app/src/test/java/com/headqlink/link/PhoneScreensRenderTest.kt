@@ -75,6 +75,76 @@ class PhoneScreensRenderTest {
         } finally {
             Config(app).setSetupDone(true)
         }
+        // El diario del viaje: la postal, sin fotos y con fotos (de colores, inventadas).
+        try {
+            val t = TripLog.Trip()
+            t.startMs = 1_760_000_000_000L
+            t.minutes = 192
+            t.km = 312.4
+            t.climb = 1240.0
+            t.descent = 980.0
+            val pts = ArrayList<DoubleArray>()
+            for (i in 0..400) {
+                val f = i / 400.0
+                pts.add(doubleArrayOf(40.4 + f * 1.2 + Math.sin(f * 9) * 0.08, -3.7 + f * 2.1 + Math.cos(f * 7) * 0.1, f * 192 * 60 + if (f > 0.55) 1500.0 else 0.0))
+            }
+            // Una parada de 25 min a mitad de camino (para la marca ámbar).
+            val stopAt = pts[220]
+            for (k in 0..10) pts.add(221 + k, doubleArrayOf(stopAt[0], stopAt[1], stopAt[2] + k * 150))
+            t.track = pts.toTypedArray()
+            t.places = arrayOf("Castillo de Almonacid", "Embalse de Buendía", "Ciudad Encantada", "Catedral de Cuenca")
+            val photos = listOf(0xFF3A7BD5.toInt(), 0xFFE8505B.toInt(), 0xFF4CAF50.toInt()).map { col ->
+                android.graphics.Bitmap.createBitmap(400, 300, android.graphics.Bitmap.Config.ARGB_8888).apply { eraseColor(col) }
+            }
+            for ((name, ph) in listOf("movil_postal" to emptyList(), "movil_postal_fotos" to photos)) {
+                val bmp = TripPostcard.render(app, t, emptyList(), ph)
+                FileOutputStream(File(dir, "$name.png")).use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+                println("PhoneScreensRender: $name OK")
+            }
+        } catch (e: Throwable) {
+            println("PhoneScreensRender: movil_postal no se pudo dibujar: $e")
+            e.printStackTrace()
+        }
+        // «Acerca de y créditos», con «Invítame a un café».
+        try {
+            val act = Robolectric.buildActivity(Activity::class.java).setup().get()
+            act.setTheme(com.andrerinas.openheadunit.R.style.Theme_HeadQLink)
+            val sv = android.widget.ScrollView(act)
+            sv.setBackgroundColor(0xFF111821.toInt())
+            sv.addView(About.view(act))
+            act.setContentView(sv)
+            idle(300)
+            save(sv, File(dir, "movil_acerca.png"))
+            println("PhoneScreensRender: movil_acerca OK")
+        } catch (e: Throwable) {
+            println("PhoneScreensRender: movil_acerca no se pudo dibujar: $e")
+        }
+        // Viajes con una carga rápida en marcha: la tarjeta «Cargando ahora» arriba.
+        try {
+            val act = Robolectric.buildActivity(Activity::class.java).setup().get()
+            act.setTheme(com.andrerinas.openheadunit.R.style.Theme_HeadQLink)
+            val pi = PhoneInsights(act)
+            val d = PhoneInsights.Data()
+            d.account = true
+            val now = System.currentTimeMillis()
+            val s = ChargeSession(now - 8 * 60_000L, 34.0, true, null, 81.9, 180.0, 800.0)
+            val pts = listOf(34.0 to 120.0, 38.9 to 135.0, 44.4 to 130.0, 49.7 to 110.0, 54.2 to 85.0)
+            for ((i, p) in pts.withIndex()) {
+                val t = now - (pts.size - 1 - i) * 2 * 60_000L
+                s.observe(t, p.first, p.second, true, false, Double.NaN, t)
+            }
+            d.live = s
+            val m = PhoneInsights::class.java.getDeclaredMethod("build", PhoneInsights.Data::class.java)
+            m.isAccessible = true
+            m.invoke(pi, d)
+            act.setContentView(pi.view())
+            idle(300)
+            save(pi.view(), File(dir, "movil_viajes_cargando.png"))
+            println("PhoneScreensRender: movil_viajes_cargando OK")
+        } catch (e: Throwable) {
+            println("PhoneScreensRender: movil_viajes_cargando no se pudo dibujar: $e")
+            e.printStackTrace()
+        }
     }
 
     private fun idle(ms: Long) {

@@ -88,7 +88,7 @@
     <string name="hql_guess_stops_add">Toevoegen aan Maps</string>
     <string name="hql_guess_stops_no">Zonder stops</string>
     <string name="hql_guess_stops_fail_title">Kon de route van Google Maps niet wijzigen</string>
-    <string name="hql_guess_stops_fail_text">Maps volgt nog zijn eigen route. Stop die met de X en tik op «Opnieuw».</string>
+    <string name="hql_guess_stops_fail_text">Maps volgt nog zijn eigen route. Stop die met de X en tik op „Opnieuw”.</string>
     <string name="hql_guess_stops_retry">Opnieuw</string>
     <!-- «Ruta en Qonecta+» (ShareDestActivity, SharedDest) -->
     <string name="hql_share_label">Route in Qonecta+</string>

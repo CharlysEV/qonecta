@@ -16,7 +16,8 @@ import java.util.Locale;
 
 /**
  * Conexión automática: cuando el móvil se conecta por Bluetooth al coche (por su nombre, ajustable
- * en la app), HeadQLink se pone a esperar al coche como si se pulsara Conectar: si Android Auto quedó aparcado, se
+ * en la app, o por su dirección aprendida en una sesión: CarBluetooth), HeadQLink se pone a esperar al coche como si se
+ * pulsara Conectar: si Android Auto quedó aparcado, se
  * reanuda con la sesión sin desbloquear; si hay que arrancar su servidor con el móvil bloqueado, se avisa y se arranca
  * al desbloquear (LinkLifecycle).
  * Si el Bluetooth del coche se va sin haber llegado a conectar, se para (no se queda buscando); tras una sesión, sigue
@@ -48,7 +49,11 @@ public final class CarBtReceiver extends BroadcastReceiver {
             dev = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
         }
         String name = deviceName(dev);
-        if (name == null || !matches(name, cfg.btAutoName())) return;
+        // Por su nombre («Leapmotor_BT» de serie, ajustable) o por su dirección, si ya se aprendió con una sesión
+        // (CarBluetooth): un coche con el Bluetooth renombrado también vale.
+        boolean learned = dev != null && CarBluetooth.isCar(ctx, dev.getAddress());
+        if (!learned && (name == null || !matches(name, cfg.btAutoName()))) return;
+        if (name == null) name = CarBluetooth.masked(dev.getAddress());
         L.init(ctx);
         boolean connected = BluetoothDevice.ACTION_ACL_CONNECTED.equals(action);
         L.i("Bluetooth del coche " + (connected ? "conectado" : "desconectado") + ": " + name);

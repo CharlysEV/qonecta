@@ -41,6 +41,21 @@ class CarCloudTest {
     }
 
     @Test
+    fun watchingAChargeReadsEvery90sFastOr5MinSlow() {
+        val p = CarCloud.Policy.HUB_MS
+        val ac = CarCloud.Policy.WATCH_AC_MS
+        // Rápida: como con la sección Coche a la vista.
+        assertEquals(90_000L, CarCloud.Policy.delayMs(0, false, 0, false, p, true))
+        // Lenta: cada 5 min con la app cerrada; si alguien más lee, a su ritmo.
+        assertEquals(300_000L, CarCloud.Policy.delayMs(0, false, 0, false, ac, true))
+        assertEquals(120_000L, CarCloud.Policy.delayMs(0, false, 0, false, ac, false))
+        assertEquals(90_000L, CarCloud.Policy.delayMs(0, true, 0, false, ac, true))
+        // Sin vigilar, lo de siempre; los errores, igual.
+        assertEquals(120_000L, CarCloud.Policy.delayMs(0, false, 0, false, 0, false))
+        assertEquals(300_000L, CarCloud.Policy.delayMs(2, false, 0, false, ac, true))
+    }
+
+    @Test
     fun spacesOutWhenTheCarStopsUploading() {
         // Una lectura sin dato nuevo no cambia nada; desde la segunda, 5 min y luego 15 min (aunque se vea la sección).
         assertEquals(90_000L, CarCloud.Policy.delayMs(0, true, 1))
@@ -160,15 +175,29 @@ class CarCloudTest {
         // En claro solo lo que no es secreto: el modelo y el correo enmascarado.
         assertEquals("C10", st.carType())
         assertEquals("c***@e***.com", st.maskedEmail())
-        // Cerrar sesión deja el certificado; borrar datos, nada.
+        // Cerrar sesión deja el certificado (y el deviceId, para volver a entrar como el mismo móvil); borrar datos, nada.
+        st.rememberDeviceId("dev-abc")
         st.deleteSession()
         assertFalse(st.hasSession())
         assertTrue(st.hasIdentity())
+        assertEquals("dev-abc", st.lastDeviceId())
         st.wipeAll()
         assertFalse(st.hasIdentity())
         assertTrue(box.destroyed)
         assertEquals("", st.maskedEmail())
+        assertEquals(null, st.lastDeviceId())
         dir.deleteRecursively()
+    }
+
+    @Test
+    fun theTokenIsRenewedBeforeItExpires() {
+        val now = 1_761_400_000_000L
+        // Le queda una hora o menos (o ya caducó): se renueva; más, o sin saberlo, no se toca.
+        assertTrue(CarCloudSession.refreshDue(now + 30 * 60_000L, now))
+        assertTrue(CarCloudSession.refreshDue(now + CarCloudSession.REFRESH_AHEAD_MS, now))
+        assertTrue(CarCloudSession.refreshDue(now - 1, now))
+        assertFalse(CarCloudSession.refreshDue(now + 2 * 3_600_000L, now))
+        assertFalse(CarCloudSession.refreshDue(0, now))
     }
 
     @Test

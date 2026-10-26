@@ -494,7 +494,7 @@ final class SettingsScreen implements CarScreen {
 
     private void buildTrip(Context c, LinearLayout col) {
         LinearLayout alerts = card(c, null);
-        alerts.addView(toggle(c, Str.get(R.string.hql_radar_voice), null, cfg.radarVoice(), on -> {
+        alerts.addView(toggle(c, Str.get(R.string.hql_radar_voice), Str.get(R.string.hql_radar_voice_help), cfg.radarVoice(), on -> {
             cfg.putBool(Config.RADAR_VOICE, on);
             refreshSummaries();
         }));
@@ -528,10 +528,97 @@ final class SettingsScreen implements CarScreen {
         priceRow(c, energy, Str.get(R.string.hql_settings_price_fast), Str.get(R.string.hql_settings_price_fast_help),
                 cfg::fastChargePrice, cfg::setFastChargePrice);
         col.addView(energy, cardLp());
+
+        // Combustible: la comparación con un coche de combustión (ahorro y CO₂) y la gasolina del generador del REEV.
+        LinearLayout fuel = card(c, Str.get(R.string.hql_settings_fuel));
+        priceRow(c, fuel, Str.get(R.string.hql_price_petrol), null, "l", cfg::fuelPrice, cfg::setFuelPrice);
+        fuel.addView(divider(c));
+        priceRow(c, fuel, Str.get(R.string.hql_price_diesel), Str.get(R.string.hql_price_fuel_help), "l", cfg::dieselPrice,
+                cfg::setDieselPrice);
+        fuel.addView(divider(c));
+        TextView cmpLabel = CarStyle.text(c, Str.get(R.string.hql_compare_with), 24, CarStyle.TEXT);
+        cmpLabel.setPadding(0, 16, 0, 0);
+        fuel.addView(cmpLabel);
+        LinearLayout cmp = new LinearLayout(c);
+        cmp.setOrientation(LinearLayout.HORIZONTAL);
+        cmp.setPadding(0, 14, 0, 4);
+        java.util.List<TextView> cmpPills = new java.util.ArrayList<>();
+        TextView[] l100Value = new TextView[1];
+        Runnable markCompare = () -> {
+            for (TextView p : cmpPills) {
+                boolean sel = cfg.compareDiesel() == (boolean) p.getTag();
+                p.setBackground(sel ? CarKit.outlined(CarStyle.ACCENT_BG, CarStyle.ACCENT, 28) : CarStyle.round(CarStyle.PILL_BG, 28));
+                p.setTextColor(sel ? CarStyle.ACCENT : CarStyle.TEXT);
+            }
+            if (l100Value[0] != null) l100Value[0].setText(SettingsRows.l100Text(cfg.fuelLitersPer100(), Str.locale()));
+            refreshSummaries();
+        };
+        for (boolean diesel : new boolean[]{false, true}) {
+            TextView p = CarStyle.pill(c, SettingsActivity.compareLabel(diesel));
+            p.setTag(diesel);
+            p.setPadding(20, 22, 20, 22);
+            p.setOnClickListener(v -> {
+                cfg.setCompareDiesel(diesel);
+                L.i("comparar con un coche " + (diesel ? "diésel" : "de gasolina") + " (desde el coche)");
+                markCompare.run();
+            });
+            LinearLayout.LayoutParams plp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+            plp.rightMargin = 14;
+            cmpPills.add(p);
+            cmp.addView(p, plp);
+        }
+        fuel.addView(cmp);
+        fuel.addView(divider(c));
+        l100Value[0] = stepRow(c, fuel, Str.get(R.string.hql_compare_l100), Str.get(R.string.hql_compare_l100_help), () -> {
+            cfg.setFuelLitersPer100(cfg.fuelLitersPer100() - 0.1);
+            markCompare.run();
+        }, () -> {
+            cfg.setFuelLitersPer100(cfg.fuelLitersPer100() + 0.1);
+            markCompare.run();
+        });
+        markCompare.run();
+        col.addView(fuel, cardLp());
     }
 
     /** Un precio (€/kWh) con − y + de céntimo en céntimo, y su explicación debajo. */
     private void priceRow(Context c, LinearLayout card, String label, String help, java.util.function.DoubleSupplier get,
+                          java.util.function.DoubleConsumer set) {
+        priceRow(c, card, label, help, "kWh", get, set);
+    }
+
+    /** Una fila con − y + (el valor lo pone quien la usa) y su explicación debajo; devuelve la vista del valor. */
+    private TextView stepRow(Context c, LinearLayout card, String label, String help, Runnable down, Runnable up) {
+        LinearLayout row = new LinearLayout(c);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(0, 16, 0, 4);
+        row.addView(CarStyle.text(c, label, 24, CarStyle.TEXT), new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        TextView minus = CarStyle.pill(c, "−");
+        TextView value = CarStyle.text(c, "", 32, CarStyle.TEXT);
+        value.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        value.setGravity(Gravity.CENTER);
+        value.setMinWidth(210);
+        TextView plus = CarStyle.pill(c, "+");
+        for (TextView b : new TextView[]{minus, plus}) {
+            b.setMinWidth(90);
+            b.setPadding(26, 18, 26, 18);
+        }
+        minus.setOnClickListener(v -> down.run());
+        plus.setOnClickListener(v -> up.run());
+        row.addView(minus);
+        row.addView(value);
+        row.addView(plus);
+        card.addView(row);
+        if (help != null) {
+            TextView h = CarStyle.text(c, help, 20, CarStyle.TEXT_DIM);
+            h.setPadding(4, 8, 0, 0);
+            card.addView(h);
+        }
+        return value;
+    }
+
+    /** Un precio (€ por unit: kWh o l) con − y + de céntimo en céntimo, y su explicación debajo (si la hay). */
+    private void priceRow(Context c, LinearLayout card, String label, String help, String unit, java.util.function.DoubleSupplier get,
                           java.util.function.DoubleConsumer set) {
         LinearLayout priceRow = new LinearLayout(c);
         priceRow.setOrientation(LinearLayout.HORIZONTAL);
@@ -553,7 +640,7 @@ final class SettingsScreen implements CarScreen {
         priceRow.addView(value);
         priceRow.addView(plus);
         Runnable showPrice = () -> {
-            value.setText(Money.per(get.getAsDouble(), "kWh"));
+            value.setText(Money.per(get.getAsDouble(), unit));
             refreshSummaries();
         };
         showPrice.run();
@@ -566,6 +653,7 @@ final class SettingsScreen implements CarScreen {
             showPrice.run();
         });
         card.addView(priceRow);
+        if (help == null) return;
         TextView priceHelp = CarStyle.text(c, help, 20, CarStyle.TEXT_DIM);
         priceHelp.setPadding(4, 8, 0, 0);
         card.addView(priceHelp);
@@ -592,6 +680,58 @@ final class SettingsScreen implements CarScreen {
         TextView info = CarStyle.text(c, Str.get(R.string.hql_settings_info, LinkState.video.isEmpty() ? "—" : LinkState.video, VideoProfile.reason()), 20, CarStyle.TEXT_DIM);
         info.setPadding(8, 0, 8, 0);
         col.addView(info);
+        col.addView(disconnectButton(c));
+        TextView stopHelp = CarStyle.text(c, Str.get(R.string.hql_disconnect_car_help), 20, CarStyle.TEXT_DIM);
+        stopHelp.setPadding(8, 10, 8, 0);
+        col.addView(stopHelp);
+    }
+
+    /** Lo que espera «Desconectar» el segundo toque que lo confirma. */
+    static final long DISCONNECT_CONFIRM_MS = 4000;
+
+    /**
+     * «Desconectar» desde el coche: lo mismo que el botón de ajustes rápidos (LinkControl.stop), que vale con el móvil
+     * bloqueado; el viaje se guarda. Pide un segundo toque en DISCONNECT_CONFIRM_MS, para que no se haga sin querer.
+     */
+    private View disconnectButton(Context c) {
+        TextView b = CarStyle.pill(c, Str.get(R.string.hql_disconnect));
+        b.setPadding(36, 22, 36, 22);
+        b.setGravity(Gravity.CENTER);
+        long[] armedAt = {0};
+        Runnable disarm = () -> {
+            armedAt[0] = 0;
+            b.setText(Str.get(R.string.hql_disconnect));
+            b.setTextColor(CarStyle.TEXT);
+        };
+        b.setOnClickListener(v -> {
+            long now = android.os.SystemClock.uptimeMillis();
+            if (armedAt[0] == 0 || now - armedAt[0] > DISCONNECT_CONFIRM_MS) {
+                armedAt[0] = now;
+                b.setText(Str.get(R.string.hql_disconnect_confirm));
+                b.setTextColor(CarKit.AMBER);
+                long armed = now;
+                b.postDelayed(() -> {
+                    if (armedAt[0] == armed) disarm.run();
+                }, DISCONNECT_CONFIRM_MS);
+                return;
+            }
+            L.i("ajustes desde el coche: Desconectar");
+            if (DemoMode.active()) {
+                // Vista previa: no hay sesión que cerrar.
+                disarm.run();
+                return;
+            }
+            armedAt[0] = 0;
+            b.setText(Str.get(R.string.hql_disconnecting));
+            b.setEnabled(false);
+            Context app = c.getApplicationContext();
+            host.post(() -> LinkControl.stop(app, "pantalla del coche"));
+        });
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = 22;
+        lp.leftMargin = 8;
+        b.setLayoutParams(lp);
+        return b;
     }
 
     /**

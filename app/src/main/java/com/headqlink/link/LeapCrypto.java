@@ -231,6 +231,20 @@ final class LeapCrypto {
         return fallback;
     }
 
+    /** Puro: cuándo caduca el token (JWT, campo exp en segundos), en ms; 0 si no se sabe. */
+    static long tokenExpiryMs(String token) {
+        if (token == null || token.isEmpty()) return 0;
+        try {
+            String[] parts = token.split("\\.");
+            if (parts.length < 2) return 0;
+            byte[] json = Base64.decode(parts[1], Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
+            long exp = new org.json.JSONObject(new String(json, StandardCharsets.UTF_8)).optLong("exp", 0);
+            return exp > 0 ? exp * 1000 : 0;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     /** deviceId nuevo: 16 bytes aleatorios en hexadecimal. */
     static String newDeviceId(SecureRandom rnd) {
         byte[] b = new byte[16];

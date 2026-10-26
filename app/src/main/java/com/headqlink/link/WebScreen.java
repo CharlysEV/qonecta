@@ -453,6 +453,9 @@ final class WebScreen implements CarScreen {
             @Override
             public void onPageFinished(WebView v, String url) {
                 v.evaluateJavascript(FOCUS_JS, null);
+                // YouTube: la calidad elegida en el menú (⋮), si no es la automática.
+                int ytq = prefs(v.getContext()).getInt(YT_QUALITY, 0);
+                if (ytq > 0 && url != null && YouTubeQuality.isYouTube(host(url))) v.evaluateJavascript(YouTubeQuality.js(ytq), null);
                 t.audio.pageFinished();
                 if (url != null && url.startsWith("http")) {
                     t.url = url;
@@ -836,9 +839,25 @@ final class WebScreen implements CarScreen {
             closeOverlay();
             if (web != null && web.getParent() != null) web.reload();
         }));
+        // YouTube: calidad fija (automática → 360p → 480p → 720p), al momento y para las próximas páginas.
+        if (YouTubeQuality.isYouTube(h)) {
+            int q = prefs(c).getInt(YT_QUALITY, 0);
+            String label = q == 0 ? Str.get(R.string.hql_web_yt_auto) : q + "p";
+            panel.addView(menuRow(c, "▶  " + Str.get(R.string.hql_web_yt_quality, label), true, () -> {
+                int nq = YouTubeQuality.next(q);
+                prefs(c).edit().putInt(YT_QUALITY, nq).apply();
+                L.i("web: calidad de YouTube " + (nq == 0 ? "automática" : nq + "p"));
+                if (web != null) web.evaluateJavascript(YouTubeQuality.js(nq), null);
+                closeOverlay();
+                toggleMenu();
+            }));
+        }
         panel.addView(menuRow(c, "⧉  " + Str.get(R.string.hql_web_new_tab), tabs.size() < MAX_TABS, () -> newTab(null)));
         showOverlay(panel, Gravity.TOP | Gravity.RIGHT, 640);
     }
+
+    /** Calidad fija de YouTube (YouTubeQuality): 0 = la automática de YouTube. */
+    static final String YT_QUALITY = "yt_quality";
 
     private static View menuRow(Context c, String text, boolean enabled, Runnable action) {
         TextView t = CarStyle.text(c, text, 25, enabled ? CarStyle.TEXT : CarStyle.TEXT_DIM);

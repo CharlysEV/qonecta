@@ -25,8 +25,8 @@ import java.util.Locale;
 
 /**
  * Radio por internet: emisoras populares del país (directorio abierto radio-browser.info) o la
- * lista M3U del usuario (Config.radioSource, URL o archivo). Lo que suena sigue al salir de aquí
- * (RadioPlayer); arriba, la emisora actual con lo que emite y los controles.
+ * lista M3U del usuario (Config.radioSource, URL o archivo), y «Mi música» (las canciones del móvil, MusicLibrary). Lo
+ * que suena sigue al salir de aquí (RadioPlayer); arriba, la emisora o canción actual con lo que emite y los controles.
  */
 final class RadioScreen implements CarScreen {
     /** Servidores del directorio; "all" reparte entre ellos y los demás son el respaldo. */
@@ -60,24 +60,31 @@ final class RadioScreen implements CarScreen {
         lists = cfg.m3uLists(Config.RADIO);
         boolean hasList = lists.length > 0;
         favs = Favorites.load(cfg, Favorites.RADIO);
-        // ★ (favoritos), Populares y cada lista (o «Mi lista» si no hay ninguna): la pestaña i es la fuente i - 1.
-        String[] tabs = new String[2 + Math.max(1, lists.length)];
+        // ★ (favoritos), Populares, cada lista (o «Mi lista» si no hay ninguna) y «Mi música»: la pestaña i es la fuente
+        // i - 1; la última, MUSIC.
+        String[] tabs = new String[3 + Math.max(1, lists.length)];
         tabs[0] = "★";
         tabs[1] = Str.get(R.string.hql_radio_popular);
         if (hasList) for (int i = 0; i < lists.length; i++) tabs[2 + i] = lists[i][0];
         else tabs[2] = Str.get(R.string.hql_radio_my_list);
-        int first = hasList ? 2 + cfg.m3uSelected(Config.RADIO) : 1;
+        int musicTab = tabs.length - 1;
+        tabs[musicTab] = "♪ " + Str.get(R.string.hql_music_mine);
+        RadioPlayer.Station playing = RadioPlayer.current();
+        int first = playing != null && playing.local ? musicTab : hasList ? 2 + cfg.m3uSelected(Config.RADIO) : 1;
         android.widget.HorizontalScrollView hs = new android.widget.HorizontalScrollView(c);
         hs.setHorizontalScrollBarEnabled(false);
-        hs.addView(CarStyle.tabs(c, tabs, first, i -> load(i - 1)));
+        hs.addView(CarStyle.tabs(c, tabs, first, i -> load(i == musicTab ? MUSIC : i - 1)));
         col.addView(hs);
         listArea = new FrameLayout(c);
         col.addView(listArea, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         RadioPlayer.addListener(onChange);
         renderNowPlaying();
-        load(first - 1);
+        load(first == musicTab ? MUSIC : first - 1);
         return col;
     }
+
+    /** La fuente «Mi música». */
+    private static final int MUSIC = -2;
 
     @Override
     public void destroy() {
@@ -147,14 +154,16 @@ final class RadioScreen implements CarScreen {
         npName.setText(s.name);
         String sub = !RadioPlayer.error.isEmpty() ? RadioPlayer.error
                 : RadioPlayer.isBuffering() ? Str.get(R.string.hql_connecting)
+                : s.local ? (RadioPlayer.isPlaying() ? MusicLibrary.line(s) : Str.get(R.string.hql_paused))
                 : !RadioPlayer.nowTitle.isEmpty() ? RadioPlayer.nowTitle
                 : RadioPlayer.isPlaying() ? Str.get(R.string.hql_radio_live) : Str.get(R.string.hql_paused);
         npTitle.setText(sub);
         npToggle.setImageResource(RadioPlayer.isPlaying() ? R.drawable.hql_ic_pause : R.drawable.hql_ic_play);
+        int icon = s.local ? R.drawable.hql_ic_music : R.drawable.hql_ic_radio;
         if (s.logo != null && !s.logo.isEmpty()) {
-            Glide.with(host.context().getApplicationContext()).load(s.logo).error(R.drawable.hql_ic_radio).into(npLogo);
+            Glide.with(host.context().getApplicationContext()).load(s.logo).error(icon).into(npLogo);
         } else {
-            npLogo.setImageResource(R.drawable.hql_ic_radio);
+            npLogo.setImageResource(icon);
         }
     }
 
@@ -166,6 +175,10 @@ final class RadioScreen implements CarScreen {
         Context c = host.context();
         int seq = ++loadSeq;
         currentSource = source;
+        if (source == MUSIC) {
+            loadMusic(c, seq);
+            return;
+        }
         if (source < 0) {
             shown.clear();
             for (int i = 0; i < favs.length(); i++) {
@@ -211,6 +224,48 @@ final class RadioScreen implements CarScreen {
                 showGrid(c);
             });
         }, "radio-load").start();
+    }
+
+    /** «Mi música»: las canciones del móvil, con «Aleatorio» arriba; sin permiso o sin canciones, lo dice. */
+    private void loadMusic(Context c, int seq) {
+        if (!MusicLibrary.granted(c)) {
+            showMessage(Str.get(R.string.hql_music_perm));
+            return;
+        }
+        showMessage(Str.get(R.string.hql_music_loading));
+        new Thread(() -> {
+            List<RadioPlayer.Station> songs = MusicLibrary.query(c);
+            host.post(() -> {
+                if (destroyed || seq != loadSeq) return;
+                if (songs.isEmpty()) {
+                    showMessage(Str.get(R.string.hql_music_none));
+                    return;
+                }
+                shown.clear();
+                shown.addAll(songs);
+                showGrid(c);
+                // Arriba, «Aleatorio»: toda la música en otro orden.
+                LinearLayout bar = new LinearLayout(c);
+                bar.setGravity(Gravity.CENTER_VERTICAL);
+                bar.setPadding(24, 4, 24, 4);
+                TextView count = CarStyle.text(c, Str.plural(R.plurals.hql_music_songs, songs.size()), 22, CarStyle.TEXT_DIM);
+                bar.addView(count, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+                TextView shuffle = CarStyle.pill(c, Str.get(R.string.hql_music_shuffle));
+                shuffle.setOnClickListener(v -> {
+                    List<RadioPlayer.Station> mix = new ArrayList<>(songs);
+                    java.util.Collections.shuffle(mix);
+                    RadioPlayer.play(c, mix, 0);
+                });
+                bar.addView(shuffle);
+                View grid = listArea.getChildAt(0);
+                listArea.removeAllViews();
+                LinearLayout col = new LinearLayout(c);
+                col.setOrientation(LinearLayout.VERTICAL);
+                col.addView(bar);
+                col.addView(grid, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+                listArea.addView(col, CarStyle.match());
+            });
+        }, "music-load").start();
     }
 
     private void showMessage(String s) {
@@ -293,11 +348,14 @@ final class RadioScreen implements CarScreen {
                 RadioPlayer.Station s = shown.get(pos);
                 LinearLayout item = (LinearLayout) vh.itemView;
                 ImageView logo = (ImageView) item.getChildAt(0);
-                ((TextView) item.getChildAt(1)).setText(Favorites.contains(favs, s.url) ? "★ " + s.name : s.name);
+                String name = Favorites.contains(favs, s.url) ? "★ " + s.name : s.name;
+                // Una canción: el título y, debajo, el artista y la duración.
+                ((TextView) item.getChildAt(1)).setText(s.local ? name + "\n" + MusicLibrary.line(s) : name);
+                int icon = s.local ? R.drawable.hql_ic_music : R.drawable.hql_ic_radio;
                 if (s.logo != null && !s.logo.isEmpty()) {
-                    Glide.with(c.getApplicationContext()).load(s.logo).error(R.drawable.hql_ic_radio).into(logo);
+                    Glide.with(c.getApplicationContext()).load(s.logo).error(icon).into(logo);
                 } else {
-                    logo.setImageResource(R.drawable.hql_ic_radio);
+                    logo.setImageResource(icon);
                 }
                 item.setOnClickListener(v -> {
                     int i = vh.getBindingAdapterPosition();
@@ -308,6 +366,7 @@ final class RadioScreen implements CarScreen {
                     int i = vh.getBindingAdapterPosition();
                     if (i < 0) return true;
                     RadioPlayer.Station st = shown.get(i);
+                    if (st.local) return true; // las canciones no van a favoritos de la radio
                     boolean in = Favorites.toggle(favs, Favorites.item(st.name, st.url, st.logo, st.group, null));
                     Favorites.save(new Config(c), Favorites.RADIO, favs);
                     L.i("radio: " + (in ? "favorita añadida" : "favorita quitada") + " (" + favs.length() + ")");

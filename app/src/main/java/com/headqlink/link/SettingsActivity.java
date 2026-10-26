@@ -234,7 +234,7 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
             cfg.putBool(Config.DGT_TRAFFIC, on);
             L.i("tráfico DGT: " + (on ? "activado" : "desactivado"));
         });
-        switchRow(Str.get(R.string.hql_radar_voice), null, cfg::radarVoice, on -> {
+        switchRow(Str.get(R.string.hql_radar_voice), () -> Str.get(R.string.hql_radar_voice_help), cfg::radarVoice, on -> {
             cfg.putBool(Config.RADAR_VOICE, on);
             L.i("avisos de radar por voz: " + (on ? "sí" : "no"));
         });
@@ -263,6 +263,58 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
                             cfg.setFastChargePrice(p);
                             L.i(String.format(Locale.US, "precio de la carga rápida: %.2f €/kWh", cfg.fastChargePrice()));
                         }));
+        // Combustible: la comparación con un coche de combustión y la gasolina del generador del REEV.
+        row(Str.get(R.string.hql_price_petrol), () -> SettingsRows.priceText(cfg.fuelPrice(), "l", Locale.getDefault()))
+                .setOnClickListener(v -> editPrice(Str.get(R.string.hql_price_petrol), Str.get(R.string.hql_price_fuel_help),
+                        Config.FUEL_PRICE_MAX, "l", cfg::fuelPrice, p -> {
+                            cfg.setFuelPrice(p);
+                            L.i(String.format(Locale.US, "precio de la gasolina: %.2f €/l", cfg.fuelPrice()));
+                        }));
+        row(Str.get(R.string.hql_price_diesel), () -> SettingsRows.priceText(cfg.dieselPrice(), "l", Locale.getDefault()))
+                .setOnClickListener(v -> editPrice(Str.get(R.string.hql_price_diesel), Str.get(R.string.hql_price_fuel_help),
+                        Config.FUEL_PRICE_MAX, "l", cfg::dieselPrice, p -> {
+                            cfg.setDieselPrice(p);
+                            L.i(String.format(Locale.US, "precio del diésel: %.2f €/l", cfg.dieselPrice()));
+                        }));
+        row(Str.get(R.string.hql_compare_with), () -> compareLabel(cfg.compareDiesel())).setOnClickListener(v -> pickCompare());
+        row(Str.get(R.string.hql_compare_l100), () -> SettingsRows.l100Text(cfg.fuelLitersPer100(), Locale.getDefault()))
+                .setOnClickListener(v -> editL100());
+    }
+
+    static String compareLabel(boolean diesel) {
+        return Str.get(diesel ? R.string.hql_compare_diesel : R.string.hql_compare_petrol);
+    }
+
+    /** Con qué coche de combustión se compara: gasolina o diésel (cada uno con su consumo guardado). */
+    private void pickCompare() {
+        CharSequence[] items = {compareLabel(false), compareLabel(true)};
+        choose(Str.get(R.string.hql_compare_with), items, cfg.compareDiesel() ? 1 : 0, Str.get(R.string.hql_compare_help), i -> {
+            cfg.setCompareDiesel(i == 1);
+            L.i("comparar con un coche " + (i == 1 ? "diésel" : "de gasolina") + String.format(Locale.US, " de %.1f l/100 km a %.2f €/l",
+                    cfg.fuelLitersPer100(), cfg.comparePrice()));
+        });
+    }
+
+    /** El consumo del coche de comparación (l/100 km), del combustible elegido. */
+    private void editL100() {
+        TextInputEditText e = M3.field(this);
+        e.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        e.setSingleLine(true);
+        e.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(8)});
+        e.setText(String.format(Locale.getDefault(), "%.1f", cfg.fuelLitersPer100()));
+        e.setSelectAllOnFocus(true);
+        TextInputLayout field = M3.outlined(e);
+        field.setSuffixText("l/100 km");
+        editDialog(Str.get(R.string.hql_compare_l100), Str.get(R.string.hql_compare_l100_help), e, field, () -> {
+            double v = SettingsRows.parseL100(e.getText() == null ? "" : e.getText().toString());
+            if (v < 0) {
+                field.setError(Str.get(R.string.hql_compare_l100_invalid));
+                return false;
+            }
+            cfg.setFuelLitersPer100(v);
+            L.i(String.format(Locale.US, "consumo del coche de comparación: %.1f l/100 km", cfg.fuelLitersPer100()));
+            return true;
+        });
     }
 
     /** Avanzado: plegado (salvo que se dejara abierto antes de girar la pantalla), con el aviso de que es para pruebas. */
@@ -668,6 +720,12 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
     /** Un precio (€/kWh) escrito a mano: con coma o punto, redondeado al céntimo y entre 0 y max. */
     private void editPrice(String title, String help, double max, java.util.function.DoubleSupplier get,
                            java.util.function.DoubleConsumer set) {
+        editPrice(title, help, max, "kWh", get, set);
+    }
+
+    /** Un precio en €/unit (kWh o l): fuera de rango, el aviso en el campo y no se cierra. */
+    private void editPrice(String title, String help, double max, String unit, java.util.function.DoubleSupplier get,
+                           java.util.function.DoubleConsumer set) {
         TextInputEditText e = M3.field(this);
         e.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         e.setSingleLine(true);
@@ -675,12 +733,12 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
         e.setText(SettingsRows.priceField(get.getAsDouble(), Locale.getDefault()));
         e.setSelectAllOnFocus(true);
         TextInputLayout field = M3.outlined(e);
-        field.setSuffixText("€/kWh");
+        field.setSuffixText("€/" + unit);
         String maxText = SettingsRows.priceField(max, Locale.getDefault());
         editDialog(title, help, e, field, () -> {
             double p = SettingsRows.parsePrice(e.getText() == null ? "" : e.getText().toString(), max);
             if (p < 0) {
-                field.setError(Str.get(R.string.hql_aj_price_invalid, maxText));
+                field.setError(Str.get("l".equals(unit) ? R.string.hql_aj_price_invalid_l : R.string.hql_aj_price_invalid, maxText));
                 return false;
             }
             set.accept(p);

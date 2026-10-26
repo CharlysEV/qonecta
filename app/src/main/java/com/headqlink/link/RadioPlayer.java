@@ -17,16 +17,22 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * Radio por internet: un único reproductor que sigue sonando al salir de la pantalla Radio (como la
- * música de AA) y se para al cerrar la interfaz propia. Pide el foco de audio, así que pausa la
- * música de AA y se pausa si AA (o una llamada) lo toma. Solo hilo principal.
+ * Radio por internet y tu música del móvil (MusicLibrary): un único reproductor que sigue sonando al salir de la
+ * pantalla Radio (como la música de AA) y se para al cerrar la interfaz propia. Pide el foco de audio, así que pausa la
+ * música de AA y se pausa si AA (o una llamada) lo toma. Una canción, al acabar, da paso a la siguiente. Solo hilo
+ * principal.
  */
 final class RadioPlayer {
     static final class Station {
         String name;
         String url;
         String logo;
+        /** Emisora: sus etiquetas o el grupo de la lista; canción: el artista. */
         String group;
+        /** Una canción del móvil (no una emisora): se reanuda donde iba y al acabar suena la siguiente. */
+        boolean local;
+        String album = "";
+        long durMs;
     }
 
     private static ExoPlayer player;
@@ -77,15 +83,17 @@ final class RadioPlayer {
         Station s = current();
         if (s == null) return;
         if (player == null) {
-            player = new ExoPlayer.Builder(app).build();
+            // Con FFmpeg de reserva: FLAC, OGG u Opus que el móvil no sepa decodificar también suenan.
+            player = VideoPlayer.newPlayer(app);
             player.setAudioAttributes(new AudioAttributes.Builder()
                     .setUsage(C.USAGE_MEDIA).setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(), false);
             mediaFocus = MediaFocus.bind(app, player);
-            // Con la pantalla del móvil apagada la radio sigue: CPU y WiFi despiertos mientras suena.
-            player.setWakeMode(C.WAKE_MODE_NETWORK);
             player.addListener(new Player.Listener() {
                 @Override
                 public void onMediaMetadataChanged(MediaMetadata m) {
+                    // Una canción ya trae su título y artista de la biblioteca; lo que emite una emisora, de aquí.
+                    Station st = current();
+                    if (st != null && st.local) return;
                     nowTitle = m.title != null ? m.title.toString() : "";
                     publishMetadata();
                     changed();
@@ -101,6 +109,12 @@ final class RadioPlayer {
 
                 @Override
                 public void onPlaybackStateChanged(int state) {
+                    // Canción terminada: la siguiente de la lista.
+                    Station st = current();
+                    if (state == Player.STATE_ENDED && st != null && st.local && list.size() > 1) {
+                        step(app, 1);
+                        return;
+                    }
                     changed();
                 }
 
@@ -112,14 +126,16 @@ final class RadioPlayer {
             metadata = new PlaybackMetadata(app, player, "Radio", RadioPlayer::resume,
                     RadioPlayer::stop, () -> step(app, -1), () -> step(app, 1));
         }
-        nowTitle = "";
+        // Con la pantalla del móvil apagada sigue sonando: CPU (y, la radio, la Wi-Fi) despiertos mientras suena.
+        player.setWakeMode(s.local ? C.WAKE_MODE_LOCAL : C.WAKE_MODE_NETWORK);
+        nowTitle = s.local ? s.group : "";
         error = "";
         publishMetadata();
         player.setMediaItem(new MediaItem.Builder().setUri(s.url)
                 .setMediaMetadata(new MediaMetadata.Builder().setStation(s.name).build()).build());
         player.prepare();
         player.play();
-        L.i("radio: " + s.name + " · " + s.url);
+        L.i(s.local ? "música: canción " + (index + 1) + " de " + list.size() : "radio: " + s.name + " · " + s.url);
         changed();
     }
 
@@ -143,6 +159,13 @@ final class RadioPlayer {
 
     private static void resume() {
         if (player == null) return;
+        Station st = current();
+        if (st != null && st.local) {
+            // Una canción sigue donde iba (y si había terminado, desde el principio).
+            if (player.getPlaybackState() == Player.STATE_ENDED) player.seekTo(0);
+            player.play();
+            return;
+        }
         // Radio en directo: al seguir, vuelve al directo, también desde los controles Bluetooth.
         player.seekToDefaultPosition();
         player.prepare();
@@ -152,7 +175,7 @@ final class RadioPlayer {
     private static void publishMetadata() {
         Station station = current();
         if (metadata != null && station != null) metadata.setChannel(station.name,
-                nowTitle.isEmpty() ? Str.get(R.string.hql_radio) : nowTitle, station.logo);
+                nowTitle.isEmpty() ? Str.get(station.local ? R.string.hql_music_mine : R.string.hql_radio) : nowTitle, station.logo);
     }
 
     static void step(Context ctx, int delta) {

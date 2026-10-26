@@ -377,7 +377,10 @@ final class IptvScreen implements CarScreen {
         }
         FrameLayout f = new FrameLayout(c);
         f.setBackgroundColor(Color.BLACK);
-        player = new ExoPlayer.Builder(c.getApplicationContext()).build();
+        // Con FFmpeg de reserva para el audio: hay canales con AC-3 o E-AC-3 que el móvil no sabe decodificar.
+        player = VideoPlayer.newPlayer(c);
+        // A pantalla completa, el vídeo al coche va al ritmo del canal (25 o 50 fps en Europa).
+        VideoPlayer.followMovie(player);
         player.setAudioAttributes(new androidx.media3.common.AudioAttributes.Builder()
                 .setUsage(androidx.media3.common.C.USAGE_MEDIA)
                 .setContentType(androidx.media3.common.C.AUDIO_CONTENT_TYPE_MUSIC).build(), false);
@@ -606,6 +609,7 @@ final class IptvScreen implements CarScreen {
             mediaFocus = null;
             player.release();
             player = null;
+            VideoPipeline.setMovie(-1);
         }
     }
 

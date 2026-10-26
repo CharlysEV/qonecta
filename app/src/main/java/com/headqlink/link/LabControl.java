@@ -15,7 +15,9 @@ import java.util.Locale;
  *
  * Órdenes (una por petición, en minúsculas): estado · msg TEXTO · fps N|auto · kbps N|auto · cable N|auto · qp N|auto ·
  * boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto ·
- * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra).
+ * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra) · carga demo|off
+ * (la notificación de una carga inventada, para ver el Live Update) · ffmpeg (si el audio por FFmpeg está listo) · ia [hola]
+ * (el SDK de Anthropic con una clave falsa; «hola»: una pregunta de verdad con la clave guardada).
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
@@ -157,6 +159,21 @@ final class LabControl {
                 reconnect(ctx);
                 break;
             }
+            case "ia":
+                if (a.equals("hola")) {
+                    // Una pregunta de verdad con la clave guardada (cuesta una fracción de céntimo): la respuesta entera.
+                    ClaudeCompanion.Reply r = ClaudeCompanion.ask(ctx, "Hola, ¿me oyes? Preséntate en una frase.", ClaudeCompanion.context(ctx));
+                    done = "compañero: " + r.outcome + " · " + r.text;
+                } else {
+                    done = "compañero: " + labCompanion(ctx);
+                }
+                break;
+            case "ffmpeg":
+                done = "FFmpeg para el audio: " + VideoPlayer.ffmpegInfo();
+                break;
+            case "carga":
+                done = ChargeWatch.labNotify(ctx, !a.equals("off"));
+                break;
             case "reconectar":
                 done = "reconecto (unos segundos sin imagen)";
                 reconnect(ctx);
@@ -171,7 +188,7 @@ final class LabControl {
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, alemania, boost, termica, noche, hud, perfil, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, alemania, carga, ffmpeg, ia, boost, termica, noche, hud, perfil, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);
@@ -184,6 +201,27 @@ final class LabControl {
                     .setAction(LinkService.ACTION_APPLY).putExtra(LinkService.EXTRA_AA_RENEGOTIATE, true)));
         } catch (RuntimeException e) {
             L.w("laboratorio: no se pudo reconectar: " + e.getMessage());
+        }
+    }
+
+    /**
+     * «ia»: una pregunta de verdad con el SDK de Anthropic y una clave falsa, para ver en el móvil que el SDK funciona
+     * (crea el cliente, manda la petición y entiende el error 401). No toca la clave guardada.
+     */
+    private static String labCompanion(Context ctx) {
+        if (!ClaudeCompanion.supported()) return "Android antiguo";
+        try {
+            com.anthropic.client.AnthropicClient c = com.anthropic.client.okhttp.AnthropicOkHttpClient.builder()
+                    .apiKey("sk-ant-prueba-falsa-0000000000").maxRetries(0).build();
+            c.beta().messages().create(com.anthropic.models.beta.messages.MessageCreateParams.builder()
+                    .model(ClaudeCompanion.MODEL).maxTokens(64L).system(ClaudeCompanion.systemPrompt())
+                    .addBeta("server-side-fallback-2026-07-01").fallbacksDefault()
+                    .addMessage(com.anthropic.models.beta.messages.BetaMessageParam.ofUser("Hola")).build());
+            return "respuesta inesperada con una clave falsa";
+        } catch (com.anthropic.errors.UnauthorizedException e) {
+            return "SDK bien: la API contesta 401 a la clave falsa";
+        } catch (Throwable t) {
+            return "fallo " + t.getClass().getName() + ": " + t.getMessage();
         }
     }
 

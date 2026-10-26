@@ -225,6 +225,17 @@ final class LinkLifecycle {
     private long deadline = -1;
     /** Fin de la espera del coche (cierre), o -1. */
     private long closeAt = -1;
+    /** El Bluetooth del coche se fue con la sesión aún en marcha (o -1): si el coche se va poco después, se ha cerrado. */
+    private long btGoneAt = -1;
+    /** El cable USB (la conexión elegida) se fue con la sesión aún en marcha (o -1): se aplica al perder el coche. */
+    private long cableGoneAt = -1;
+    /** Con el Bluetooth del coche fuera hace menos de esto, perder la sesión es que el coche se ha cerrado. */
+    static final long BT_GONE_RECENT_MS = 30_000;
+    /**
+     * Quitado el cable, la espera del coche no pasa de esto desde que se perdió (antes, los 5 min de «Esperar al coche»):
+     * de sobra para el corte de corriente del USB del T03 (~30 s, UsbDiagnosis), que vuelve solo.
+     */
+    static final long UNPLUGGED_WAIT_MS = 120_000;
     /** Ya se pidió arrancar el servidor en esta búsqueda (un aviso, no uno por broadcast). */
     private boolean serverAsked;
     /** Último anuncio del coche (-1 = ninguno desde el arranque) y última vez que se dijo en el log. */
@@ -350,6 +361,8 @@ final class LinkLifecycle {
         deadline = -1;
         closeAt = -1;
         lostAt = -1;
+        btGoneAt = -1;
+        cableGoneAt = -1;
         serverAsked = false;
         keepAaForTheCar(d, e, "sesión con el coche");
         if (e.aaParked || e.guardActive) {
@@ -373,6 +386,17 @@ final class LinkLifecycle {
         Decision d = new Decision();
         // Solo la pérdida de una sesión cuenta; otra pérdida durante la espera no la alarga.
         if (phase != Phase.CONNECTED) return d;
+        // El Bluetooth del coche se fue justo antes: el coche se ha cerrado (antes, se olvidaba y se esperaban los 5 min).
+        if (btGoneAt >= 0 && now - btGoneAt <= BT_GONE_RECENT_MS) {
+            String ago = dur(now - btGoneAt);
+            close();
+            return d.add(Action.SHUTDOWN).why("coche perdido con su Bluetooth fuera hace " + ago + ": el coche se ha cerrado; cierro todo");
+        }
+        btGoneAt = -1;
+        // El cable se quitó (llega antes o después de perder la sesión, según el corte): la espera, como mucho la del cable.
+        boolean unplugged = cableGoneAt >= 0 && now - cableGoneAt <= UNPLUGGED_WAIT_MS;
+        cableGoneAt = -1;
+        if (unplugged) waitMs = Math.min(waitMs, UNPLUGGED_WAIT_MS);
         long grace = Math.max(0, graceMs);
         long total = Math.max(Math.max(0, waitMs), grace);
         lostAt = now;
@@ -445,13 +469,40 @@ final class LinkLifecycle {
                 close();
                 return d.add(Action.SHUTDOWN).why("Bluetooth del coche fuera sin haber conectado: cierro todo");
             case CONNECTED:
-                return d.why("Bluetooth del coche fuera con la sesión en marcha: sigo (se cierra si el coche se va)");
+                btGoneAt = now;
+                return d.why("Bluetooth del coche fuera con la sesión en marcha: sigo; si el coche se va en menos de "
+                        + dur(BT_GONE_RECENT_MS) + ", cierro todo en el acto");
             case GRACE:
             case PARKED:
                 // Sin sesión y sin el Bluetooth del coche: el coche se ha cerrado (con el coche encendido el Bluetooth no se
                 // va). Se cierra todo ya, en vez de esperar los minutos de «Esperar al coche» con el juego o la radio sonando.
                 close();
                 return d.add(Action.SHUTDOWN).why("Bluetooth del coche fuera sin sesión: el coche se ha cerrado; cierro todo");
+            default:
+                return d;
+        }
+    }
+
+    /**
+     * El cable USB, la conexión elegida, se ha quitado (o el coche dejó de ofrecerlo). Sin sesión, la espera del coche baja a
+     * UNPLUGGED_WAIT_MS desde que se perdió; con la sesión aún en marcha, se aplica al perderla.
+     */
+    Decision cableGone(long now) {
+        Decision d = new Decision();
+        switch (phase) {
+            case CONNECTED:
+                cableGoneAt = now;
+                return d.why("cable fuera con la sesión aún en marcha: al perder el coche, lo espero como mucho "
+                        + dur(UNPLUGGED_WAIT_MS));
+            case GRACE:
+            case PARKED:
+                long limit = lostAt + UNPLUGGED_WAIT_MS;
+                if (closeAt <= limit) return d;
+                closeAt = limit;
+                // En vídeo vivo el temporizador va al fin de su gracia (y entonces mira closeAt); en pausa, al cierre.
+                if (phase == Phase.PARKED || deadline > closeAt) deadline = closeAt;
+                return d.why("cable fuera: espero al coche como mucho " + dur(UNPLUGGED_WAIT_MS) + " desde que se fue ("
+                        + dur(Math.max(0, closeAt - now)) + " más)");
             default:
                 return d;
         }
@@ -468,6 +519,8 @@ final class LinkLifecycle {
         phase = Phase.CLOSED;
         deadline = -1;
         closeAt = -1;
+        btGoneAt = -1;
+        cableGoneAt = -1;
     }
 
     /** Con el coche delante o recién arrancado: AA se queda para él (sin cerrar ni apagar su servidor). */

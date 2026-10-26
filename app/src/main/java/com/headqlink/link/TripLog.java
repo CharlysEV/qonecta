@@ -33,6 +33,8 @@ final class TripLog {
         double descent;
         double maxKmh;
         double[][] track = new double[0][];
+        /** Los sitios que contó la Guía del camino en este viaje (sus títulos), para el diario del viaje. */
+        String[] places = new String[0];
         // Datos reales del coche (nube de Leapmotor) al empezar y al terminar; NaN si no los hubo.
         double socStart = Double.NaN;
         double socEnd = Double.NaN;
@@ -96,6 +98,9 @@ final class TripLog {
     private final CarSensors sensors;
     private volatile boolean running;
     private final List<double[]> track = new ArrayList<>();
+    /** Los sitios que va contando la Guía (títulos, sin repetir), como mucho MAX_PLACES. */
+    private final java.util.LinkedHashSet<String> places = new java.util.LinkedHashSet<>();
+    static final int MAX_PLACES = 12;
     private long startMs = System.currentTimeMillis();
     private long startElapsed = SystemClock.elapsedRealtime();
     /** El viaje que se retoma (TripCarry): sus km, energía y desnivel ya hechos, para las bases del primer paso. */
@@ -149,6 +154,12 @@ final class TripLog {
                     }
                 }
             }
+            JSONArray pl = o.optJSONArray("places");
+            if (pl != null) {
+                synchronized (places) {
+                    for (int i = 0; i < pl.length(); i++) places.add(pl.optString(i));
+                }
+            }
             JSONObject c = o.optJSONObject("cloud");
             if (c != null) {
                 cloudStart = new CloudMark(c.optDouble("socStart", Double.NaN), c.optDouble("odoStart", Double.NaN), startMs,
@@ -181,6 +192,8 @@ final class TripLog {
         instance = null;
         t.running = false;
         t.save();
+        // Si fue largo y no sigue con la próxima conexión, el diario del viaje lo ofrece.
+        if (!t.demo) TripPostcard.afterTrip(t.ctx, t.startMs);
         CarSensors.stop();
     }
 
@@ -238,6 +251,30 @@ final class TripLog {
         cloudCap = cs.capacityKwh;
     }
 
+    /** La Guía del camino acaba de contar este sitio: va al diario del viaje en curso. */
+    static void notePlace(String title) {
+        TripLog t = instance;
+        if (t == null || t.demo || title == null || title.isEmpty()) return;
+        synchronized (t.places) {
+            if (t.places.size() < MAX_PLACES) t.places.add(title);
+        }
+    }
+
+    /** El recorrido del viaje en curso hasta ahora ([lat, lon, segundo]; copia), o null sin viaje o en la demostración. */
+    static java.util.List<double[]> liveTrack() {
+        TripLog t = instance;
+        if (t == null || t.demo) return null;
+        synchronized (t.track) {
+            return new ArrayList<>(t.track);
+        }
+    }
+
+    /** Inicio del viaje en curso (ms), o 0. */
+    static long liveStartMs() {
+        TripLog t = instance;
+        return t == null ? 0 : t.startMs;
+    }
+
     /** Inicio del viaje en curso con datos de la nube, o null (en la demostración, el suyo). */
     static CloudMark cloudStart() {
         if (DemoMode.active()) return CarCloud.car().demo ? DemoMode.cloudTripStart() : null;
@@ -276,6 +313,9 @@ final class TripLog {
                 for (double[] p : track) t.put(new JSONArray().put(round(p[0])).put(round(p[1])).put(Math.round(p[2])));
             }
             o.put("track", t);
+            synchronized (places) {
+                if (!places.isEmpty()) o.put("places", new JSONArray(places));
+            }
             CloudMark c0 = cloudStart;
             CloudMark c1 = cloudEnd;
             if (c0 != null && c1 != null && c1 != c0) {
@@ -355,6 +395,11 @@ final class TripLog {
                         // Los viajes de antes de la 0.2.7 no llevan el segundo de cada punto (NaN: sin paradas).
                         t.track[k] = new double[]{q.getDouble(0), q.getDouble(1), q.length() > 2 ? q.getDouble(2) : Double.NaN};
                     }
+                }
+                JSONArray pl = o.optJSONArray("places");
+                if (pl != null) {
+                    t.places = new String[pl.length()];
+                    for (int k = 0; k < pl.length(); k++) t.places[k] = pl.optString(k);
                 }
                 JSONObject c = o.optJSONObject("cloud");
                 if (c != null) {

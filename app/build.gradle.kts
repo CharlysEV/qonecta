@@ -86,6 +86,11 @@ android {
     }
     tasks.matching { it.name == "assembleGithubRelease" }.configureEach { finalizedBy(archiveMapping) }
 
+    // headqlink: el AAR de FFmpeg de Jellyfin (media3-ffmpeg-decoder) declara «core library desugaring» porque su
+    // proyecto lo tiene activado, pero sus clases no usan ninguna API que lo necesite (revisado con javap: String,
+    // ByteBuffer, List). Se salta esa comprobación en vez de activar el desugaring en toda la app.
+    tasks.matching { it.name.startsWith("check") && it.name.endsWith("AarMetadata") }.configureEach { enabled = false }
+
     sourceSets {
         getByName("main") {
             assets.srcDirs("${project.layout.buildDirectory.get().asFile}/generated/assets/root")
@@ -111,8 +116,8 @@ android {
         // Android 6+: lo pide Material 3 (1.14) y, de todas formas, Android Auto ya exige Android 9 en el móvil.
         minSdk = 23
         targetSdk = 36
-        versionCode = 62
-        versionName = "0.3.5-qdauto"
+        versionCode = 64
+        versionName = "0.3.7-qdauto"
         setProperty("archivesBaseName", "Qonecta_${versionName}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -313,6 +318,11 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-exoplayer-hls:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
+    // headqlink: audio que muchos móviles no decodifican (AC-3, E-AC-3/Dolby Digital Plus, DTS, TrueHD) con FFmpeg.
+    // La extensión de media3 compilada por Jellyfin (GPL-3.0, compatible con la AGPL de la app); la misma versión que media3.
+    implementation("org.jellyfin.media3:media3-ffmpeg-decoder:1.3.1+2")
+    // headqlink: el compañero de voz (con la clave de API de Claude del usuario), con el SDK oficial de Anthropic.
+    implementation("com.anthropic:anthropic-java:3.3.0")
     implementation("com.google.android.material:material:1.14.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     // Material 1.14 ya no lo trae de rebote; lo usa el código de open-headunit (avisos entre pantallas).

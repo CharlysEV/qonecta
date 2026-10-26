@@ -721,6 +721,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
             if (stopping || !usbActive) return;
             if (Config.LINK_USB.equals(wifiLinkMode)) {
                 L.i("cable USB fuera (" + why + "): espero a que se vuelva a enchufar");
+                // Quitar el cable suele ser bajarse del coche: la espera, más corta (LinkLifecycle.UNPLUGGED_WAIT_MS).
+                apply(life.cableGone(now()));
                 return;
             }
             L.i("cable USB fuera (" + why + "): vuelvo al Wi-Fi (" + Ui.linkTitle(wifiLinkMode) + ")");
@@ -1234,6 +1236,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
     /** El coche (otra vez) en sesión: el juego en pausa por haberlo perdido sigue. */
     private LinkLifecycle.Decision carConnectedNow() {
         NesScreen.carPresent(true);
+        // El Bluetooth del coche, por su dirección (para reconocerlo aunque se llame de otra forma).
+        CarBluetooth.learn(this);
         return life.carConnected(now(), env());
     }
 

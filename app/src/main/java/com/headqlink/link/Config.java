@@ -172,9 +172,11 @@ final class Config {
         String id = videoProfileChoice();
         if (id.isEmpty()) id = VideoProfile.recommended(app);
         VideoProfile p = VideoProfile.of(id);
-        if (MODE_AA_EXT.equals(mode()) && !p.reencode) p = VideoProfile.of(VideoProfile.MEDIUM);
+        // Auto extendido recodifica siempre (nuestra interfaz va en el vídeo): Básico, 720p a 30 fps sin forzar el móvil.
+        if (MODE_AA_EXT.equals(mode()) && !p.reencode) p = VideoProfile.basicReencoded();
         p = p.withFluidity(fluidity());
-        // «Coche» (y «Automático» con él): 720p al empezar y 1080p con el móvil fresco (ThermalResolution).
+        // «Coche» (y «Automático» con él): la resolución de cada viaje según cómo aguantó el móvil los anteriores
+        // (ThermalResolution); en marcha solo baja a 720p si se calienta.
         // Con la «Protección térmica» apagada, la de siempre.
         if (ThermalResolution.applies(p) && !ThermalPolicy.MODE_OFF.equals(ThermalPolicy.mode(thermalMode()))) {
             p = p.withHd720(!ThermalResolution.high());
@@ -393,6 +395,17 @@ final class Config {
         sp.edit().putString(BT_AUTO_NAME, s == null ? "" : s.trim()).apply();
     }
 
+    /** Direcciones Bluetooth de los coches aprendidos (CarBluetooth), separadas por comas; el último, primero. */
+    static final String CAR_BT_ADDRS = "car_bt_addrs";
+
+    String carBtAddresses() {
+        return sp.getString(CAR_BT_ADDRS, "");
+    }
+
+    void setCarBtAddresses(String s) {
+        sp.edit().putString(CAR_BT_ADDRS, s == null ? "" : s).apply();
+    }
+
     /** El marcador de la imagen arriba a la derecha de la pantalla del coche (VideoHud): de serie, encendido. */
     static final String VIDEO_HUD = "video_hud";
 
@@ -542,12 +555,61 @@ final class Config {
         sp.edit().putFloat("price_fast_kwh", (float) Math.max(0, Math.min(1.5, Math.round(eurPerKwh * 100) / 100.0))).apply();
     }
 
+    /** Tope de los precios del combustible (€/l) que se pueden poner. */
+    static final double FUEL_PRICE_MAX = 4.0;
+    /** Consumo del coche de comparación (l/100 km): entre estos dos. */
+    static final double COMPARE_L100_MIN = 2.0;
+    static final double COMPARE_L100_MAX = 20.0;
+
+    /** €/l de gasolina: lo que pone el generador del REEV y, si se compara con gasolina, la comparación. */
     double fuelPrice() {
         return sp.getFloat("price_fuel", 1.60f);
     }
 
+    void setFuelPrice(double eurPerLiter) {
+        sp.edit().putFloat("price_fuel", (float) clampPrice(eurPerLiter, FUEL_PRICE_MAX)).apply();
+    }
+
+    /** €/l de diésel, para comparar con un diésel. */
+    double dieselPrice() {
+        return sp.getFloat("price_diesel", 1.50f);
+    }
+
+    void setDieselPrice(double eurPerLiter) {
+        sp.edit().putFloat("price_diesel", (float) clampPrice(eurPerLiter, FUEL_PRICE_MAX)).apply();
+    }
+
+    private static double clampPrice(double v, double max) {
+        return Math.max(0, Math.min(max, Math.round(v * 100) / 100.0));
+    }
+
+    /** El coche de combustión con el que se compara (ahorro y CO₂): diésel o, de serie, gasolina. */
+    boolean compareDiesel() {
+        return sp.getBoolean("compare_diesel", false);
+    }
+
+    void setCompareDiesel(boolean diesel) {
+        sp.edit().putBoolean("compare_diesel", diesel).apply();
+    }
+
+    /** €/l del coche de comparación (el del combustible elegido). */
+    double comparePrice() {
+        return compareDiesel() ? dieselPrice() : fuelPrice();
+    }
+
+    /** l/100 km del coche de comparación: cada combustible guarda el suyo (de serie, 6,5 en gasolina y 5,5 en diésel). */
     double fuelLitersPer100() {
-        return sp.getFloat("fuel_l100", 6.5f);
+        return compareDiesel() ? sp.getFloat("diesel_l100", 5.5f) : sp.getFloat("fuel_l100", 6.5f);
+    }
+
+    void setFuelLitersPer100(double l100) {
+        double v = Math.max(COMPARE_L100_MIN, Math.min(COMPARE_L100_MAX, Math.round(l100 * 10) / 10.0));
+        sp.edit().putFloat(compareDiesel() ? "diesel_l100" : "fuel_l100", (float) v).apply();
+    }
+
+    /** kg de CO₂ por litro quemado (solo el escape): gasolina 2,31; diésel 2,65. */
+    static double co2KgPerLiter(boolean diesel) {
+        return diesel ? 2.65 : 2.31;
     }
 
     /** Ajuste de la previsión de las rutas (RouteCalibration): las últimas llegadas, en JSON. */
@@ -783,8 +845,18 @@ final class Config {
     /** Avisos de radar por voz (RadarVoice): radar delante y exceso de velocidad junto a él. */
     static final String RADAR_VOICE = "radar_voice";
 
+    /**
+     * Avisos de radar por voz: lo que se eligió en Ajustes o, sin elegir, de serie sí, salvo en los países donde la ley se
+     * los prohíbe al conductor (Country: Alemania y Suiza).
+     */
     boolean radarVoice() {
-        return sp.getBoolean(RADAR_VOICE, true);
+        if (sp.contains(RADAR_VOICE)) return sp.getBoolean(RADAR_VOICE, true);
+        return !Country.radarWarningsForbidden(Country.current(app));
+    }
+
+    /** Los avisos de radar están apagados solo porque se está en un país que los prohíbe (no se eligió nada). */
+    boolean radarVoiceOffByCountry() {
+        return !sp.contains(RADAR_VOICE) && Country.radarWarningsForbidden(Country.current(app));
     }
 
     /** Tarjeta flotante con la próxima parada sobre Android Auto (CarUi/FloatCard). */
@@ -900,10 +972,11 @@ final class Config {
 
     /** Botones del panel que se ven, en su orden (entre «Auto», fijo arriba, y «Ajustes», fijo abajo). */
     static final String PANEL_BUTTONS = "panel_buttons";
-    static final String[] PANEL_BUTTONS_ALL = {"car", "photos", "videos", "web", "tv", "radio", "games", "home", "guide", "karaoke"};
+    static final String[] PANEL_BUTTONS_ALL = {"car", "photos", "videos", "web", "tv", "radio", "games", "home", "guide", "karaoke",
+            "companion"};
     /**
-     * Los de serie: todos menos la guía del camino y el karaoke, que solo salen si el usuario los enciende (Ajustes ›
-     * Botones del panel).
+     * Los de serie: todos menos la guía del camino, el karaoke y el compañero de voz, que solo salen si el usuario los
+     * enciende (Ajustes › Botones del panel).
      */
     static final String[] PANEL_BUTTONS_DEFAULT = {"car", "photos", "videos", "web", "tv", "radio", "games", "home"};
 

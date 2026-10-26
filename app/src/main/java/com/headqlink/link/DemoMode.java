@@ -483,9 +483,24 @@ final class DemoMode {
         for (int i = 0; i < all.size(); i++) {
             TripLog.Trip t = all.get(i);
             if (i == 3) continue; // uno sin dato del coche (la nube a veces no lo sube)
-            double fuel = reev ? (t.km > 100 ? 4.9 : 0) : Double.NaN;
+            double kwh = t.kwh * 1.07;
+            double fuel = Double.NaN;
+            if (reev) {
+                // Como un C10 REEV real (lo que dice el coche es solo lo que salió de la batería): el viaje largo en modo
+                // combustible (6 L/100 km y la batería casi quieta, como el del 24-10), los medianos mixtos y los cortos
+                // en eléctrico.
+                if (t.km > 100) {
+                    fuel = t.km * 0.060;
+                    kwh = t.km * 0.001;
+                } else if (t.km > 30) {
+                    fuel = t.km * 0.020;
+                    kwh = Math.max(0.5, kwh - fuel * TripStats.KWH_PER_LITER);
+                } else {
+                    fuel = 0;
+                }
+            }
             out.add(new CloudHistory.Trip(t.startMs + 60_000, t.endMs() - 60_000, Math.round(t.km * 10) / 10.0,
-                    Math.round(t.kwh * 1.07 * 100) / 100.0, fuel, t.maxKmh));
+                    Math.round(kwh * 100) / 100.0, fuel, t.maxKmh));
         }
         return out;
     }

@@ -991,7 +991,7 @@
     <string name="stand_down_station_always">Altijd</string>
     <string name="stand_down_station_never">Nooit</string>
     <string name="stand_down_station_hint">Automatisch verlaat het eigen netwerk van deze unit alleen wanneer de radio een 5 GHz-band heeft en dat netwerk op 2,4 GHz draait, zodat de WiFi Direct-groep een eigen 5 GHz-kanaal kan krijgen. Op een unit met alleen 2,4 GHz blijft het verbonden, omdat verlaten de unit alleen naar netwerken zou laten zoeken, en ook wanneer het netwerk al op 5 GHz zit. Het netwerk wordt na afloop van de sessie opnieuw verbonden. Probeer Altijd of Nooit als het beeld hapert.</string>
-    <string name="stand_down_station_needs_overlay">Vereist de toestemming «weergeven over andere apps» op deze Android-versie.</string>
+    <string name="stand_down_station_needs_overlay">Vereist de toestemming „weergeven over andere apps” op deze Android-versie.</string>
     <string name="connection_issue_banner_bt_silent">Je telefoon is via Bluetooth verbonden, maar de Bluetooth van dit apparaat kon niets sturen. Tik om een modus te kiezen die dit niet nodig heeft, zoals Wireless Helper.</string>
     <string name="connection_issue_banner_bssid">Je telefoon wist niet met welk netwerk hij moest verbinden, omdat dit apparaat zijn WiFi-adres niet deelde. Zet locatie aan, of tik om het adres handmatig in te voeren.</string>
     <string name="connection_issue_banner_hotspot_off">De hotspot van dit apparaat staat uit, dus had je telefoon geen netwerk om mee te verbinden. Zet hem aan, of tik om de app dit te laten doen.</string>
@@ -1113,7 +1113,7 @@
     <string name="auto_disconnect_bt_delay_immediate">Onmiddellijk</string>
     <string name="enter_auto_disconnect_bt_delay">Seconden wachten alvorens sessie te beëindigen</string>
     <string name="auto_disconnect_bt_delay_hint">Een Bluetooth-verbinding kan kort wegvallen tijdens het opnieuw verbinden van profielen. De sessie stopt pas als het apparaat na deze tijd nog weg is.</string>
-    <string name="auto_disconnect_bt_kill_hint">Beëindigt de sessie wanneer de Bluetooth-verbinding met het gekozen apparaat wegvalt (bijv. auto uitgeschakeld). Schakel «App sluiten bij verbreken» in onder Automatisering om ook de app te sluiten.</string>
+    <string name="auto_disconnect_bt_kill_hint">Beëindigt de sessie wanneer de Bluetooth-verbinding met het gekozen apparaat wegvalt (bijv. auto uitgeschakeld). Schakel „App sluiten bij verbreken” in onder Automatisering om ook de app te sluiten.</string>
     <string name="audio_stream_vendor_format">%1$s (%2$d)</string>
     <string name="debug_video_fault_injection">Videofout-injectie</string>
     <string name="debug_video_fault_rate">Foutpercentage (1 op N)</string>

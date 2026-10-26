@@ -992,7 +992,7 @@
     <string name="stand_down_station_always">Sempre</string>
     <string name="stand_down_station_never">Nunca</string>
     <string name="stand_down_station_hint">Automático só sai da rede própria desta unidade quando o rádio dela tem banda de 5 GHz e essa rede está em 2.4 GHz, para que o grupo WiFi Direct possa ter um canal de 5 GHz só para si. Ele permanece conectado em uma unidade que só tem 2.4 GHz, onde sair só faria a unidade procurar redes, e também quando a rede já está em 5 GHz. A rede é reconectada ao final da sessão. Experimente Sempre ou Nunca se a imagem travar.</string>
-    <string name="stand_down_station_needs_overlay">Requer a permissão «sobrepor a outros apps» nesta versão do Android.</string>
+    <string name="stand_down_station_needs_overlay">Requer a permissão “sobrepor a outros apps” nesta versão do Android.</string>
     <string name="connection_issue_banner_bt_silent">Seu celular conectou via Bluetooth, mas o Bluetooth desta unidade não conseguiu enviar nada. Toque para escolher um modo que não precise disso, como o Wireless Helper.</string>
     <string name="connection_issue_banner_bssid">Seu celular não soube a qual rede se conectar, porque esta unidade não compartilhou seu endereço WiFi. Ative a localização, ou toque para digitar o endereço manualmente.</string>
     <string name="connection_issue_banner_hotspot_off">O ponto de acesso desta unidade está desligado, então seu celular não tinha rede para se conectar. Ative-o, ou toque para deixar o app ativá-lo.</string>
@@ -1114,7 +1114,7 @@
     <string name="auto_disconnect_bt_delay_immediate">Imediatamente</string>
     <string name="enter_auto_disconnect_bt_delay">Segundos de espera antes de encerrar a sessão</string>
     <string name="auto_disconnect_bt_delay_hint">A conexão Bluetooth pode cair brevemente enquanto os perfis se reconectam. A sessão só encerra se o dispositivo continuar ausente após esse tempo.</string>
-    <string name="auto_disconnect_bt_kill_hint">Encerra a sessão quando o Bluetooth do dispositivo escolhido se desconectar (por exemplo, ao desligar o carro). Para fechar também o app, ative «Fechar app ao desconectar» em Automação.</string>
+    <string name="auto_disconnect_bt_kill_hint">Encerra a sessão quando o Bluetooth do dispositivo escolhido se desconectar (por exemplo, ao desligar o carro). Para fechar também o app, ative “Fechar app ao desconectar” em Automação.</string>
     <string name="audio_stream_vendor_format">%1$s (%2$d)</string>
     <string name="debug_video_fault_injection">Injeção de falhas de vídeo</string>
     <string name="debug_video_fault_rate">Taxa de falhas (1 em N)</string>

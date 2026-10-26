@@ -145,8 +145,9 @@ final class VideoProfile {
      * Fluidez 60, 60 pida lo que pida el coche (la cabecera de vídeo sigue repitiendo su FrameRate).
      */
     int fpsFor(int carFps) {
-        // Máximo: los del coche (60 por cable, 30 por Wi-Fi); sin VIDEO_ARGS, 60.
+        // Máximo: los del coche (60 por cable, 30 por Wi-Fi); sin VIDEO_ARGS, 60. Muy alto y Alto por Wi-Fi, igual.
         if (best()) return carFps > 0 ? Math.max(10, Math.min(60, carFps)) : fps;
+        if (wifiCapped(carFps)) return Math.max(10, carFps);
         if (!followsCar) return fps;
         if (fluidity >= FLUID_60) return FLUID_60;
         if (carFps <= 0) return fps;
@@ -170,6 +171,7 @@ final class VideoProfile {
      */
     int startBitrate(int carBitrate, int carFps, int videoW) {
         if (best()) return carFps >= 50 || carFps <= 0 ? BEST_CABLE_BPS : Math.max(carBitrate, BEST_WIFI_BPS);
+        if (wifiCapped(carFps)) return Math.max(carBitrate, BEST_WIFI_BPS);
         if (followsCar) {
             int car = carBitrate > 0 ? carBitrate : CAR_DEFAULT_BPS;
             if (fluidity >= FLUID_60 || carFps >= 50) return Math.min(FLUID_60_MAX_BPS, Math.max(car, FLUID_60_MIN_BPS));
@@ -181,17 +183,41 @@ final class VideoProfile {
 
     /** Bitrate mínimo del adaptable con los fps que pide el coche (Máximo por Wi-Fi: BEST_WIFI_MIN_BPS). */
     int minBitrateFor(int carFps) {
-        return best() && byWifi(carFps) ? BEST_WIFI_MIN_BPS : minBitrate;
+        return (best() && byWifi(carFps)) || wifiCapped(carFps) ? BEST_WIFI_MIN_BPS : minBitrate;
     }
 
     /** Bitrate máximo del adaptable con los fps que pide el coche (Máximo por Wi-Fi: BEST_WIFI_MAX_BPS). */
     int maxBitrateFor(int carFps) {
-        return best() && byWifi(carFps) ? BEST_WIFI_MAX_BPS : maxBitrate;
+        return (best() && byWifi(carFps)) || wifiCapped(carFps) ? BEST_WIFI_MAX_BPS : maxBitrate;
     }
 
     /** Puro: ¿por Wi-Fi? El coche pide menos de 50 fps (el C10, 30 por Wi-Fi y 60 por cable); sin VIDEO_ARGS, cable. */
     static boolean byWifi(int carFps) {
         return carFps > 0 && carFps < 50;
+    }
+
+    /**
+     * Básico cuando hay que recodificar (Auto extendido: nuestra interfaz va en el vídeo): 720p a 30 fps, 3,5 Mbit/s y
+     * sin forzar el codificador, más ligero que Coche (antes pasaba a ser Medio: 45 fps y relojes al máximo).
+     */
+    static VideoProfile basicReencoded() {
+        return new VideoProfile(BASIC, true, 30, true, false, false, 3_500_000, 3_500_000, 3_500_000);
+    }
+
+    /** Suelo de QP (la nitidez máxima) de Máximo por cable: más nítido que los demás (24). Se afina con «qp N» en pruebas. */
+    static final int BEST_CABLE_QP_FLOOR = 22;
+
+    /**
+     * QP mínimo de los fotogramas (cuanto más bajo, más nítido y más bits): Máximo por cable, BEST_CABLE_QP_FLOOR; los
+     * demás y por Wi-Fi, el de siempre (PFrameSizeController.QP_FLOOR).
+     */
+    int qpFloorFor(int carFps) {
+        return best() && !byWifi(carFps) ? BEST_CABLE_QP_FLOOR : PFrameSizeController.QP_FLOOR;
+    }
+
+    /** Muy alto y Alto: 60 fps por cable; por Wi-Fi, como Máximo, lo que pide el coche y el margen de BEST_WIFI_*. */
+    private boolean wifiCapped(int carFps) {
+        return (MAX.equals(id) || HIGH.equals(id)) && byWifi(carFps);
     }
 
     /** Perfil por su id; uno desconocido (de una versión vieja o mal escrito) es Coche. */
@@ -204,7 +230,8 @@ final class VideoProfile {
             case HIGH:
                 return new VideoProfile(HIGH, true, 60, false, false, false, 10_000_000, 5_000_000, 14_000_000);
             case MEDIUM:
-                return new VideoProfile(MEDIUM, true, 45, true, true, true, 5_000_000, 5_000_000, 5_000_000);
+                // Sin optimizaciones de latencia ni relojes al máximo: que gaste menos que Alto (antes los llevaba).
+                return new VideoProfile(MEDIUM, true, 45, true, true, false, 5_000_000, 5_000_000, 5_000_000);
             case BASIC:
                 return new VideoProfile(BASIC, false, 30, true, false, false, 0, 0, 0);
             case LOW:

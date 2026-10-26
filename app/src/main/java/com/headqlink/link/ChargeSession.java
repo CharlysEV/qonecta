@@ -253,6 +253,27 @@ final class ChargeSession {
         return l.atMs + m * 60_000;
     }
 
+    /**
+     * Minutos desde la última lectura hasta pct (0 si ya está): la rápida, por la curva (minutesTo); la lenta, al 100 %
+     * lo que dice el coche y, si no, al ritmo de ahora. NaN si aún no se sabe.
+     */
+    synchronized double minutesUntil(double pct) {
+        Sample l = last();
+        if (l == null || Double.isNaN(pct)) return Double.NaN;
+        if (l.soc >= pct - 0.25) return 0;
+        if (dc) return minutesTo(pct);
+        if (pct >= 99.5 && !Double.isNaN(carRemainMin) && carRemainMin > 0) return carRemainMin;
+        double ph = pctPerHour();
+        return Double.isNaN(ph) || ph <= 0.1 ? Double.NaN : (pct - l.soc) / ph * 60;
+    }
+
+    /** Hora (ms) a la que llega a pct, o NaN si no se sabe. */
+    synchronized double atMs(double pct) {
+        Sample l = last();
+        double m = minutesUntil(pct);
+        return l == null || Double.isNaN(m) ? Double.NaN : l.atMs + m * 60_000;
+    }
+
     /** % que sube cada hora al ritmo de ahora (carga lenta), o NaN si aún no se sabe. */
     synchronized double pctPerHour() {
         double kw = rateKw();

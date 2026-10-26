@@ -87,8 +87,8 @@ final class MonthlyReportView {
             TextView big = text(c, "~" + Money.format(saved, 0), 0xFF4CFF9F, 34, true);
             k.addView(big);
             Config cfg = new Config(c);
-            k.addView(note(c, Str.get(R.string.hql_report_saved, Money.format(s.petrolEur, 0), num(cfg.fuelLitersPer100(), 1),
-                    Money.per(cfg.fuelPrice(), "l"))), lp(c, 4));
+            k.addView(note(c, Str.get(cfg.compareDiesel() ? R.string.hql_report_saved_diesel : R.string.hql_report_saved,
+                    Money.format(s.petrolEur, 0), num(cfg.fuelLitersPer100(), 1), Money.per(cfg.comparePrice(), "l"))), lp(c, 4));
             col.addView(k, lp(c, 14));
         }
         LinearLayout ch = card(c, Str.get(R.string.hql_report_charges_title));
@@ -199,7 +199,8 @@ final class MonthlyReportView {
         k.addView(r2, pxLp(40));
         double saved = s.savedEur();
         if (!Double.isNaN(saved) && saved > 0) {
-            TextView sv = px(c, Str.get(R.string.hql_report_share_saved, Money.format(saved, 0)), 0xFF4CFF9F, 46, true);
+            int savedText = new Config(c).compareDiesel() ? R.string.hql_report_share_saved_diesel : R.string.hql_report_share_saved;
+            TextView sv = px(c, Str.get(savedText, Money.format(saved, 0)), 0xFF4CFF9F, 46, true);
             k.addView(sv, pxLp(56));
         }
         View spacer = new View(c);

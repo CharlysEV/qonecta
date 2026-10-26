@@ -17,7 +17,8 @@ import java.util.Locale;
  * La carga en directo de ahora (una a la vez, mientras viva el proceso): la empieza RoutePlanner al ver que el coche
  * carga, la alimentan las lecturas de la nube (RoutePlanner con la sesión del coche, ChargeWatchService sin ella) y
  * avisa de lo que pasa: «ya puedes seguir» (notificación con sonido y, con el coche, voz y tarjeta en el panel), carga
- * lenta y, al terminar, la guarda en el historial (ChargeLog).
+ * lenta y, al terminar, la guarda en el historial (ChargeLog). Su notificación fija es un Live Update en Android 16
+ * (la Now Bar de Samsung, el chip de la barra de estado): el % en grande y la barra hasta el objetivo.
  */
 final class ChargeWatch {
     static final String CHANNEL = "hql_charge";
@@ -56,8 +57,8 @@ final class ChargeWatch {
     }
 
     /**
-     * Empieza una carga. background: también fuera del coche (ChargeWatchService con su notificación), en una parada de
-     * viaje o en carga rápida; en casa sin ruta solo se ve en el coche.
+     * Empieza una carga. background: también fuera del coche (ChargeWatchService con su notificación); la de la
+     * demostración, nunca.
      */
     static void begin(Context ctx, ChargeSession s, boolean background) {
         begin(ctx, s, background, false);
@@ -134,11 +135,12 @@ final class ChargeWatch {
         if (s == null && mayStart(ctx, cs)) {
             s = newSession(cs, null);
             s.seenLate = true;
-            begin(ctx, s, s.dc);
+            begin(ctx, s, true);
         }
         if (s == null) return;
         tick(ctx, cs);
-        if (!s.ended && !s.dc && android.os.Build.VERSION.SDK_INT >= 26) {
+        // Sin el servicio (Android no lo dejó arrancar o le agotó el tiempo): la notificación, al día con esta lectura.
+        if (!s.ended && !serviceRunning && android.os.Build.VERSION.SDK_INT >= 26) {
             ctx.getSystemService(NotificationManager.class).notify(NOTIF_ID, ongoing(ctx));
         }
     }
@@ -294,9 +296,37 @@ final class ChargeWatch {
                 PendingIntent.FLAG_IMMUTABLE);
     }
 
+    /** Cada cuánto se lee la nube vigilando esta carga: la rápida, como con la sección Coche a la vista; la lenta, 5 min. */
+    static long watchMs(ChargeSession s) {
+        if (s == null) return 0;
+        return s.dc ? CarCloud.Policy.HUB_MS : CarCloud.Policy.WATCH_AC_MS;
+    }
+
+    /**
+     * Hasta dónde llega la barra: el % del plan de ruta si lo hay; si no, el 80 % en la rápida (a partir de ahí va lenta)
+     * y el 100 % en la lenta. Pasado el 80 % en una rápida sin plan, el 100 %.
+     */
+    static double barTarget(ChargeSession s) {
+        if (!Double.isNaN(s.targetPct) && s.targetPct > s.startSoc) return Math.min(100, s.targetPct);
+        if (s.dc && s.soc() < DC_BAR_PCT - 0.5) return DC_BAR_PCT;
+        return 100;
+    }
+
+    static final double DC_BAR_PCT = 80;
+
+    /** El % para el chip de la barra de estado (Android 16): «54 %». */
+    static String chip(ChargeSession s) {
+        return String.format(Locale.getDefault(), "%.0f %%", s.soc());
+    }
+
     /** La notificación fija de la carga (Android 8+): «Cargando · 54 % → 64 %», «85 kW · lista ≈ 14:32», con la barra. */
     @android.annotation.TargetApi(26)
     static Notification ongoing(Context ctx) {
+        return ongoing(ctx, session());
+    }
+
+    @android.annotation.TargetApi(26)
+    static Notification ongoing(Context ctx, ChargeSession s) {
         NotificationManager nm = ctx.getSystemService(NotificationManager.class);
         nm.createNotificationChannel(new NotificationChannel(CHANNEL, Str.get(R.string.hql_live_channel), NotificationManager.IMPORTANCE_LOW));
         Notification.Builder b = new Notification.Builder(ctx, CHANNEL)
@@ -305,17 +335,70 @@ final class ChargeWatch {
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(openApp(ctx));
-        ChargeSession s = session();
         if (s == null) {
             return b.setContentTitle(Str.get(R.string.hql_live_title_wait)).build();
         }
         b.setContentTitle(title(s)).setContentText(line(s));
-        if (!Double.isNaN(s.targetPct) && s.targetPct > s.startSoc) {
-            int p = (int) Math.round(Math.max(0, Math.min(1, (s.soc() - s.startSoc) / (s.targetPct - s.startSoc))) * 100);
+        double target = barTarget(s);
+        if (android.os.Build.VERSION.SDK_INT >= 36) {
+            liveUpdate(ctx, b, s, target);
+        } else if (target > s.startSoc) {
+            int p = (int) Math.round(Math.max(0, Math.min(1, (s.soc() - s.startSoc) / (target - s.startSoc))) * 100);
             b.setProgress(100, p, false);
         }
         return b.build();
     }
+
+    /**
+     * Android 16: Live Update (se pide que suba arriba: Now Bar, chip con el % en la barra de estado, pantalla de
+     * bloqueo). La barra es la batería, de 0 a 100: en color hasta el objetivo, con una marca en él.
+     */
+    @android.annotation.TargetApi(36)
+    private static void liveUpdate(Context ctx, Notification.Builder b, ChargeSession s, double target) {
+        int t = (int) Math.round(Math.max(1, Math.min(100, target)));
+        int accent = ctx.getColor(R.color.hql_accent);
+        Notification.ProgressStyle ps = new Notification.ProgressStyle()
+                .setStyledByProgress(true)
+                .setProgress((int) Math.round(Math.max(0, Math.min(100, s.soc()))))
+                .addProgressSegment(new Notification.ProgressStyle.Segment(t).setColor(accent));
+        if (t < 100) {
+            ps.addProgressSegment(new Notification.ProgressStyle.Segment(100 - t).setColor(ctx.getColor(R.color.hql_idle)));
+            ps.addProgressPoint(new Notification.ProgressStyle.Point(t).setColor(ctx.getColor(R.color.hql_ok)));
+        }
+        b.setStyle(ps)
+                .setShortCriticalText(chip(s));
+        android.os.Bundle x = new android.os.Bundle();
+        x.putBoolean(EXTRA_PROMOTED, true);
+        b.addExtras(x);
+    }
+
+    /**
+     * Variante de pruebas («carga demo»): la notificación de una carga rápida inventada (54 % → 80 %, 85 kW), para ver el
+     * Live Update en el móvil sin cargar de verdad; «carga off» la quita.
+     */
+    static String labNotify(Context ctx, boolean on) {
+        NotificationManager nm = ctx.getSystemService(NotificationManager.class);
+        if (!on) {
+            nm.cancel(LAB_ID);
+            return "notificación de carga quitada";
+        }
+        if (android.os.Build.VERSION.SDK_INT < 26) return "no: Android 8 o más";
+        long now = System.currentTimeMillis();
+        ChargeSession s = new ChargeSession(now - 8 * 60_000L, 34, true, null, 81.9, 180, 800);
+        double[][] pts = {{34, 120}, {38.9, 135}, {44.4, 130}, {49.7, 110}, {54.2, 85}};
+        for (int i = 0; i < pts.length; i++) {
+            long t = now - (pts.length - 1 - i) * 2 * 60_000L;
+            s.observe(t, pts[i][0], pts[i][1], true, false, Double.NaN, t);
+        }
+        nm.notify(LAB_ID, ongoing(ctx, s));
+        boolean promo = android.os.Build.VERSION.SDK_INT >= 36 && nm.canPostPromotedNotifications();
+        return "notificación de carga puesta (Live Update " + (promo ? "permitido" : "no permitido o Android < 16") + ")";
+    }
+
+    private static final int LAB_ID = 29;
+
+    /** Notification.EXTRA_REQUEST_PROMOTED_ONGOING (API 36.1; en 36.0 lo lee igual el sistema). */
+    static final String EXTRA_PROMOTED = "android.requestPromotedOngoing";
 
     /** «Cargando · 54 % → 64 %», «Lista: puedes seguir · 66 %» o «Cargando · 54 %». */
     static String title(ChargeSession s) {
@@ -334,10 +417,21 @@ final class ChargeWatch {
         return b.toString();
     }
 
-    /** «lista ≈ 14:32 (12 min)», «llena ≈ 18:40 (según el coche)» o vacío (ya lista o sin saberlo). */
+    /**
+     * «lista ≈ 14:32 (12 min)», «llena ≈ 18:40 (según el coche)», sin plan «80 % ≈ 14:32 (25 min)» (hasta donde llega la
+     * barra), o vacío (ya lista o sin saberlo).
+     */
     static String when(ChargeSession s) {
+        if (s.readyFired) return "";
         double at = s.readyAtMs();
-        if (s.readyFired || Double.isNaN(at)) return "";
+        if (Double.isNaN(s.targetPct) && (Double.isNaN(at) || s.dc)) {
+            double to = barTarget(s);
+            double t = s.atMs(to);
+            if (Double.isNaN(t) || s.soc() >= to - 0.25) return "";
+            long left = Math.max(0, Math.round((t - DemoMode.wallClockMs()) / 1000));
+            return Str.get(R.string.hql_live_pct_at, to, time((long) t), DriveTab.duration(left));
+        }
+        if (Double.isNaN(at)) return "";
         String hhmm = time((long) at);
         if (Double.isNaN(s.targetPct)) return Str.get(R.string.hql_live_full_at, hhmm);
         long left = Math.max(0, Math.round((at - DemoMode.wallClockMs()) / 1000));

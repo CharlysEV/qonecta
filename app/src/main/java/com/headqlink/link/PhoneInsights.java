@@ -112,6 +112,8 @@ final class PhoneInsights {
         /** Lo aprendido de las cargas rápidas del coche (curva, 400–500 V, los de 150 kW o más). */
         ChargeCurveModel.Summary curve;
         double price;
+        /** La carga en directo de ahora, o null. */
+        ChargeSession live;
 
         static Data load(Activity a) {
             Data d = new Data();
@@ -131,6 +133,9 @@ final class PhoneInsights {
                 d.curve = null;
             }
             d.price = new Config(a).electricityPrice();
+            // La carga en curso; si la nube la ve y aún no se seguía (la comprobación de fondo va cada 15 min), empieza.
+            if (d.account) ChargeWatch.background(a, d.cloud);
+            d.live = ChargeWatch.session();
             return d;
         }
     }
@@ -139,6 +144,7 @@ final class PhoneInsights {
 
     private void build(Data d) {
         col.removeAllViews();
+        liveCard(d);
         carCard(d);
         reportCard();
         monthCard(d);
@@ -245,6 +251,72 @@ final class PhoneInsights {
         row.addView(facts, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         c.addView(row);
         addCard(c);
+    }
+
+    /**
+     * «Cargando ahora», mientras el coche carga: el % y los kW, a qué hora llega al objetivo (el del plan de ruta; si no,
+     * el 80 % en la rápida y el 100 % en la lenta) y al 100 %, lo cargado y lo que cuesta, y la curva de esta carga.
+     */
+    private void liveCard(Data d) {
+        ChargeSession s = d.live;
+        if (s == null) return;
+        String head = Str.get(R.string.hql_live_now_title);
+        if (s.charger != null) head += " · " + RoutePlanner.chargerName(s.charger);
+        LinearLayout c = card(head);
+        ChargeSession.Sample l = s.last();
+        LinearLayout row = new LinearLayout(act);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        PhoneCharts.Ring ring = new PhoneCharts.Ring(act);
+        ring.set(s.soc(), l == null || Double.isNaN(l.kw) ? Str.get(s.dc ? R.string.hql_ins_dc : R.string.hql_ins_ac)
+                : fmt0(Math.abs(l.kw)) + " kW");
+        row.addView(ring, new LinearLayout.LayoutParams(dp(150), dp(150)));
+        LinearLayout facts = new LinearLayout(act);
+        facts.setOrientation(LinearLayout.VERTICAL);
+        facts.setPadding(dp(18), 0, 0, 0);
+        double target = ChargeWatch.barTarget(s);
+        facts.addView(eta(s, target));
+        if (target < 99.5) facts.addView(eta(s, 100));
+        double kwh = s.kwhAdded();
+        Config cfg = new Config(act);
+        double price = s.dc ? cfg.fastChargePrice() : cfg.electricityPrice();
+        facts.addView(fact(Str.get(R.string.hql_live_now_added), "+" + fmt1(kwh), "kWh"));
+        if (price > 0 && kwh >= 0.1) {
+            facts.addView(fact(Str.get(R.string.hql_live_now_cost, Money.per(price, "kWh")), "≈ " + Money.format(kwh * price), ""));
+        }
+        row.addView(facts, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        c.addView(row);
+        double[] soc;
+        double[] kw;
+        synchronized (s) {
+            soc = new double[s.samples.size()];
+            kw = new double[s.samples.size()];
+            for (int i = 0; i < soc.length; i++) {
+                soc[i] = s.samples.get(i).soc;
+                kw[i] = s.samples.get(i).kw;
+            }
+        }
+        if (soc.length >= 2) {
+            PhoneCharts.Curve curve = new PhoneCharts.Curve(act, false);
+            curve.set(soc, kw);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(150));
+            lp.topMargin = dp(12);
+            c.addView(curve, lp);
+        }
+        TextView n = small(Str.get(R.string.hql_live_now_note));
+        n.setPadding(0, dp(10), 0, 0);
+        c.addView(n);
+        addCard(c);
+    }
+
+    /** «Al 80 % · 25 min» con la hora («14:32»), «Ya puedes seguir» si ya llegó, o «—». */
+    private View eta(ChargeSession s, double pct) {
+        String label = Str.get(R.string.hql_live_now_at, pct);
+        double m = s.minutesUntil(pct);
+        if (m == 0) return fact(label, Str.get(R.string.hql_live_ready_title), "");
+        double at = s.atMs(pct);
+        if (Double.isNaN(at)) return fact(label, "—", "");
+        long left = Math.max(0, Math.round((at - DemoMode.wallClockMs()) / 60_000));
+        return fact(label + " · " + duration(left), ChargeWatch.time((long) at), "");
     }
 
     private void monthCard(Data d) {
@@ -594,8 +666,11 @@ final class PhoneInsights {
             txt.addView(title(day(t.startMs) + " · " + time(t.startMs)));
             double per100 = TripStats.bestKwhPer100(t, d.history);
             double cost = TripStats.cost(t, d.history, d.price, new Config(act).fuelPrice());
-            String line = Str.get(R.string.hql_ins_drive_line, fmt1(t.km), duration(t.minutes),
-                    Double.isNaN(per100) ? "—" : fmt1(per100) + " kWh/100");
+            // REEV en modo combustible: los litros, no los 0,1 kWh/100 km de la batería.
+            TripStats.Energy en = TripStats.energy(t, d.history);
+            String use = en != null && en.drive() == TripStats.Drive.FUEL ? fmt1(en.litersPer100()) + " L/100"
+                    : Double.isNaN(per100) ? "—" : fmt1(per100) + " kWh/100";
+            String line = Str.get(R.string.hql_ins_drive_line, fmt1(t.km), duration(t.minutes), use);
             if (!Double.isNaN(cost) && cost > 0) line += " · " + Money.format(cost);
             // Lo que bajó la batería del móvil en el viaje (sin enchufar).
             if (t.phoneUsedPct() >= 0) line += " · " + Str.get(R.string.hql_trip_phone_short, t.phoneUsedPct());

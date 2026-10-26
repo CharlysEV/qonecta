@@ -117,8 +117,8 @@
     <string name="hql_cloud_cert_pick_cert">Pick the certificate…</string>
     <string name="hql_cloud_cert_restart">Start over</string>
     <string name="hql_cloud_cert_reading">Reading the certificate…</string>
-    <string name="hql_cloud_cert_err_read">Could not read «%1$s». Copy it to the phone (Downloads) and pick it from there.</string>
-    <string name="hql_cloud_cert_err_unknown">«%1$s» is neither a certificate nor a key (PEM, DER or PKCS#12).</string>
+    <string name="hql_cloud_cert_err_read">Could not read “%1$s”. Copy it to the phone (Downloads) and pick it from there.</string>
+    <string name="hql_cloud_cert_err_unknown">“%1$s” is neither a certificate nor a key (PEM, DER or PKCS#12).</string>
     <string name="hql_cloud_cert_err_no_picker">Could not open the file picker on this phone.</string>
     <string name="hql_cloud_cert_err_save">Could not save the certificate (%1$s).</string>
     <string name="hql_cloud_step_account">2 · Leapmotor account</string>
@@ -198,7 +198,7 @@
     <string name="hql_cc_open_settings">Open settings</string>
     <string name="hql_cc_voice_prompt">Say: lock, unlock, trunk, climate at 21, defrost, turn off climate or find the car</string>
     <string name="hql_cc_no_voice">This phone has no speech recognition.</string>
-    <string name="hql_cc_not_understood">I didn\'t understand: «%1$s»</string>
+    <string name="hql_cc_not_understood">I didn\'t understand: “%1$s”</string>
     <string name="hql_cc_retry">Repeat</string>
     <string name="hql_cc_confirm_unlock">Unlock the car?</string>
     <string name="hql_cc_confirm_trunk">Open the trunk?</string>

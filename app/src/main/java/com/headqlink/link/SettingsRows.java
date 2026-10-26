@@ -66,7 +66,29 @@ final class SettingsRows {
 
     /** Puro: un precio como se enseña («0,20 €/kWh» en español). */
     static String priceText(double eurPerKwh, Locale loc) {
-        return String.format(loc, "%.2f €/kWh", eurPerKwh);
+        return priceText(eurPerKwh, "kWh", loc);
+    }
+
+    /** Puro: un precio con su unidad («1,60 €/l»). */
+    static String priceText(double eur, String unit, Locale loc) {
+        return String.format(loc, "%.2f €/%s", eur, unit);
+    }
+
+    /** Puro: el consumo del coche de comparación como se enseña («6,5 l/100 km»). */
+    static String l100Text(double l100, Locale loc) {
+        return String.format(loc, "%.1f l/100 km", l100);
+    }
+
+    /**
+     * Puro: un consumo escrito (l/100 km) redondeado a la décima, o -1 si no vale: vacío, letras o fuera de
+     * [Config.COMPARE_L100_MIN, Config.COMPARE_L100_MAX]. Admite coma o punto y que se escriba la unidad.
+     */
+    static double parseL100(String text) {
+        if (text == null) return -1;
+        String s = text.trim().replaceAll("(?i)l\\s*/\\s*100\\s*(km)?$", "").trim().replace(',', '.');
+        if (!s.matches("[0-9]{1,2}(\\.[0-9]{0,3})?")) return -1;
+        double v = Math.round(Double.parseDouble(s) * 10) / 10.0;
+        return v >= Config.COMPARE_L100_MIN - 1e-9 && v <= Config.COMPARE_L100_MAX + 1e-9 ? v : -1;
     }
 
     /** Puro: el precio para el campo de texto (sin la unidad, con la coma o el punto del idioma). */
@@ -76,11 +98,11 @@ final class SettingsRows {
 
     /**
      * Puro: un precio escrito (€/kWh) redondeado al céntimo, o -1 si no vale: vacío, letras, más de dos cifras enteras o
-     * por encima de max. Admite coma o punto y que se escriba la unidad («0,25 €», «0.25 €/kWh»).
+     * por encima de max. Admite coma o punto y que se escriba la unidad («0,25 €», «0.25 €/kWh», «2,05 €/l»).
      */
     static double parsePrice(String text, double max) {
         if (text == null) return -1;
-        String s = text.trim().replaceAll("(?i)€?\\s*/\\s*kwh$", "").replace("€", "").trim().replace(',', '.');
+        String s = text.trim().replaceAll("(?i)€?\\s*/\\s*(kwh|l)$", "").replace("€", "").trim().replace(',', '.');
         if (!s.matches("[0-9]{0,2}(\\.[0-9]{0,4})?") || s.isEmpty() || s.equals(".")) return -1;
         double v = Math.round(Double.parseDouble(s) * 100) / 100.0;
         return v <= max + 1e-9 ? v : -1;

@@ -105,7 +105,7 @@ final class VideoPlayer {
         MediaLibrary.Item it = items.get(i);
         FrameLayout f = new FrameLayout(c);
         f.setBackgroundColor(Color.BLACK);
-        player = new ExoPlayer.Builder(c.getApplicationContext()).build();
+        player = newPlayer(c);
         player.setAudioAttributes(new androidx.media3.common.AudioAttributes.Builder()
                 .setUsage(C.USAGE_MEDIA).setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(), false);
         focus = MediaFocus.bind(c, player);
@@ -156,12 +156,29 @@ final class VideoPlayer {
         player.setMediaItem(mb.build());
         player.setPlaybackParameters(new PlaybackParameters(SPEEDS[speed]));
         applySubs();
+        boolean[] audioWarned = {false};
         player.addListener(new Player.Listener() {
             @Override
             public void onPlaybackStateChanged(int state) {
                 if (state == Player.STATE_ENDED) ended();
             }
+
+            @Override
+            public void onTracksChanged(androidx.media3.common.Tracks tracks) {
+                // Audio que el móvil no sabe decodificar (DD+/E-AC-3 en muchos): ExoPlayer lo salta sin decir nada.
+                if (audioWarned[0] || !tracks.containsType(C.TRACK_TYPE_AUDIO) || tracks.isTypeSupported(C.TRACK_TYPE_AUDIO)) return;
+                audioWarned[0] = true;
+                L.w("vídeos: sin sonido, el móvil no decodifica su audio (" + audioMimes(tracks) + ")");
+                notice(f, Str.get(R.string.hql_video_audio_unsupported, audioMimes(tracks)));
+            }
+
+            @Override
+            public void onPlayerError(androidx.media3.common.PlaybackException e) {
+                L.w("vídeos: error al reproducir (" + e.getErrorCodeName() + ")");
+            }
         });
+        diagnostics(player);
+        followMovie(player);
         player.prepare();
         host.setContent(f);
         host.setFullscreen(true);
@@ -174,6 +191,131 @@ final class VideoPlayer {
             player.play();
             showControls();
         }
+    }
+
+    /**
+     * Un reproductor con FFmpeg de reserva para el audio (vídeos e IPTV): primero los decodificadores del móvil y, si no
+     * saben (AC-3, E-AC-3/DD+, DTS, TrueHD en muchos), FFmpeg. Antes, esos vídeos se veían sin sonido.
+     */
+    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+    static ExoPlayer newPlayer(Context c) {
+        Context app = c.getApplicationContext();
+        logFfmpeg();
+        androidx.media3.exoplayer.DefaultRenderersFactory r = new androidx.media3.exoplayer.DefaultRenderersFactory(app)
+                .setExtensionRendererMode(androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON);
+        return new ExoPlayer.Builder(app, r).build();
+    }
+
+    private static boolean ffmpegLogged;
+
+    /** Una vez por proceso, al log: si FFmpeg está y qué audio sabe (AC-3, E-AC-3…). */
+    private static synchronized void logFfmpeg() {
+        if (ffmpegLogged) return;
+        ffmpegLogged = true;
+        L.i("vídeos: FFmpeg para el audio " + ffmpegInfo());
+    }
+
+    /**
+     * «6.0 (E-AC-3 sí, AC-3 sí, DTS sí; renderizador sí)» o «no disponible». El renderizador es la clase que media3
+     * busca por su nombre: si R8 se lo cambiara, FFmpeg no se usaría.
+     */
+    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+    static String ffmpegInfo() {
+        try {
+            if (!androidx.media3.decoder.ffmpeg.FfmpegLibrary.isAvailable()) return "no disponible";
+            boolean renderer;
+            try {
+                Class.forName("androidx.media3.decoder.ffmpeg.FfmpegAudioRenderer");
+                renderer = true;
+            } catch (ClassNotFoundException e) {
+                renderer = false;
+            }
+            return androidx.media3.decoder.ffmpeg.FfmpegLibrary.getVersion() + " (E-AC-3 "
+                    + yes(androidx.media3.decoder.ffmpeg.FfmpegLibrary.supportsFormat(MimeTypes.AUDIO_E_AC3)) + ", AC-3 "
+                    + yes(androidx.media3.decoder.ffmpeg.FfmpegLibrary.supportsFormat(MimeTypes.AUDIO_AC3)) + ", DTS "
+                    + yes(androidx.media3.decoder.ffmpeg.FfmpegLibrary.supportsFormat(MimeTypes.AUDIO_DTS)) + "; renderizador "
+                    + yes(renderer) + ")";
+        } catch (Throwable t) {
+            return "no disponible (" + t.getClass().getSimpleName() + ")";
+        }
+    }
+
+    private static String yes(boolean b) {
+        return b ? "sí" : "no";
+    }
+
+    /** Los formatos de las pistas de audio («audio/eac3»), para el aviso y el log. */
+    static String audioMimes(androidx.media3.common.Tracks tracks) {
+        java.util.LinkedHashSet<String> mimes = new java.util.LinkedHashSet<>();
+        for (androidx.media3.common.Tracks.Group g : tracks.getGroups()) {
+            if (g.getType() != C.TRACK_TYPE_AUDIO) continue;
+            for (int i = 0; i < g.length; i++) {
+                String m = g.getTrackFormat(i).sampleMimeType;
+                if (m != null) mimes.add(m.replace("audio/", ""));
+            }
+        }
+        return mimes.isEmpty() ? "?" : android.text.TextUtils.join(", ", mimes);
+    }
+
+    /** Un aviso sobre el vídeo, arriba, que se quita solo a los NOTICE_MS. */
+    private void notice(FrameLayout f, String text) {
+        TextView t = CarStyle.text(f.getContext(), text, 24, Color.WHITE);
+        t.setBackground(CarStyle.round(0xCC000000, 18));
+        t.setPadding(26, 16, 26, 16);
+        t.setGravity(Gravity.CENTER);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+                Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+        lp.topMargin = 24;
+        f.addView(t, lp);
+        main.postDelayed(() -> f.removeView(t), NOTICE_MS);
+    }
+
+    static final long NOTICE_MS = 8000;
+
+    /**
+     * Para el log: con qué decodificador y en qué formato va el vídeo (códec, tamaño, fps; un decodificador
+     * «c2.android.*» es por software) y los fotogramas que se pierden. Así se ve por qué un HEVC va a tirones.
+     */
+    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+    private static void diagnostics(ExoPlayer p) {
+        p.addAnalyticsListener(new androidx.media3.exoplayer.analytics.AnalyticsListener() {
+            @Override
+            public void onVideoDecoderInitialized(EventTime t, String name, long initializedMs, long durationMs) {
+                L.i("vídeos: decodificador de vídeo " + name);
+            }
+
+            @Override
+            public void onAudioDecoderInitialized(EventTime t, String name, long initializedMs, long durationMs) {
+                L.i("vídeos: decodificador de audio " + name);
+            }
+
+            @Override
+            public void onVideoInputFormatChanged(EventTime t, androidx.media3.common.Format f,
+                                                  androidx.media3.exoplayer.DecoderReuseEvaluation reuse) {
+                L.i(String.format(java.util.Locale.US, "vídeos: %s (%s) %dx%d a %.3f fps", f.sampleMimeType, f.codecs, f.width,
+                        f.height, f.frameRate));
+            }
+
+            @Override
+            public void onDroppedVideoFrames(EventTime t, int dropped, long elapsedMs) {
+                L.i("vídeos: " + dropped + " fotogramas perdidos en " + elapsedMs + " ms");
+            }
+        });
+    }
+
+    /**
+     * Vídeo a pantalla completa (Vídeos y TV): en cuanto se sabe su formato, el vídeo al coche va a su ritmo
+     * (VideoPipeline.setMovie: cada frame al llegar y como mucho a sus fps). Al soltar el reproductor, setMovie(-1).
+     */
+    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+    static void followMovie(ExoPlayer p) {
+        p.addAnalyticsListener(new androidx.media3.exoplayer.analytics.AnalyticsListener() {
+            @Override
+            public void onVideoInputFormatChanged(EventTime t, androidx.media3.common.Format f,
+                                                  androidx.media3.exoplayer.DecoderReuseEvaluation reuse) {
+                VideoPipeline.setMovie(f.frameRate > 0 ? f.frameRate : 0);
+            }
+        });
     }
 
     /** «¿Seguir desde 12:34?»: Seguir / Desde el principio; sin respuesta en RESUME_ASK_MS, sigue. */
@@ -360,6 +502,7 @@ final class VideoPlayer {
             focus = null;
             player.release();
             player = null;
+            VideoPipeline.setMovie(-1);
         }
     }
 

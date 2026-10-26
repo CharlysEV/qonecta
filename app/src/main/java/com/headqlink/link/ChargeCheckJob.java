@@ -75,6 +75,8 @@ public class ChargeCheckJob extends JobService {
         // Lo que gasta la app en reposo, apuntado cada vez que Android la despierta (sin viaje en marcha).
         if (!LinkService.tripRunning) AppEnergy.checkpoint(ctx, false);
         if (!PhoneInsights.hasAccount(ctx)) return;
+        // La sesión de Leapmotor, renovada antes de caducar (si no, tras horas sin leer el coche pedía la contraseña).
+        CarCloudSession.keepAlive(ctx);
         ChargeWatch.restore(ctx);
         if (ChargeWatch.serviceRunning) return;
         boolean already = CarCloud.running();

@@ -97,7 +97,10 @@ class VideoProfileTest {
         assertTrue(VideoProfile.ALL.toList().containsAll(listOf("muy_alto", "alto", "medio", "basico", "muy_bajo")))
         val max = VideoProfile.of(VideoProfile.MAX)
         assertEquals(VideoProfile.MAX, max.id)
-        assertEquals(60, max.fpsFor(30))
+        // 60 por cable (y sin VIDEO_ARGS); por Wi-Fi, lo que pide el coche (30), como Máximo.
+        assertEquals(60, max.fpsFor(60))
+        assertEquals(60, max.fpsFor(0))
+        assertEquals(30, max.fpsFor(30))
         assertEquals(10_000_000, max.startBitrate(5_080_320, 1920))
         assertTrue(max.adaptiveBitrate())
         assertTrue(max.boost)

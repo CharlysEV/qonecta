@@ -126,7 +126,7 @@ The "Your phone, on the C10's screen" screen, with what you need "Before you sta
 > **Privacy in "Auto extended".** Its panels use the phone's location, if you allow it, and open internet services:
 > OpenStreetMap and OSRM for routes and chargers, Open-Meteo for weather and wind, and radio-browser.info for radio. To
 > work these out, those services receive your position or your destination. If you don't want that, choose "Auto" or
-> don't grant the "Photos, videos and location" permission.
+> don't grant the "Photos, videos, music and location" permission.
 
 **"Connection to the car"**
 
@@ -179,7 +179,7 @@ This is the **requirements check**: a list of everything your setup needs. It's 
 | "QDLink" or "Port 18463" in red ("Busy") | QDLink (or another app) is open right now. | "Force stop". |
 | "Bluetooth (nearby devices)" (Required if you turn on the automatic connection) | To recognise the car's Bluetooth and connect by itself. | "Allow". |
 | "Display over other apps" (Optional) | To open Android Auto with the phone in the background. | "Allow". |
-| "Photos, videos and location" (Optional, "Auto extended") | For the gallery and the driving panels in the car. | "Allow". |
+| "Photos, videos, music and location" (Optional, "Auto extended") | For the gallery, your music and the driving panels in the car. | "Allow". |
 | "Location all the time" (Recommended, "Auto extended") | So the car data keeps going with the phone locked (see [What you see and how to use it](#what-you-see-and-how-to-use-it)). | "Open": explains why and opens Android's page; choose "Allow all the time". If it doesn't have the location yet, it asks for it first. |
 
 > [!IMPORTANT]
@@ -422,15 +422,18 @@ version). That tells us whether the C10 supports it.
       stops at 800 V ones (or 150 kW and up, which almost always are, even if the registry does not say so) and keeps
       the 400–500 V ones in reserve: the list marks them in amber ("470 V: your 800 V car charges here at half power")
       and the plan says how many there are along the way. Tesla Superchargers in Spain are 400–500 V.
-    - **Live charging:** with the Leapmotor account, when you plug in a block over the route shows the kW, the % and
-      the target ("54 % → 64 %"), the time it will be ready and what you reach the next stop or the destination with;
-      if charging a little more saves you the next stop, it says so ("Up to 85 % saves you the stop at Lleida: +7 min
-      here, −23 min there"). The curve compares what the charger is giving (solid line) with what your car should take
-      there (dashed), and it warns if charging is much slower than expected. At the target: **"You can go on"** with a
-      sound on the phone and, if you are in the car, voice and a green card. On a trip or on a fast charger, the phone
-      keeps watching **even if the car's screen turns off** (you go for a coffee): an ongoing notification with the %
-      and the ready time, gone by itself when you unplug. Each charge is saved on the phone (real kW, % and minutes)
-      to learn the car's real curve.
+    - **Live charging:** with the Leapmotor account, when you plug in a block over the route shows the kW, the % and the
+      target ("54 % → 64 %"), the time it will be ready and what you reach the next stop or the destination with; if
+      charging a little more saves you the next stop, it says so ("Up to 85 % saves you the stop at Lleida: +7 min here,
+      −23 min there"). The curve compares what the charger is giving (solid line) with what your car should take there
+      (dashed), and it warns if charging is much slower than expected. At the target: **"You can go on"** with a sound
+      on the phone and, if you are in the car, voice and a green card. The phone keeps watching **even if the car's
+      screen turns off** (you go for a coffee), slow charging at home too (one reading every 5 min): an ongoing
+      notification with the %, the time and a bar up to the target (without a plan, 80 % on a fast charger and 100 % on
+      a slow one), gone by itself when you unplug. On Android 16 it is a **Live Update**: at the very top, and,
+      depending on the phone, with the % in the status bar or in Samsung's Now Bar. On the phone, **Trips** shows
+      "Charging now" at the top: the %, the kW, when it reaches the target and 100 %, what was added, what it costs and
+      the curve. Each charge is saved on the phone (real kW, % and minutes) to learn the car's real curve.
     - **The plan redoes itself during the trip:** with the Leapmotor account it compares how much your battery really
       drops with what was expected for those km and adjusts the rest ("Adjusted to this trip's consumption: +12 %").
       Chosen stops are kept while you reach them with margin; if you are running short (or have extra), the plan changes
@@ -441,9 +444,11 @@ version). That tells us whether the C10 supports it.
   - "Driving": the next manoeuvre in large, with a bar that empties until the turn, the lanes and the manoeuvre after;
     the speed with the speed-limit sign, heading, altitude, slope and the sun until sunset.
   - "Trips": the current trip and the saved ones, with their route, consumption, climbing and cost; the km of the last
-    14 days and the records. **Tap a trip** to open it in large: the route on a map (OpenStreetMap), the start, the end and
-    **the stops** (2 minutes or more in the same place, with how long, the time and the km), and its figures. Stops are
-    known for trips from 0.2.7 on.
+    14 days and the records. **Tap a trip** to open it in large: the route on a map (OpenStreetMap), the start, the end
+    and **the stops** (2 minutes or more in the same place, with how long, the time and the km), and its figures. Stops
+    are known for trips from 0.2.7 on. **The ghost:** if you repeat a road (same start, same way), "Current trip" tells
+    you live how far ahead of or behind your best time to this point you are ("Ghost: 1:20 behind your best time"), and
+    the fastest trip of each repeated road gets "Route record".
   - "Gauges": speedometer with the limit and the maximum, G forces with the trail of the last seconds and the peaks,
     inclination and a smoothness score (0-100) from the jerks when accelerating, braking and turning.
   - "Efficiency": the power of the last 2 minutes (what is recovered in green), consumption now, for the trip and on
@@ -509,7 +514,9 @@ congestiones 4`.
 ### At the end of the trip
 
 - Switch the car off (Qonecta+ closes by itself when "Wait for the car" runs out, 5 minutes by default) or tap
-  "Disconnect" to close it now.
+  "Disconnect" to close it now. Without touching the phone: in the car, Settings › Connection › "Disconnect" (it asks
+  for a second tap), or the quick settings tile, which works with the phone locked. If you just unplug the cable, the
+  trip is saved anyway; the app closes when "Wait for the car" runs out.
 - If the phone was locked when it closed, you'll see the "Auto on hold until you unlock the phone (then it closes by
   itself)" notification. **Unlock the phone once** so it closes completely: you'll see "Closing Auto…" for a few
   seconds (section 9). If you get back in the car before unlocking it and use the Bluetooth automatic connection,
@@ -519,6 +526,14 @@ congestiones 4`.
   after 15 s; if the Android Auto server may have been left on, you'll see "The Android Auto server is still on · Tap to
   turn it off": tap it with the phone unlocked.
 - Turn the hotspot off if you don't need it.
+
+### Trip diary
+
+In the phone's "Trips" tab › "Drives", open a trip and tap **"Trip postcard"**: an image with the date, the km and
+the time, the route with its stops, consumption, cost, climb, up to three photos you took with the phone during the
+trip and the places the Road guide told you about. You see it first; "Without photos" removes them and "Share"
+sends it wherever you like. It does not leave the phone unless you share it. After a trip of 50 km or more, a
+discreet notification offers it.
 
 ### Monthly report
 
@@ -551,6 +566,10 @@ comes from Wikipedia, in the app's language.
   one once and at most one every 4 minutes. It never talks over a call, the navigator's directions or another alert,
   and the music is lowered for a moment while it speaks. While it speaks, "Stop" cuts it off at once. "No
   voice": cards only (and it cuts off what it is saying).
+- **Trivia:** "? Trivia" (top) asks three-answer questions about the places around, for those in the car: which
+  century it is from, what it is (a town, a monument, a reservoir…), which one is closest and which one gets the
+  most Wikipedia visits. The right one turns green and, with "Voice", it is said aloud; it keeps the score. "Back to
+  the guide" closes it.
 - **Stopped:** after a minute stopped (for example, charging), it shows what is nearby on foot, with the walking time.
 - **Split screen:** with "Split screen", the guide sits next to Android Auto, in one column, and can be used while
   driving, with no warning.
@@ -570,6 +589,20 @@ The lyrics of what is playing in Android Auto (Spotify, YouTube Music…), synce
   synced lyrics, the plain text is shown; if there are none, it says so.
 - With "Split screen" it sits next to Android Auto; like the rest of the entertainment, better with the car stopped.
 
+### Voice companion (AI) ("Auto extended")
+
+Talk to Claude (by Anthropic) in the car: conversation, curiosities, quizzes or stories for the kids on long trips.
+Tap the microphone, speak, and the short answer is read aloud and shown on the screen.
+
+- **Setup:** on the phone, ⚙ menu › "Voice companion (AI)": paste your Anthropic API key (console.anthropic.com › API
+  Keys; it is stored encrypted on the phone) and, if you like, "Faster and cheaper" (Claude Haiku 5.5 instead of
+  Claude Opus 5.5). In the car, "Settings" › "Side panel buttons" › "Companion" (Yes).
+- **Cost:** each question is charged to your Anthropic account, about 1–2 cents with Opus and much less in fast mode.
+- **What is sent:** what you say, with the time, the battery and the car's range; never your location. The app's log
+  does not keep what you say or the answer.
+- Tapping while it speaks stops it; "New conversation" starts afresh (a new one starts by itself every 12 questions).
+  It needs Android 8 or later and mobile data.
+
 ### Automatic connection: "Connect when the car's Bluetooth is detected"
 
 With this switch, Qonecta+ starts waiting for the car as soon as the phone connects to the car's Bluetooth, without
@@ -577,7 +610,8 @@ you opening the app.
 
 1. Turn it on on the main screen.
 2. In the "Automatic connection" prompt, type text contained in the **car's Bluetooth name** (the default is
-   `Leapmotor_BT`; not case-sensitive) and tap "Save".
+   `Leapmotor_BT`; not case-sensitive) and tap "Save". If your car's Bluetooth has another name, you don't need to
+   change it: after the first session with the car, Qonecta+ recognises it by its address.
 3. Grant the Bluetooth permission and remove the battery restrictions when asked. Otherwise Android won't let it start
    in the background.
 
@@ -638,12 +672,13 @@ Everything is in the ⚙ menu on the main screen, a panel that slides up from th
 | Profile | What it does |
 |---|---|
 | "Automatic (…)" | Follows the recommended one for this phone. **The best choice if you're not sure.** |
-| "Car" (recommended) | What the car asks for (30 fps and about 5 Mbit/s), without pushing the phone. It starts at 720p and, if the phone has stayed cool for 10 minutes, goes up to full resolution (it reconnects: 2-4 s of black); when it gets really hot it goes back to 720p. A small sign in the panel shows the resolution, fps and phone temperature. The least heat and battery. |
-| "Very high" | Full resolution at 60 fps with the lowest latency. Uses more power. The C10 doesn't show more than 30 fps. |
-| "High" | Full resolution at 60 fps without pushing the phone: less battery and heat, a little more delay. |
-| "Medium" | 720p at a steady 45 fps, re-encoded on the phone. |
-| "Basic" | 720p at 30 fps, not re-encoded: the lightest for the phone. In "Auto extended" it behaves like "Medium". |
-| "Very low" | 720p at 20 fps and low bitrate: the minimum for battery and connection. |
+| "Car" (recommended) | What the car asks for: 30 fps (60 with "Smoothness") and about 5 Mbit/s. Full resolution if the phone stayed cool on previous trips and 720p if it got hot; while driving it only drops to 720p if it heats up (reconnects: 2-4 s of black). The panel shows a label with the resolution, the fps and the phone's temperature. The coolest at full resolution. |
+| "Maximum (cable)" | For the cable: 60 fps at full resolution and the sharpest picture (H.264 High, encoder at full power). On Wi-Fi, 30 fps. Heats the phone the most. If the car's screen stays black, go back to "Car". |
+| "Very high" | On the cable, 60 fps at full resolution with the lowest delay (encoder at full power). On Wi-Fi, 30 fps. Heats the phone quite a bit. |
+| "High" | On the cable, 60 fps at full resolution without pushing the phone (a little more delay than "Very high"). On Wi-Fi, 30 fps. |
+| "Medium" | 720p at a steady 45 fps, without pushing the phone. |
+| "Basic" | 720p at 30 fps and a low bitrate: lighter than "Car". |
+| "Very low" | 720p at 20 fps and a very low bitrate: the least for the battery and the connection. |
 
 If you're connected, saving another profile makes the car and Android Auto reconnect by themselves in a few seconds.
 
@@ -693,6 +728,11 @@ The "Settings" button on the car's panel lets you change the picture profile and
 a few seconds"), auto-hide the panel and latency optimizations, the "Electricity price" (€/kWh, for the cost of trips;
 0.20 by default), and see the connection and engine in use. Only use it with the car stopped.
 
+"Fuel" (in the car, Settings › Trip; on the phone, in Settings): "Petrol price" and "Diesel price" (€/l; 1.60 and
+1.50 by default), "Compare with" (petrol or diesel) and the "Comparison car consumption" (6.5 and 5.5 l/100 km by
+default). They give the savings against a combustion car (Efficiency, monthly report) and the CO₂ you avoid; on the
+REEV, the petrol the generator uses is always counted at the petrol price.
+
 "Side panel color": "Automatic" (dark at night and light by day, like the car's screen) or one of 16 fixed colors, which
 stays the same day and night. It applies at once, and the panel's text turns light or dark so it stays readable.
 
@@ -706,7 +746,7 @@ screen, when a new version is out a notice shows its news and "Download and inst
 first time it asks to allow Qonecta+ to install unknown apps); the first time a freshly installed
 version starts, its news is shown. In the ⚙ menu, "Check for new version" checks right away.
 
-"Speed camera voice alerts" (on by default): when you approach a camera, "Speed camera in 700 meters, limit 80",
+"Speed camera voice alerts" (on by default, except in Germany and Switzerland, where the law forbids the driver from using speed camera warnings; there they stay off unless you turn them on yourself): when you approach a camera, "Speed camera in 700 meters, limit 80",
 once per camera; and if at 400 meters or less you are over the limit, "You are doing 95, limit 80". Cameras come
 from OpenStreetMap, so some may be missing.
 
@@ -720,10 +760,22 @@ language.
 
 Paste the URL of an M3U list or tap "Choose file". Without a radio list, the car shows the popular stations.
 
+### "My music" (Radio, "Auto extended")
+
+In the car, Radio › "♪ My music" shows the songs on the phone (MP3, FLAC, OGG, M4A… the ones in Android's library:
+the Music folder, Downloads or a USB drive), by artist and album. Tap one and the rest follow; "Shuffle" mixes them.
+It plays like the radio: it keeps going when you change screen, with the panel's mini player and the steering
+wheel buttons. It needs the "Photos, videos, music and location" permission (Android 13 or later).
+
 ### "Web bookmarks" ("Auto extended")
 
 The shortcuts on the car's "Web" screen (YouTube, Google, Wikipedia and Twitch by default). Add your own with a
 name and an address, remove them or reorder them with the arrows; "Defaults" puts back the original four.
+
+### "Aquarium" (Games › For the wait)
+
+For the kids, with the car parked: colourful fish swimming, bubbles, seaweed and rays of light. **Tap the water** and
+food falls for the fish to eat; tap a fish and it darts away. "Another fish" adds one (up to 14).
 
 ### "Games folder": NES, Mega Drive and Super Nintendo ("Auto extended")
 
@@ -911,8 +963,13 @@ They have no open internet stream, so no M3U list carries them. With the TDTChan
 Android does that and an app cannot prevent it. Since 0.2.60 the phone shows a black cover at minimum brightness while
 you play; touching the phone removes it.
 
+**Can I support the project?**
+Qonecta+ is free and has no ads. If it's useful to you, you can buy me a coffee with [PayPal](https://www.paypal.me/CharlysEV); also from the
+app, in "About and credits". Thank you!
+
 **How do I ask for help?**
 Export the log (section 8) and say what happened and when. It carries no passwords, addresses or typed text.
+To report a bug or suggest something, open an issue at [github.com/CharlysEV/qonecta/issues](https://github.com/CharlysEV/qonecta/issues). It's public: better share the log privately.
 
 ---
 
@@ -922,6 +979,7 @@ Always start with the ⚙ menu › "Requirements check": every red row has its o
 
 | Symptom | Likely cause | What to do |
 |---|---|---|
+| On the cable, the car's screen freezes and "Disconnect" and "Connect" don't fix it | The car's mirroring app (QDLink) has frozen with the cable plugged in: it stops answering and doesn't even read what it gets. It's the car, not the phone. | Unplug the cable, plug it back in and open QDLink on the car's screen; Qonecta+ reconnects by itself. It tells you by voice and with a notice on the phone ("The car's app has frozen"). |
 | The car isn't found ("Searching…" all the time) | The car isn't on the phone's hotspot, the hotspot switched itself off, or the mirroring app isn't open in the car. With Wi-Fi Direct: the hotspot is on or Wi-Fi is off. | Check the "Network" row: it should say "Hotspot on (…)". Join the car to the hotspot (car Settings › Wi-Fi) and open the mirroring app. Turn off the hotspot's auto-off. After 5 minutes without the car announcing itself Qonecta+ stops: tap "Connect" again. |
 | "Port 18463 is busy (is QDLink open?)", or "Port 18463 · Busy" in the "Requirements check" | The QDLink app (or another one) is open on the phone and holds the port. | "Force stop" QDLink. Qonecta+ retries every 5 s and the warning clears by itself. |
 | Black screen in the car, or an error in the "Auto" row | Android Auto didn't start: the phone was locked ("Doesn't start: unlock the phone"), or developer mode or accessibility is missing. | Unlock the phone (with the "Unlock the phone to start Android Auto" notification, it starts by itself when you unlock). If it still fails, check the "Requirements check" and tap "Disconnect" and "Connect". To find out what's failing, turn on Diagnostics › "Test without Android Auto (pattern)": if you see the test image, the connection is fine and the problem is Android Auto (turn it off afterwards). If nothing works, try the "Original headqlink" engine. |
@@ -929,6 +987,7 @@ Always start with the ⚙ menu › "Requirements check": every red row has its o
 | Many radio dropouts (the picture stops for half a second again and again; in the log, «Corte … RADIO» and «enlace muy congestionado» lines) | The radio between the phone and the car can't carry more: hotspot on 2.4 GHz, the phone in a pocket, in a metal tray or far from the screen. Qonecta+ already lowers the quality as far as it can (down to 1.2 Mbit/s and 20 fps), but with the radio saturated that isn't enough. | Put the hotspot on **5 GHz** (Settings › Hotspot › Band). Keep the phone out of pockets and metal trays and close to the car's screen. The **USB cable** is the most stable. In the log, the «radio de la zona Wi-Fi» line gives the band and channel when Android lets the app read them. |
 | The picture is less smooth than with the original HeadQLink | The original sent 60 fps; Qonecta+ sends 30 (what the car asks for) so the phone doesn't overheat. Or the phone is already hot and the heat adaptation has lowered the fps, or the link is tight and the bitrate or fps were lowered. | "Picture settings" › "Smoothness" › "60 fps · maximum smoothness" (with the "Car" or "Automatic" profile). If heat lowers the fps, "Heat protection" › "Gentle" (section 6). In the log, the "HQL/Térmico" lines ("estado térmico 2" or higher) and the "enlace:" lines tell you which of the two it is. |
 | The picture freezes for about 10 s and then reconnects | In earlier versions, a full frame larger than ~512 KB hung the car's receiver, which stopped reading until the connection dropped. **Fixed**: Qonecta+ no longer sends any that large and keeps them at about 300 KB at most. | Update Qonecta+. If it happens with the "Basic" profile (there Android Auto decides the size), use "Automatic" or "Car". If it continues, export the log (section 8). |
+| A video or a TV channel plays without sound | Its audio is AC-3, E-AC-3 (Dolby Digital Plus) or DTS, which many phones cannot decode. **Fixed**: Qonecta+ decodes it with FFmpeg when the phone cannot. | Update Qonecta+. If "No sound: this phone can't decode this video's audio…" still appears, export the log (section 8). |
 | It disconnects often | Hotspot auto-off, battery saving, QDLink open, or the car's mirroring app closed. | Short dropouts reconnect by themselves ("Reconnecting…"). If they're long or frequent: "No battery restrictions", "Samsung: never sleeping apps", turn off the hotspot's auto-off and close QDLink. If it continues, export the log (section 8). |
 | "Start (or restart) the Android Auto server" notification, or the "Auto" row says "Waiting for the Android Auto server" | Manual start, and Android Auto doesn't answer: its server is off (after restarting the phone or updating Android Auto) or blocked: a connection was cut halfway (something connected and left without a word, or a session dropped abruptly). | Tap the notification or the row: Android Auto › ⋮ › "Stop head unit server" (if shown) and ⋮ › "Start head unit server". Qonecta+ retries every 5 s and carries on by itself. |
 | "Qonecta+ can't find the server button" notification | Android Auto has updated and changed its ⋮ menu (the automation looks for it by its text). | "Open AA" and start it by hand, or "Manual start". See [Android Auto versions](#android-auto-versions) and export the log (section 8). |
@@ -991,7 +1050,7 @@ You can ask for help on the project's GitHub page: [CharlysEV/qonecta](https://g
 | Bluetooth (nearby devices) | Recognising the car's Bluetooth. | Only with the automatic connection |
 | No battery restrictions | Keeping it running with the screen off. | Recommended |
 | Display over other apps | Opening Android Auto with the phone in the background. | Optional |
-| Photos, videos and location | Gallery and driving panels. | Optional, "Auto extended" |
+| Photos, videos, music and location | Gallery, your music and driving panels. | Optional, "Auto extended" |
 | Location all the time | Keeping the "Car" panels going with the phone locked. Only used with the link running or the "Car" screens open. | Recommended, "Auto extended" |
 | Microphone | "Speak" in "Search destination": the phone's speech recognition understands it. | Optional, "Auto extended" |
 | Internet | "Auto extended" services (OpenStreetMap, OSRM, Open-Meteo, radio-browser.info), the destination search (Photon and Android's address search, Google's: they receive what you type), the trip map (OpenStreetMap tiles), your TV and radio lists and, if you set it up, the Leapmotor cloud (real car data, read-only). | Only those features |

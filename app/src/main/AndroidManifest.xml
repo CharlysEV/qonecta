@@ -125,6 +125,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <!-- headqlink: carga en directo (ChargeWatchService lee la nube de Leapmotor mientras carga, fuera del coche). -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- headqlink: Android 16, su notificación como Live Update (Now Bar, chip con el % en la barra de estado). -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
     <!-- headqlink: GPS de los paneles Instrumentos/Eficiencia con la pantalla apagada -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
@@ -135,6 +137,8 @@
     <!-- headqlink: fotos y vídeos del móvil en la pantalla del coche (modo Android Auto ampliado) -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <!-- headqlink: tu música del móvil en Radio › Mi música (MusicLibrary). -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <!-- headqlink: el sitio de cada foto en el pase de diapositivas (su GPS); sin él, solo la fecha. -->
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <!--
