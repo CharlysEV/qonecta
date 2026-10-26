@@ -381,6 +381,10 @@ version). That tells us whether the C10 supports it.
   Google Maps to pan and search. Each side takes its own touches. "Full screen" shows it alone again. It lasts while you
   stay connected to the car. The first time in each connection, a notice must be accepted: we recommend using it with
   the car stopped, and you use it at your own risk. Not on the T03: its screen is too narrow to split.
+- **Car keyboard** (Web, destination search, names): numbers on top and, at the bottom, "#+=" with every symbol (any
+  password can be typed) and "äé" with accents and umlauts (ä ö ü ß, á é í ó ú, ç, ã…; after one it goes back to the
+  letters by itself). ⇧ capitalises the next letter; tap it twice in a row for caps lock (⇪). Hold ⌫ to keep deleting.
+  Above the keys you see what you type, also in web page fields; in a password, dots and the last letter for a moment.
 - **"Car" section** (estimated from the phone's sensors and open services; with the Leapmotor account, also with real
   car data: see [Real car data](#real-car-data-leapmotor-account)):
   - "Route": destination, arrival, expected energy and consumption; the elevation profile coloured by slope (descents

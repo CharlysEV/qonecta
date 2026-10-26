@@ -401,6 +401,11 @@ admite.
   Dura enquanto estiver ligado ao carro. Da primeira vez em cada ligação aparece um aviso que é preciso aceitar:
   recomenda-se usar com o carro parado, e a utilização é da sua responsabilidade. No T03 não existe: o ecrã é
   demasiado estreito para o dividir.
+- **Teclado do carro** (Web, pesquisa de destino, nomes): números em cima e, em baixo, «#+=» com todos os símbolos
+  (pode escrever qualquer palavra-passe) e «äé» com acentos e tremas (ä ö ü ß, á é í ó ú, ç, ã…; depois de um volta
+  sozinho às letras). ⇧ põe em maiúscula a letra seguinte; com dois toques seguidos fica fixo (⇪). Mantendo ⌫ premido
+  continua a apagar. Por cima das teclas vê o que escreve, também nos campos das páginas web; numa palavra-passe,
+  pontos e, por um momento, a última letra.
 - **Secção «Carro»** (estimado com os sensores do telemóvel e serviços abertos; com a conta Leapmotor, também com dados
   reais do carro: ver [Dados reais do carro](#dados-reais-do-carro-conta-leapmotor)):
   - «Rota»: destino, chegada, energia e consumo previstos; o perfil de elevação colorido pela inclinação (a verde as

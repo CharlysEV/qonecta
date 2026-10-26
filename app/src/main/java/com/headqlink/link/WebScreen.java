@@ -184,7 +184,8 @@ final class WebScreen implements CarScreen {
                     showTyped();
                 } else if (web != null) {
                     web.requestFocus();
-                    web.evaluateJavascript("document.execCommand('insertText', false, " + JSONObject.quote(s) + ")", null);
+                    web.evaluateJavascript("document.execCommand('insertText', false, " + JSONObject.quote(s) + ");" + FIELD_JS,
+                            r -> showField(r, true));
                 }
             }
 
@@ -195,6 +196,8 @@ final class WebScreen implements CarScreen {
                     showTyped();
                 } else if (web != null) {
                     key(KeyEvent.KEYCODE_DEL);
+                    // La tecla llega a la página un poco después: el campo, cuando ya ha borrado.
+                    web.postDelayed(() -> readField(false), 80);
                 }
             }
 
@@ -1046,8 +1049,36 @@ final class WebScreen implements CarScreen {
             suggestScroll.setVisibility(View.GONE);
         }
         if (show) closeOverlay();
-        if (show && !forAddress && web != null) web.requestFocus();
+        if (show && !forAddress && web != null) {
+            web.requestFocus();
+            readField(false);
+        }
     }
+
+    /** El campo con el foco encima del teclado; typed: se acaba de escribir (en una contraseña, la última letra un momento). */
+    private void readField(boolean typed) {
+        if (web != null) web.evaluateJavascript(FIELD_JS, r -> showField(r, typed));
+    }
+
+    private void showField(String json, boolean typed) {
+        if (typingAddress || keyboard.getVisibility() != View.VISIBLE) return;
+        try {
+            JSONObject o = new JSONObject(json);
+            keyboard.showField(o.optString("v"), o.optString("h"), o.optBoolean("p"), typed);
+        } catch (org.json.JSONException e) {
+            // Sin campo con el foco ("null"): la línea vacía.
+            keyboard.showText("", "");
+        }
+    }
+
+    /**
+     * El campo con el foco: su texto (los últimos 300 caracteres), si es una contraseña y su pista (placeholder o
+     * aria-label). Lo lee la app para enseñarlo encima del teclado; no se guarda ni se registra.
+     */
+    private static final String FIELD_JS = "(function(){var e=document.activeElement;if(!e||e===document.body)return null;"
+            + "var v=e.isContentEditable?(e.innerText||''):(typeof e.value==='string'?e.value:'');"
+            + "return {v:v.length>300?v.slice(-300):v,p:(e.type||'').toLowerCase()==='password',"
+            + "h:e.placeholder||e.getAttribute('aria-label')||''};})()";
 
     /** Desde la página (hilo del navegador): un campo de texto ganó o perdió el foco. */
     private final class KeyboardBridge {
@@ -1059,7 +1090,6 @@ final class WebScreen implements CarScreen {
                     if (keyboard.getVisibility() == View.VISIBLE && typingAddress) return;
                     autoKeyboard = true;
                     showKeyboard(true, false);
-                    keyboard.showText("", "");
                     // La página encoge con el teclado: el campo, a la vista (cuando ya tiene el tamaño nuevo).
                     web.postDelayed(() -> {
                         if (web != null) web.evaluateJavascript("(function(){var e=document.activeElement;"

@@ -389,6 +389,11 @@ admite.
   otra vez. Dura mientras sigas conectado al coche. La primera vez de cada conexión sale un aviso que hay que aceptar:
   se recomienda usarla con el coche parado, y se usa bajo tu responsabilidad. En el T03 no está: su pantalla es
   demasiado estrecha para partirla.
+- **Teclado del coche** (Web, buscar destino, nombres): números arriba y, abajo, «#+=» con todos los símbolos (cualquier
+  contraseña se puede escribir) y «äé» con acentos y diéresis (ä ö ü ß, á é í ó ú, ç, ã…; tras uno vuelve solo a las
+  letras). ⇧ pone en mayúscula la siguiente letra; con dos toques seguidos se quedan fijas (⇪). ⌫ mantenido sigue
+  borrando. Encima de las teclas ves lo que escribes, también en los campos de las webs; en una contraseña, puntos y la
+  última letra un momento.
 - **Sección «Coche»** (estimado con los sensores del móvil y servicios abiertos; con la cuenta de Leapmotor, también
   con datos reales del coche: ver [Datos reales del coche](#datos-reales-del-coche-cuenta-leapmotor)):
   - «Ruta»: destino, llegada, energía y consumo previstos; el perfil de elevación coloreado por la pendiente (en verde
