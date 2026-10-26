@@ -47,6 +47,12 @@ final class VideoPipeline {
      * gate_outq_kb (Config.GATE_OUTQ_KB).
      */
     static final int GATE_OUTQ = 32 * 1024;
+    /**
+     * Por Wi-Fi, el doble: el Wi-Fi Direct del C10 tiene microcortes de radio cada ~10 s (hasta ~200 ms) y con 32 KB la
+     * puerta tiraba frames en cada uno. El 26-10, en el mismo trayecto, 4,0 % de frames perdidos con 32 KB y 1,0 % con
+     * 64 KB (lab «cola 64»), sin cola en la sesión: tras cada corte la imagen va como mucho ~100 ms por detrás.
+     */
+    static final int GATE_OUTQ_WIFI = 64 * 1024;
     private static final int GATE_MAX_PENDING = 3;
     private static final long GATE_PENDING_TIMEOUT_NS = 200_000_000L;
     static final long ENCODER_HEALTH_NS = 2_000_000_000L;
@@ -198,7 +204,7 @@ final class VideoPipeline {
         linkFpsCap = plan.fps;
         thermalMode = cfg.thermalMode();
         int gateKb = cfg.getInt(Config.GATE_OUTQ_KB);
-        gateOutq = gateKb > 0 ? gateKb * 1024 : GATE_OUTQ;
+        gateOutq = gateKb > 0 ? gateKb * 1024 : gateOutqFor(plan.car.argsFps);
         source = VideoSource.create(ctx, cfg);
         source.setCarSize(plan.car.carW, plan.car.carH);
         source.setVideoSize(plan.videoW, plan.videoH);
@@ -1005,6 +1011,11 @@ final class VideoPipeline {
         if (encoder == null || encoder.failed()) return false;
         if (vp != null && vp.noRepeat) return true;
         return encoderResponsive(System.nanoTime(), lastEncoderFrameNs, lastSubmitNs, gated);
+    }
+
+    /** Puro: la puerta de serie según lo que pide el coche (VideoProfile.byWifi): GATE_OUTQ_WIFI o GATE_OUTQ por cable. */
+    static int gateOutqFor(int carFps) {
+        return VideoProfile.byWifi(carFps) ? GATE_OUTQ_WIFI : GATE_OUTQ;
     }
 
     /**

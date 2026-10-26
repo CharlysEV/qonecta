@@ -38,7 +38,7 @@ final class LabControl {
      */
     static volatile int qpFloor;
     /**
-     * Puerta «último frame» en KB (0: la de siempre, VideoPipeline.GATE_OUTQ). Más alta aguanta los microcortes de radio
+     * Puerta «último frame» en KB (0: la de serie, VideoPipeline.gateOutqFor). Más alta aguanta los microcortes de radio
      * del Wi-Fi Direct sin tirar frames (a ~4 Mbit/s, 200 ms son ~100 KB) a cambio de imagen algo retrasada tras cada
      * corte. Vale al momento.
      */
@@ -130,7 +130,8 @@ final class LabControl {
                 break;
             case "cola":
                 gateKb = "auto".equals(a) ? 0 : clamp(parse(a), 16, 256);
-                done = gateKb == 0 ? "cola del kernel: la de siempre (" + VideoPipeline.GATE_OUTQ / 1024 + " KB)"
+                done = gateKb == 0 ? "cola del kernel: la de serie (" + VideoPipeline.GATE_OUTQ_WIFI / 1024 + " KB por Wi-Fi, "
+                        + VideoPipeline.GATE_OUTQ / 1024 + " por cable)"
                         : "cola del kernel hasta " + gateKb + " KB antes de tirar frames";
                 break;
             case "boost":
