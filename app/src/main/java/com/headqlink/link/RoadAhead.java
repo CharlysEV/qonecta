@@ -15,6 +15,8 @@ import java.util.Map;
  * la marcha y en un sentido permitido) y, por ella hacia delante, hasta una distancia; en cada cruce, la misma carretera
  * (misma referencia o nombre) o la que menos gira. Sin ruta, los radares se buscaban en línea recta: en curva se veía
  * tarde el de la propia carretera y en recta valía el de una vía paralela (RadarSimTest). Puro: se prueba en el PC.
+ * Desde el 27-10 también da el límite de la vía por la que se va ({@link #match}): antes salía de una consulta a Overpass
+ * cada 250 m, y con sus servidores saturados no llegaba ninguna (el cartel no salía en toda la tarde).
  */
 final class RoadAhead {
     /** Las clases de vía que se siguen (sin calles de barrio ni de servicio: los radares fijos van en las otras). */
@@ -26,7 +28,10 @@ final class RoadAhead {
     /** En un cruce no se sigue por donde haya que girar más de esto (grados): ahí se acaba lo que se sabe. */
     static final double MAX_TURN_DEG = 75;
 
-    /** Una vía: sus nodos (ids), sus puntos, referencia, nombre y sentido (1: el del dibujo; −1: el contrario; 0: los dos). */
+    /**
+     * Una vía: sus nodos (ids), sus puntos, referencia, nombre, sentido (1: el del dibujo; −1: el contrario; 0: los dos) y
+     * las etiquetas que hacen falta para su límite ({@link #KEEP_TAGS}; null solo en las pruebas que no las usan).
+     */
     static final class Way {
         final long[] nodes;
         final double[] lat;
@@ -35,8 +40,9 @@ final class RoadAhead {
         final String name;
         final boolean link;
         final int oneway;
+        final JSONObject tags;
 
-        Way(long[] nodes, double[] lat, double[] lon, String ref, String name, boolean link, int oneway) {
+        Way(long[] nodes, double[] lat, double[] lon, String ref, String name, boolean link, int oneway, JSONObject tags) {
             this.nodes = nodes;
             this.lat = lat;
             this.lon = lon;
@@ -44,6 +50,24 @@ final class RoadAhead {
             this.name = name == null ? "" : name;
             this.link = link;
             this.oneway = oneway;
+            this.tags = tags;
+        }
+    }
+
+    /** Las etiquetas que se guardan de cada vía: las del límite (RoadInfo.limitFor), el sentido, el nombre y la referencia. */
+    static final String[] KEEP_TAGS = {"highway", "name", "ref", "oneway", "junction", "lanes", "maxspeed", "maxspeed:forward",
+            "maxspeed:backward", "zone:maxspeed", "maxspeed:type", "source:maxspeed"};
+
+    /** La vía que se lleva, para su límite: la vía, si se va en el sentido de su dibujo y a cuántos metros está. */
+    static final class Match {
+        final Way way;
+        final boolean forward;
+        final double distM;
+
+        Match(Way way, boolean forward, double distM) {
+            this.way = way;
+            this.forward = forward;
+            this.distM = distM;
         }
     }
 
@@ -67,6 +91,10 @@ final class RoadAhead {
         return ways.size();
     }
 
+    List<Way> ways() {
+        return ways;
+    }
+
     /** Las vías de una respuesta de OpenStreetMap con «out body geom» (nodos y puntos). */
     static List<Way> parse(JSONArray els) throws JSONException {
         List<Way> out = new ArrayList<>();
@@ -85,14 +113,90 @@ final class RoadAhead {
                 la[k] = p.getDouble("lat");
                 lo[k] = p.getDouble("lon");
             }
-            JSONObject t = e.optJSONObject("tags");
-            String hw = t == null ? "" : t.optString("highway");
-            int oneway = t == null ? 0 : RoadInfo.oneway(t);
-            // Las autovías y sus ramales son de un sentido aunque no lo digan.
-            if (oneway == 0 && t != null && (hw.equals("motorway") || hw.endsWith("_link")) && !"no".equals(t.optString("oneway"))) oneway = 1;
-            out.add(new Way(nodes, la, lo, t == null ? "" : t.optString("ref"), t == null ? "" : t.optString("name"), hw.endsWith("_link"), oneway));
+            out.add(way(nodes, la, lo, e.optJSONObject("tags")));
         }
         return out;
+    }
+
+    /** Una vía con sus etiquetas de OpenStreetMap (se quedan solo las de KEEP_TAGS). */
+    private static Way way(long[] nodes, double[] la, double[] lo, JSONObject all) throws JSONException {
+        JSONObject t = new JSONObject();
+        if (all != null) for (String k : KEEP_TAGS) if (all.has(k)) t.put(k, all.optString(k));
+        String hw = t.optString("highway");
+        int oneway = RoadInfo.oneway(t);
+        // Las autovías y sus ramales son de un sentido aunque no lo digan.
+        if (oneway == 0 && (hw.equals("motorway") || hw.endsWith("_link")) && !"no".equals(t.optString("oneway"))) oneway = 1;
+        return new Way(nodes, la, lo, t.optString("ref"), t.optString("name"), hw.endsWith("_link"), oneway, t);
+    }
+
+    /**
+     * Las vías en el formato que se guarda en el móvil (RoadCache): por vía, «n» los nodos, «g» los puntos (lat, lon
+     * seguidos, en millonésimas de grado) y «t» las etiquetas.
+     */
+    static JSONArray toJson(List<Way> ways) throws JSONException {
+        JSONArray out = new JSONArray();
+        for (Way w : ways) {
+            JSONArray n = new JSONArray();
+            JSONArray g = new JSONArray();
+            for (int k = 0; k < w.nodes.length; k++) {
+                n.put(w.nodes[k]);
+                g.put(Math.round(w.lat[k] * 1e6));
+                g.put(Math.round(w.lon[k] * 1e6));
+            }
+            out.put(new JSONObject().put("n", n).put("g", g).put("t", w.tags));
+        }
+        return out;
+    }
+
+    /** Las vías guardadas con {@link #toJson}. */
+    static List<Way> fromJson(JSONArray arr) throws JSONException {
+        List<Way> out = new ArrayList<>();
+        for (int i = 0; i < arr.length(); i++) {
+            JSONObject o = arr.getJSONObject(i);
+            JSONArray n = o.getJSONArray("n");
+            JSONArray g = o.getJSONArray("g");
+            if (n.length() < 2 || g.length() != n.length() * 2) continue;
+            long[] nodes = new long[n.length()];
+            double[] la = new double[n.length()];
+            double[] lo = new double[n.length()];
+            for (int k = 0; k < nodes.length; k++) {
+                nodes[k] = n.getLong(k);
+                la[k] = g.getLong(2 * k) / 1e6;
+                lo[k] = g.getLong(2 * k + 1) / 1e6;
+            }
+            out.add(way(nodes, la, lo, o.optJSONObject("t")));
+        }
+        return out;
+    }
+
+    /**
+     * La vía por la que se va, para su límite: a MATCH_M o menos, con el rumbo a menos de MATCH_DEG de la marcha y en un
+     * sentido permitido (la que menos se aparte, sumando metros y grados); null si ninguna (una calle que no está entre
+     * las CLASSES, o lejos de todas).
+     */
+    Match match(double lat, double lon, double heading) {
+        Match best = null;
+        double bscore = Double.MAX_VALUE;
+        double kx = 111_320.0 * Math.cos(Math.toRadians(lat));
+        double ky = 111_320.0;
+        for (Way way : ways) {
+            for (int i = 0; i < way.lat.length - 1; i++) {
+                double d = segDist(way, i, lat, lon, kx, ky);
+                if (d > MATCH_M) continue;
+                double brg = RoadInfo.bearing(way.lat[i], way.lon[i], way.lat[i + 1], way.lon[i + 1]);
+                for (int dir = 1; dir >= -1; dir -= 2) {
+                    if (way.oneway != 0 && way.oneway != dir) continue;
+                    double diff = Math.abs(RoutePlanner.angleDiff(heading, dir > 0 ? brg : brg + 180));
+                    if (diff > MATCH_DEG) continue;
+                    double score = d + diff;
+                    if (score < bscore) {
+                        bscore = score;
+                        best = new Match(way, dir > 0, d);
+                    }
+                }
+            }
+        }
+        return best;
     }
 
     /**

@@ -485,7 +485,9 @@ supporta.
     quello della sua zona («DE:urban», «AT:rural»…). Dove manca, si assume il limite generale del paese per il tipo di
     strada (Spagna, Portogallo, Germania, Austria, Svizzera, Italia, Francia, Paesi Bassi, Belgio e Lussemburgo), con
     «stimato». Sull'Autobahn senza limite compare il cartello di fine limitazioni, senza colori; con i pannelli
-    variabili, nessuno.
+    variabili, nessuno. Le strade dei tuoi viaggi vengono salvate sul telefono (60 giorni): su quelle abituali il limite
+    compare anche quando i server di OpenStreetMap sono sovraccarichi. Se non si conosce, non compare nessun cartello
+    (meglio che uno sbagliato).
   - «Efficienza»: la potenza degli ultimi 2 minuti (in verde quella recuperata), il consumo attuale, del viaggio e
     medio, dove va l'energia, il costo del viaggio, la CO₂ che non è uscita da un tubo di scarico e un consiglio.
   - «Stato» (con l'account Leapmotor): batteria, autonomia, ricarica, pressione dei pneumatici, porte e contachilometri

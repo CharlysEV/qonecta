@@ -16,7 +16,8 @@ import java.util.TimeZone;
  * Datos de la vía para la pestaña "Conducción", con OpenStreetMap (Overpass) y cálculos locales:
  * - Límite de velocidad de la vía por la que se circula (maxspeed, la del sentido de la marcha o la zona: «DE:urban»,
  *   «AT:rural», «none» en la Autobahn sin límite…; si no lo dice, el genérico del país según el tipo de vía, marcado como
- *   estimado). Ver {@link #limitFor}.
+ *   estimado). Ver {@link #limitFor}. Sale de las carreteras de alrededor (RoadAhead, guardadas en el móvil con
+ *   RoadCache) si se va por una de ellas; si no, de una consulta pequeña a Overpass.
  * - Radares fijos cercanos (highway=speed_camera) delante, en la vía por la que se va y en el sentido de la marcha.
  * Dos hilos: uno pregunta a OpenStreetMap (puede tardar o fallar) y otro, cada segundo, mira los radares con la
  * posición de ese momento. Antes iban en el mismo y, si OpenStreetMap tardaba, el aviso salía con la posición de hacía
@@ -123,14 +124,6 @@ final class RoadInfo {
         return traceNow;
     }
 
-    /** ¿Va el coche por la ruta del planificador? */
-    private boolean onPlanRoute(CarSensors.Snapshot s) {
-        Trace plan = trace();
-        if (plan == null) return false;
-        double[] on = onTrace(plan, s.lat, s.lon);
-        return on != null && on[2] <= TRACE_ON_M;
-    }
-
     /**
      * Por dónde buscar los radares: la ruta del planificador si el coche va por ella; si no (sin ruta o fuera de ella),
      * la carretera por la que va (RoadAhead), hacia delante; si tampoco se sabe, null (por el rumbo).
@@ -202,30 +195,78 @@ final class RoadInfo {
                         + CAM_RETRY_MS / 1000 + " s");
             }
         }
-        // Las carreteras de alrededor, para los radares sin ruta (RoadAhead): al empezar y cada ROADS_RELOAD_M. Con la ruta
-        // del planificador (y el coche en ella) no hacen falta: no se gastan datos en ellas.
-        if (!onPlanRoute(s) && shouldLoadRoads(roadsLat, roadsLon, s.lat, s.lon, now - roadsMs, roadsFailed)) {
+        // Las carreteras de alrededor (RoadAhead), para el límite de la vía y los radares sin ruta: al empezar y cada
+        // ROADS_RELOAD_M, también con la ruta del planificador (el límite las necesita). Primero las guardadas en el móvil
+        // (RoadCache): en los trayectos de siempre no se pregunta a Overpass.
+        if (shouldLoadRoads(roadsLat, roadsLon, s.lat, s.lon, now - roadsMs, roadsFailed)) {
             roadsMs = now;
-            try {
-                loadRoads(s.lat, s.lon);
-                roadsLat = s.lat;
-                roadsLon = s.lon;
+            long wall = System.currentTimeMillis();
+            RoadCache.Hit hit = RoadCache.find(ctx, s.lat, s.lon, wall);
+            if (hit != null) {
+                roads = new RoadAhead(hit.ways);
+                roadsLat = hit.lat;
+                roadsLon = hit.lon;
                 roadsFailed = false;
-            } catch (Http.OverpassPausedException e) {
-                roadsFailed = true;
-            } catch (Exception e) {
-                roadsFailed = true;
-                L.w("vía: carreteras de alrededor sin cargar (" + Http.safeError(e) + ")");
+                L.i("vía: " + hit.ways.size() + " carreteras alrededor, guardadas en el móvil (de hace "
+                        + (wall - hit.atMs) / 86_400_000L + " días)");
+            } else {
+                try {
+                    loadRoads(s.lat, s.lon);
+                    roadsLat = s.lat;
+                    roadsLon = s.lon;
+                    roadsFailed = false;
+                } catch (Http.OverpassPausedException e) {
+                    roadsFailed = true;
+                } catch (Exception e) {
+                    roadsFailed = true;
+                    L.w("vía: carreteras de alrededor sin cargar (" + Http.safeError(e) + ")");
+                }
             }
         }
-        // Overpass pide moderación: como mucho una consulta cada 8 s y cada 250 m.
-        if ((Double.isNaN(limitLat) || dist(s.lat, s.lon, limitLat, limitLon) > 250) && now - limitMs > 8000) {
+        // El límite, de la carretera por la que se va si está entre las de alrededor (en marcha: hace falta el rumbo).
+        RoadAhead r = roads;
+        RoadAhead.Match m = r != null && s.speedKmh > 5 ? r.match(s.lat, s.lon, s.headingDeg) : null;
+        if (m != null && m.way.tags != null) {
+            applyWay(m.way.tags, m.forward);
+            limitConfirmed(s);
+        }
+        // Sin confirmar en LIMIT_STALE_M (una calle sin respuesta de Overpass): mejor sin señal que con la de otra vía.
+        if (!Double.isNaN(limitOkLat) && dist(s.lat, s.lon, limitOkLat, limitOkLon) > LIMIT_STALE_M) {
+            limit = -1;
+            limitEst = false;
+            road = "";
+            limitOkLat = Double.NaN;
+        }
+        // Si no (una calle, que no está entre las CLASSES, o parado), una consulta pequeña a Overpass, que pide
+        // moderación: como mucho una cada 8 s y cada 250 m.
+        if (m == null && (Double.isNaN(limitLat) || dist(s.lat, s.lon, limitLat, limitLon) > 250) && now - limitMs > 8000) {
             limitMs = now;
             limitLat = s.lat;
             limitLon = s.lon;
             updateLimit(s);
         }
         if (camError != null) throw camError;
+    }
+
+    /** Sin confirmar el límite en esta distancia (m), se quita. */
+    static final double LIMIT_STALE_M = 400;
+    /** Dónde se confirmó el límite por última vez (NaN: no hay límite que vigilar). */
+    private double limitOkLat = Double.NaN;
+    private double limitOkLon = Double.NaN;
+
+    private void limitConfirmed(CarSensors.Snapshot s) {
+        limitOkLat = s.lat;
+        limitOkLon = s.lon;
+    }
+
+    /** El límite, el nombre y el sentido de la vía por la que se va (forward: en el sentido de su dibujo). */
+    private void applyWay(JSONObject tags, boolean forward) {
+        roadOneway = oneway(tags) != 0;
+        road = firstNonEmpty(tags.optString("name"), tags.optString("ref"));
+        String cc = Country.current(ctx).toUpperCase(Locale.US);
+        int[] l = limitFor(tags, forward, cc.isEmpty() ? "ES" : cc);
+        limit = l[0];
+        limitEst = l[1] == 1;
     }
 
     /**
@@ -263,7 +304,8 @@ final class RoadInfo {
                 ROADS_RADIUS_M, lat, lon, RoadAhead.CLASSES);
         RoadAhead r = new RoadAhead(RoadAhead.parse(elements(Http.overpass(q))));
         roads = r;
-        L.i("vía: " + r.size() + " carreteras alrededor (radares sin ruta)");
+        L.i("vía: " + r.size() + " carreteras alrededor (límite de la vía y radares sin ruta)");
+        RoadCache.save(ctx, lat, lon, r.ways(), System.currentTimeMillis());
     }
 
     /** Radares: se cargan 15 km a la redonda y se vuelven a cargar a los RELOAD_M (como mucho, cada RELOAD_MS). */
@@ -359,19 +401,14 @@ final class RoadInfo {
                 bestForward = forward;
             }
         }
+        limitConfirmed(s);
         if (best == null) {
             limit = -1;
             road = "";
             roadOneway = false;
             return;
         }
-        JSONObject tags = best.getJSONObject("tags");
-        roadOneway = oneway(tags) != 0;
-        road = firstNonEmpty(tags.optString("name"), tags.optString("ref"));
-        String cc = Country.current(ctx).toUpperCase(Locale.US);
-        int[] l = limitFor(tags, bestForward, cc.isEmpty() ? "ES" : cc);
-        limit = l[0];
-        limitEst = l[1] == 1;
+        applyWay(best.getJSONObject("tags"), bestForward);
     }
 
     /**

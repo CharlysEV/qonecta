@@ -18,7 +18,7 @@ class RoadAheadTest {
     private val kx = 111_320.0 * cos(Math.toRadians(lat0))
 
     private fun way(nodes: LongArray, xy: List<DoubleArray>, ref: String, link: Boolean, oneway: Int) = RoadAhead.Way(
-        nodes, DoubleArray(xy.size) { lat0 + xy[it][1] / ky }, DoubleArray(xy.size) { lon0 + xy[it][0] / kx }, ref, "", link, oneway)
+        nodes, DoubleArray(xy.size) { lat0 + xy[it][1] / ky }, DoubleArray(xy.size) { lon0 + xy[it][0] / kx }, ref, "", link, oneway, null)
 
     /**
      * Autovía A-9 hacia el norte en dos vías (0–1000 m y 1000–3000 m, curva a la derecha en la segunda), una salida en el

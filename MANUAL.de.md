@@ -512,7 +512,9 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
     das ihrer Zone („DE:urban“, „AT:rural“ …). Fehlt es dort, nimmt die App die allgemeine Regel des Landes für den
     Straßentyp an (Spanien, Portugal, Deutschland, Österreich, Schweiz, Italien, Frankreich, Niederlande, Belgien und
     Luxemburg) und schreibt „geschätzt“ dazu. Auf der Autobahn ohne Tempolimit erscheint das Schild „Ende aller
-    Streckenverbote“, ohne Farben; bei Wechselverkehrszeichen erscheint keins.
+    Streckenverbote“, ohne Farben; bei Wechselverkehrszeichen erscheint keins. Die Straßen deiner Fahrten werden auf
+    dem Handy gespeichert (60 Tage): Auf den üblichen Strecken erscheint das Tempolimit auch dann, wenn die Server von
+    OpenStreetMap überlastet sind. Ist es nicht bekannt, erscheint kein Schild (besser als ein falsches).
   - „Effizienz“: die Leistung der letzten 2 Minuten (grün, was zurückgewonnen wird), der Verbrauch jetzt, auf der Fahrt
     und im Mittel, wofür die Energie verbraucht wird, die Kosten der Fahrt, das CO₂, das aus keinem Auspuff gekommen
     ist, und ein Tipp.

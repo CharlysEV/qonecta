@@ -490,7 +490,9 @@ admite.
   - **O limite de velocidade** (Condução e Instrumentos) vem do OpenStreetMap: o da via no seu sentido ou o da sua zona
     («DE:urban», «AT:rural»…). Onde falta, assume-se o limite geral do país para o tipo de via (Espanha, Portugal,
     Alemanha, Áustria, Suíça, Itália, França, Países Baixos, Bélgica e Luxemburgo), com «estimado». Na Autobahn sem
-    limite aparece o sinal de fim de limitação, sem cores; com painéis variáveis, nenhum.
+    limite aparece o sinal de fim de limitação, sem cores; com painéis variáveis, nenhum. As estradas das suas viagens
+    ficam guardadas no telemóvel (60 dias): nas habituais, o limite aparece mesmo com os servidores do OpenStreetMap
+    sobrecarregados. Se não se souber, não aparece nenhum sinal (melhor do que um errado).
   - «Eficiência»: a potência dos últimos 2 minutos (a verde o que se recupera), o consumo agora, da viagem e médio, para
     onde vai a energia, o custo da viagem, o CO₂ que não saiu por um tubo de escape e uma dica.
   - «Estado» (com a conta Leapmotor): a bateria, a autonomia, a carga, as pressões, as portas e o conta-quilómetros
