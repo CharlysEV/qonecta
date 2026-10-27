@@ -149,8 +149,10 @@ public class PreviewActivity extends Activity {
                 ui = new CarUi(getApplicationContext(), W, H, AaPassthroughSource.PANEL_W, DPI, visible -> {
                 });
                 ui.start(surface);
+                // --es screen radio (u otra pantalla de PreviewShots): abre esa en vez de la pestaña Coche.
+                String screen = getIntent().getStringExtra("screen");
                 main.postDelayed(() -> {
-                    if (ui != null) ui.showForPreview("car-0");
+                    if (ui != null) ui.showForPreview(screen != null ? screen : "car-0");
                 }, 300);
             }
 
