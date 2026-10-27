@@ -1047,6 +1047,7 @@
     <string name="hql_aa_size_smallest">小很多</string>
     <string name="hql_aa_size_note">在小屏幕上（如 T03 的 10\" 屏幕）已自动缩小。重新连接后生效。</string>
     <string name="hql_list_add">添加列表</string>
+    <string name="hql_list_added">已添加列表</string>
     <string name="hql_lists_help">点按一个列表即可在车上使用（也可以在车上切换列表）。</string>
     <string name="hql_tv_formats">M3U 列表或 TDTChannels JSON 列表（…/lists/tv.json），后者还包含其 YouTube 和网页频道。</string>
     <string name="hql_tv_backup">备用源</string>

@@ -1089,6 +1089,15 @@ public class HomeActivity extends Activity implements LinkState.Listener {
                     Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*");
                     startActivityForResult(i, radio ? REQ_RADIO_FILE : REQ_IPTV_FILE);
                 })
+                // Cerrar (o salir) con una URL pegada sin «Añadir lista»: se añade igual, en vez de perderla sin avisar.
+                .setOnDismissListener(d -> {
+                    String u = url.getText().toString().trim();
+                    if (u.isEmpty()) return;
+                    if (!u.contains("://")) u = "https://" + u;
+                    addList(kind, name.getText().toString().trim(), u);
+                    L.i("listas de " + kind + ": añadida al cerrar sin «Añadir lista»");
+                    android.widget.Toast.makeText(this, Str.get(R.string.hql_list_added), android.widget.Toast.LENGTH_SHORT).show();
+                })
                 .show();
     }
 

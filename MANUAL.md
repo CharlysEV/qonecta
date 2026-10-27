@@ -789,8 +789,9 @@ Android 12 o anterior, la app usa el idioma del sistema.
 
 ### «Lista de TV» y «Lista de radio» («Auto extendido»)
 
-Pega la URL de una lista M3U o pulsa «Elegir archivo». Si no pones lista de radio, en el coche salen las emisoras
-populares.
+Pega la URL de una lista M3U (en la de TV, también la JSON de TDTChannels: `https://www.tdtchannels.com/lists/tv.json`)
+y pulsa **«Añadir lista»**: aparece arriba con un ✓. Si cierras con la URL pegada sin pulsarlo, se añade igual. También
+puedes pulsar «Elegir archivo». Si no pones lista de radio, en el coche salen las emisoras populares.
 
 ### «Mi música» (Radio, «Auto extendido»)
 

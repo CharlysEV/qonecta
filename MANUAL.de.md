@@ -846,8 +846,10 @@ Verbindung. Unter Android 12 oder älter nutzt die App die Systemsprache.
 
 ### „TV-Liste“ und „Radioliste“ („Auto erweitert“)
 
-Füge die URL einer M3U-Liste ein oder tippe auf „Datei wählen“. Wenn du keine Radioliste angibst, erscheinen im
-Fahrzeug die beliebtesten Sender.
+Füge die URL einer M3U-Liste ein (beim TV auch die JSON-Liste von TDTChannels:
+`https://www.tdtchannels.com/lists/tv.json`) und tippe auf **„Liste hinzufügen“**: Sie erscheint oben mit einem ✓.
+Schließt du mit eingefügter URL, ohne darauf zu tippen, wird sie trotzdem hinzugefügt. Du kannst auch auf „Datei wählen“
+tippen. Wenn du keine Radioliste angibst, erscheinen im Fahrzeug die beliebtesten Sender.
 
 ### „Meine Musik“ (Radio, „Auto erweitert“)
 
