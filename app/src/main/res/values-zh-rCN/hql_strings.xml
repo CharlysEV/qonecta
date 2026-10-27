@@ -1282,6 +1282,8 @@
     <string name="hql_energy_note">根据 Android 提供的本应用统计估算。不包括你使用应用时的手机屏幕，也不包括 Android Auto、地图或音乐的耗电。</string>
     <string name="hql_energy_none">从现在开始测量：几小时后就能看到待机和每次行程的耗电。</string>
     <string name="hql_split_aa_right">分屏时 Android Auto 在右侧</string>
+    <string name="hql_radio_resume">连接时继续播放电台</string>
+    <string name="hql_radio_resume_help">如果与车辆的连接结束时电台或我的音乐正在播放，下次连接时会自动继续（歌曲从上次的位置继续）。如果你已停止播放，则不会。</string>
     <string name="hql_split_swap">交换左右</string>
     <string name="hql_settings_fuel">燃油</string>
     <string name="hql_price_petrol">汽油价格</string>

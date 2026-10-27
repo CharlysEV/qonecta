@@ -198,4 +198,107 @@ final class RadioPlayer {
         error = "";
         changed();
     }
+
+    // ---------------------------------------------------------------- seguir en la próxima sesión
+
+    private static final String RESUME_PREFS = "hql_radio_resume";
+    /** Emisoras o canciones que se guardan como mucho, alrededor de la que sonaba: ⏮ ⏭ siguen valiendo al volver. */
+    static final int RESUME_MAX = 200;
+
+    /** Lo guardado para la próxima sesión: la lista, la que sonaba y, en una canción, por dónde iba. */
+    static final class Resume {
+        final List<Station> list;
+        final int index;
+        final long posMs;
+
+        Resume(List<Station> list, int index, long posMs) {
+            this.list = list;
+            this.index = index;
+            this.posMs = posMs;
+        }
+    }
+
+    /**
+     * Al cerrarse la interfaz propia, antes de {@link #stop()}: si sonaba algo, se guarda para seguir en la próxima
+     * sesión («Seguir con la radio al conectar»); si estaba en pausa o parado, se olvida (como la radio de un coche).
+     */
+    static void saveForResume(Context ctx) {
+        android.content.SharedPreferences p = ctx.getSharedPreferences(RESUME_PREFS, Context.MODE_PRIVATE);
+        Station s = current();
+        if (s == null || !isPlaying()) {
+            if (p.contains("state")) L.i("radio: no sonaba al cerrar; no seguirá en la próxima conexión");
+            p.edit().remove("state").apply();
+            return;
+        }
+        p.edit().putString("state", resumeJson(list, index, s.local ? player.getCurrentPosition() : 0)).apply();
+        L.i("radio: sonaba " + (s.local ? "una canción" : s.name) + " al cerrar; seguirá en la próxima conexión");
+    }
+
+    /** Al abrir la interfaz propia: sigue con lo que sonaba al cerrarse la anterior, si sonaba y no suena ya otra cosa. */
+    static void resumeSaved(Context ctx) {
+        if (current() != null) return;
+        Resume r = resumeFrom(ctx.getSharedPreferences(RESUME_PREFS, Context.MODE_PRIVATE).getString("state", null));
+        if (r == null) return;
+        list.clear();
+        list.addAll(r.list);
+        index = r.index;
+        Station s = current();
+        L.i("radio: sigo con lo que sonaba al cerrar: " + (s.local ? "canción " + (index + 1) + " de " + list.size()
+                + " desde " + r.posMs / 1000 + " s" : s.name));
+        start(ctx.getApplicationContext());
+        if (r.posMs > 0 && player != null) player.seekTo(r.posMs);
+    }
+
+    /** Puro: la lista (como mucho RESUME_MAX alrededor de la que suena), la que suena y la posición, en JSON. */
+    static String resumeJson(List<Station> l, int i, long posMs) {
+        int from = Math.max(0, Math.min(i - RESUME_MAX / 2, l.size() - RESUME_MAX));
+        int to = Math.min(l.size(), from + RESUME_MAX);
+        org.json.JSONArray a = new org.json.JSONArray();
+        try {
+            for (int k = from; k < to; k++) {
+                Station s = l.get(k);
+                org.json.JSONObject o = new org.json.JSONObject();
+                o.put("name", s.name);
+                o.put("url", s.url);
+                if (s.logo != null) o.put("logo", s.logo);
+                if (s.group != null) o.put("group", s.group);
+                if (s.local) {
+                    o.put("local", true);
+                    o.put("album", s.album);
+                    o.put("dur", s.durMs);
+                }
+                a.put(o);
+            }
+            return new org.json.JSONObject().put("list", a).put("index", i - from).put("pos", Math.max(0, posMs)).toString();
+        } catch (org.json.JSONException e) {
+            return null;
+        }
+    }
+
+    /** Puro: lo guardado por {@link #resumeJson}, o null si no hay nada (o está roto). */
+    static Resume resumeFrom(String json) {
+        if (json == null || json.isEmpty()) return null;
+        try {
+            org.json.JSONObject o = new org.json.JSONObject(json);
+            org.json.JSONArray a = o.getJSONArray("list");
+            List<Station> out = new ArrayList<>();
+            for (int k = 0; k < a.length(); k++) {
+                org.json.JSONObject e = a.getJSONObject(k);
+                Station s = new Station();
+                s.name = e.optString("name");
+                s.url = e.optString("url");
+                s.logo = e.optString("logo", null);
+                s.group = e.optString("group", null);
+                s.local = e.optBoolean("local");
+                s.album = e.optString("album");
+                s.durMs = e.optLong("dur");
+                if (!s.url.isEmpty()) out.add(s);
+            }
+            int i = o.optInt("index", -1);
+            if (out.size() != a.length() || i < 0 || i >= out.size()) return null;
+            return new Resume(out, i, out.get(i).local ? Math.max(0, o.optLong("pos")) : 0);
+        } catch (org.json.JSONException e) {
+            return null;
+        }
+    }
 }

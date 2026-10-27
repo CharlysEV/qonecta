@@ -782,6 +782,10 @@ the Music folder, Downloads or a USB drive), by artist and album. Tap one and th
 It plays like the radio: it keeps going when you change screen, with the panel's mini player and the steering
 wheel buttons. It needs the "Photos, videos, music and location" permission (Android 13 or later).
 
+If the radio or "My music" was playing when the connection with the car ended (when you switch it off, for example),
+it carries on by itself when you connect again; a song, from where it was. Not if you had stopped it. Turn it off in
+Settings › "Car screen" › "Resume the radio when connecting".
+
 ### "Web bookmarks" ("Auto extended")
 
 The shortcuts on the car's "Web" screen (YouTube, Google, Wikipedia and Twitch by default). Add your own with a

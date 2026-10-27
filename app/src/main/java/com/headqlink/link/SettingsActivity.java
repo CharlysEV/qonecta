@@ -205,6 +205,12 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
             cfg.putBool(Config.SPLIT_AA_RIGHT, on);
             CarUi.applySplitAaRight(on);
         });
+        switchRow(Str.get(R.string.hql_radio_resume),
+                () -> Str.get(R.string.hql_radio_resume_help) + (extended() ? "" : "\n" + Str.get(R.string.hql_aj_ext_only)),
+                cfg::radioResume, on -> {
+                    cfg.putBool(Config.RADIO_RESUME, on);
+                    L.i("radio: seguir al conectar " + (on ? "sí" : "no"));
+                });
         switchRow(Str.get(R.string.hql_psx_enhanced), () -> Str.get(R.string.hql_psx_enhanced_sum), cfg::psxEnhanced, on -> {
             cfg.putBool(Config.PSX_ENHANCED, on);
             L.i("PlayStation: imagen " + (on ? "mejorada" : "original") + " (se aplica al abrir el próximo juego)");

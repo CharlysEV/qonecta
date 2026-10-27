@@ -114,6 +114,9 @@ final class CarUi {
     private FrameLayout root;
     private float swipeX = -1;
     private final Runnable radioChanged = () -> main.post(this::renderRadioMini);
+    /** «Seguir con la radio al conectar»: unos segundos después de abrir, cuando el audio del coche ya está. */
+    private final Runnable resumeRadio = this::resumeRadioNow;
+    static final long RADIO_RESUME_DELAY_MS = 3000;
     // Aviso del plan de carga (RoutePlanner): tarjeta ámbar abajo en el panel, por encima de Android Auto.
     private LinearLayout alertCard;
     private TextView alertTitle;
@@ -1101,7 +1104,12 @@ final class CarUi {
                 if (autoHide) setHidden(true);
             }
             main.postDelayed(floatTick, FLOAT_TICK_MS);
+            if (new Config(ctx).radioResume()) main.postDelayed(resumeRadio, RADIO_RESUME_DELAY_MS);
         });
+    }
+
+    private void resumeRadioNow() {
+        RadioPlayer.resumeSaved(ctx);
     }
 
     /** Guarda qué se veía (sección, pestaña de Coche y pantalla partida) por si la conexión vuelve enseguida (TripCarry). */
@@ -1198,6 +1206,8 @@ final class CarUi {
             if (screen != null) screen.destroy();
             screen = null;
             RadioPlayer.removeListener(radioChanged);
+            main.removeCallbacks(resumeRadio);
+            if (new Config(ctx).radioResume()) RadioPlayer.saveForResume(ctx);
             RadioPlayer.stop();
             TripLog.stop();
             CarCloud.release("ui");

@@ -859,6 +859,10 @@ anderen danach; „Zufällig“ mischt sie. Es spielt wie das Radio: läuft beim
 Mini-Player im Panel und den Lenkradtasten. Dafür braucht es die Berechtigung „Fotos, Videos, Musik und Standort“
 (ab Android 13).
 
+Lief das Radio oder „Meine Musik“, als die Verbindung zum Fahrzeug endete (zum Beispiel beim Ausschalten), läuft es
+beim nächsten Verbinden von selbst weiter; ein Titel an der Stelle, an der er war. Hattest du es angehalten, nicht.
+Abschalten unter Einstellungen › „Fahrzeugbildschirm“ › „Radio beim Verbinden fortsetzen“.
+
 ### „Web-Lesezeichen“ („Auto erweitert“)
 
 Die Verknüpfungen auf dem Bildschirm „Web“ im Fahrzeug (standardmäßig YouTube, Google, Wikipedia und Twitch). Füge

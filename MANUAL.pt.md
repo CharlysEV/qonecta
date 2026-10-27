@@ -808,6 +808,10 @@ biblioteca: pasta Música, Transferências ou uma pen USB), por artista e álbum
 «Aleatório» mistura-as. Toca como a rádio: continua ao mudar de ecrã, com o mini leitor do painel e os comandos do
 volante. Precisa da permissão «Fotos, vídeos, música e localização» (Android 13 ou superior).
 
+Se a rádio ou «A minha música» estava a tocar quando a ligação ao carro terminou (ao desligá-lo, por exemplo),
+continua sozinha na ligação seguinte; uma música, onde ia. Se a tinha parado, não. Desliga-se em Definições › «Ecrã
+do carro» › «Continuar a rádio ao ligar».
+
 ### «Marcadores web» («Auto estendido»)
 
 Os atalhos do ecrã «Web» do carro (de origem, YouTube, Google, Wikipedia e Twitch). Adicione os seus com nome e

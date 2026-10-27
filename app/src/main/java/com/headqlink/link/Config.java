@@ -860,6 +860,16 @@ final class Config {
     }
 
     /** Tarjeta flotante con la próxima parada sobre Android Auto (CarUi/FloatCard). */
+    /**
+     * «Seguir con la radio al conectar» (por defecto, sí): si la radio o «Mi música» sonaba al cerrarse la interfaz propia,
+     * sigue sola en la próxima sesión (RadioPlayer.saveForResume / resumeSaved). Si estaba parada, no.
+     */
+    static final String RADIO_RESUME = "radio_resume";
+
+    boolean radioResume() {
+        return sp.getBoolean(RADIO_RESUME, true);
+    }
+
     static final String FLOAT_CARD = "float_card";
 
     boolean floatCard() {

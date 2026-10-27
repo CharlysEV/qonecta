@@ -1279,6 +1279,8 @@
     <string name="hql_energy_note">Estimé avec les statistiques qu\'Android fournit pour cette app. Ne compte pas l\'écran du téléphone pendant que vous utilisez l\'app, ni ce que consomment Android Auto, Maps ou la musique.</string>
     <string name="hql_energy_none">Mesure à partir de maintenant : dans quelques heures, vous verrez ce qu\'elle consomme au repos et à chaque trajet.</string>
     <string name="hql_split_aa_right">Écran partagé : Android Auto à droite</string>
+    <string name="hql_radio_resume">Reprendre la radio à la connexion</string>
+    <string name="hql_radio_resume_help">Si la radio ou Ma musique jouait à la fin de la connexion avec la voiture, elle reprend toute seule à la suivante (un morceau, là où il en était). Pas si vous l\'aviez arrêtée.</string>
     <string name="hql_split_swap">Inverser les côtés</string>
     <string name="hql_settings_fuel">Carburant</string>
     <string name="hql_price_petrol">Prix de l\'essence</string>

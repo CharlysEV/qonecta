@@ -1278,6 +1278,8 @@
     <string name="hql_energy_note">Geschat met de statistieken die Android over deze app geeft. Zonder het telefoonscherm terwijl je de app gebruikt, en zonder wat Android Auto, Maps of de muziek verbruiken.</string>
     <string name="hql_energy_none">Vanaf nu wordt gemeten: over een paar uur zie je het verbruik in rust en per rit.</string>
     <string name="hql_split_aa_right">Gesplitst scherm: Android Auto rechts</string>
+    <string name="hql_radio_resume">Radio hervatten bij verbinden</string>
+    <string name="hql_radio_resume_help">Speelde de radio of Mijn muziek toen de verbinding met de auto stopte, dan gaat die bij de volgende vanzelf verder (een nummer vanaf waar het was). Niet als je hem had gestopt.</string>
     <string name="hql_split_swap">Kanten wisselen</string>
     <string name="hql_settings_fuel">Brandstof</string>
     <string name="hql_price_petrol">Benzineprijs</string>

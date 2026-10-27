@@ -1284,6 +1284,8 @@
     <string name="hql_energy_note">Estimado con las estadísticas que Android da de esta app. No cuenta la pantalla del móvil mientras usas la app ni lo que gastan Android Auto, Maps o la música.</string>
     <string name="hql_energy_none">Midiendo desde ahora: en unas horas verás lo que gasta en reposo y en cada viaje.</string>
     <string name="hql_split_aa_right">Pantalla partida: Android Auto a la derecha</string>
+    <string name="hql_radio_resume">Seguir con la radio al conectar</string>
+    <string name="hql_radio_resume_help">Si la radio o Mi música sonaba al terminar la conexión con el coche, sigue sola en la siguiente (una canción, por donde iba). Si la habías parado, no.</string>
     <string name="hql_split_swap">Cambiar de lado</string>
     <string name="hql_settings_fuel">Combustible</string>
     <string name="hql_price_petrol">Precio de la gasolina</string>

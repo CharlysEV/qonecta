@@ -809,6 +809,10 @@ Android: cartella Musica, Download o una chiavetta USB), per artista e album. To
 «Casuale» li mescola. Suona come la radio: continua cambiando schermata, con il mini lettore del pannello e i comandi
 al volante. Serve il permesso «Foto, video, musica e posizione» (Android 13 o successivo).
 
+Se la radio o «La mia musica» era in riproduzione quando è finita la connessione con l'auto (spegnendola, per
+esempio), riparte da sola alla connessione successiva; un brano, da dove era. Se l'avevi fermata, no. Si disattiva in
+Impostazioni › «Schermo dell'auto» › «Riprendi la radio alla connessione».
+
 ### «Segnalibri web» («Auto esteso»)
 
 Le scorciatoie della schermata «Web» dell'auto (di default YouTube, Google, Wikipedia e Twitch). Aggiungi i tuoi con
