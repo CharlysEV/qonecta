@@ -136,8 +136,10 @@ final class RoutePlanner {
         List<String> routeTiles = new ArrayList<>();
         volatile List<String> missingTiles = new ArrayList<>();
         volatile int chargerVersion;
-        /** Versión de los puntos oficiales (DGT y Bundesnetzagentur) con la que se hizo la lista (OfficialChargers.version). */
+        /** Versión de los puntos oficiales (DGT, Bundesnetzagentur y Suiza) con la que se hizo la lista (OfficialChargers.version). */
         int dgtVersion = -1;
+        /** La ruta pasa por Suiza: mientras dure, se pide el estado en directo de sus cargadores (SwissChargers). */
+        volatile boolean swiss;
         /** Cuántos cargadores de la lista salen de la DGT. */
         volatile int dgtCount;
         /** Cuadrículas con datos de la DGT a las que aún les faltan los de OpenStreetMap (se piden en segundo plano). */
@@ -667,6 +669,9 @@ final class RoutePlanner {
         if (f != null && f != p) finishPending(f);
         // Tráfico de la DGT sobre la ruta (obras, accidentes, retenciones, vehículos detenidos…).
         DgtTraffic.update(ctx, p, p == null ? 0 : p.km[Math.min(p.progress, p.n - 1)], this::trafficAlert);
+        // Ruta por Suiza: el estado de sus cargadores (cada pocos minutos; si un sitio queda fuera de servicio, sube la
+        // versión y la lista se rehace sin él).
+        if (p != null && p.swiss) SwissChargers.statusIfDue(ctx);
         if (p != null && !demo && !p.routeTiles.isEmpty() && p.dgtVersion != OfficialChargers.version()) {
             // Han llegado (o se han renovado) los puntos de la DGT: la lista de la ruta, con ellos.
             rebuildChargers(p);
@@ -3214,6 +3219,13 @@ final class RoutePlanner {
             BnetzaChargers.sites(ctx);
             BnetzaChargers.want(ctx);
         }
+        // En Suiza, los de la Oficina Federal de Energía (~1,1 MB, con cualquier red; mientras, OpenStreetMap) y, mientras
+        // dure la ruta, su estado en directo (step).
+        p.swiss = !demo && SwissChargers.nearSwitzerland(p.lat, p.lon);
+        if (p.swiss) {
+            SwissChargers.sites(ctx);
+            SwissChargers.refreshIfStale(ctx);
+        }
         // Con lo que ya hay (DGT y caché) el plan sale ya; lo que falte se pide a OpenStreetMap en otro hilo y la lista se
         // rehace al llegar. Antes se esperaba aquí: con Overpass saturado, la ruta tardaba minutos en salir.
         rebuildChargers(p);
@@ -3342,6 +3354,10 @@ final class RoutePlanner {
      */
     List<Charger> nearby(double lat, double lon, double radiusKm, List<String> missing) {
         if (!demo) OfficialChargers.load(ctx);
+        if (!demo && SwissChargers.inSwitzerland(lat, lon)) {
+            SwissChargers.refreshIfStale(ctx);
+            SwissChargers.statusIfDue(ctx);
+        }
         long now = System.currentTimeMillis();
         List<Charger> official = new ArrayList<>();
         List<Charger> extra = new ArrayList<>();
@@ -3447,6 +3463,8 @@ final class RoutePlanner {
             List<DgtChargers.Site> dgt = OfficialChargers.inTile(t);
             if (dgt != null) {
                 for (DgtChargers.Site s : dgt) {
+                    // Suiza: con todos sus puntos fuera de servicio ahora mismo, el plan no lo usa.
+                    if (SwissChargers.allOut(s)) continue;
                     int idx = nearest(p, s.lat, s.lon, -1);
                     if (distToRouteKm(p.lat, p.lon, idx, s.lat, s.lon) > CHARGER_RADIUS_KM) continue;
                     Charger c = s.toCharger();

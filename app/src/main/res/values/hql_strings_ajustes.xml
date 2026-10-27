@@ -19,7 +19,7 @@
     <string name="hql_aj_car_mode">Android car mode</string>
     <string name="hql_aj_car_mode_sum">While projecting. Not needed; leaving it makes the phone reload every app (like a soft reset). Applies to the next session.</string>
     <string name="hql_aj_price_home">Home electricity price</string>
-    <string name="hql_aj_price_invalid">Enter a price from 0 to %1$s €/kWh</string>
+    <string name="hql_aj_price_invalid">Enter a price from 0 to %1$s %2$s/kWh</string>
     <string name="hql_aj_adv_warning">For testing. A value here overrides the profile; empty = automatic (the profile\'s or what the car asks for).</string>
     <string name="hql_aj_low_latency">Latency optimizations</string>
     <string name="hql_aj_low_latency_sum">Set by the profile; use more battery</string>

@@ -19,7 +19,7 @@
     <string name="hql_aj_car_mode">Android-Automodus</string>
     <string name="hql_aj_car_mode_sum">Beim Projizieren. Nicht nötig; beim Verlassen lädt das Handy alle Apps neu (wie ein Soft-Reset). Gilt ab der nächsten Sitzung.</string>
     <string name="hql_aj_price_home">Strompreis zu Hause</string>
-    <string name="hql_aj_price_invalid">Gib einen Preis von 0 bis %1$s €/kWh ein</string>
+    <string name="hql_aj_price_invalid">Gib einen Preis von 0 bis %1$s %2$s/kWh ein</string>
     <string name="hql_aj_adv_warning">Zum Testen. Ein Wert hier hat Vorrang vor dem Profil; leer = automatisch (der des Profils oder was das Fahrzeug verlangt).</string>
     <string name="hql_aj_low_latency">Latenzoptimierungen</string>
     <string name="hql_aj_low_latency_sum">Vom Profil gesetzt; brauchen mehr Akku</string>

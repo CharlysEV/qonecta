@@ -19,7 +19,7 @@
     <string name="hql_aj_car_mode">Modalità auto di Android</string>
     <string name="hql_aj_car_mode_sum">Durante la proiezione. Non serve; all\'uscita il telefono ricarica tutte le app (come un riavvio leggero). Vale dalla prossima sessione.</string>
     <string name="hql_aj_price_home">Prezzo dell\'elettricità a casa</string>
-    <string name="hql_aj_price_invalid">Scrivi un prezzo da 0 a %1$s €/kWh</string>
+    <string name="hql_aj_price_invalid">Scrivi un prezzo da 0 a %1$s %2$s/kWh</string>
     <string name="hql_aj_adv_warning">Per i test. Un valore qui prevale sul profilo; vuoto = automatico (quello del profilo o quello che chiede l\'auto).</string>
     <string name="hql_aj_low_latency">Ottimizzazioni di latenza</string>
     <string name="hql_aj_low_latency_sum">Le attiva il profilo; consumano più batteria</string>

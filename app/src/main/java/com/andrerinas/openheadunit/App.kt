@@ -140,6 +140,8 @@ class App : Application(), Application.ActivityLifecycleCallbacks {
         // headqlink: logcat continuo del proceso y registro de fallos, el coche del perfil (C10 o T03) y por qué terminó
         // la app la vez anterior (bloqueo, memoria, fallo nativo, cierre forzado). Leen ajustes: con el móvil desbloqueado.
         com.headqlink.link.CarSpec.load(this)
+        // La moneda de los precios (la elegida o la de la SIM); si cambió, los precios guardados se pasan.
+        com.headqlink.link.Money.init(this)
         com.headqlink.link.LogcatCapture.start(this)
         com.headqlink.link.QdTrace.init(this)
         com.headqlink.link.ExitReasons.start(this)

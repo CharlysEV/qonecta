@@ -2018,7 +2018,8 @@ final class RouteTab implements CarScreen {
             count.setText(Str.get(R.string.hql_near_count, passing, nearRadius));
             String src = OfficialChargers.sourceOf(ChargerCache.tileOf(pos[0], pos[1]));
             body.addView(hint(Str.get("dgt".equals(src) ? R.string.hql_chargers_source_dgt
-                    : "de".equals(src) ? R.string.hql_chargers_source_de : R.string.hql_chargers_source_osm)));
+                    : "de".equals(src) ? R.string.hql_chargers_source_de
+                    : "ch".equals(src) ? R.string.hql_chargers_source_ch : R.string.hql_chargers_source_osm)));
         };
         build[0].run();
         root.addView(panel, CarStyle.match());
@@ -2048,12 +2049,38 @@ final class RouteTab implements CarScreen {
         if (ChargePlanner.lowVolts(c, planner.carVolts())) {
             txt.addView(CarStyle.text(ctx, Str.get(R.string.hql_charger_low_volts, c.maxVolts), 20, CarKit.AMBER));
         }
+        addLive(txt, c, 20);
         item.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         item.addView(markPill(c));
         TextView go = CarKit.pill(ctx, Str.get(R.string.hql_go), false);
         go.setOnClickListener(v -> navigateTo(c.lat, c.lon));
         item.addView(go, spaced());
         return item;
+    }
+
+    /**
+     * El estado de ahora de un cargador de Suiza (SwissChargers), si lo hay: «Libres ahora: 3 de 4» en verde, todos
+     * ocupados en ámbar o fuera de servicio en rojo.
+     */
+    private void addLive(LinearLayout txt, RoutePlanner.Charger c, int size) {
+        int[] l = SwissChargers.live(c.id);
+        if (l == null) return;
+        int total = l[SwissChargers.FREE] + l[SwissChargers.BUSY] + l[SwissChargers.OUT] + l[SwissChargers.UNKNOWN];
+        String text;
+        int color;
+        if (l[SwissChargers.FREE] > 0) {
+            text = Str.get(R.string.hql_ch_live_free, l[SwissChargers.FREE], total);
+            color = CarKit.GREEN;
+        } else if (l[SwissChargers.OUT] == total) {
+            text = Str.get(R.string.hql_ch_live_out);
+            color = CarKit.RED;
+        } else if (l[SwissChargers.BUSY] > 0) {
+            text = Str.get(R.string.hql_ch_live_busy);
+            color = CarKit.AMBER;
+        } else {
+            return;
+        }
+        txt.addView(CarStyle.text(ctx, text, size, color));
     }
 
     /** Una fila de la ventana de cargadores. */
@@ -2092,6 +2119,7 @@ final class RouteTab implements CarScreen {
         if (ChargePlanner.lowVolts(c, planner.carVolts())) {
             txt.addView(CarStyle.text(ctx, Str.get(R.string.hql_charger_low_volts, c.maxVolts), 20, CarKit.AMBER));
         }
+        addLive(txt, c, 20);
         item.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         if (stop != null) {
             TextView tag = CarStyle.text(ctx, Str.get(R.string.hql_chargers_list_stop, stop), 21, CarKit.ACCENT);
@@ -2619,6 +2647,7 @@ final class RouteTab implements CarScreen {
             line.setMaxLines(2);
             txt.addView(name);
             txt.addView(line);
+            addLive(txt, st.charger, 19);
             // Parada larga: si hay dónde comer cerca (FoodNearby, pedido una vez).
             String food = ChargePlanner.longStop(st) ? foodText(st.charger) : "";
             if (!food.isEmpty()) {

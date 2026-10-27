@@ -269,6 +269,7 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
             cfg.putBool("trip_notice", on);
             L.i("resumen del viaje al desconectar: " + (on ? "sí" : "no"));
         });
+        row(Str.get(R.string.hql_currency), () -> currencyLabel(cfg.currencyChoice())).setOnClickListener(v -> pickCurrency());
         row(Str.get(R.string.hql_aj_price_home), () -> SettingsRows.priceText(cfg.electricityPrice(), Locale.getDefault()))
                 .setOnClickListener(v -> editPrice(Str.get(R.string.hql_aj_price_home), Str.get(R.string.hql_settings_price_help),
                         SettingsRows.PRICE_HOME_MAX, cfg::electricityPrice, p -> {
@@ -297,6 +298,29 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
         row(Str.get(R.string.hql_compare_with), () -> compareLabel(cfg.compareDiesel())).setOnClickListener(v -> pickCompare());
         row(Str.get(R.string.hql_compare_l100), () -> SettingsRows.l100Text(cfg.fuelLitersPer100(), Locale.getDefault()))
                 .setOnClickListener(v -> editL100());
+    }
+
+    /** «Automática (CHF)» o «CHF · franco suizo». */
+    private String currencyLabel(String code) {
+        if (code.isEmpty()) return Str.get(R.string.hql_currency_auto, Money.autoCode(this));
+        return code + " · " + java.util.Currency.getInstance(code).getDisplayName(Str.locale());
+    }
+
+    /** La moneda de los precios y los costes: automática (la de la SIM) o una de Money.CODES; los precios se pasan solos. */
+    private void pickCurrency() {
+        String now = cfg.currencyChoice();
+        CharSequence[] items = new CharSequence[Money.CODES.length + 1];
+        items[0] = currencyLabel("");
+        int sel = 0;
+        for (int i = 0; i < Money.CODES.length; i++) {
+            items[i + 1] = currencyLabel(Money.CODES[i]);
+            if (Money.CODES[i].equals(now)) sel = i + 1;
+        }
+        choose(Str.get(R.string.hql_currency), items, sel, Str.get(R.string.hql_currency_help), i -> {
+            cfg.setCurrencyChoice(i == 0 ? "" : Money.CODES[i - 1]);
+            Money.init(this);
+            L.i("moneda: " + (i == 0 ? "automática (" + Money.currency().getCurrencyCode() + ")" : Money.CODES[i - 1]));
+        });
     }
 
     static String compareLabel(boolean diesel) {
@@ -735,14 +759,14 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
                 });
     }
 
-    /** Un precio (€/kWh) escrito a mano: con coma o punto, redondeado al céntimo y entre 0 y max. */
-    private void editPrice(String title, String help, double max, java.util.function.DoubleSupplier get,
+    /** Un precio por kWh escrito a mano: con coma o punto, redondeado al céntimo y entre 0 y el tope. */
+    private void editPrice(String title, String help, double maxEur, java.util.function.DoubleSupplier get,
                            java.util.function.DoubleConsumer set) {
-        editPrice(title, help, max, "kWh", get, set);
+        editPrice(title, help, maxEur, "kWh", get, set);
     }
 
-    /** Un precio en €/unit (kWh o l): fuera de rango, el aviso en el campo y no se cierra. */
-    private void editPrice(String title, String help, double max, String unit, java.util.function.DoubleSupplier get,
+    /** Un precio por unit (kWh o l) en la moneda de la app: fuera de rango, el aviso en el campo y no se cierra. */
+    private void editPrice(String title, String help, double maxEur, String unit, java.util.function.DoubleSupplier get,
                            java.util.function.DoubleConsumer set) {
         TextInputEditText e = M3.field(this);
         e.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
@@ -751,12 +775,15 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
         e.setText(SettingsRows.priceField(get.getAsDouble(), Locale.getDefault()));
         e.setSelectAllOnFocus(true);
         TextInputLayout field = M3.outlined(e);
-        field.setSuffixText("€/" + unit);
-        String maxText = SettingsRows.priceField(max, Locale.getDefault());
+        field.setSuffixText(Money.symbol() + "/" + unit);
+        // El tope es en euros: en otra moneda, por su cambio (como Config).
+        double top = Math.round(maxEur * Money.rate() * 100) / 100.0;
+        String maxText = SettingsRows.priceField(top, Locale.getDefault());
         editDialog(title, help, e, field, () -> {
-            double p = SettingsRows.parsePrice(e.getText() == null ? "" : e.getText().toString(), max);
+            double p = SettingsRows.parsePrice(e.getText() == null ? "" : e.getText().toString(), top);
             if (p < 0) {
-                field.setError(Str.get("l".equals(unit) ? R.string.hql_aj_price_invalid_l : R.string.hql_aj_price_invalid, maxText));
+                field.setError(Str.get("l".equals(unit) ? R.string.hql_aj_price_invalid_l : R.string.hql_aj_price_invalid, maxText,
+                        Money.symbol()));
                 return false;
             }
             set.accept(p);

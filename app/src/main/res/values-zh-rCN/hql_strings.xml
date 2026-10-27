@@ -763,7 +763,7 @@
     <string name="hql_charger_networks">运营商</string>
     <string name="hql_charger_all_networks">全部</string>
     <string name="hql_charger_other">其他</string>
-    <string name="hql_charger_filter_note">在西班牙和德国，充电桩数据来自官方登记册（DGT 提供功率和电压；德国联邦网络局提供功率）；在其他地区，数据来自 OpenStreetMap，功率或网络可能缺失或过时。</string>
+    <string name="hql_charger_filter_note">在西班牙、德国和瑞士，充电桩数据来自官方登记册（DGT 提供功率和电压；德国联邦网络局提供功率；瑞士联邦能源办公室提供功率和实时占用情况）；在其他地区，数据来自 OpenStreetMap，功率或网络可能缺失或过时。</string>
     <string name="hql_charger_tab_chargers">充电桩</string>
     <string name="hql_charger_tab_plan">充电计划</string>
     <string name="hql_charger_tab_marks">收藏与屏蔽</string>
@@ -816,7 +816,7 @@
     <string name="hql_charger_kw_unknown">功率未确认</string>
     <string name="hql_charger_unknown_include">包括无功率或电压数据的充电桩</string>
     <string name="hql_charger_unknown_exclude">仅限已确认数据</string>
-    <string name="hql_charger_unknown_note">在西班牙和德国，充电桩来自官方登记册（DGT 和德国联邦网络局），带有每个充电桩的功率（DGT 还提供电压）。在其他地区则来自 OpenStreetMap，多数没有标明功率：Tesla、Ionity、Zunder、Fastned、Electra、Atlante 和 Mercedes-Benz 按其典型功率计算（≈）；其余的只有在你选择包含时才计入，且计划优先选择已确认的充电桩。</string>
+    <string name="hql_charger_unknown_note">在西班牙、德国和瑞士，充电桩来自官方登记册（DGT、德国联邦网络局和瑞士联邦能源办公室），带有每个充电桩的功率（DGT 还提供电压）。在其他地区则来自 OpenStreetMap，多数没有标明功率：Tesla、Ionity、Zunder、Fastned、Electra、Atlante 和 Mercedes-Benz 按其典型功率计算（≈）；其余的只有在你选择包含时才计入，且计划优先选择已确认的充电桩。</string>
     <string name="hql_chargers_list_title">路线上的充电桩</string>
     <string name="hql_chargers_list_filtered">已筛选</string>
     <string name="hql_chargers_list_all">全部</string>
@@ -1275,7 +1275,12 @@
     <string name="hql_karaoke_source">歌词：LRCLIB（lrclib.net）</string>
     <string name="hql_about_lrclib">卡拉OK：来自 LRCLIB（lrclib.net）的同步歌词</string>
     <string name="hql_chargers_source_de">数据：在德国，来自联邦网络局的公共充电桩登记册（Ladesäulenregister，CC BY 4.0）；其他地区，© OpenStreetMap 贡献者（ODbL）。</string>
+    <string name="hql_chargers_source_ch">数据：在瑞士，充电站及其实时状态来自瑞士联邦能源办公室（BFE，ich-tanke-strom.ch，开放数据）；其他地区，© OpenStreetMap 贡献者（ODbL）。</string>
+    <string name="hql_ch_live_free">当前空闲：%1$d / %2$d</string>
+    <string name="hql_ch_live_busy">当前：全部占用</string>
+    <string name="hql_ch_live_out">当前：停止服务</string>
     <string name="hql_about_bnetza">德国充电桩：联邦网络局 Ladesäulenregister（CC BY 4.0）</string>
+    <string name="hql_about_bfe">瑞士充电桩：瑞士联邦能源办公室（BFE），ich-tanke-strom.ch（开放数据）</string>
     <string name="hql_trip_phone_used">手机电量：−%1$d%%</string>
     <string name="hql_trip_phone_used_mah">手机电量：−%1$d%%（%2$d mAh）</string>
     <string name="hql_trip_phone_charging">手机电量：%1$d%% → %2$d%%（充电中）</string>
@@ -1303,10 +1308,13 @@
     <string name="hql_compare_petrol">汽油车</string>
     <string name="hql_compare_diesel">柴油车</string>
     <string name="hql_compare_help">用来比较你花费的燃油车：该燃料的每升价格和 CO₂。</string>
+    <string name="hql_currency">货币</string>
+    <string name="hql_currency_auto">自动（%1$s）</string>
+    <string name="hql_currency_help">用于价格和费用。自动时使用 SIM 卡所属国家的货币（旅行时不会变）。更改后，已设置的价格会按近似汇率换算，请检查一下。</string>
     <string name="hql_compare_l100">比较车辆的油耗</string>
     <string name="hql_compare_l100_help">比较车辆每 100 公里的油耗（升），用于计算节省和 CO₂。</string>
     <string name="hql_compare_l100_invalid">请输入 2 到 20 l/100 km 之间的油耗</string>
-    <string name="hql_aj_price_invalid_l">请输入 0 到 %1$s €/l 之间的价格</string>
+    <string name="hql_aj_price_invalid_l">请输入 0 到 %1$s %2$s/l 之间的价格</string>
     <string name="hql_cost_diesel">柴油车需 ~%1$s</string>
     <string name="hql_co2_note_diesel">对比油耗 %1$.1f l/100 km 的柴油车（每升 %2$.2f kg CO₂，仅计尾气排放）。</string>
     <string name="hql_report_saved_diesel">油耗 %2$s L/100 km 的柴油车按 %3$s 计算需花费 %1$s。</string>

@@ -442,7 +442,7 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
       kommen die Schnelllader aus dem offiziellen Register der Bundesnetzagentur (Ladesäulenregister), mit Leistung und
       Steckern (ohne Spannung: Es wird die typische des jeweiligen Ladenetzes verwendet). Es ist etwa 55 MB groß, deshalb
       wird es nur per WLAN geladen, einmal im Monat und nur auf Handys, die schon eine Route durch Deutschland geplant
-      haben; bis dahin gilt OpenStreetMap. Die App wählt das Register danach, wo die Route verläuft, nicht nach der
+      haben; bis dahin gilt OpenStreetMap. **In der Schweiz** kommen sie vom Bundesamt für Energie (ich-tanke-strom.ch), mit Leistung und **live, wie viele Ladepunkte frei sind**: „Jetzt frei: 3 von 4“ in Grün, „alle belegt“ in Gelb oder „außer Betrieb“ in Rot – in der Liste, bei „Ladestationen in der Nähe“ und bei den Stopps des Ladeplans; ein Standort, dessen Ladepunkte alle außer Betrieb sind, kommt nicht in den Plan. Die Daten sind klein (~1 MB): Sie werden einmal pro Woche geladen, wenn eine Route durch die Schweiz führt oder du dort Ladestationen suchst, und der Status wird währenddessen alle 3 Minuten abgefragt. Die App wählt das Register danach, wo die Route verläuft, nicht nach der
       Sprache des Handys. **„Ladestationen an der Route“** öffnet die Liste mit dem Kennzeichen jedes Ladenetzes, dem
       km, der Leistung, der Spannung („350 kW · 920 V“) und den Steckern.
     - **Ladestationen in deiner Nähe:** „In der Nähe“ (neben „Filter“) sucht Ladestationen im Umkreis von 5, 10, 25
@@ -832,6 +832,12 @@ Verbindung und Engine sehen. Nutze das nur bei stehendem Fahrzeug.
 Vergleichsautos“ (standardmäßig 6,5 und 5,5 l/100 km). Daraus ergeben sich die Ersparnis gegenüber einem Verbrenner
 (Effizienz, Monatsbericht) und das eingesparte CO₂; beim REEV wird das Benzin des Generators immer zum Benzinpreis
 gerechnet.
+
+„Währung“ (auf dem Handy in den Einstellungen, über den Preisen): die für Preise und Kosten. „Automatisch“ nimmt die
+des Landes deiner SIM-Karte, die sich auf Reisen nicht ändert (mit einer deutschen SIM in der Schweiz bleibt es bei
+Euro); oder du wählst eine: Euro, Schweizer Franken, Pfund, Dänische, Schwedische, Norwegische und Isländische Krone,
+Złoty, Tschechische Krone, Forint oder Leu. Beim Wechsel werden deine Preise mit einem ungefähren Kurs umgerechnet –
+prüf sie kurz.
 
 „Farbe der Seitenleiste“: „Automatisch“ (nachts dunkel und tagsüber hell, wie das Fahrzeugdisplay) oder eine von 16
 festen Farben, die tagsüber und nachts gleich bleibt. Gilt sofort, und der Text der Seitenleiste wird hell oder dunkel,
@@ -1310,7 +1316,7 @@ Hilfe bekommst du auch auf der Projektseite bei GitHub: [CharlysEV/qonecta](http
 - Online-Daten: Karten, Straßen und Ladestationen © **OpenStreetMap**-Mitwirkende (ODbL), mit Overpass, OSRM, Photon
   (komoot) und Nominatim; Wetter und Höhendaten von **Open-Meteo.com** (CC BY 4.0) und Open Topo Data; Ladestationen in
   Spanien aus dem Register des MITECO, veröffentlicht von der DGT, und in Deutschland aus dem Ladesäulenregister der
-  **Bundesnetzagentur** (CC BY 4.0); Radio von **radio-browser.info**; Orte im Reiseführer aus der **Wikipedia**
+  **Bundesnetzagentur** (CC BY 4.0) und in der Schweiz vom **Bundesamt für Energie** (ich-tanke-strom.ch, Open Data); Radio von **radio-browser.info**; Orte im Reiseführer aus der **Wikipedia**
   (CC BY-SA); Liedtexte für Karaoke von **LRCLIB**.
 - Emulatoren: Nestopia, halfNES, bsnes, ClownMDEmu und PCSX ReARMed, jeweils mit eigener Lizenz. Alles Weitere in
   [NOTICE](NOTICE).

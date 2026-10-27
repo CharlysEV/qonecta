@@ -765,7 +765,7 @@
     <string name="hql_charger_networks">Réseaux</string>
     <string name="hql_charger_all_networks">Tous</string>
     <string name="hql_charger_other">Autres</string>
-    <string name="hql_charger_filter_note">En Espagne et en Allemagne, les bornes viennent des registres officiels (DGT, avec puissance et tension ; Bundesnetzagentur, avec puissance) ; ailleurs, d\'OpenStreetMap, où la puissance ou le réseau peuvent manquer ou ne pas être à jour.</string>
+    <string name="hql_charger_filter_note">En Espagne, en Allemagne et en Suisse, les bornes viennent des registres officiels (DGT, avec puissance et tension ; Bundesnetzagentur, avec puissance ; Office fédéral de l\'énergie, avec puissance et disponibilité en direct) ; ailleurs, d\'OpenStreetMap, où la puissance ou le réseau peuvent manquer ou ne pas être à jour.</string>
     <string name="hql_charger_tab_chargers">Bornes</string>
     <string name="hql_charger_tab_plan">Plan de recharge</string>
     <string name="hql_charger_tab_marks">Favorites et bannies</string>
@@ -818,7 +818,7 @@
     <string name="hql_charger_kw_unknown">puissance non confirmée</string>
     <string name="hql_charger_unknown_include">Inclure celles sans puissance ni tension</string>
     <string name="hql_charger_unknown_exclude">Seulement les données confirmées</string>
-    <string name="hql_charger_unknown_note">En Espagne et en Allemagne, les bornes viennent des registres officiels (DGT et Bundesnetzagentur), avec la puissance de chacune (la DGT donne aussi la tension). Ailleurs, d\'OpenStreetMap, où la plupart n\'indiquent pas leur puissance : Tesla, Ionity, Zunder, Fastned, Electra, Atlante et Mercedes-Benz comptent avec leur puissance typique (≈) ; les autres, seulement si tu les inclus, et le plan préfère les bornes confirmées.</string>
+    <string name="hql_charger_unknown_note">En Espagne, en Allemagne et en Suisse, les bornes viennent des registres officiels (DGT, Bundesnetzagentur et Office fédéral de l\'énergie), avec la puissance de chacune (la DGT donne aussi la tension). Ailleurs, d\'OpenStreetMap, où la plupart n\'indiquent pas leur puissance : Tesla, Ionity, Zunder, Fastned, Electra, Atlante et Mercedes-Benz comptent avec leur puissance typique (≈) ; les autres, seulement si tu les inclus, et le plan préfère les bornes confirmées.</string>
     <string name="hql_chargers_list_title">Bornes sur l\'itinéraire</string>
     <string name="hql_chargers_list_filtered">Filtrées</string>
     <string name="hql_chargers_list_all">Toutes</string>
@@ -1272,7 +1272,12 @@
     <string name="hql_karaoke_source">Paroles : LRCLIB (lrclib.net)</string>
     <string name="hql_about_lrclib">Karaoké : paroles synchronisées de LRCLIB (lrclib.net)</string>
     <string name="hql_chargers_source_de">Données : en Allemagne, le registre des points de recharge de la Bundesnetzagentur (Ladesäulenregister, CC BY 4.0) ; ailleurs, © contributeurs d\'OpenStreetMap (ODbL).</string>
+    <string name="hql_chargers_source_ch">Données : en Suisse, les bornes et leur état en direct de l\'Office fédéral de l\'énergie (OFEN, ich-tanke-strom.ch, données ouvertes) ; ailleurs, © contributeurs d\'OpenStreetMap (ODbL).</string>
+    <string name="hql_ch_live_free">Libres maintenant : %1$d sur %2$d</string>
+    <string name="hql_ch_live_busy">Maintenant : toutes occupées</string>
+    <string name="hql_ch_live_out">Maintenant : hors service</string>
     <string name="hql_about_bnetza">Bornes en Allemagne : Ladesäulenregister de la Bundesnetzagentur (CC BY 4.0)</string>
+    <string name="hql_about_bfe">Bornes en Suisse : Office fédéral de l\'énergie (OFEN), ich-tanke-strom.ch (données ouvertes)</string>
     <string name="hql_trip_phone_used">Batterie du téléphone : −%1$d %%</string>
     <string name="hql_trip_phone_used_mah">Batterie du téléphone : −%1$d %% (%2$d mAh)</string>
     <string name="hql_trip_phone_charging">Batterie du téléphone : %1$d %% → %2$d %% (en charge)</string>
@@ -1300,10 +1305,13 @@
     <string name="hql_compare_petrol">Essence</string>
     <string name="hql_compare_diesel">Diesel</string>
     <string name="hql_compare_help">La voiture thermique avec laquelle on compare ce que vous dépensez : prix au litre et CO₂ de ce carburant.</string>
+    <string name="hql_currency">Devise</string>
+    <string name="hql_currency_auto">Automatique (%1$s)</string>
+    <string name="hql_currency_help">Pour les prix et les coûts. En automatique, celle du pays de votre carte SIM (elle ne change pas en voyage). Si vous la changez, vos prix sont convertis à un taux approximatif : vérifiez-les.</string>
     <string name="hql_compare_l100">Consommation de la voiture de comparaison</string>
     <string name="hql_compare_l100_help">Litres aux 100 km de la voiture de comparaison (économies et CO₂).</string>
     <string name="hql_compare_l100_invalid">Saisissez une consommation de 2 à 20 l/100 km</string>
-    <string name="hql_aj_price_invalid_l">Saisissez un prix de 0 à %1$s €/l</string>
+    <string name="hql_aj_price_invalid_l">Saisissez un prix de 0 à %1$s %2$s/l</string>
     <string name="hql_cost_diesel">En voiture diesel, ~%1$s</string>
     <string name="hql_co2_note_diesel">Par rapport à une voiture diesel à %1$.1f l/100 km (%2$.2f kg de CO₂ par litre, à l\'échappement uniquement).</string>
     <string name="hql_report_saved_diesel">Une voiture diesel à %2$s L/100 km aurait coûté %1$s à %3$s.</string>

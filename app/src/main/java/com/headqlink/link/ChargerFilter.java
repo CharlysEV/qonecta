@@ -83,6 +83,17 @@ final class ChargerFilter {
         NETWORKS.put("gofast", new String[]{"GOFAST", "gofast"});
         NETWORKS.put("izivia", new String[]{"Izivia", "izivia"});
         NETWORKS.put("freetox", new String[]{"Free To X", "free to x"});
+        // Suiza: las de más puntos rápidos del registro de la Oficina Federal de Energía (SwissChargers, 27-10).
+        NETWORKS.put("energie360", new String[]{"Energie 360°", "energie 360"});
+        NETWORKS.put("mcharge", new String[]{"M-Charge (Migros)", "m charge", "mcharge"});
+        NETWORKS.put("move", new String[]{"Move", "=move", "move mobility"});
+        NETWORKS.put("ecarup", new String[]{"eCarUp", "ecarup"});
+        NETWORKS.put("swisscharge", new String[]{"swisscharge", "swisscharge"});
+        NETWORKS.put("powerup", new String[]{"Power Up", "=power up", "powerup"});
+        NETWORKS.put("eponet", new String[]{"Eponet", "eponet"});
+        NETWORKS.put("aviavolt", new String[]{"AVIA VOLT", "avia volt"});
+        NETWORKS.put("iwb", new String[]{"IWB", "iwb"});
+        NETWORKS.put("ewz", new String[]{"ewz", "ewz", "elektrizitatswerk der stadt zurich"});
     }
 
     private ChargerFilter() {
@@ -221,6 +232,16 @@ final class ChargerFilter {
         BADGES.put("gofast", new Object[]{0xFFE30613, "GF", 0});
         BADGES.put("izivia", new Object[]{0xFF00A3A1, "IZ", 0});
         BADGES.put("freetox", new Object[]{0xFF00B140, "FX", 0});
+        BADGES.put("energie360", new Object[]{0xFF00A19A, "360", 0});
+        BADGES.put("mcharge", new Object[]{0xFFFF6600, "MC", 0});
+        BADGES.put("move", new Object[]{0xFF00A0E1, "MV", 0});
+        BADGES.put("ecarup", new Object[]{0xFF7AB800, "eC", 0});
+        BADGES.put("swisscharge", new Object[]{0xFFE30613, "SC", 0});
+        BADGES.put("powerup", new Object[]{0xFF0055A5, "PU", 0});
+        BADGES.put("eponet", new Object[]{0xFF009EE0, "EP", 0});
+        BADGES.put("aviavolt", new Object[]{0xFFE2001A, "AV", 0});
+        BADGES.put("iwb", new Object[]{0xFF00965E, "IWB", 0});
+        BADGES.put("ewz", new Object[]{0xFF0073B9, "EWZ", 0});
     }
 
     /**
@@ -357,6 +378,11 @@ final class ChargerFilter {
         COUNTRIES.put("gofast", new String[]{"ch", "at", "de"});
         COUNTRIES.put("izivia", new String[]{"fr"});
         COUNTRIES.put("freetox", new String[]{"it"});
+        String[] ch = {"ch", "li"};
+        for (String k : new String[]{"energie360", "mcharge", "move", "ecarup", "swisscharge", "powerup", "eponet", "aviavolt",
+                "iwb", "ewz"}) {
+            COUNTRIES.put(k, ch);
+        }
     }
 
     /** Puro: ¿la red tiene cargadores en ese país (ISO en minúsculas)? Sin país ("" o null) o red sin datos: sí. */

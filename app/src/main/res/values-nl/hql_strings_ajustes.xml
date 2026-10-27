@@ -19,7 +19,7 @@
     <string name="hql_aj_car_mode">Android-automodus</string>
     <string name="hql_aj_car_mode_sum">Tijdens projecteren. Niet nodig; bij het verlaten laadt de telefoon alle apps opnieuw (als een zachte herstart). Geldt vanaf de volgende sessie.</string>
     <string name="hql_aj_price_home">Stroomprijs thuis</string>
-    <string name="hql_aj_price_invalid">Vul een prijs in van 0 tot %1$s €/kWh</string>
+    <string name="hql_aj_price_invalid">Vul een prijs in van 0 tot %1$s %2$s/kWh</string>
     <string name="hql_aj_adv_warning">Om te testen. Een waarde hier gaat boven het profiel; leeg = automatisch (die van het profiel of wat de auto vraagt).</string>
     <string name="hql_aj_low_latency">Optimalisaties voor lage vertraging</string>
     <string name="hql_aj_low_latency_sum">Ingesteld door het profiel; kosten meer batterij</string>

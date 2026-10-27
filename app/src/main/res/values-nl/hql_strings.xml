@@ -764,7 +764,7 @@
     <string name="hql_charger_networks">Netwerken</string>
     <string name="hql_charger_all_networks">Alle</string>
     <string name="hql_charger_other">Overige</string>
-    <string name="hql_charger_filter_note">In Spanje en Duitsland komen de laadpalen uit de officiële registers (DGT, met vermogen en spanning; Bundesnetzagentur, met vermogen); elders uit OpenStreetMap, waar vermogen of netwerk kunnen ontbreken of verouderd zijn.</string>
+    <string name="hql_charger_filter_note">In Spanje, Duitsland en Zwitserland komen de laadpalen uit de officiële registers (DGT, met vermogen en spanning; Bundesnetzagentur, met vermogen; Zwitsers federaal energiebureau, met vermogen en live bezetting); elders uit OpenStreetMap, waar vermogen of netwerk kunnen ontbreken of verouderd zijn.</string>
     <string name="hql_charger_tab_chargers">Laadpalen</string>
     <string name="hql_charger_tab_plan">Laadplan</string>
     <string name="hql_charger_tab_marks">Favoriet en geblokkeerd</string>
@@ -817,7 +817,7 @@
     <string name="hql_charger_kw_unknown">vermogen onbevestigd</string>
     <string name="hql_charger_unknown_include">Ook zonder vermogen of spanning</string>
     <string name="hql_charger_unknown_exclude">Alleen bevestigde gegevens</string>
-    <string name="hql_charger_unknown_note">In Spanje en Duitsland komen de laadpalen uit de officiële registers (DGT en Bundesnetzagentur), met het vermogen van elke laadpaal (bij de DGT ook de spanning). Elders uit OpenStreetMap, waar de meeste hun vermogen niet vermelden: Tesla, Ionity, Zunder, Fastned, Electra, Atlante en Mercedes-Benz tellen mee met hun gebruikelijke vermogen (≈); de rest alleen als je ze meeneemt, en het plan geeft de voorkeur aan de bevestigde.</string>
+    <string name="hql_charger_unknown_note">In Spanje, Duitsland en Zwitserland komen de laadpalen uit de officiële registers (DGT, Bundesnetzagentur en het Zwitserse federale energiebureau), met het vermogen van elke laadpaal (bij de DGT ook de spanning). Elders uit OpenStreetMap, waar de meeste hun vermogen niet vermelden: Tesla, Ionity, Zunder, Fastned, Electra, Atlante en Mercedes-Benz tellen mee met hun gebruikelijke vermogen (≈); de rest alleen als je ze meeneemt, en het plan geeft de voorkeur aan de bevestigde.</string>
     <string name="hql_chargers_list_title">Laadpalen langs de route</string>
     <string name="hql_chargers_list_filtered">Gefilterd</string>
     <string name="hql_chargers_list_all">Alle</string>
@@ -1271,7 +1271,12 @@
     <string name="hql_karaoke_source">Songteksten: LRCLIB (lrclib.net)</string>
     <string name="hql_about_lrclib">Karaoke: gesynchroniseerde songteksten van LRCLIB (lrclib.net)</string>
     <string name="hql_chargers_source_de">Gegevens: in Duitsland het laadpaalregister van de Bundesnetzagentur (Ladesäulenregister, CC BY 4.0); elders © OpenStreetMap-bijdragers (ODbL).</string>
+    <string name="hql_chargers_source_ch">Gegevens: in Zwitserland de laadpalen en hun live status van het Zwitserse federale energiebureau (BFE, ich-tanke-strom.ch, open data); elders © OpenStreetMap-bijdragers (ODbL).</string>
+    <string name="hql_ch_live_free">Nu vrij: %1$d van %2$d</string>
+    <string name="hql_ch_live_busy">Nu: alle bezet</string>
+    <string name="hql_ch_live_out">Nu: buiten gebruik</string>
     <string name="hql_about_bnetza">Laadpalen in Duitsland: Ladesäulenregister van de Bundesnetzagentur (CC BY 4.0)</string>
+    <string name="hql_about_bfe">Laadpalen in Zwitserland: Zwitsers federaal energiebureau (BFE), ich-tanke-strom.ch (open data)</string>
     <string name="hql_trip_phone_used">Telefoonaccu: −%1$d %%</string>
     <string name="hql_trip_phone_used_mah">Telefoonaccu: −%1$d %% (%2$d mAh)</string>
     <string name="hql_trip_phone_charging">Telefoonaccu: %1$d %% → %2$d %% (laadt)</string>
@@ -1299,10 +1304,13 @@
     <string name="hql_compare_petrol">Benzine</string>
     <string name="hql_compare_diesel">Diesel</string>
     <string name="hql_compare_help">De brandstofauto waarmee je kosten worden vergeleken: literprijs en CO₂ van die brandstof.</string>
+    <string name="hql_currency">Valuta</string>
+    <string name="hql_currency_auto">Automatisch (%1$s)</string>
+    <string name="hql_currency_help">Voor prijzen en kosten. Automatisch: die van het land van je simkaart (verandert niet als je reist). Als je hem wijzigt, worden je prijzen omgerekend met een benaderende koers: controleer ze.</string>
     <string name="hql_compare_l100">Verbruik van de vergelijkingsauto</string>
     <string name="hql_compare_l100_help">Liter per 100 km van de vergelijkingsauto (besparing en CO₂).</string>
     <string name="hql_compare_l100_invalid">Vul een verbruik in van 2 tot 20 l/100 km</string>
-    <string name="hql_aj_price_invalid_l">Vul een prijs in van 0 tot %1$s €/l</string>
+    <string name="hql_aj_price_invalid_l">Vul een prijs in van 0 tot %1$s %2$s/l</string>
     <string name="hql_cost_diesel">Met een dieselauto ~%1$s</string>
     <string name="hql_co2_note_diesel">Vergeleken met een dieselauto die %1$.1f l/100 km verbruikt (%2$.2f kg CO₂ per liter, alleen uitlaat).</string>
     <string name="hql_report_saved_diesel">Een dieselauto met %2$s L/100 km had %1$s gekost bij %3$s.</string>

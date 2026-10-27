@@ -431,7 +431,7 @@ admite.
       Transição Ecológica, publicado pela DGT em nap.dgt.es): a potência e a **tensão** de cada um. É descarregado no
       telemóvel uma vez por semana (cerca de 3 MB). O que falta no registo (há operadores que não registaram todos os
       seus pontos) completa-se com o OpenStreetMap, sem repetir os que já lá estão; fora de Espanha, tudo vem do
-      OpenStreetMap, onde a potência ou a rede podem faltar. **Na Alemanha**, os rápidos vêm do registo oficial da Bundesnetzagentur (Ladesäulenregister), com a potência e as fichas (sem tensão: usa-se a típica de cada rede). Ocupa uns 55 MB, por isso só se descarrega com Wi-Fi, uma vez por mês e só nos telemóveis que planearam alguma rota pela Alemanha; entretanto, OpenStreetMap. A app escolhe o registo pelo sítio por onde passa a rota, não pelo idioma do telemóvel. **«Carregadores ao longo da rota»** abre a lista com o
+      OpenStreetMap, onde a potência ou a rede podem faltar. **Na Alemanha**, os rápidos vêm do registo oficial da Bundesnetzagentur (Ladesäulenregister), com a potência e as fichas (sem tensão: usa-se a típica de cada rede). Ocupa uns 55 MB, por isso só se descarrega com Wi-Fi, uma vez por mês e só nos telemóveis que planearam alguma rota pela Alemanha; entretanto, OpenStreetMap. **Na Suíça**, vêm do Serviço Federal de Energia (ich-tanke-strom.ch), com a potência e **quantos pontos estão livres em direto**: «Livres agora: 3 de 4» a verde, «todos ocupados» a âmbar ou «fora de serviço» a vermelho, na lista, em «Perto de mim» e nas paragens do plano; o plano não usa um local com todos os pontos fora de serviço. Pesa pouco (~1 MB): descarrega-se uma vez por semana quando uma rota passa pela Suíça ou procura carregadores lá, e o estado consulta-se a cada 3 minutos entretanto. A app escolhe o registo pelo sítio por onde passa a rota, não pelo idioma do telemóvel. **«Carregadores ao longo da rota»** abre a lista com o
       distintivo de cada rede, o km, a potência, a tensão («350 kW · 920 V») e as fichas.
     - **Carregadores perto de si:** «Perto de mim» (ao lado de «Filtrar») procura os carregadores a 5, 10, 25 ou 50 km
       de onde está, sem rota, do mais perto ao mais longe: escolhe a rede («os Wenea perto de mim») e a potência mínima,
@@ -785,6 +785,11 @@ das viagens; 0,20 por omissão), e ver a ligação e o motor em uso. Use-o só c
 (€/l; 1,60 e 1,50 por omissão), «Comparar com» (gasolina ou gasóleo) e o «Consumo do carro de comparação» (6,5 e
 5,5 l/100 km por omissão). Com eles saem a poupança face a um carro a combustão (Eficiência, relatório do mês) e o CO₂
 que evita; no REEV, a gasolina que o gerador gasta conta sempre ao preço da gasolina.
+
+«Moeda» (no telemóvel, nas Definições, por cima dos preços): a dos preços e custos. Em «Automática», a do país do seu
+cartão SIM, que não muda em viagem (com um cartão português na Suíça, continua em euros); ou escolhe uma: euro, franco
+suíço, libra, coroas dinamarquesa, sueca, norueguesa e islandesa, zlóti, coroa checa, forinte ou leu. Ao mudá-la, os
+seus preços são convertidos com uma taxa aproximada: reveja-os.
 
 «Cor do painel lateral»: «Automático» (escuro à noite e claro de dia, como o ecrã do carro) ou uma de 16 cores fixas,
 que fica igual de dia e de noite. Aplica-se logo, e o texto do painel passa a claro ou escuro para se ler.
@@ -1191,7 +1196,7 @@ Pode pedir ajuda na página do projeto no GitHub: [CharlysEV/qonecta](https://gi
 - Dados online: mapas, estradas e carregadores © colaboradores do **OpenStreetMap** (ODbL), através do Overpass, OSRM,
   Photon (komoot) e Nominatim; tempo e altitude da **Open-Meteo.com** (CC BY 4.0) e Open Topo Data; carregadores em
   Espanha do registo do MITECO publicado pela DGT e na Alemanha do Ladesäulenregister da **Bundesnetzagentur**
-  (CC BY 4.0); rádio do **radio-browser.info**; lugares do Guia da estrada da **Wikipedia** (CC BY-SA); letras do
+  (CC BY 4.0) e na Suíça do **Serviço Federal de Energia** (ich-tanke-strom.ch, dados abertos); rádio do **radio-browser.info**; lugares do Guia da estrada da **Wikipedia** (CC BY-SA); letras do
   Karaoke do **LRCLIB**.
 - Emuladores: Nestopia, halfNES, bsnes, ClownMDEmu e PCSX ReARMed, cada um com a sua licença. Tudo no
   [NOTICE](NOTICE).

@@ -764,7 +764,7 @@
     <string name="hql_charger_networks">Ladenetze</string>
     <string name="hql_charger_all_networks">Alle</string>
     <string name="hql_charger_other">Andere</string>
-    <string name="hql_charger_filter_note">In Spanien und Deutschland stammen die Ladesäulen aus den offiziellen Registern (DGT mit Leistung und Spannung, Bundesnetzagentur mit Leistung); sonst aus OpenStreetMap, wo Leistung oder Ladenetz fehlen oder veraltet sein können.</string>
+    <string name="hql_charger_filter_note">In Spanien, Deutschland und der Schweiz stammen die Ladesäulen aus den offiziellen Registern (DGT mit Leistung und Spannung, Bundesnetzagentur mit Leistung, Bundesamt für Energie mit Leistung und Live-Belegung); sonst aus OpenStreetMap, wo Leistung oder Ladenetz fehlen oder veraltet sein können.</string>
     <string name="hql_charger_tab_chargers">Ladesäulen</string>
     <string name="hql_charger_tab_plan">Ladeplan</string>
     <string name="hql_charger_tab_marks">Bevorzugt und gesperrt</string>
@@ -817,7 +817,7 @@
     <string name="hql_charger_kw_unknown">Leistung unbestätigt</string>
     <string name="hql_charger_unknown_include">Auch ohne Leistungs- oder Spannungsangabe</string>
     <string name="hql_charger_unknown_exclude">Nur bestätigte Angaben</string>
-    <string name="hql_charger_unknown_note">In Spanien und Deutschland stammen die Ladesäulen aus den offiziellen Registern (DGT und Bundesnetzagentur), mit der Leistung jeder Station (bei der DGT auch die Spannung). Sonst aus OpenStreetMap, wo die meisten ihre Leistung nicht nennen: Tesla, Ionity, Zunder, Fastned, Electra, Atlante und Mercedes-Benz zählen mit ihrer typischen Leistung (≈); die anderen nur, wenn du sie einschließt, und der Plan bevorzugt die bestätigten.</string>
+    <string name="hql_charger_unknown_note">In Spanien, Deutschland und der Schweiz stammen die Ladesäulen aus den offiziellen Registern (DGT, Bundesnetzagentur und Bundesamt für Energie), mit der Leistung jeder Station (bei der DGT auch die Spannung). Sonst aus OpenStreetMap, wo die meisten ihre Leistung nicht nennen: Tesla, Ionity, Zunder, Fastned, Electra, Atlante und Mercedes-Benz zählen mit ihrer typischen Leistung (≈); die anderen nur, wenn du sie einschließt, und der Plan bevorzugt die bestätigten.</string>
     <string name="hql_chargers_list_title">Ladestationen an der Route</string>
     <string name="hql_chargers_list_filtered">Gefiltert</string>
     <string name="hql_chargers_list_all">Alle</string>
@@ -1271,7 +1271,12 @@
     <string name="hql_karaoke_source">Liedtexte: LRCLIB (lrclib.net)</string>
     <string name="hql_about_lrclib">Karaoke: synchronisierte Liedtexte von LRCLIB (lrclib.net)</string>
     <string name="hql_chargers_source_de">Daten: in Deutschland das Ladesäulenregister der Bundesnetzagentur (CC BY 4.0); sonst © OpenStreetMap-Mitwirkende (ODbL).</string>
+    <string name="hql_chargers_source_ch">Daten: in der Schweiz die Ladestationen und ihr Live-Status vom Bundesamt für Energie (BFE, ich-tanke-strom.ch, Open Data); sonst © OpenStreetMap-Mitwirkende (ODbL).</string>
+    <string name="hql_ch_live_free">Jetzt frei: %1$d von %2$d</string>
+    <string name="hql_ch_live_busy">Jetzt: alle belegt</string>
+    <string name="hql_ch_live_out">Jetzt: außer Betrieb</string>
     <string name="hql_about_bnetza">Ladesäulen in Deutschland: Ladesäulenregister der Bundesnetzagentur (CC BY 4.0)</string>
+    <string name="hql_about_bfe">Ladestationen in der Schweiz: Bundesamt für Energie (BFE), ich-tanke-strom.ch (Open Data)</string>
     <string name="hql_trip_phone_used">Handy-Akku: −%1$d %%</string>
     <string name="hql_trip_phone_used_mah">Handy-Akku: −%1$d %% (%2$d mAh)</string>
     <string name="hql_trip_phone_charging">Handy-Akku: %1$d %% → %2$d %% (lädt)</string>
@@ -1299,10 +1304,13 @@
     <string name="hql_compare_petrol">Benziner</string>
     <string name="hql_compare_diesel">Diesel</string>
     <string name="hql_compare_help">Der Verbrenner, mit dem deine Kosten verglichen werden: Literpreis und CO₂ dieses Kraftstoffs.</string>
+    <string name="hql_currency">Währung</string>
+    <string name="hql_currency_auto">Automatisch (%1$s)</string>
+    <string name="hql_currency_help">Für Preise und Kosten. Automatisch: die des Landes deiner SIM-Karte (ändert sich auf Reisen nicht). Beim Wechsel werden deine Preise mit einem ungefähren Kurs umgerechnet – prüf sie kurz.</string>
     <string name="hql_compare_l100">Verbrauch des Vergleichsautos</string>
     <string name="hql_compare_l100_help">Liter pro 100 km des Vergleichsautos (Ersparnis und CO₂).</string>
     <string name="hql_compare_l100_invalid">Gib einen Verbrauch von 2 bis 20 l/100 km ein</string>
-    <string name="hql_aj_price_invalid_l">Gib einen Preis von 0 bis %1$s €/l ein</string>
+    <string name="hql_aj_price_invalid_l">Gib einen Preis von 0 bis %1$s %2$s/l ein</string>
     <string name="hql_cost_diesel">Mit einem Diesel ~%1$s</string>
     <string name="hql_co2_note_diesel">Gegenüber einem Diesel mit %1$.1f l/100 km (%2$.2f kg CO₂ pro Liter, nur Auspuff).</string>
     <string name="hql_report_saved_diesel">Ein Diesel mit %2$s L/100 km hätte bei %3$s %1$s gekostet.</string>

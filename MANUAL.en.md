@@ -411,7 +411,7 @@ version). That tells us whether the C10 supports it.
       Ecological Transition, published by the DGT at nap.dgt.es): the power and **voltage** of each one. It is
       downloaded on the phone once a week (about 3 MB). What the registry lacks (some operators have not registered
       all their points) is filled in from OpenStreetMap, without repeating the ones already there; outside Spain,
-      everything comes from OpenStreetMap, where power or network may be missing. **In Germany**, fast chargers come from the Bundesnetzagentur's official register (Ladesäulenregister), with their power and sockets (no voltage: each network's typical one is used). It weighs about 55 MB, so it is only downloaded on Wi-Fi, once a month and only on phones that have planned a route through Germany; meanwhile, OpenStreetMap. The app picks the register by where the route goes, not by the phone's language. **"Chargers along the route"** opens
+      everything comes from OpenStreetMap, where power or network may be missing. **In Germany**, fast chargers come from the Bundesnetzagentur's official register (Ladesäulenregister), with their power and sockets (no voltage: each network's typical one is used). It weighs about 55 MB, so it is only downloaded on Wi-Fi, once a month and only on phones that have planned a route through Germany; meanwhile, OpenStreetMap. **In Switzerland**, they come from the Swiss Federal Office of Energy (ich-tanke-strom.ch), with their power and **how many points are free right now**: "Free now: 3 of 4" in green, "all occupied" in amber or "out of service" in red, in the list, in "Near me" and on the plan's stops; the plan skips a site whose points are all out of service. It is small (~1 MB): it is downloaded once a week when a route goes through Switzerland or you search for chargers there, and the status is checked every 3 minutes meanwhile. The app picks the register by where the route goes, not by the phone's language. **"Chargers along the route"** opens
       the list with each network's badge, the km, the power, the voltage ("350 kW · 920 V") and the sockets.
     - **Chargers near you:** "Near me" (next to "Filter") finds the chargers 5, 10, 25 or 50 km from where you are,
       without a route, nearest first: pick the network ("the Wenea ones near me") and the minimum power, and see how far
@@ -760,6 +760,11 @@ a few seconds"), auto-hide the panel and latency optimizations, the "Electricity
 1.50 by default), "Compare with" (petrol or diesel) and the "Comparison car consumption" (6.5 and 5.5 l/100 km by
 default). They give the savings against a combustion car (Efficiency, monthly report) and the CO₂ you avoid; on the
 REEV, the petrol the generator uses is always counted at the petrol price.
+
+"Currency" (on the phone, in Settings, above the prices): the one for prices and costs. "Automatic" uses your SIM
+card's country, which does not change when you travel (with a Spanish SIM in Switzerland it stays in euros); or pick
+one: euro, Swiss franc, pound, Danish, Swedish, Norwegian and Icelandic krone, złoty, Czech koruna, forint or leu.
+When you change it, your prices are converted at an approximate rate: check them.
 
 "Side panel color": "Automatic" (dark at night and light by day, like the car's screen) or one of 16 fixed colors, which
 stays the same day and night. It applies at once, and the panel's text turns light or dark so it stays readable.
@@ -1161,7 +1166,7 @@ You can ask for help on the project's GitHub page: [CharlysEV/qonecta](https://g
 - Online data: maps, roads and chargers © **OpenStreetMap** contributors (ODbL), through Overpass, OSRM, Photon
   (komoot) and Nominatim; weather and elevation by **Open-Meteo.com** (CC BY 4.0) and Open Topo Data; chargers in Spain
   from the MITECO registry published by the DGT and in Germany from the **Bundesnetzagentur** Ladesäulenregister
-  (CC BY 4.0); radio from **radio-browser.info**; Road guide places from **Wikipedia** (CC BY-SA); Karaoke lyrics
+  (CC BY 4.0) and in Switzerland from the **Swiss Federal Office of Energy** (ich-tanke-strom.ch, open data); radio from **radio-browser.info**; Road guide places from **Wikipedia** (CC BY-SA); Karaoke lyrics
   from **LRCLIB**.
 - Emulators: Nestopia, halfNES, bsnes, ClownMDEmu and PCSX ReARMed, each under its own licence. All of it, in
   [NOTICE](NOTICE).

@@ -423,7 +423,7 @@ admite.
       OpenStreetMap, donde la potencia o la red pueden faltar. **En Alemania**, los rápidos salen del registro oficial de
       la Bundesnetzagentur (Ladesäulenregister), con su potencia y sus enchufes (sin voltaje: se usa el típico de cada
       red). Pesa unos 55 MB, así que se baja solo con Wi-Fi, una vez al mes y solo en los móviles que han planificado
-      alguna ruta por Alemania; mientras, OpenStreetMap. La app elige el registro por dónde pasa la ruta, no por el
+      alguna ruta por Alemania; mientras, OpenStreetMap. **En Suiza**, salen de la Oficina Federal de Energía (ich-tanke-strom.ch), con su potencia y **cuántos puntos hay libres en directo**: «Libres ahora: 3 de 4» en verde, «todos ocupados» en ámbar o «fuera de servicio» en rojo, en la lista, en «Cerca de mí» y en las paradas del plan; el plan no usa un sitio con todos sus puntos fuera de servicio. Pesa poco (~1 MB): se baja una vez por semana cuando una ruta pasa por Suiza o buscas cargadores allí, y el estado se mira cada 3 minutos mientras tanto. La app elige el registro por dónde pasa la ruta, no por el
       idioma del móvil. **«Cargadores en ruta»** abre la lista con el distintivo
       de cada red, el km, la potencia, el voltaje («350 kW · 920 V») y los enchufes.
     - **Cargadores cerca de ti:** «Cerca de mí» (junto a «Filtrar») busca los cargadores a 5, 10, 25 o 50 km de donde
@@ -776,6 +776,11 @@ de los viajes; 0,20 de serie), y ver la conexión y el motor que se están usand
 (€/l; 1,60 y 1,50 de serie), «Comparar con» (gasolina o diésel) y el «Consumo del coche de comparación» (6,5 y
 5,5 l/100 km de serie). Con ellos salen el ahorro frente a un coche de combustión (Eficiencia, informe del mes) y el
 CO₂ que te ahorras; en el REEV, la gasolina que pone el generador cuenta siempre al precio de la gasolina.
+
+«Moneda» (en el móvil, en Ajustes, encima de los precios): la de los precios y los costes. En «Automática», la del
+país de tu SIM, que no cambia al viajar (con una SIM española en Suiza, sigue en euros); o eliges una: euro, franco
+suizo, libra, coronas danesa, sueca, noruega e islandesa, esloti, corona checa, forinto o leu. Al cambiarla, los
+precios que tenías se pasan con un cambio aproximado: revísalos.
 
 «Color del panel lateral»: «Automático» (oscuro de noche y claro de día, como la pantalla del coche) o uno de 16 colores
 fijos, que se queda igual de día y de noche. Se aplica al momento, y el texto del panel pasa a claro u oscuro para que
@@ -1181,7 +1186,7 @@ Puedes pedir ayuda en la página del proyecto en GitHub: [CharlysEV/qonecta](htt
 - Datos en línea: mapas, carreteras y cargadores © colaboradores de **OpenStreetMap** (ODbL), con Overpass, OSRM,
   Photon (komoot) y Nominatim; tiempo y altitud de **Open-Meteo.com** (CC BY 4.0) y Open Topo Data; cargadores en
   España del registro del MITECO publicado por la DGT y en Alemania del Ladesäulenregister de la
-  **Bundesnetzagentur** (CC BY 4.0); radio de **radio-browser.info**; lugares de la Guía del camino de **Wikipedia**
+  **Bundesnetzagentur** (CC BY 4.0) y en Suiza de la **Oficina Federal de Energía** (ich-tanke-strom.ch, datos abiertos); radio de **radio-browser.info**; lugares de la Guía del camino de **Wikipedia**
   (CC BY-SA); letras del Karaoke de **LRCLIB**.
 - Emuladores: Nestopia, halfNES, bsnes, ClownMDEmu y PCSX ReARMed, cada uno con su licencia. Todo, en
   [NOTICE](NOTICE).

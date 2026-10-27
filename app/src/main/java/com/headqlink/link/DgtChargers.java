@@ -60,8 +60,10 @@ final class DgtChargers {
         boolean type2;
         /** Puntos de recarga (conectores que cargan a la vez). */
         int points;
-        /** De qué registro oficial viene: «dgt» (España) o «de» (Alemania, BnetzaChargers). */
+        /** De qué registro oficial viene: «dgt» (España), «de» (Alemania, BnetzaChargers) o «ch» (Suiza, SwissChargers). */
         String src = "dgt";
+        /** Suiza: los puntos (EvseID) del sitio, para su estado en directo; null en los demás. */
+        String[] evses;
 
         /** Como cargador de la ruta (sin el km). */
         RoutePlanner.Charger toCharger() {

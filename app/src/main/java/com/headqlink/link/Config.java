@@ -536,47 +536,84 @@ final class Config {
         sp.edit().putFloat("soc_used_kwh", (float) (socUsedKwh() + kwh)).apply();
     }
 
-    /** Precios para el coste de los viajes. */
+    // Precios: en la moneda de la app (Money; «price_currency» dice en cuál están guardados). Los topes y los valores de
+    // serie son en euros y se pasan a esa moneda con el cambio aproximado (Money.rate).
+
+    /** La moneda elegida en Ajustes (ISO 4217), o "" en automático (la del país de la SIM). */
+    String currencyChoice() {
+        return sp.getString("currency", "");
+    }
+
+    void setCurrencyChoice(String code) {
+        sp.edit().putString("currency", code == null ? "" : code).apply();
+    }
+
+    /** En qué moneda están guardados los precios (antes de la 0.3.10, siempre euros). */
+    String pricesCurrency() {
+        return sp.getString("price_currency", "EUR");
+    }
+
+    private static final String[] PRICE_KEYS = {"price_kwh", "price_fast_kwh", "price_fuel", "price_diesel"};
+    private static final double[] PRICE_MAX_EUR = {SettingsRows.PRICE_HOME_MAX, SettingsRows.PRICE_FAST_MAX, Config.FUEL_PRICE_MAX,
+            Config.FUEL_PRICE_MAX};
+
+    /** Pasa los precios guardados de una moneda a otra con el cambio aproximado (dentro de los topes de la nueva). */
+    void convertPrices(String from, String to) {
+        double k = Money.rate(to) / Money.rate(from);
+        SharedPreferences.Editor e = sp.edit();
+        for (int i = 0; i < PRICE_KEYS.length; i++) {
+            if (!sp.contains(PRICE_KEYS[i])) continue;
+            e.putFloat(PRICE_KEYS[i], (float) clampPrice(sp.getFloat(PRICE_KEYS[i], 0) * k, PRICE_MAX_EUR[i] * Money.rate(to)));
+        }
+        e.putString("price_currency", to).apply();
+    }
+
+    /** Un precio guardado o, si no se ha puesto, el de serie (en euros) en la moneda de la app. */
+    private double price(String key, double defaultEur) {
+        return sp.contains(key) ? sp.getFloat(key, 0) : Math.round(defaultEur * Money.rate() * 100) / 100.0;
+    }
+
+    /** Precio de la electricidad en casa (por kWh), para el coste de los viajes. */
     double electricityPrice() {
-        return sp.getFloat("price_kwh", 0.20f);
+        return price("price_kwh", 0.20);
     }
 
-    /** €/kWh para el coste de los viajes (Ajustes del coche), entre 0 y 1 €. */
-    void setElectricityPrice(double eurPerKwh) {
-        sp.edit().putFloat("price_kwh", (float) Math.max(0, Math.min(1, Math.round(eurPerKwh * 100) / 100.0))).apply();
+    /** Precio por kWh para el coste de los viajes (Ajustes del coche), entre 0 y el tope (1 € en euros). */
+    void setElectricityPrice(double perKwh) {
+        sp.edit().putFloat("price_kwh", (float) clampPrice(perKwh, SettingsRows.PRICE_HOME_MAX * Money.rate())).apply();
     }
 
-    /** €/kWh en los cargadores rápidos, para lo que cuesta el plan de carga (Ajustes del coche), entre 0 y 1,5 €. */
+    /** Precio por kWh en los cargadores rápidos, para lo que cuesta el plan de carga (tope: 1,5 € en euros). */
     double fastChargePrice() {
-        return sp.getFloat("price_fast_kwh", 0.49f);
+        return price("price_fast_kwh", 0.49);
     }
 
-    void setFastChargePrice(double eurPerKwh) {
-        sp.edit().putFloat("price_fast_kwh", (float) Math.max(0, Math.min(1.5, Math.round(eurPerKwh * 100) / 100.0))).apply();
+    void setFastChargePrice(double perKwh) {
+        sp.edit().putFloat("price_fast_kwh", (float) clampPrice(perKwh, SettingsRows.PRICE_FAST_MAX * Money.rate())).apply();
     }
 
-    /** Tope de los precios del combustible (€/l) que se pueden poner. */
+    /** Tope de los precios del combustible (por litro, en euros: en otra moneda, por su cambio) que se pueden poner. */
     static final double FUEL_PRICE_MAX = 4.0;
     /** Consumo del coche de comparación (l/100 km): entre estos dos. */
     static final double COMPARE_L100_MIN = 2.0;
     static final double COMPARE_L100_MAX = 20.0;
 
-    /** €/l de gasolina: lo que pone el generador del REEV y, si se compara con gasolina, la comparación. */
+    /** Litro de gasolina: lo que pone el generador del REEV y, si se compara con gasolina, la comparación. */
     double fuelPrice() {
-        return sp.getFloat("price_fuel", 1.60f);
+        return price("price_fuel", 1.60);
     }
 
-    void setFuelPrice(double eurPerLiter) {
-        sp.edit().putFloat("price_fuel", (float) clampPrice(eurPerLiter, FUEL_PRICE_MAX)).apply();
+    void setFuelPrice(double perLiter) {
+        sp.edit().putFloat("price_fuel", (float) clampPrice(perLiter, FUEL_PRICE_MAX * Money.rate())).apply();
     }
 
-    /** €/l de diésel, para comparar con un diésel. */
+    /** Litro de diésel, para comparar con un diésel. */
     double dieselPrice() {
-        return sp.getFloat("price_diesel", 1.50f);
+        return price("price_diesel", 1.50);
     }
 
-    void setDieselPrice(double eurPerLiter) {
-        sp.edit().putFloat("price_diesel", (float) clampPrice(eurPerLiter, FUEL_PRICE_MAX)).apply();
+    void setDieselPrice(double perLiter) {
+        sp.edit().putFloat("price_diesel", (float) clampPrice(perLiter, FUEL_PRICE_MAX * Money.rate())).apply();
     }
 
     private static double clampPrice(double v, double max) {

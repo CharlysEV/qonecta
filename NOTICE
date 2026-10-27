@@ -53,6 +53,10 @@ Maps, routes, search, weather and elevation (online services the app queries):
   Chargers in Germany: the Bundesnetzagentur's register of public charging points (Ladesäulenregister,
   https://www.bundesnetzagentur.de/ladeinfrastruktur), CC BY 4.0; downloaded by the app once a month, on Wi-Fi, only on
   phones that plan routes through Germany, and kept in a compact form (fast chargers only); not bundled.
+  Chargers in Switzerland: the charging stations and their live status published by the Swiss Federal Office of Energy
+  (SFOE/BFE, ich-tanke-strom.ch, https://data.geo.admin.ch/ch.bfe.ladestellen-elektromobilitaet), open data
+  (free use, source must be cited); downloaded by the app once a week and the status every few minutes, only while a
+  route goes through Switzerland or chargers are searched there; not bundled.
   Road guide: place summaries and photos from Wikipedia (https://www.wikipedia.org, text under CC BY-SA 4.0) and
   Wikimedia Commons (each photo under its own free licence), fetched while the guide is open; not bundled. The app
   shows them with the source; summaries are shortened (without parentheses or references).

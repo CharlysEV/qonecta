@@ -644,12 +644,14 @@ final class SettingsScreen implements CarScreen {
             refreshSummaries();
         };
         showPrice.run();
+        // De céntimo en céntimo; en coronas o forintos (Money), de décima en décima o de unidad en unidad.
+        double step = Money.rate() >= 50 ? 1 : Money.rate() >= 5 ? 0.1 : 0.01;
         minus.setOnClickListener(v -> {
-            set.accept(get.getAsDouble() - 0.01);
+            set.accept(get.getAsDouble() - step);
             showPrice.run();
         });
         plus.setOnClickListener(v -> {
-            set.accept(get.getAsDouble() + 0.01);
+            set.accept(get.getAsDouble() + step);
             showPrice.run();
         });
         card.addView(priceRow);

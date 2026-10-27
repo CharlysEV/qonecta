@@ -130,6 +130,25 @@ final class LabControl {
                     done = "registro de Alemania pedido (se baja con Wi-Fi)";
                 }
                 break;
+            case "suiza": {
+                // Cargadores de Suiza sin ir a Suiza: baja los puntos (si hace falta) y el estado, y dice cuántos.
+                if (SwissChargers.sites(ctx) == null || "on".equals(a)) SwissChargers.refresh(ctx);
+                java.util.List<DgtChargers.Site> all = SwissChargers.sites(ctx);
+                if (all == null) return "no: no se pudieron bajar (mira el log)";
+                SwissChargers.refreshStatus();
+                int free = 0;
+                int out = 0;
+                int known = 0;
+                for (DgtChargers.Site s : all) {
+                    int[] c = SwissChargers.live(s);
+                    if (c == null) continue;
+                    known++;
+                    if (c[SwissChargers.FREE] > 0) free++;
+                    if (SwissChargers.allOut(s)) out++;
+                }
+                return all.size() + " sitios de carga rápida en Suiza · con estado " + known + " · con algún punto libre " + free
+                        + " · fuera de servicio " + out;
+            }
             case "qp":
                 qpFloor = "auto".equals(a) ? 0 : clamp(parse(a), 12, 30);
                 done = (qpFloor == 0 ? "calidad mínima: la de siempre (QP 24)" : "calidad mínima QP " + qpFloor)

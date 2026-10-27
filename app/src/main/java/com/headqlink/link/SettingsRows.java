@@ -69,9 +69,9 @@ final class SettingsRows {
         return priceText(eurPerKwh, "kWh", loc);
     }
 
-    /** Puro: un precio con su unidad («1,60 €/l»). */
-    static String priceText(double eur, String unit, Locale loc) {
-        return String.format(loc, "%.2f €/%s", eur, unit);
+    /** Puro: un precio con su unidad, en la moneda de la app («1,60 €/l», «1.85 CHF/l»). */
+    static String priceText(double price, String unit, Locale loc) {
+        return String.format(loc, "%.2f %s/%s", price, Money.symbol(loc), unit);
     }
 
     /** Puro: el consumo del coche de comparación como se enseña («6,5 l/100 km»). */
@@ -96,14 +96,19 @@ final class SettingsRows {
         return String.format(loc, "%.2f", eurPerKwh);
     }
 
+    /** Lo que se quita de un precio escrito: los símbolos y códigos de las monedas de Money.CODES. */
+    private static final String CURRENCY_MARKS = "(?i)(€|£|eur|chf|fr\\.|gbp|dkk|sek|nok|pln|czk|huf|ron|isk|kr|zł|kč|ft|lei)";
+
     /**
-     * Puro: un precio escrito (€/kWh) redondeado al céntimo, o -1 si no vale: vacío, letras, más de dos cifras enteras o
-     * por encima de max. Admite coma o punto y que se escriba la unidad («0,25 €», «0.25 €/kWh», «2,05 €/l»).
+     * Puro: un precio escrito (por kWh o por litro) redondeado al céntimo, o -1 si no vale: vacío, letras, más cifras
+     * enteras que el tope (dos como poco) o por encima de max. Admite coma o punto y que se escriba la moneda y la unidad
+     * («0,25 €», «0.25 €/kWh», «2,05 €/l», «1.85 CHF/l»).
      */
     static double parsePrice(String text, double max) {
         if (text == null) return -1;
-        String s = text.trim().replaceAll("(?i)€?\\s*/\\s*(kwh|l)$", "").replace("€", "").trim().replace(',', '.');
-        if (!s.matches("[0-9]{0,2}(\\.[0-9]{0,4})?") || s.isEmpty() || s.equals(".")) return -1;
+        String s = text.trim().replaceAll("(?i)\\s*/\\s*(kwh|l)$", "").replaceAll(CURRENCY_MARKS, "").trim().replace(',', '.');
+        int digits = Math.max(2, Long.toString((long) Math.floor(Math.max(0, max))).length());
+        if (!s.matches("[0-9]{0," + digits + "}(\\.[0-9]{0,4})?") || s.isEmpty() || s.equals(".")) return -1;
         double v = Math.round(Double.parseDouble(s) * 100) / 100.0;
         return v <= max + 1e-9 ? v : -1;
     }

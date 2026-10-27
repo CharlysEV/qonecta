@@ -421,7 +421,7 @@ supporta.
       Transizione Ecologica, pubblicato dalla DGT su nap.dgt.es): potenza e **tensione** di ognuna. Si scarica sul
       telefono una volta alla settimana (circa 3 MB). Quello che manca nel registro (alcuni operatori non hanno
       registrato tutti i loro punti) si completa con OpenStreetMap, senza ripetere quelle già presenti; fuori dalla
-      Spagna, tutto viene da OpenStreetMap, dove potenza o operatore possono mancare. **In Germania**, le colonnine rapide vengono dal registro ufficiale della Bundesnetzagentur (Ladesäulenregister), con potenza e prese (senza tensione: si usa quella tipica di ogni rete). Pesa circa 55 MB, quindi si scarica solo con Wi-Fi, una volta al mese e solo sui telefoni che hanno pianificato un percorso in Germania; nel frattempo, OpenStreetMap. L'app sceglie il registro in base a dove passa il percorso, non alla lingua del telefono. **«Colonnine lungo il
+      Spagna, tutto viene da OpenStreetMap, dove potenza o operatore possono mancare. **In Germania**, le colonnine rapide vengono dal registro ufficiale della Bundesnetzagentur (Ladesäulenregister), con potenza e prese (senza tensione: si usa quella tipica di ogni rete). Pesa circa 55 MB, quindi si scarica solo con Wi-Fi, una volta al mese e solo sui telefoni che hanno pianificato un percorso in Germania; nel frattempo, OpenStreetMap. **In Svizzera** vengono dall'Ufficio federale dell'energia (ich-tanke-strom.ch), con la potenza e **quanti punti sono liberi in tempo reale**: «Libere ora: 3 su 4» in verde, «tutte occupate» in ambra o «fuori servizio» in rosso, nell'elenco, in «Vicino a me» e nelle soste del piano; il piano non usa un sito con tutti i punti fuori servizio. Pesa poco (~1 MB): si scarica una volta alla settimana quando un percorso passa per la Svizzera o cerchi colonnine lì, e lo stato si controlla ogni 3 minuti nel frattempo. L'app sceglie il registro in base a dove passa il percorso, non alla lingua del telefono. **«Colonnine lungo il
       percorso»** apre l'elenco con il distintivo di ogni operatore, il km, la potenza, la tensione («350 kW · 920 V»)
       e le prese.
     - **Colonnine vicino a te:** «Vicino a me» (accanto a «Filtra») cerca le colonnine a 5, 10, 25 o 50 km da dove
@@ -786,6 +786,11 @@ solo con l'auto ferma.
 del gasolio» (€/l; 1,60 e 1,50 di default), «Confronta con» (benzina o diesel) e il «Consumo dell'auto di confronto»
 (6,5 e 5,5 l/100 km di default). Da qui escono il risparmio rispetto a un'auto a combustione (Efficienza, resoconto del
 mese) e la CO₂ evitata; sulla REEV, la benzina del generatore si conta sempre al prezzo della benzina.
+
+«Valuta» (sul telefono, nelle Impostazioni, sopra i prezzi): quella di prezzi e costi. «Automatica» usa il paese della
+tua SIM, che non cambia quando viaggi (con una SIM italiana in Svizzera resta in euro); oppure ne scegli una: euro,
+franco svizzero, sterlina, corona danese, svedese, norvegese e islandese, złoty, corona ceca, fiorino o leu. Se la
+cambi, i prezzi vengono convertiti con un cambio approssimativo: controllali.
 
 «Colore del pannello laterale»: «Automatico» (scuro di notte e chiaro di giorno, come lo schermo dell'auto) o uno di 16
 colori fissi, che resta uguale di giorno e di notte. Si applica subito, e il testo del pannello diventa chiaro o scuro
@@ -1197,7 +1202,7 @@ Puoi chiedere aiuto sulla pagina GitHub del progetto: [CharlysEV/qonecta](https:
 - Dati online: mappe, strade e colonnine © collaboratori di **OpenStreetMap** (ODbL), tramite Overpass, OSRM, Photon
   (komoot) e Nominatim; meteo e altitudine di **Open-Meteo.com** (CC BY 4.0) e Open Topo Data; colonnine in Spagna dal
   registro del MITECO pubblicato dalla DGT e in Germania dal Ladesäulenregister della **Bundesnetzagentur**
-  (CC BY 4.0); radio da **radio-browser.info**; luoghi della Guida di viaggio da **Wikipedia** (CC BY-SA); testi
+  (CC BY 4.0) e in Svizzera dall'**Ufficio federale dell'energia** (ich-tanke-strom.ch, dati aperti); radio da **radio-browser.info**; luoghi della Guida di viaggio da **Wikipedia** (CC BY-SA); testi
   del Karaoke da **LRCLIB**.
 - Emulatori: Nestopia, halfNES, bsnes, ClownMDEmu e PCSX ReARMed, ognuno con la sua licenza. Tutto in
   [NOTICE](NOTICE).
