@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Casa (Home Assistant) en el coche: los elementos elegidos en el móvil en botones grandes (luces, enchufes, garaje,
+ * Home Assistant en el coche: al entrar, «Mi panel» (el panel completo del usuario, buildPanel); con «‹ Mis botones», los
+ * elementos elegidos en el móvil en botones grandes (luces, enchufes, garaje,
  * persianas, cerraduras, escenas, scripts…) con su estado. Un toque hace lo suyo (HomeAssistant.action); las cerraduras y
  * puertas piden confirmar. Los sensores y el clima solo se miran. Se actualiza cada 5 s mientras se ve.
  *
@@ -50,8 +51,9 @@ final class HomeScreen implements CarScreen {
         host = h;
         ha = new HomeAssistant(h.context());
         tiles = buildTiles(h.context());
-        // Se salió de Casa con el panel abierto: se vuelve a él.
-        if (ha.configured() && ha.panelOpen()) return buildPanel(h.context());
+        // Al entrar, «Mi panel» (lo de siempre), salvo si la última vez se pasó a los botones grandes; sin botones
+        // elegidos, siempre el panel (solo habría el aviso).
+        if (ha.configured() && (ha.panelOpen() || ha.entities().isEmpty())) return buildPanel(h.context());
         startTiles();
         return tiles;
     }
@@ -155,12 +157,13 @@ final class HomeScreen implements CarScreen {
         col.setOrientation(LinearLayout.VERTICAL);
         col.setBackgroundColor(CarKit.BG);
         LinearLayout bar = CarStyle.bar(c);
-        TextView back = CarStyle.pill(c, "‹ " + Str.get(R.string.hql_ha_title));
+        // «Mis botones» (los botones grandes elegidos en el móvil), solo si hay alguno.
+        TextView back = CarStyle.pill(c, "‹ " + Str.get(R.string.hql_ha_buttons));
         TextView title = CarStyle.text(c, Str.get(R.string.hql_ha_panel), 24, CarStyle.TEXT_DIM);
         title.setPadding(22, 0, 22, 0);
         title.setSingleLine(true);
         TextView reload = CarStyle.pill(c, "⟳");
-        bar.addView(back);
+        if (!ha.entities().isEmpty()) bar.addView(back);
         bar.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         bar.addView(reload);
         col.addView(bar);

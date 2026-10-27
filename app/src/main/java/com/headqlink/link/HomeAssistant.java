@@ -101,7 +101,7 @@ final class HomeAssistant {
     // ------------------------------------------------------------------ «Mi panel» (el panel completo en el coche)
 
     private static final String K_PANEL = "panel";
-    /** Al salir de Casa se estaba en «Mi panel»: se vuelve a él al entrar. */
+    /** Se ve «Mi panel» (lo de siempre) y no los botones grandes: se recuerda lo último que se vio. */
     private static final String K_PANEL_OPEN = "panel_open";
 
     /** El panel que se abre en el coche: su ruta («lovelace/coche», «dashboard-coche»…), o "" = el de siempre. */
@@ -114,7 +114,7 @@ final class HomeAssistant {
     }
 
     boolean panelOpen() {
-        return sp.getBoolean(K_PANEL_OPEN, false);
+        return sp.getBoolean(K_PANEL_OPEN, true);
     }
 
     void setPanelOpen(boolean open) {

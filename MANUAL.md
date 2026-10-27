@@ -816,16 +816,15 @@ volver a conectar; una canción, por donde iba. Si la habías parado, no. Se qui
 Los accesos de la pantalla «Web» del coche (de serie, YouTube, Google, Wikipedia y Twitch). Añade los tuyos con
 nombre y dirección, quítalos o cámbialos de orden con las flechas; «Los de serie» los deja como venían.
 
-### «Home Assistant» (Casa, «Auto extendido»)
+### «Home Assistant» («Auto extendido»)
 
 Si tienes Home Assistant, pon la dirección de fuera de tu casa (Nabu Casa o tu dominio: en el coche el móvil va con
-datos) y un token de acceso de larga duración (Home Assistant › tu perfil › Seguridad), y pulsa «Probar y guardar».
-Luego elige qué sale en el coche: en la pantalla «Casa» salen en botones grandes (luces, enchufes, garaje, persianas,
-escenas, sensores). Arriba, **«Mi panel»** abre tu panel completo de Home Assistant, con sus tarjetas, sin volver a
-iniciar sesión (usa el mismo token); «‹ Casa» vuelve a los botones, y si sales de «Casa» con el panel abierto, la
-próxima vez vuelve a él. En «Mi panel en el coche» eliges otro panel (su ruta, como `lovelace/coche`, o pega su
-dirección); vacío, el de siempre. El token se guarda cifrado; mientras el panel está abierto lo usa su página, y al
-cerrarlo se borra de ella.
+datos) y un token de acceso de larga duración (Home Assistant › tu perfil › Seguridad), y pulsa «Probar y guardar». En
+el coche, el botón **«Home Assistant»** del panel lateral abre **tu panel completo**, con sus tarjetas, sin volver a
+iniciar sesión (usa el mismo token). En «Mi panel en el coche» eliges otro panel (su ruta, como `lovelace/coche`, o pega
+su dirección); vacío, el de siempre. Si además eliges elementos en el móvil (luces, enchufes, garaje, persianas,
+escenas, sensores), «‹ Mis botones» los enseña en botones grandes y «▦ Mi panel» vuelve al panel; se recuerda lo último
+que viste. El token se guarda cifrado; mientras el panel está abierto lo usa su página, y al cerrarlo se borra de ella.
 
 ### «Acuario» (Juegos › Para la espera)
 

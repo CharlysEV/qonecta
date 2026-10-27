@@ -877,17 +877,17 @@ Die Verknüpfungen auf dem Bildschirm „Web“ im Fahrzeug (standardmäßig You
 eigene mit Name und Adresse hinzu, entferne sie oder ändere ihre Reihenfolge mit den Pfeilen; „Standard“ stellt den
 Ausgangszustand wieder her.
 
-### „Home Assistant“ (Zuhause, „Auto erweitert“)
+### „Home Assistant“ („Auto erweitert“)
 
 Wenn du Home Assistant hast, trag die externe Adresse deines Zuhauses ein (Nabu Casa oder eigene Domain: im Auto nutzt
 das Handy mobile Daten) und einen langlebigen Zugriffstoken (Home Assistant › dein Profil › Sicherheit), und tippe auf
-„Testen und speichern“. Dann wählst du, was im Auto erscheint: Der Bildschirm „Zuhause“ zeigt es als große Tasten
-(Lichter, Steckdosen, Garage, Rollläden, Szenen, Sensoren). Oben öffnet **„Mein Dashboard“** dein komplettes
-Home-Assistant-Dashboard mit seinen Karten, ohne erneute Anmeldung (es nutzt denselben Token); „‹ Zuhause“ führt zurück
-zu den Tasten, und verlässt du „Zuhause“ mit offenem Dashboard, kommst du beim nächsten Mal wieder dorthin. Unter „Mein
-Dashboard im Auto“ wählst du ein anderes Dashboard (seinen Pfad, etwa `lovelace/auto`, oder füge seine Adresse ein);
-leer bleibt es das übliche. Der Token wird verschlüsselt gespeichert; solange das Dashboard offen ist, nutzt ihn seine
-Seite, und beim Schließen wird er dort gelöscht.
+„Testen und speichern“. Im Auto öffnet die Taste **„Home Assistant“** in der Seitenleiste **dein komplettes Dashboard**
+mit seinen Karten, ohne erneute Anmeldung (es nutzt denselben Token). Unter „Mein Dashboard im Auto“ wählst du ein
+anderes Dashboard (seinen Pfad, etwa `lovelace/auto`, oder füge seine Adresse ein); leer bleibt es das übliche. Wählst
+du außerdem auf dem Handy Elemente aus (Lichter, Steckdosen, Garage, Rollläden, Szenen, Sensoren), zeigt „‹ Meine
+Tasten“ sie als große Tasten, und „▦ Mein Dashboard“ führt zurück zum Dashboard; das zuletzt Gesehene bleibt
+gespeichert. Der Token wird verschlüsselt gespeichert; solange das Dashboard offen ist, nutzt ihn seine Seite, und beim
+Schließen wird er dort gelöscht.
 
 ### „Aquarium“ (Spiele › Für die Wartezeit)
 
