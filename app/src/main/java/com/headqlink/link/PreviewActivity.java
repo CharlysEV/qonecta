@@ -134,6 +134,8 @@ public class PreviewActivity extends Activity {
         // --es state replan (u otro estado de PreviewShots): la demostración en vivo en ese estado.
         String state = getIntent().getStringExtra("state");
         if (state != null) DemoMode.applyState(state);
+        // --ez any_charger true: el plan con cualquier cargador (para probar «Cambiar» sin tocar el filtro del usuario).
+        if (getIntent().getBooleanExtra("any_charger", false)) RoutePlanner.previewAnyCharger = true;
         interactive = true;
         status.setVisibility(View.GONE);
         TextureView tv = new TextureView(this);
@@ -315,6 +317,7 @@ public class PreviewActivity extends Activity {
         reader = null;
         main.post(() -> {
             DemoMode.disable();
+            RoutePlanner.previewAnyCharger = false;
             if (s != null) s.release();
             if (latest != null) {
                 latest.close();

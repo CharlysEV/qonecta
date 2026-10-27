@@ -98,4 +98,18 @@
     <string name="hql_share_place">分享的目的地</string>
     <string name="hql_share_applied_title">从手机发送的路线</string>
     <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
+    <string name="hql_plan_change">更换</string>
+    <string name="hql_plan_change_title">更换第 %1$d 站</string>
+    <string name="hql_plan_change_now">当前：%1$s · 第 %2$.0f 公里 · 到达时 %3$.0f%%</string>
+    <string name="hql_plan_change_line">第 %1$.0f 公里 · 到达时 %2$.0f%% · %3$s</string>
+    <string name="hql_plan_change_same">时间相同</string>
+    <string name="hql_plan_change_more">多停 %1$d 分钟</string>
+    <string name="hql_plan_change_less">少停 %1$d 分钟</string>
+    <string name="hql_plan_change_stops">停靠：%1$d → %2$d</string>
+    <string name="hql_plan_change_no_arrive">选它到不了</string>
+    <string name="hql_plan_change_use">用这个</string>
+    <string name="hql_plan_change_in_plan">已在计划中</string>
+    <string name="hql_plan_change_unpin">取消我的选择</string>
+    <string name="hql_plan_change_none">按你的筛选条件，这一段没有其他可到达的充电桩。</string>
+    <string name="hql_plan_change_note">仅限本次行程：更换目的地后会忘记。如果能耗变化导致到不了，计划会另选一个并提醒你。想一直优先某个充电桩，请用 ★ 标记。</string>
 </resources>

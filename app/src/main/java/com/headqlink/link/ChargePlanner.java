@@ -38,6 +38,28 @@ final class ChargePlanner {
         ChargeCurveModel.Curve curve;
         /** Parte del pico que admite un coche de 800 V en un cargador de 400–500 V: la mitad, o la aprendida. */
         double lowVoltsFactor = LOW_VOLTS_FACTOR;
+        /**
+         * Paradas elegidas a mano para este viaje («Cambiar» en una parada del plan): se para en ellas mientras se lleguen
+         * con al menos PIN_MIN_PCT; si no, el plan elige otra.
+         */
+        List<RoutePlanner.Charger> pinned = Collections.emptyList();
+
+        /** Una copia (para probar otra parada sin tocar los ajustes del plan). */
+        Settings copy() {
+            Settings s = new Settings();
+            s.arriveMinPct = arriveMinPct;
+            s.stopMinPct = stopMinPct;
+            s.maxChargePct = maxChargePct;
+            s.carPeakKw = carPeakKw;
+            s.capacityKwh = capacityKwh;
+            s.carVolts = carVolts;
+            s.favorites = favorites;
+            s.food = food;
+            s.curve = curve;
+            s.lowVoltsFactor = lowVoltsFactor;
+            s.pinned = pinned;
+            return s;
+        }
     }
 
     /**
@@ -415,7 +437,9 @@ final class ChargePlanner {
                 return new Result(stops.isEmpty() ? Outcome.NO_STOPS : Outcome.PLANNED, stops, soc - toEnd, km, kwhCum, fromKm, socNow, cap);
             }
             if (k == MAX_STOPS) break;
-            RoutePlanner.Charger best = kept(km, kwhCum, cur, soc, end, keep, s);
+            // La parada elegida a mano, si se llega; si no, la que se mantiene del plan anterior o la mejor.
+            RoutePlanner.Charger best = pinnedNext(km, kwhCum, cur, soc, end, s);
+            if (best == null) best = kept(km, kwhCum, cur, soc, end, keep, s);
             if (best == null && preferred != chargers) best = pick(km, kwhCum, cur, soc, end, preferred, s, s.stopMinPct);
             if (best == null) best = pick(km, kwhCum, cur, soc, end, chargers, s, s.stopMinPct);
             // Ya justo de batería: el que se alcance aunque se llegue con menos del mínimo.
@@ -492,6 +516,90 @@ final class ChargePlanner {
         // Llegando a cada parada con el mínimo (el plan, si no hay otra, admite llegar más justo: aquí no vale).
         for (Stop st : r.stops) if (st.arrivePct < s.stopMinPct - 1e-9) return false;
         return true;
+    }
+
+    /** Una parada elegida a mano se usa si se llega con al menos esto (%): la ha elegido el conductor, aunque vaya justo. */
+    static final double PIN_MIN_PCT = 3;
+
+    /**
+     * La siguiente parada elegida a mano por delante, si se llega a ella con PIN_MIN_PCT; null si no hay o no se llega
+     * (entonces el plan para antes donde toque y, con lo cargado, quizá ya llegue a ella).
+     */
+    private static RoutePlanner.Charger pinnedNext(double[] km, double[] kwhCum, double cur, double soc, double end, Settings s) {
+        RoutePlanner.Charger next = null;
+        for (RoutePlanner.Charger c : s.pinned) {
+            if (c.kmAlong <= cur + 0.5 || c.kmAlong >= end - 1) continue;
+            if (next == null || c.kmAlong < next.kmAlong) next = c;
+        }
+        if (next == null) return null;
+        double at = soc - (kwhAt(km, kwhCum, next.kmAlong) - kwhAt(km, kwhCum, cur)) / s.capacityKwh * 100;
+        return at >= PIN_MIN_PCT ? next : null;
+    }
+
+    /**
+     * Cambiar una parada del plan (puro): los cargadores que podrían sustituir a la parada index de r, de los de chargers
+     * (ya filtrados) que quedan entre la parada anterior (o el coche) y la siguiente (o el destino) y a los que se llega
+     * con PIN_MIN_PCT; cada uno con el plan que sale eligiéndolo (pins: las demás elegidas a mano, sin la de esa parada).
+     * Por cercanía a la parada de ahora, como mucho max.
+     */
+    static List<Alternative> alternatives(Result r, int index, List<RoutePlanner.Charger> chargers, Settings s,
+                                          List<RoutePlanner.Charger> pins, int max) {
+        List<Alternative> out = new ArrayList<>();
+        if (r == null || index < 0 || index >= r.stops.size()) return out;
+        Stop st = r.stops.get(index);
+        double prevKm = r.fromKm;
+        double prevPct = r.socNow;
+        if (index > 0) {
+            prevKm = r.stops.get(index - 1).km;
+            prevPct = r.stops.get(index - 1).departPct;
+        }
+        double end = r.km[r.km.length - 1];
+        double nextKm = index + 1 < r.stops.size() ? r.stops.get(index + 1).km : end;
+        for (RoutePlanner.Charger c : chargers) {
+            if (c.kmAlong <= prevKm + 0.5 || c.kmAlong >= nextKm - 0.5 || c.kmAlong >= end - 1) continue;
+            double arrive = prevPct - (kwhAt(r.km, r.kwhCum, c.kmAlong) - kwhAt(r.km, r.kwhCum, prevKm)) / r.capacityKwh * 100;
+            if (arrive < PIN_MIN_PCT) continue;
+            Settings t = s.copy();
+            List<RoutePlanner.Charger> p = new ArrayList<>();
+            for (RoutePlanner.Charger x : pins) if (x != st.charger) p.add(x);
+            if (c != st.charger) p.add(c);
+            t.pinned = p;
+            Result alt = plan(r.km, r.kwhCum, r.fromKm, r.socNow, chargers, t);
+            // Los km como los cuenta Google Maps, igual que en el plan de ahora.
+            alt.trend = r.trend;
+            alt.mapsRatio = r.mapsRatio;
+            alt.nearRatio = r.nearRatio;
+            alt.nearUntilKm = r.nearUntilKm;
+            out.add(new Alternative(c, arrive, alt, alt.chargeMinutes - r.chargeMinutes, c == st.charger));
+        }
+        Collections.sort(out, (a, b) -> Double.compare(Math.abs(a.charger.kmAlong - st.km), Math.abs(b.charger.kmAlong - st.km)));
+        while (out.size() > max) out.remove(out.size() - 1);
+        Collections.sort(out, (a, b) -> Double.compare(a.charger.kmAlong, b.charger.kmAlong));
+        return out;
+    }
+
+    /** Un cargador para sustituir una parada: con cuánto se llega, el plan que sale y los minutos de más (o de menos). */
+    static final class Alternative {
+        final RoutePlanner.Charger charger;
+        final double arrivePct;
+        final Result plan;
+        /** Minutos parados de más (negativo: de menos) frente al plan de ahora; la ruta en coche es la misma. */
+        final double deltaMin;
+        /** Es la parada que ya tiene el plan. */
+        final boolean current;
+
+        Alternative(RoutePlanner.Charger charger, double arrivePct, Result plan, double deltaMin, boolean current) {
+            this.charger = charger;
+            this.arrivePct = arrivePct;
+            this.plan = plan;
+            this.deltaMin = deltaMin;
+            this.current = current;
+        }
+
+        /** ¿Con ella se llega al destino? */
+        boolean works() {
+            return plan.outcome != Outcome.NO_CHARGER;
+        }
     }
 
     /** La siguiente parada del plan anterior, si se sigue alcanzando (con un poco de holgura); null si no. */

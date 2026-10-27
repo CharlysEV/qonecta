@@ -1977,13 +1977,22 @@ final class RoutePlanner {
                 chargeSettings = "";
                 lastAlert = null;
             }
+            // Las paradas elegidas a mano valen para este destino (también si la ruta se rehace por el camino).
+            String dk = destKey(pl);
+            if (!dk.equals(pinsDest)) {
+                if (!pins.isEmpty()) L.i("ruta: paradas elegidas a mano olvidadas (otro destino)");
+                pins.clear();
+                pinsDest = dk;
+                pinsVersion++;
+            }
             Config c = new Config(ctx);
             int minKw = c.chargerMinKw();
             String nets = c.chargerNetworks();
             String marks = c.chargerMarks();
             boolean food = c.planPreferFood();
             String settings = minKw + "/" + c.chargerVolts() + "V/" + nets + "/" + c.chargerIncludeUnknown() + "/" + c.planArrivePct() + "/" + c.planMaxPct() + "/" + Math.round(capKwh * 10)
-                    + (realSoc ? "/real" : "/indicado") + "/c" + pl.chargerVersion + "/curva" + c.learnedChargeCurve() + "/m" + marks.hashCode() + (food ? "/f" + FoodNearby.version : "");
+                    + (realSoc ? "/real" : "/indicado") + "/c" + pl.chargerVersion + "/curva" + c.learnedChargeCurve() + "/m" + marks.hashCode() + (food ? "/f" + FoodNearby.version : "")
+                    + "/p" + pinsVersion;
             int prog = Math.min(pl.progress, pl.n - 1);
             double f = demo ? DemoMode.planTrend() : trend.factor();
             double mr = pl.mapsRatio;
@@ -2000,6 +2009,9 @@ final class RoutePlanner {
             // Favoritos (y, si se prefiere, los que tienen dónde comer cerca): suman al elegir parada.
             s.favorites = ChargerMarks.favorites(list, ChargerMarks.parse(marks));
             if (food) s.food = withFood(list);
+            s.pinned = pinnedIn(list);
+            lastList = list;
+            lastSettings = s;
             // Con los mismos ajustes, las paradas elegidas se mantienen mientras se lleguen (que el plan no baile).
             boolean same = settings.equals(chargeSettings) && charge != null;
             List<Charger> keep = new ArrayList<>();
@@ -2057,6 +2069,90 @@ final class RoutePlanner {
         }
     }
 
+    // ------------------------------------------------------------------ paradas elegidas a mano
+
+    /** Cuántas alternativas se enseñan al cambiar una parada (las más cercanas a ella). */
+    static final int MAX_ALTERNATIVES = 24;
+    /**
+     * Paradas elegidas a mano en este viaje («Cambiar» en una parada del plan; con chargeLock): valen para este destino y
+     * se olvidan al cambiar de destino (o al cerrar la app). Para preferir siempre un cargador están los favoritos.
+     */
+    private final List<ChargerMarks.Mark> pins = new ArrayList<>();
+    private String pinsDest = "";
+    private int pinsVersion;
+    /** Los cargadores y los ajustes del último plan (para probar otras paradas con lo mismo). */
+    private List<Charger> lastList;
+    private ChargePlanner.Settings lastSettings;
+
+    /** El destino de un plan (lat,lon redondeados a ~100 m). */
+    private static String destKey(Plan pl) {
+        return String.format(Locale.US, "%.3f,%.3f", pl.destLat, pl.destLon);
+    }
+
+    /** Las elegidas a mano que están en esta lista (por id o por estar en el mismo sitio). Con chargeLock. */
+    private List<Charger> pinnedIn(List<Charger> list) {
+        if (pins.isEmpty()) return java.util.Collections.emptyList();
+        List<Charger> out = new ArrayList<>();
+        for (ChargerMarks.Mark m : pins) {
+            List<ChargerMarks.Mark> one = java.util.Collections.singletonList(m);
+            for (Charger c : list) {
+                if (ChargerMarks.find(one, c) != null) {
+                    out.add(c);
+                    break;
+                }
+            }
+        }
+        return out;
+    }
+
+    /** ¿La eligió el conductor a mano? */
+    boolean isPinned(Charger c) {
+        synchronized (chargeLock) {
+            return ChargerMarks.find(pins, c) != null;
+        }
+    }
+
+    /** Lo que sale cambiando la parada index del plan de ahora por cada cargador alcanzable de su tramo. */
+    List<ChargePlanner.Alternative> stopAlternatives(int index) {
+        synchronized (chargeLock) {
+            if (charge == null || lastList == null || lastSettings == null) return new ArrayList<>();
+            return ChargePlanner.alternatives(charge, index, lastList, lastSettings, lastSettings.pinned, MAX_ALTERNATIVES);
+        }
+    }
+
+    /** El conductor elige chosen en lugar de la parada replaced: se rehace el plan con ella (sin aviso de cambio). */
+    void pinStop(Charger replaced, Charger chosen) {
+        synchronized (chargeLock) {
+            ChargerMarks.Mark old = replaced == null ? null : ChargerMarks.find(pins, replaced);
+            if (old != null) pins.remove(old);
+            ChargerMarks.Mark dup = ChargerMarks.find(pins, chosen);
+            if (dup != null) pins.remove(dup);
+            ChargerMarks.Mark m = new ChargerMarks.Mark();
+            m.id = ChargerMarks.key(chosen);
+            m.name = chosen.name == null ? "" : chosen.name;
+            m.lat = chosen.lat;
+            m.lon = chosen.lon;
+            m.kind = ChargerMarks.FAV;
+            pins.add(m);
+            pinsVersion++;
+            chargeKey = "";
+        }
+        L.i(String.format(Locale.US, "ruta: parada elegida a mano: km %.0f%s", chosen.kmAlong,
+                replaced == null ? "" : String.format(Locale.US, " en lugar de la del km %.0f", replaced.kmAlong)));
+    }
+
+    /** Quita la elección a mano de esa parada: el plan vuelve a elegir. */
+    void unpin(Charger c) {
+        synchronized (chargeLock) {
+            ChargerMarks.Mark m = ChargerMarks.find(pins, c);
+            if (m == null) return;
+            pins.remove(m);
+            pinsVersion++;
+            chargeKey = "";
+        }
+        L.i(String.format(Locale.US, "ruta: quitada la parada elegida a mano del km %.0f", c.kmAlong));
+    }
+
     private String speedLogged = "";
 
     /** El consejo de velocidad, al registro cuando cambia. */
@@ -2100,11 +2196,15 @@ final class RoutePlanner {
     }
 
     /** Los cargadores de la ruta que pasan el filtro, sin los vetados (ChargerMarks). */
+    /** Vista previa («Cambiar» una parada): en la demostración, el plan con cualquier cargador (sin el filtro del usuario). */
+    static volatile boolean previewAnyCharger;
+
     private static List<Charger> wantedChargers(Plan pl, Config c) {
         java.util.Set<String> want = ChargerFilter.parseNetworks(c.chargerNetworks());
+        boolean any = previewAnyCharger && DemoMode.active();
         List<Charger> list = new ArrayList<>();
         for (Charger ch : pl.chargers) {
-            if (ChargerFilter.accepts(ch, c.chargerMinKw(), c.chargerVolts(), want, c.chargerIncludeUnknown())) list.add(ch);
+            if (any || ChargerFilter.accepts(ch, c.chargerMinKw(), c.chargerVolts(), want, c.chargerIncludeUnknown())) list.add(ch);
         }
         return ChargerMarks.withoutBanned(list, ChargerMarks.parse(c.chargerMarks()));
     }
@@ -2226,12 +2326,15 @@ final class RoutePlanner {
         if (before != null) for (ChargePlanner.Stop st : before.stops) if (st.km > here + ChargePlanner.HERE_KM) ahead++;
         String key = System.identityHashCode(p) + "/" + p.chargerVersion + "/" + c.chargerMinKw() + "/" + c.chargerVolts() + "V/" + c.chargerNetworks() + "/"
                 + c.chargerIncludeUnknown() + "/" + c.planArrivePct() + "/" + c.planMaxPct() + "/" + Math.round(f * 100) + "/" + prog + "/"
-                + ahead + "/" + c.chargerMarks().hashCode();
+                + ahead + "/" + c.chargerMarks().hashCode() + "/p" + pinsVersion;
         if (key.equals(sessionKey)) return;
         sessionKey = key;
         ChargePlanner.Settings set = planSettings(c, s.capacityKwh);
         List<Charger> all = wantedChargers(p, c);
         set.favorites = ChargerMarks.favorites(all, ChargerMarks.parse(c.chargerMarks()));
+        synchronized (chargeLock) {
+            set.pinned = pinnedIn(all);
+        }
         List<Charger> list = new ArrayList<>();
         for (Charger ch : all) if (Math.abs(ch.kmAlong - here) > ChargePlanner.HERE_KM) list.add(ch);
         double[] kwh = ChargePlanner.scaled(p.km, capped(p, speedCap(p), here), here, f);

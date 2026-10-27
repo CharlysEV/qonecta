@@ -421,9 +421,12 @@ admite.
       («Falta subir 90 m e descer 20 m: +0,5 kWh»). Com a conta Leapmotor, a linha tracejada sobre as barras é **a média
       do seu carro** (do histórico dele: ver [Dados reais do carro](#dados-reais-do-carro-conta-leapmotor)) e a previsão
       ajusta-se ao seu consumo real; ao chegar aparece «previsto … · real …».
-    - **Filtrar carregadores:** «Filtrar» escolhe a potência mínima (qualquer, 22, 50, 100 ou 150 kW) e as redes (Tesla,
-      Zunder, Ionity, Iberdrola, Endesa X, Repsol, Wenea…, as que houver na rota, com quantos carregadores tem cada
-      uma). Fica guardado, e os raios do perfil também o seguem.
+    - **Filtrar carregadores:** «Filtrar» tem três separadores. Em **«Carregadores»**, a potência mínima (qualquer, 22,
+      50, 100, 150, 200 ou 300 kW), a tensão e as **redes**: em cima as que há na sua rota, com quantos carregadores tem
+      cada uma, e em baixo as do seu país de A a Z (mais as que existem em quase toda a Europa: Tesla, Ionity, Shell,
+      Lidl); «Ver redes de outros países» mostra o resto. Sem nenhuma marcada contam todas. **«Plano de carregamento»**
+      tem com quanto chegar, até quanto carregar, carregar no destino, a comida, a voz e o navegador, e **«Favoritos e
+      vetados»**, os carregadores que marcou. Fica guardado, e os raios do perfil também o seguem.
     - **De onde vêm os carregadores:** em Espanha, do **registo oficial** de pontos de carregamento (Ministério para a
       Transição Ecológica, publicado pela DGT em nap.dgt.es): a potência e a **tensão** de cada um. É descarregado no
       telemóvel uma vez por semana (cerca de 3 MB). O que falta no registo (há operadores que não registaram todos os
@@ -433,16 +436,22 @@ admite.
     - **Carregadores perto de si:** «Perto de mim» (ao lado de «Filtrar») procura os carregadores a 5, 10, 25 ou 50 km
       de onde está, sem rota, do mais perto ao mais longe: escolhe a rede («os Wenea perto de mim») e a potência mínima,
       e vê a que distância estão, a potência, a tensão, as fichas e os pontos, com «Ir».
-    - **Navegar com o Google Maps ou o Waze:** em «Filtrar» → «Navegar com» (se o Waze estiver instalado). O botão
-      de guiar e os «Ir» abrem o escolhido. O Waze não admite paragens intermédias: «Ir com as paragens» leva-o à
-      seguinte.
+    - **Navegar com o Google Maps ou o Waze:** em «Filtrar» › «Plano de carregamento» › «Navegar com» (se o Waze estiver
+      instalado). O botão de guiar e os «Ir» abrem o escolhido. O Waze não admite paragens intermédias: «Ir com as
+      paragens» leva-o à seguinte.
     - **Plano de carregamento (grátis, como o ABRP):** se não chega com a margem, a Rota diz **onde parar e até quanto
       carregar** entre os carregadores do filtro: o melhor carregador rápido do último troço a que chega e só o que faz
       falta (o C10 carrega mais devagar acima dos 50 %: melhor duas paragens curtas do que uma longa até aos 100 %).
       Cada paragem mostra o km, com quanto chega, até quanto carregar e os minutos; a linha da bateria sobe em cada
-      paragem. «Ir com as paragens» abre o Google Maps com elas (até 3). Em «Filtrar» escolhe com quanto chegar
-      (10-30 %) e até quanto carregar no máximo (70-100 %); se com um pouco mais do máximo chega ao destino, carrega
-      isso em vez de fazer outra paragem a poucos km do fim. Num REEV não há plano: o gerador põe o que faltar.
+      paragem. «Ir com as paragens» abre o Google Maps com elas (até 3). Em «Filtrar» › «Plano de carregamento» escolhe
+      com quanto chegar (10-30 %) e até quanto carregar no máximo (70-100 %); se com um pouco mais do máximo chega ao
+      destino, carrega isso em vez de fazer outra paragem a poucos km do fim. Num REEV não há plano: o gerador põe o que
+      faltar.
+    - **Trocar uma paragem:** cada paragem do plano tem «Trocar»: aparecem os outros carregadores desse troço a que
+      chega, com quanto chega e quanto muda o tempo parado («+5 min parado», «paragens: 1 → 2»). «Usar esta» fixa-a
+      **para esta viagem** (📌) e o plano refaz-se a partir dela; se o consumo mudar e já não chegar, escolhe outro e
+      avisa. «Retirar a minha escolha» volta à do plano. Ao mudar de destino esquece-se; para preferir sempre um
+      carregador, marque-o com ★.
     - **800 V (C10 de 81,9 kWh):** a bateria grande é de 800 V e nos carregadores de 400–500 V carrega, mas a metade
       da potência. O plano para nos de 800 V (ou de 150 kW ou mais, que quase sempre o são mesmo que o registo não o
       diga) e deixa os de 400–500 V de reserva: a lista marca-os a âmbar («470 V: o seu carro de 800 V carrega aqui a
@@ -465,8 +474,8 @@ admite.
       mantêm-se enquanto lá chegar com margem; se estiver a ficar sem bateria (ou sobrar), o plano muda e **avisa**: um
       cartão âmbar no painel do carro (também por cima do Android Auto) com «Ir» (Google Maps com as paragens novas) e
       «Rota», o botão «Carro» em âmbar e **um aviso por voz** («Plano de carregamento alterado. Está a gastar mais 12 %
-      do que o previsto. Nova paragem: …»). A voz desliga-se em «Filtrar» → «Avisar por voz se o plano mudar». Enquanto
-      carrega não avisa (foi decisão sua).
+      do que o previsto. Nova paragem: …»). A voz desliga-se em «Filtrar» › «Plano de carregamento» › «Avisar por voz se
+      o plano mudar». Enquanto carrega não avisa (foi decisão sua).
   - «Condução»: a próxima manobra em grande, com uma barra que se esvazia até à viragem, as faixas e a manobra seguinte;
     a velocidade com o sinal do limite, o rumo, a altitude, a inclinação e o sol até ao pôr do sol.
   - «Viagens»: a viagem em curso e as guardadas, com o percurso, consumo, desnível e custo; os km dos últimos 14 dias e

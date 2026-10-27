@@ -263,4 +263,45 @@ class ChargePlannerTest {
         // Con ya más de lo necesario, lo que hay.
         assertEquals(95.0, ChargePlanner.readyPct(km, kwh, 300.0, 95.0, emptyList(), s, 0), 1e-9)
     }
+
+    @Test
+    fun aStopChosenByHandIsUsedWhileItIsReachable() {
+        // 27-10 («Cambiar» una parada): el plan para en el km 260; el conductor elige el del km 180.
+        val s = settings().apply { pinned = listOf(c180) }
+        val r = ChargePlanner.plan(km, kwh, 0.0, 90.0, all, s)
+        assertEquals(ChargePlanner.Outcome.PLANNED, r.outcome)
+        assertSame(c180, r.stops[0].charger)
+        assertTrue(r.arrivalPct >= 15)
+        // La copia de los ajustes la lleva.
+        assertEquals(listOf(c180), s.copy().pinned)
+    }
+
+    @Test
+    fun aChosenStopOutOfReachIsLeftAndThePlanStillWorks() {
+        // El del km 350 no se alcanza desde el inicio (haría falta un 100 %): se para donde toque y se llega igual.
+        val r = ChargePlanner.plan(km, kwh, 0.0, 90.0, all, settings().apply { pinned = listOf(c350) })
+        assertEquals(ChargePlanner.Outcome.PLANNED, r.outcome)
+        assertTrue(r.stops.isNotEmpty())
+        assertTrue(r.stops[0].charger.kmAlong < 350)
+    }
+
+    @Test
+    fun alternativesForAStopAreTheReachableOnesOfItsStretch() {
+        val s = settings()
+        val r = ChargePlanner.plan(km, kwh, 0.0, 90.0, all, s)
+        assertSame(c260, r.stops[0].charger)
+        val alts = ChargePlanner.alternatives(r, 0, all, s, emptyList(), 24)
+        // Los que se alcanzan desde el inicio con al menos un 3 % (el del km 350 ya no), por km.
+        assertEquals(listOf(100.0, 180.0, 200.0, 260.0), alts.map { it.charger.kmAlong })
+        val cur = alts.single { it.current }
+        assertSame(c260, cur.charger)
+        assertEquals(0.0, cur.deltaMin, 1e-6)
+        // Eligiendo el del km 180, el plan para ahí; cada alternativa dice con cuánto se llega.
+        val a180 = alts.single { it.charger === c180 }
+        assertSame(c180, a180.plan.stops[0].charger)
+        assertEquals(90 - 36 / 70.0 * 100, a180.arrivePct, 1e-6)
+        assertTrue(a180.works())
+        // Fuera de rango: sin plan, ninguna.
+        assertTrue(ChargePlanner.alternatives(r, 5, all, s, emptyList(), 24).isEmpty())
+    }
 }

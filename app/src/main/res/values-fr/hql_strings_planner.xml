@@ -100,4 +100,18 @@
     <string name="hql_share_place">Destination partagée</string>
     <string name="hql_share_applied_title">Itinéraire envoyé depuis le téléphone</string>
     <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
+    <string name="hql_plan_change">Changer</string>
+    <string name="hql_plan_change_title">Changer l\'arrêt %1$d</string>
+    <string name="hql_plan_change_now">Actuellement : %1$s · km %2$.0f · tu arrives avec %3$.0f %%</string>
+    <string name="hql_plan_change_line">km %1$.0f · arrivée avec %2$.0f %% · %3$s</string>
+    <string name="hql_plan_change_same">même durée</string>
+    <string name="hql_plan_change_more">+%1$d min d\'arrêt</string>
+    <string name="hql_plan_change_less">−%1$d min d\'arrêt</string>
+    <string name="hql_plan_change_stops">arrêts : %1$d → %2$d</string>
+    <string name="hql_plan_change_no_arrive">avec elle tu n\'arrives pas</string>
+    <string name="hql_plan_change_use">Prendre celle-ci</string>
+    <string name="hql_plan_change_in_plan">Dans le plan</string>
+    <string name="hql_plan_change_unpin">Retirer mon choix</string>
+    <string name="hql_plan_change_none">Aucune autre borne accessible sur ce tronçon avec ton filtre.</string>
+    <string name="hql_plan_change_note">Seulement pour ce trajet : ton choix est oublié si tu changes de destination. Si la consommation change et que tu ne peux plus l\'atteindre, le plan en choisit une autre et te prévient. Pour toujours préférer une borne, marque-la avec ★.</string>
 </resources>

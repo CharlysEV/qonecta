@@ -100,4 +100,18 @@
     <string name="hql_share_place">Destino compartido</string>
     <string name="hql_share_applied_title">Ruta enviada desde el móvil</string>
     <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
+    <string name="hql_plan_change">Cambiar</string>
+    <string name="hql_plan_change_title">Cambiar la parada %1$d</string>
+    <string name="hql_plan_change_now">Ahora: %1$s · km %2$.0f · llegas con %3$.0f %%</string>
+    <string name="hql_plan_change_line">km %1$.0f · llegas con %2$.0f %% · %3$s</string>
+    <string name="hql_plan_change_same">mismo tiempo</string>
+    <string name="hql_plan_change_more">+%1$d min parado</string>
+    <string name="hql_plan_change_less">−%1$d min parado</string>
+    <string name="hql_plan_change_stops">paradas: %1$d → %2$d</string>
+    <string name="hql_plan_change_no_arrive">con ella no llegas</string>
+    <string name="hql_plan_change_use">Usar esta</string>
+    <string name="hql_plan_change_in_plan">En el plan</string>
+    <string name="hql_plan_change_unpin">Quitar mi elección</string>
+    <string name="hql_plan_change_none">No hay otros cargadores alcanzables en este tramo con tu filtro.</string>
+    <string name="hql_plan_change_note">Solo para este viaje: al cambiar de destino se olvida. Si el consumo cambia y ya no llegas, el plan elige otra y te avisa. Para preferir siempre un cargador, márcalo con ★.</string>
 </resources>

@@ -50,6 +50,9 @@ final class RouteTab implements CarScreen {
     private CarKit.Card batteryCard;
     private CarKit.Card weatherCard;
     private LinearLayout chargers;
+    /** El desplazamiento de la tarjeta de cargadores y la primera parada del plan en ella (vista previa). */
+    private ScrollView chargersScroll;
+    private View firstStopView;
     /** Filtro de los cargadores (ChargerFilter): potencia mínima y redes; y su resumen junto al botón. */
     private int chargerMinKw;
     /** Voltaje del filtro (ChargerFilter.VOLTS_*). */
@@ -267,6 +270,7 @@ final class RouteTab implements CarScreen {
         ScrollView sv = new ScrollView(ctx);
         sv.setVerticalScrollBarEnabled(false);
         sv.addView(chargers);
+        chargersScroll = sv;
         LinearLayout.LayoutParams svp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f);
         svp.topMargin = 6;
         chCol.addView(sv, svp);
@@ -285,6 +289,16 @@ final class RouteTab implements CarScreen {
         if (previewFilter) {
             previewFilter = false;
             root.postDelayed(this::openChargerFilter, 300);
+        }
+        if (previewChange) {
+            previewChange = false;
+            previewChangeTry(0);
+        }
+        if (previewStops) {
+            previewStops = false;
+            boolean pin = previewPin;
+            previewPin = false;
+            previewStopsTry(0, pin);
         }
         String pq = previewQuery;
         if (pq != null) {
@@ -319,6 +333,11 @@ final class RouteTab implements CarScreen {
     static volatile boolean previewChargers;
     /** Capturas: abrir el filtro de cargadores. */
     static volatile boolean previewFilter;
+    /** Vista previa: «Cambiar» en la primera parada del plan, en cuanto lo haya. */
+    static volatile boolean previewChange;
+    /** Vista previa: la tarjeta de cargadores bajada hasta las paradas del plan (con previewPin, la primera cambiada a mano). */
+    static volatile boolean previewStops;
+    static volatile boolean previewPin;
     /** Vista previa: el filtro, bajado hasta las redes. */
     static volatile boolean previewFilterNets;
     /** Vista previa: el país del móvil para el filtro (ISO; null, el de verdad). */
@@ -2573,14 +2592,23 @@ final class RouteTab implements CarScreen {
         if (cp.outcome == ChargePlanner.Outcome.NO_CHARGER) chargers.addView(hint(Str.get(R.string.hql_plan_impossible)));
         int n = 1;
         for (ChargePlanner.Stop st : cp.stops) {
+            final int idx = n - 1;
+            // Dos líneas: la parada a lo ancho y, debajo, sus botones (en una sola, el nombre se quedaba en «1. End…»).
+            LinearLayout block = CarKit.col(ctx);
+            block.setPadding(0, 10, 0, 10);
             LinearLayout item = CarKit.row(ctx);
             item.setGravity(Gravity.CENTER_VERTICAL);
-            item.setPadding(0, 10, 0, 10);
+            block.addView(item);
+            LinearLayout actions = CarKit.row(ctx);
+            actions.setGravity(Gravity.END | Gravity.CENTER_VERTICAL);
+            actions.setPadding(0, 8, 0, 0);
+            block.addView(actions);
             ChargerDot dot = new ChargerDot(ctx, st.charger.maxKw, st.charger.network);
             item.addView(dot, new LinearLayout.LayoutParams(52, 52));
             LinearLayout txt = CarKit.col(ctx);
             txt.setPadding(16, 0, 10, 0);
-            TextView name = CarStyle.text(ctx, n++ + ". " + st.charger.name, 24, CarKit.TEXT);
+            // 📌: la eligió el conductor («Cambiar»), no el plan.
+            TextView name = CarStyle.text(ctx, n++ + ". " + (planner.isPinned(st.charger) ? "📌 " : "") + st.charger.name, 24, CarKit.TEXT);
             name.setTypeface(CarKit.MEDIUM);
             name.setSingleLine(true);
             name.setEllipsize(android.text.TextUtils.TruncateAt.END);
@@ -2600,11 +2628,18 @@ final class RouteTab implements CarScreen {
                 txt.addView(f);
             }
             item.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-            item.addView(markPill(st.charger));
+            // Las ya hechas (o en la que se está) no se cambian.
+            if (st.km > cp.fromKm + ChargePlanner.HERE_KM) {
+                TextView change = CarKit.pill(ctx, Str.get(R.string.hql_plan_change), false);
+                change.setOnClickListener(v -> openStopChange(idx));
+                actions.addView(change);
+            }
+            actions.addView(markPill(st.charger), spaced());
             TextView go = CarKit.pill(ctx, Str.get(R.string.hql_go), false);
             go.setOnClickListener(v -> navigateTo(st.charger.lat, st.charger.lon));
-            item.addView(go, spaced());
-            chargers.addView(item);
+            actions.addView(go, spaced());
+            chargers.addView(block);
+            if (idx == 0) firstStopView = block;
         }
         addLowVoltsNote(p, cp);
         addDestChargers(p, cp);
@@ -2619,6 +2654,143 @@ final class RouteTab implements CarScreen {
         other.setLetterSpacing(0.1f);
         other.setPadding(0, 8, 0, 0);
         chargers.addView(other);
+    }
+
+    /**
+     * «Cambiar» en una parada del plan (27-10, pedido en el foro LPMFF): los cargadores que podrían sustituirla (los del
+     * tramo entre la parada anterior y la siguiente a los que se llega, con el filtro), con cuánto se llega y cuánto cambia
+     * el tiempo parado. «Usar esta» la fija para este viaje (RoutePlanner.pinStop) y el plan se rehace desde ella;
+     * «Quitar mi elección» deja que el plan vuelva a elegir.
+     */
+    private void openStopChange(int idx) {
+        ChargePlanner.Result cp = chargePlan;
+        if (cp == null || idx >= cp.stops.size()) return;
+        ChargePlanner.Stop st = cp.stops.get(idx);
+        LinearLayout panel = new LinearLayout(ctx);
+        panel.setOrientation(LinearLayout.VERTICAL);
+        panel.setBackgroundColor(CarKit.BG);
+        panel.setClickable(true);
+        panel.setPadding(CarKit.PAD, 18, CarKit.PAD, CarKit.PAD);
+        LinearLayout bar = CarKit.row(ctx);
+        bar.setGravity(Gravity.CENTER_VERTICAL);
+        TextView title = CarStyle.text(ctx, Str.get(R.string.hql_plan_change_title, idx + 1), 34, CarKit.TEXT);
+        title.setTypeface(CarKit.MEDIUM);
+        bar.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        TextView done = CarKit.pill(ctx, Str.get(R.string.hql_close), true);
+        done.setOnClickListener(v -> root.removeView(panel));
+        bar.addView(done);
+        panel.addView(bar);
+        LinearLayout body = CarKit.col(ctx);
+        ScrollView sv = new ScrollView(ctx);
+        sv.addView(body);
+        panel.addView(sv, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+
+        TextView now = hint(Str.get(R.string.hql_plan_change_now, st.charger.name, cp.kmMark(st.km), st.arrivePct));
+        now.setTextColor(CarKit.DIM);
+        now.setMaxLines(2);
+        now.setPadding(0, 6, 0, 14);
+        body.addView(now);
+        if (planner.isPinned(st.charger)) {
+            TextView unpin = CarKit.pill(ctx, Str.get(R.string.hql_plan_change_unpin), false);
+            unpin.setOnClickListener(v -> {
+                planner.unpin(st.charger);
+                root.removeView(panel);
+                shownChargersFor = -1;
+                tick();
+            });
+            LinearLayout.LayoutParams ulp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            ulp.topMargin = 10;
+            body.addView(unpin, ulp);
+        }
+        java.util.List<ChargePlanner.Alternative> alts = planner.stopAlternatives(idx);
+        boolean any = false;
+        for (ChargePlanner.Alternative a : alts) any |= !a.current;
+        if (!any) body.addView(hint(Str.get(R.string.hql_plan_change_none)));
+        for (ChargePlanner.Alternative a : alts) {
+            RoutePlanner.Charger c = a.charger;
+            LinearLayout item = CarKit.row(ctx);
+            item.setGravity(Gravity.CENTER_VERTICAL);
+            item.setPadding(18, 10, 18, 10);
+            item.setBackground(CarKit.outlined(a.current ? CarKit.alpha(CarKit.ACCENT, 0.10f) : CarKit.SURFACE,
+                    a.current ? CarKit.ACCENT : CarKit.OUTLINE, 18));
+            item.addView(new ChargerDot(ctx, c.maxKw, c.network), new LinearLayout.LayoutParams(52, 52));
+            LinearLayout txt = CarKit.col(ctx);
+            txt.setPadding(16, 0, 10, 0);
+            TextView name = CarStyle.text(ctx, c.name, 24, CarKit.TEXT);
+            name.setTypeface(CarKit.MEDIUM);
+            name.setSingleLine(true);
+            name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            txt.addView(name);
+            txt.addView(CarStyle.text(ctx, Str.get(R.string.hql_plan_change_line, cp.kmMark(c.kmAlong), a.arrivePct, kwText(c)), 20,
+                    a.arrivePct < new ChargePlanner.Settings().stopMinPct ? CarKit.AMBER : CarKit.DIM));
+            if (!a.current) {
+                TextView delta = CarStyle.text(ctx, deltaText(a, cp), 20, !a.works() ? CarKit.RED : a.deltaMin > 0.5 ? CarKit.AMBER : CarKit.GREEN);
+                txt.addView(delta);
+            }
+            item.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+            if (a.current) {
+                item.addView(CarStyle.text(ctx, Str.get(R.string.hql_plan_change_in_plan), 21, CarKit.ACCENT));
+            } else if (a.works()) {
+                TextView use = CarKit.pill(ctx, Str.get(R.string.hql_plan_change_use), true);
+                use.setOnClickListener(v -> {
+                    planner.pinStop(st.charger, c);
+                    root.removeView(panel);
+                    shownChargersFor = -1;
+                    tick();
+                });
+                item.addView(use);
+            }
+            body.addView(item, itemParams());
+        }
+        TextView note = CarStyle.text(ctx, Str.get(R.string.hql_plan_change_note), 21, CarKit.FAINT);
+        note.setPadding(4, 22, 4, 0);
+        body.addView(note);
+        root.addView(panel, CarStyle.match());
+    }
+
+    /** Vista previa: abre «Cambiar» en la primera parada en cuanto el plan la tenga (cada 400 ms, como mucho 8 veces). */
+    private void previewChangeTry(int n) {
+        root.postDelayed(() -> {
+            ChargePlanner.Result cp = chargePlan;
+            if (cp != null && !cp.stops.isEmpty()) openStopChange(0);
+            else if (n < 8) previewChangeTry(n + 1);
+        }, 400);
+    }
+
+    /** Vista previa: en cuanto haya paradas, (si pin) cambia la primera por otra y baja la tarjeta hasta ellas. */
+    private void previewStopsTry(int n, boolean pin) {
+        root.postDelayed(() -> {
+            ChargePlanner.Result cp = chargePlan;
+            if (cp == null || cp.stops.isEmpty()) {
+                if (n < 8) previewStopsTry(n + 1, pin);
+                return;
+            }
+            if (pin) {
+                for (ChargePlanner.Alternative a : planner.stopAlternatives(0)) {
+                    if (a.current || !a.works()) continue;
+                    planner.pinStop(cp.stops.get(0).charger, a.charger);
+                    shownChargersFor = -1;
+                    tick();
+                    break;
+                }
+            }
+            // La tarjeta se rehace con cada tick: se baja varias veces para que la captura la pille abajo.
+            for (int i = 1; i <= 8; i++) {
+                root.postDelayed(() -> {
+                    if (chargersScroll != null && firstStopView != null) chargersScroll.scrollTo(0, Math.max(0, firstStopView.getTop() - 60));
+                }, 400L * i);
+            }
+        }, 400);
+    }
+
+    /** «−4 min · paradas: 2 → 1», «mismo tiempo» o «con ella no llegas». */
+    private String deltaText(ChargePlanner.Alternative a, ChargePlanner.Result cp) {
+        if (!a.works()) return Str.get(R.string.hql_plan_change_no_arrive);
+        long d = Math.round(a.deltaMin);
+        String t = d == 0 ? Str.get(R.string.hql_plan_change_same)
+                : d > 0 ? Str.get(R.string.hql_plan_change_more, d) : Str.get(R.string.hql_plan_change_less, -d);
+        if (a.plan.stops.size() != cp.stops.size()) t += " · " + Str.get(R.string.hql_plan_change_stops, cp.stops.size(), a.plan.stops.size());
+        return t;
     }
 
     /**

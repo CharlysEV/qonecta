@@ -427,10 +427,13 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
       die gestrichelte Linie über den Balken **der Durchschnitt deines Fahrzeugs** (laut seinem Verlauf: siehe [Echte
       Fahrzeugdaten](#echte-fahrzeugdaten-leapmotor-konto)), und die Prognose passt sich deinem echten Verbrauch an;
       bei Ankunft siehst du „erwartet … · real …“.
-    - **Ladestationen filtern:** „Filter“ wählt die Mindestleistung (beliebig, 22, 50, 100 oder 150 kW) und die
-      Ladenetze (Tesla, Zunder, Ionity, Iberdrola, Endesa X, Repsol, Wenea…, die auf der Route vorkommen, jeweils mit
-      der Zahl ihrer Ladestationen). Die Auswahl wird gespeichert, und auch die Blitze im Höhenprofil richten sich
-      danach.
+    - **Ladestationen filtern:** „Filter“ hat drei Tabs. Unter **„Ladesäulen“** die Mindestleistung (beliebig, 22, 50,
+      100, 150, 200 oder 300 kW), die Spannung und die **Ladenetze**: oben die auf deiner Route, mit der Zahl ihrer
+      Ladestationen, darunter die deines Landes von A bis Z (dazu die, die es fast überall in Europa gibt: Tesla,
+      Ionity, Shell, Lidl); „Ladenetze anderer Länder zeigen“ zeigt den Rest. Ist keins ausgewählt, zählen alle.
+      **„Ladeplan“** enthält, mit wie viel du ankommst, bis wie viel du lädst, Laden am Ziel, Essen, Sprachansage und
+      Navi-App, und **„Bevorzugt und gesperrt“** die Ladestationen, die du markiert hast. Das wird gespeichert, und die
+      Blitze im Profil folgen dem auch.
     - **Woher die Ladestationen kommen:** In Spanien aus dem **offiziellen Register** der Ladepunkte (Ministerio para
       la Transición Ecológica, veröffentlicht von der DGT auf nap.dgt.es): Leistung und **Spannung** jeder Station. Es
       wird einmal pro Woche aufs Handy geladen (etwa 3 MB). Was im Register fehlt (manche Betreiber haben nicht alle
@@ -446,18 +449,24 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
       oder 50 km um deinen Standort, ohne Route, von der nächsten bis zur entferntesten: Du wählst das Ladenetz („die
       Wenea-Stationen in meiner Nähe“) und die Mindestleistung und siehst, wie weit sie entfernt sind, ihre Leistung,
       ihre Spannung, die Stecker und die Ladepunkte, mit „Los“.
-    - **Mit Google Maps oder Waze navigieren:** unter „Filter“ → „Navigieren mit“ (wenn Waze installiert ist). Die
-      Taste zum Navigieren und die „Los“-Tasten öffnen die gewählte App. Waze kann keine Zwischenstopps: „Mit Stopps
-      navigieren“ führt dich zum nächsten.
+    - **Mit Google Maps oder Waze navigieren:** unter „Filter“ › „Ladeplan“ › „Navigieren mit“ (wenn Waze installiert
+      ist). Die Taste zum Navigieren und die „Los“-Tasten öffnen die gewählte App. Waze kann keine Zwischenstopps: „Mit
+      Stopps navigieren“ führt dich zum nächsten.
     - **Ladeplan (kostenlos, wie ABRP):** Reicht der Akku nicht mit der gewünschten Reserve, sagt dir die Route **wo du
       halten und bis wie viel du laden solltest**, unter den Ladestationen des Filters: den besten Schnelllader auf dem
       letzten Abschnitt, den du erreichst, und nur so viel wie nötig (der C10 lädt über 50 % langsamer: besser zwei
       kurze Stopps als einer bis 100 %). Jeder Stopp zeigt den km, mit wie viel du ankommst, bis wie viel du laden
       sollst, und die Minuten; die Akkulinie steigt bei jedem Stopp an. „Mit Stopps navigieren“ öffnet Google Maps mit
-      ihnen (bis zu 3). Unter „Filter“ wählst du, mit wie viel du ankommen willst (10–30 %) und bis wie viel du
-      höchstens laden willst (70–100 %); kommst du mit etwas mehr als dem Maximum ans Ziel, lädt der Plan so viel,
-      statt wenige km vor dem Ende noch einen Stopp einzulegen. Beim REEV gibt es keinen Plan: Der Generator liefert,
-      was fehlt.
+      ihnen (bis zu 3). Unter „Filter“ › „Ladeplan“ wählst du, mit wie viel du ankommen willst (10–30 %) und bis wie
+      viel du höchstens laden willst (70–100 %); kommst du mit etwas mehr als dem Maximum ans Ziel, lädt der Plan so
+      viel, statt wenige km vor dem Ende noch einen Stopp einzulegen. Beim REEV gibt es keinen Plan: Der Generator
+      liefert, was fehlt.
+    - **Einen Stopp ändern:** Jeder Stopp des Plans hat „Ändern“: Du siehst die anderen Ladestationen dieses Abschnitts,
+      die du erreichst, mit wie viel du ankommst und wie sich die Standzeit ändert („+5 Min. Standzeit“, „Stopps: 1 →
+      2“). „Diese nehmen“ legt sie **für diese Fahrt** fest (📌), und der Plan wird ab ihr neu berechnet; ändert sich der
+      Verbrauch und du kommst nicht mehr hin, wählt er eine andere und sagt es dir. „Meine Wahl entfernen“ geht zurück
+      zum Stopp des Plans. Bei einem anderen Ziel wird sie vergessen; um eine Ladestation immer zu bevorzugen, markiere
+      sie mit ★.
     - **800 V (C10 mit 81,9 kWh):** Der große Akku arbeitet mit 800 V und lädt an 400–500-V-Ladestationen zwar, aber
       nur mit halber Leistung. Der Plan hält an 800-V-Stationen (oder an solchen mit 150 kW oder mehr, die das fast
       immer sind, auch wenn das Register es nicht angibt) und lässt die 400–500-V-Stationen als Reserve: Die Liste
@@ -477,14 +486,14 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
       Auf dem Handy zeigt **Fahrten** oben „Lädt gerade“: das %, die kW, wann das Ziel und 100 % erreicht sind, das
       Geladene, die Kosten und die Kurve. Jeder Ladevorgang wird auf dem Handy gespeichert (echte kW, % und Minuten), um
       nach und nach die echte Ladekurve des Fahrzeugs kennenzulernen.
-    - **Der Plan wird während der Fahrt von selbst neu berechnet:** Mit dem Leapmotor-Konto vergleicht er, wie viel
-      dein Akku wirklich verliert, mit dem, was für diese km erwartet war, und passt den Rest an („An den Verbrauch
-      dieser Fahrt angepasst: +12 %“). Die gewählten Stopps bleiben, solange du sie mit Reserve erreichst; wird dein
-      Akku knapp (oder bleibt dir mehr übrig), ändert sich der Plan und **du wirst gewarnt**: eine orangefarbene Karte
-      auf dem Fahrzeugdisplay (auch über Android Auto) mit „Los“ (Google Maps mit den neuen Stopps) und „Route“, die
-      Taste „Fahrzeug“ in Orange und **eine Sprachansage** („Ladeplan geändert. Du verbrauchst 12 % mehr als erwartet.
-      Neuer Stopp: …“). Die Sprachansage schaltest du unter „Filter“ → „Sprachansage, wenn sich der Plan ändert“ aus.
-      Während du lädst, gibt es keine Warnung (das hast du selbst entschieden).
+    - **Der Plan wird während der Fahrt von selbst neu berechnet:** Mit dem Leapmotor-Konto vergleicht er, wie viel dein
+      Akku wirklich verliert, mit dem, was für diese km erwartet war, und passt den Rest an („An den Verbrauch dieser
+      Fahrt angepasst: +12 %“). Die gewählten Stopps bleiben, solange du sie mit Reserve erreichst; wird dein Akku knapp
+      (oder bleibt dir mehr übrig), ändert sich der Plan und **du wirst gewarnt**: eine orangefarbene Karte auf dem
+      Fahrzeugdisplay (auch über Android Auto) mit „Los“ (Google Maps mit den neuen Stopps) und „Route“, die Taste
+      „Fahrzeug“ in Orange und **eine Sprachansage** („Ladeplan geändert. Du verbrauchst 12 % mehr als erwartet. Neuer
+      Stopp: …“). Die Sprachansage schaltest du unter „Filter“ › „Ladeplan“ › „Sprachansage, wenn sich der Plan ändert“
+      aus. Während du lädst, gibt es keine Warnung (das hast du selbst entschieden).
   - „Fahren“: das nächste Fahrmanöver groß, mit einem Balken, der sich bis zum Abbiegen leert, die Fahrspuren und das
     Manöver danach; die Geschwindigkeit mit dem Tempolimit-Schild, die Fahrtrichtung, die Höhe, die Steigung und die
     Sonne bis zum Sonnenuntergang.

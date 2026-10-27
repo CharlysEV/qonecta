@@ -99,4 +99,18 @@
     <string name="hql_share_place">Shared destination</string>
     <string name="hql_share_applied_title">Route sent from the phone</string>
     <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
+    <string name="hql_plan_change">Change</string>
+    <string name="hql_plan_change_title">Change stop %1$d</string>
+    <string name="hql_plan_change_now">Now: %1$s · km %2$.0f · you arrive with %3$.0f %%</string>
+    <string name="hql_plan_change_line">km %1$.0f · arrive with %2$.0f %% · %3$s</string>
+    <string name="hql_plan_change_same">same time</string>
+    <string name="hql_plan_change_more">+%1$d min stopped</string>
+    <string name="hql_plan_change_less">−%1$d min stopped</string>
+    <string name="hql_plan_change_stops">stops: %1$d → %2$d</string>
+    <string name="hql_plan_change_no_arrive">with it you would not make it</string>
+    <string name="hql_plan_change_use">Use this</string>
+    <string name="hql_plan_change_in_plan">In the plan</string>
+    <string name="hql_plan_change_unpin">Remove my choice</string>
+    <string name="hql_plan_change_none">No other reachable chargers on this stretch with your filter.</string>
+    <string name="hql_plan_change_note">Only for this trip: it is forgotten when you change destination. If consumption changes and you can no longer reach it, the plan picks another and tells you. To always prefer a charger, mark it with ★.</string>
 </resources>

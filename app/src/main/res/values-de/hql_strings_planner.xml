@@ -99,4 +99,18 @@
     <string name="hql_share_place">Geteiltes Ziel</string>
     <string name="hql_share_applied_title">Route vom Handy gesendet</string>
     <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
+    <string name="hql_plan_change">Ändern</string>
+    <string name="hql_plan_change_title">Stopp %1$d ändern</string>
+    <string name="hql_plan_change_now">Jetzt: %1$s · km %2$.0f · Ankunft mit %3$.0f %%</string>
+    <string name="hql_plan_change_line">km %1$.0f · Ankunft mit %2$.0f %% · %3$s</string>
+    <string name="hql_plan_change_same">gleiche Zeit</string>
+    <string name="hql_plan_change_more">+%1$d Min. Standzeit</string>
+    <string name="hql_plan_change_less">−%1$d Min. Standzeit</string>
+    <string name="hql_plan_change_stops">Stopps: %1$d → %2$d</string>
+    <string name="hql_plan_change_no_arrive">damit kommst du nicht an</string>
+    <string name="hql_plan_change_use">Diese nehmen</string>
+    <string name="hql_plan_change_in_plan">Im Plan</string>
+    <string name="hql_plan_change_unpin">Meine Wahl entfernen</string>
+    <string name="hql_plan_change_none">Keine anderen erreichbaren Ladesäulen auf diesem Abschnitt mit deinem Filter.</string>
+    <string name="hql_plan_change_note">Nur für diese Fahrt: Bei einem anderen Ziel wird die Wahl vergessen. Ändert sich der Verbrauch und du kommst nicht mehr hin, wählt der Plan eine andere und sagt es dir. Um eine Ladesäule immer zu bevorzugen, markiere sie mit ★.</string>
 </resources>

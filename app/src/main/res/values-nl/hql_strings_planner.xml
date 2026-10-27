@@ -99,4 +99,18 @@
     <string name="hql_share_place">Gedeelde bestemming</string>
     <string name="hql_share_applied_title">Route vanaf de telefoon gestuurd</string>
     <string name="hql_share_applied_text">%1$s · %2$.0f km</string>
+    <string name="hql_plan_change">Wijzigen</string>
+    <string name="hql_plan_change_title">Stop %1$d wijzigen</string>
+    <string name="hql_plan_change_now">Nu: %1$s · km %2$.0f · je komt aan met %3$.0f %%</string>
+    <string name="hql_plan_change_line">km %1$.0f · aankomst met %2$.0f %% · %3$s</string>
+    <string name="hql_plan_change_same">zelfde tijd</string>
+    <string name="hql_plan_change_more">+%1$d min stilstaan</string>
+    <string name="hql_plan_change_less">−%1$d min stilstaan</string>
+    <string name="hql_plan_change_stops">stops: %1$d → %2$d</string>
+    <string name="hql_plan_change_no_arrive">hiermee kom je niet aan</string>
+    <string name="hql_plan_change_use">Deze gebruiken</string>
+    <string name="hql_plan_change_in_plan">In het plan</string>
+    <string name="hql_plan_change_unpin">Mijn keuze weghalen</string>
+    <string name="hql_plan_change_none">Geen andere bereikbare laadpalen op dit stuk met je filter.</string>
+    <string name="hql_plan_change_note">Alleen voor deze rit: bij een andere bestemming wordt je keuze vergeten. Verandert het verbruik en haal je hem niet meer, dan kiest het plan een andere en zegt het je. Om een laadpaal altijd te verkiezen, markeer je hem met ★.</string>
 </resources>

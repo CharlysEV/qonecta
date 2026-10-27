@@ -400,9 +400,13 @@ version). That tells us whether the C10 supports it.
       hills cost ("Ahead: up 90 m, down 20 m: +0.5 kWh"). With the Leapmotor account, the dashed line over the bars is
       **your car's average** (from its history: see [Real car data](#real-car-data-leapmotor-account)) and the forecast
       is fitted to your real consumption; on arrival it shows "expected … · real …".
-    - **Filter chargers:** "Filter" picks the minimum power (any, 22, 50, 100 or 150 kW) and the networks (Tesla, Zunder,
-      Ionity, Iberdrola, Endesa X, Repsol, Wenea…, those on the route, with how many chargers each has). It is saved,
-      and the bolts on the profile follow it too.
+    - **Filter chargers:** "Filter" has three tabs. In **"Chargers"**, the minimum power (any, 22, 50, 100, 150, 200 or
+      300 kW), the voltage and the **networks**: at the top the ones on your route, with how many chargers each has, and
+      below those of your country from A to Z (plus the ones found almost everywhere in Europe: Tesla, Ionity, Shell,
+      Lidl); "Show networks from other countries" shows the rest. With none ticked, all count. **"Charging plan"** has
+      what to arrive with, how far to charge, charging at the destination, food, voice and the navigation app, and
+      **"Favourites and banned"**, the chargers you have marked. It is saved, and the bolts on the profile follow it
+      too.
     - **Where the chargers come from:** in Spain, from the **official registry** of charging points (Ministry for the
       Ecological Transition, published by the DGT at nap.dgt.es): the power and **voltage** of each one. It is
       downloaded on the phone once a week (about 3 MB). What the registry lacks (some operators have not registered
@@ -412,16 +416,21 @@ version). That tells us whether the C10 supports it.
     - **Chargers near you:** "Near me" (next to "Filter") finds the chargers 5, 10, 25 or 50 km from where you are,
       without a route, nearest first: pick the network ("the Wenea ones near me") and the minimum power, and see how far
       they are, their power, voltage, sockets and points, with "Go".
-    - **Navigate with Google Maps or Waze:** in "Filter" → "Navigate with" (if Waze is installed). The guide button
-      and the "Go" buttons open the chosen one. Waze has no intermediate stops: "Go with the stops" takes you to the
-      next one.
+    - **Navigate with Google Maps or Waze:** in "Filter" › "Charging plan" › "Navigate with" (if Waze is installed). The
+      guide button and the "Go" buttons open the chosen one. Waze has no intermediate stops: "Go with the stops" takes
+      you to the next one.
     - **Charging plan (free, like ABRP):** if you won't arrive with the margin, Route says **where to stop and how far
       to charge** among the filtered chargers: the best fast charger in the last stretch you can reach and only what is
       needed (the C10 charges more slowly above 50 %: two short stops beat one long one to 100 %). Each stop shows the
       km, what you arrive with, how far to charge and the minutes; the battery line jumps up at each stop. "Go with the
-      stops" opens Google Maps with them (up to 3). In "Filter" you choose what to arrive with (10-30 %) and the most to
-      charge to (70-100 %); if a little more than the maximum gets you to the destination, it charges that instead of
-      adding a stop a few km from the end. There is no plan on a REEV: the generator covers the rest.
+      stops" opens Google Maps with them (up to 3). In "Filter" › "Charging plan" you choose what to arrive with (10-30
+      %) and the most to charge to (70-100 %); if a little more than the maximum gets you to the destination, it charges
+      that instead of adding a stop a few km from the end. There is no plan on a REEV: the generator covers the rest.
+    - **Change a stop:** each stop of the plan has "Change": you see the other chargers on that stretch you can reach,
+      what you arrive with and how the stopped time changes ("+5 min stopped", "stops: 1 → 2"). "Use this" fixes it
+      **for this trip** (📌) and the plan is redone from it; if consumption changes and you can no longer reach it, it
+      picks another and tells you. "Remove my choice" goes back to the plan's one. It is forgotten when you change
+      destination; to always prefer a charger, mark it with ★.
     - **800 V (81.9 kWh C10):** the big battery is 800 V and charges on 400–500 V chargers, but at half power. The plan
       stops at 800 V ones (or 150 kW and up, which almost always are, even if the registry does not say so) and keeps
       the 400–500 V ones in reserve: the list marks them in amber ("470 V: your 800 V car charges here at half power")
@@ -442,9 +451,9 @@ version). That tells us whether the C10 supports it.
       drops with what was expected for those km and adjusts the rest ("Adjusted to this trip's consumption: +12 %").
       Chosen stops are kept while you reach them with margin; if you are running short (or have extra), the plan changes
       and **tells you**: an amber card on the car panel (also over Android Auto) with "Go" (Google Maps with the new
-      stops) and "Route", the "Car" button in amber and **a voice alert** ("Charging plan changed. You're using 12 % more
-      than expected. New stop: …"). Turn the voice off in "Filter" → "Voice alert if the plan changes". It does not alert
-      while you are charging (that was your call).
+      stops) and "Route", the "Car" button in amber and **a voice alert** ("Charging plan changed. You're using 12 %
+      more than expected. New stop: …"). Turn the voice off in "Filter" › "Charging plan" › "Voice alert if the plan
+      changes". It does not alert while you are charging (that was your call).
   - "Driving": the next manoeuvre in large, with a bar that empties until the turn, the lanes and the manoeuvre after;
     the speed with the speed-limit sign, heading, altitude, slope and the sun until sunset.
   - "Trips": the current trip and the saved ones, with their route, consumption, climbing and cost; the km of the last

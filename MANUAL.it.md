@@ -410,9 +410,13 @@ supporta.
       sopra le barre è **la media della tua auto** (dal suo storico: vedi [Dati reali
       dell'auto](#dati-reali-dellauto-account-leapmotor)) e la previsione si adatta al tuo consumo reale; all'arrivo
       compare «previsti … · reali …».
-    - **Filtrare le colonnine:** «Filtra» sceglie la potenza minima (qualsiasi, 22, 50, 100 o 150 kW) e gli operatori
-      (Tesla, Zunder, Ionity, Iberdrola, Endesa X, Repsol, Wenea…, quelli presenti sul percorso, con quante colonnine ha
-      ciascuno). La scelta viene salvata, e la seguono anche le icone a fulmine sul profilo.
+    - **Filtrare le colonnine:** «Filtra» ha tre schede. In **«Colonnine»** la potenza minima (qualsiasi, 22, 50, 100,
+      150, 200 o 300 kW), la tensione e gli **operatori**: in alto quelli sul tuo percorso, con quante colonnine ha
+      ciascuno, e sotto quelli del tuo paese dalla A alla Z (più quelli presenti quasi ovunque in Europa: Tesla, Ionity,
+      Shell, Lidl); «Mostra le reti di altri paesi» mostra il resto. Se non ne scegli nessuno valgono tutti. **«Piano di
+      ricarica»** ha con quanto arrivare, fino a quanto ricaricare, ricaricare a destinazione, il cibo, la voce e il
+      navigatore, e **«Preferite ed escluse»** le colonnine che hai segnato. La scelta viene salvata, e la seguono anche
+      le icone a fulmine sul profilo.
     - **Da dove vengono le colonnine:** in Spagna, dal **registro ufficiale** dei punti di ricarica (Ministero per la
       Transizione Ecologica, pubblicato dalla DGT su nap.dgt.es): potenza e **tensione** di ognuna. Si scarica sul
       telefono una volta alla settimana (circa 3 MB). Quello che manca nel registro (alcuni operatori non hanno
@@ -423,17 +427,22 @@ supporta.
     - **Colonnine vicino a te:** «Vicino a me» (accanto a «Filtra») cerca le colonnine a 5, 10, 25 o 50 km da dove
       sei, senza percorso, dalla più vicina: scegli l'operatore («le Wenea vicino a me») e la potenza minima, e vedi a
       che distanza sono, potenza, tensione, prese e punti, con «Vai».
-    - **Navigare con Google Maps o Waze:** in «Filtra» → «Navigare con» (se Waze è installato). Il pulsante per
-      guidare e i «Vai» aprono quello scelto. Waze non ammette soste intermedie: «Vai con le soste» ti porta alla
-      prossima.
+    - **Navigare con Google Maps o Waze:** in «Filtra» › «Piano di ricarica» › «Navigare con» (se Waze è installato). Il
+      pulsante per guidare e i «Vai» aprono quello scelto. Waze non ammette soste intermedie: «Vai con le soste» ti
+      porta alla prossima.
     - **Piano di ricarica (gratis, come ABRP):** se non arrivi con il margine, Percorso dice **dove fermarti e fino a
       quanto ricaricare** tra le colonnine del filtro: la migliore colonnina rapida dell'ultimo tratto che raggiungi e
       solo quello che serve (la C10 ricarica più lentamente sopra il 50 %: meglio due soste brevi che una lunga fino al
       100 %). Ogni sosta mostra il km, con quanto arrivi, fino a quanto ricaricare e i minuti; la linea della batteria
-      sale a ogni sosta. «Vai con le soste» apre Google Maps con le soste (fino a 3). In «Filtra» scegli con quanto
-      arrivare (10-30 %) e fino a quanto ricaricare al massimo (70-100 %); se con poco più del massimo arrivi a
-      destinazione, ricarica quello invece di fare un'altra sosta a pochi km dalla fine. Su una REEV non c'è piano: il
-      generatore mette quello che manca.
+      sale a ogni sosta. «Vai con le soste» apre Google Maps con le soste (fino a 3). In «Filtra» › «Piano di ricarica»
+      scegli con quanto arrivare (10-30 %) e fino a quanto ricaricare al massimo (70-100 %); se con poco più del massimo
+      arrivi a destinazione, ricarica quello invece di fare un'altra sosta a pochi km dalla fine. Su una REEV non c'è
+      piano: il generatore mette quello che manca.
+    - **Cambiare una sosta:** ogni sosta del piano ha «Cambia»: vedi le altre colonnine di quel tratto che raggiungi,
+      con quanto arrivi e come cambia il tempo di sosta («+5 min di sosta», «soste: 1 → 2»). «Usa questa» la fissa **per
+      questo viaggio** (📌) e il piano si ricalcola da lì; se i consumi cambiano e non ci arrivi più, ne sceglie un'altra
+      e ti avvisa. «Togli la mia scelta» torna a quella del piano. Cambiando destinazione si dimentica; per preferire
+      sempre una colonnina, segnala con ★.
     - **800 V (C10 da 81,9 kWh):** la batteria grande è a 800 V e sulle colonnine a 400–500 V ricarica, ma a metà
       potenza. Il piano si ferma a quelle a 800 V (o da 150 kW in su, che quasi sempre lo sono anche se il registro non
       lo dice) e tiene di riserva quelle a 400–500 V: l'elenco le segna in ambra («470 V: la tua auto a 800 V qui
@@ -454,11 +463,11 @@ supporta.
       minuti) per conoscere la curva reale dell'auto.
     - **Il piano si rifà da solo durante il viaggio:** con l'account Leapmotor confronta quanto scende davvero la
       batteria con quanto previsto per quei km e adatta il resto («Adattato al consumo di questo viaggio: +12 %»). Le
-      soste scelte restano finché le raggiungi con margine; se stai restando senza batteria (o ne avanza), il piano cambia
-      e **ti avvisa**: una scheda ambra nel pannello dell'auto (anche sopra Android Auto) con «Vai» (Google Maps con le
-      nuove soste) e «Percorso», il pulsante «Veicolo» in ambra e **un avviso vocale** («Piano di ricarica cambiato. Stai
-      consumando il 12 % in più del previsto. Nuova sosta: …»). La voce si disattiva in «Filtra» → «Avviso vocale se il
-      piano cambia». Mentre ricarichi non avvisa (l'hai deciso tu).
+      soste scelte restano finché le raggiungi con margine; se stai restando senza batteria (o ne avanza), il piano
+      cambia e **ti avvisa**: una scheda ambra nel pannello dell'auto (anche sopra Android Auto) con «Vai» (Google Maps
+      con le nuove soste) e «Percorso», il pulsante «Veicolo» in ambra e **un avviso vocale** («Piano di ricarica
+      cambiato. Stai consumando il 12 % in più del previsto. Nuova sosta: …»). La voce si disattiva in «Filtra» › «Piano
+      di ricarica» › «Avviso vocale se il piano cambia». Mentre ricarichi non avvisa (l'hai deciso tu).
   - «Guida»: la prossima manovra in grande, con una barra che si svuota fino alla svolta, le corsie e la manovra
     successiva; la velocità con il cartello del limite, la direzione, l'altitudine, la pendenza e il sole fino al
     tramonto.

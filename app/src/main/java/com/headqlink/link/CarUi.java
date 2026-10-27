@@ -1388,6 +1388,17 @@ final class CarUi {
                 if (parts.length > 2 && parts[2].endsWith("cargadores")) RouteTab.previewChargers = true;
                 // "…-filtro": con el filtro de cargadores abierto.
                 if (parts.length > 2 && parts[2].endsWith("filtro")) RouteTab.previewFilter = true;
+                // «car-0-cambiar»: «Cambiar» en la primera parada del plan.
+                // «car-0-paradas»: la tarjeta bajada hasta las paradas; «…-fijada», con la primera cambiada a mano.
+                if (parts.length > 2 && parts[2].startsWith("paradas")) {
+                    RouteTab.previewStops = true;
+                    RouteTab.previewPin = parts[2].endsWith("fijada");
+                    RoutePlanner.previewAnyCharger = true;
+                }
+                if (parts.length > 2 && parts[2].equals("cambiar")) {
+                    RouteTab.previewChange = true;
+                    RoutePlanner.previewAnyCharger = true;
+                }
                 // «…-filtro-redes»: el filtro, bajado hasta las redes; «…-filtro-redes-de», como si el móvil estuviera en
                 // Alemania (las redes de allí).
                 if (parts.length > 2 && parts[2].contains("filtro-redes")) {
