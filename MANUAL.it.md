@@ -699,7 +699,7 @@ Per connetterti senza aprire l'app:
 «Diagnostica». In mezzo, gruppi che si aprono toccandoli (ognuno dice quante opzioni ha):
 
 - **Auto:** «Verifica requisiti», «Impostazioni immagine» e «Dati dell'auto».
-- **Contenuti della modalità estesa** (solo in «Auto esteso»): «Lista TV», «Lista radio» e «Segnalibri web».
+- **Contenuti della modalità estesa** (solo in «Auto esteso»): «Lista TV», «Lista radio», «Segnalibri web» e «Home Assistant».
 - **Giochi** (solo in «Auto esteso»): «Cartella giochi».
 - **App:** «Cerca nuova versione», «Lingua», «Aggiungi widget alla schermata Home» e «Aggiungi pulsante a Impostazioni
   rapide» (Android 13+).
@@ -824,6 +824,17 @@ Impostazioni › «Schermo dell'auto» › «Riprendi la radio alla connessione�
 
 Le scorciatoie della schermata «Web» dell'auto (di default YouTube, Google, Wikipedia e Twitch). Aggiungi i tuoi con
 nome e indirizzo, toglili o riordinali con le frecce; «Predefiniti» rimette i quattro originali.
+
+### «Home Assistant» (Casa, «Auto esteso»)
+
+Se hai Home Assistant, inserisci l'indirizzo esterno di casa (Nabu Casa o il tuo dominio: in auto il telefono usa i dati
+mobili) e un token di accesso di lunga durata (Home Assistant › il tuo profilo › Sicurezza), e tocca «Prova e salva».
+Poi scegli cosa vedere in auto: la schermata «Casa» lo mostra con pulsanti grandi (luci, prese, garage, tapparelle,
+scene, sensori). In alto, **«Il mio pannello»** apre il tuo pannello completo di Home Assistant, con le sue schede,
+senza accedere di nuovo (usa lo stesso token); «‹ Casa» torna ai pulsanti, e se esci da «Casa» con il pannello aperto,
+la volta dopo torni lì. In «Il mio pannello in auto» scegli un altro pannello (il suo percorso, come `lovelace/auto`, o
+incolla il suo indirizzo); vuoto, quello solito. Il token è salvato cifrato; mentre il pannello è aperto lo usa la sua
+pagina, e alla chiusura viene cancellato da lì.
 
 ### «Acquario» (Giochi › Per l'attesa)
 

@@ -910,6 +910,9 @@
     <string name="hql_ha_menu">Home Assistant</string>
     <string name="hql_ha_label">车上控制家居</string>
     <string name="hql_ha_intro">在车机屏幕上控制你的 Home Assistant（扩展模式 › 智能家居）：灯、插座、车库门、窗帘、场景… 请使用你家的外网地址（Nabu Casa 或你自己的域名）：在车上手机使用移动数据。令牌在 Home Assistant › 你的个人资料 › 安全 › 长期访问令牌中创建。它会加密保存在这部手机上，并且绝不会写入日志。</string>
+    <string name="hql_ha_panel">我的仪表板</string>
+    <string name="hql_ha_panel_field">车上的我的仪表板（可选）</string>
+    <string name="hql_ha_panel_help">在车上，智能家居 › 我的仪表板 会打开你完整的 Home Assistant 仪表板。留空：使用默认仪表板；其他仪表板请填写路径（lovelace/car、dashboard-car…）或粘贴其地址。</string>
     <string name="hql_ha_url">Home Assistant 地址</string>
     <string name="hql_ha_url_help">例如 https://xxxx.ui.nabu.casa</string>
     <string name="hql_ha_token">访问令牌</string>

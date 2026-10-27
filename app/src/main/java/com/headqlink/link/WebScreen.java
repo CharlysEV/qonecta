@@ -995,7 +995,7 @@ final class WebScreen implements CarScreen {
     }
 
     /** De noche, las webs sin modo oscuro propio se oscurecen (como en Chrome). */
-    private static void applyDark(WebSettings s) {
+    static void applyDark(WebSettings s) {
         boolean night = CarTheme.night();
         if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
             WebSettingsCompat.setAlgorithmicDarkeningAllowed(s, night);

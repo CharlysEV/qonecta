@@ -912,6 +912,9 @@
     <string name="hql_ha_menu">Home Assistant</string>
     <string name="hql_ha_label">La maison dans la voiture</string>
     <string name="hql_ha_intro">Pilotez votre Home Assistant depuis l’écran de la voiture (mode étendu › Maison) : lumières, prises, garage, volets, scènes… Utilisez l’adresse extérieure de votre maison (Nabu Casa ou votre domaine) : dans la voiture le téléphone passe par les données mobiles. Le jeton se crée dans Home Assistant › votre profil › Sécurité › Jetons d’accès longue durée. Il est chiffré sur ce téléphone et n’apparaît jamais dans le journal.</string>
+    <string name="hql_ha_panel">Mon tableau de bord</string>
+    <string name="hql_ha_panel_field">Mon tableau de bord dans la voiture (facultatif)</string>
+    <string name="hql_ha_panel_help">Dans la voiture, Maison › Mon tableau de bord ouvre votre tableau de bord Home Assistant complet. Vide : celui d’habitude ; pour un autre, son chemin (lovelace/voiture, dashboard-voiture…) ou collez son adresse.</string>
     <string name="hql_ha_url">Adresse de Home Assistant</string>
     <string name="hql_ha_url_help">Par exemple https://xxxx.ui.nabu.casa</string>
     <string name="hql_ha_token">Jeton d’accès</string>

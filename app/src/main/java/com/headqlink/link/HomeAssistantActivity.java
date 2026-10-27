@@ -61,6 +61,22 @@ public class HomeAssistantActivity extends Activity {
         pickTitle = findViewById(R.id.hql_ha_pick_title);
         url.setText(ha.url());
         if (ha.configured()) tokenBox.setHelperText(Str.get(R.string.hql_ha_token_saved));
+        TextInputEditText panel = findViewById(R.id.hql_ha_panel);
+        panel.setText(ha.panel());
+        panel.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int st, int c, int a) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int st, int b, int c) {
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                ha.setPanel(String.valueOf(s));
+            }
+        });
         MaterialButton test = findViewById(R.id.hql_ha_test);
         test.setOnClickListener(v -> {
             String u = String.valueOf(url.getText());

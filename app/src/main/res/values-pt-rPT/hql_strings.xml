@@ -912,6 +912,9 @@
     <string name="hql_ha_menu">Home Assistant</string>
     <string name="hql_ha_label">Casa no carro</string>
     <string name="hql_ha_intro">Controle o seu Home Assistant a partir do ecrã do carro (modo alargado › Casa): luzes, tomadas, garagem, estores, cenas… Use o endereço exterior da sua casa (Nabu Casa ou o seu domínio): no carro o telemóvel usa dados móveis. O token cria-se em Home Assistant › o seu perfil › Segurança › Tokens de acesso de longa duração. Fica cifrado neste telemóvel e nunca vai para o registo.</string>
+    <string name="hql_ha_panel">O meu painel</string>
+    <string name="hql_ha_panel_field">O meu painel no carro (opcional)</string>
+    <string name="hql_ha_panel_help">No carro, Casa › O meu painel abre o seu painel completo do Home Assistant. Vazio: o de sempre; para outro, o seu caminho (lovelace/carro, dashboard-carro…) ou cole o seu endereço.</string>
     <string name="hql_ha_url">Endereço do Home Assistant</string>
     <string name="hql_ha_url_help">Por exemplo https://xxxx.ui.nabu.casa</string>
     <string name="hql_ha_token">Token de acesso</string>

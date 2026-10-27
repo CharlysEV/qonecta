@@ -98,6 +98,98 @@ final class HomeAssistant {
         sp.edit().putString(K_ENTITIES, String.join(",", new LinkedHashSet<>(ids))).apply();
     }
 
+    // ------------------------------------------------------------------ «Mi panel» (el panel completo en el coche)
+
+    private static final String K_PANEL = "panel";
+    /** Al salir de Casa se estaba en «Mi panel»: se vuelve a él al entrar. */
+    private static final String K_PANEL_OPEN = "panel_open";
+
+    /** El panel que se abre en el coche: su ruta («lovelace/coche», «dashboard-coche»…), o "" = el de siempre. */
+    String panel() {
+        return sp.getString(K_PANEL, "");
+    }
+
+    void setPanel(String path) {
+        sp.edit().putString(K_PANEL, normalizePanel(path)).apply();
+    }
+
+    boolean panelOpen() {
+        return sp.getBoolean(K_PANEL_OPEN, false);
+    }
+
+    void setPanelOpen(boolean open) {
+        sp.edit().putBoolean(K_PANEL_OPEN, open).apply();
+    }
+
+    /** La dirección del panel elegido. */
+    String panelUrl() {
+        return panelUrl(url(), panel());
+    }
+
+    /**
+     * El guion que deja hecha la sesión en la web de Home Assistant con el token de la app (como las tablets de pared):
+     * se pone antes de cada página de su origen, así el panel se abre sin pedir usuario y contraseña.
+     */
+    String sessionScript() throws Exception {
+        return sessionScript(origin(url()), token());
+    }
+
+    /**
+     * Puro: lo que guarda la web de Home Assistant al iniciar sesión (hassTokens), con el token de larga duración como
+     * token de acceso y una caducidad lejana (así no intenta renovarlo). Solo si aún no hay una sesión suya.
+     */
+    static String sessionScript(String origin, String token) {
+        String o = org.json.JSONObject.quote(origin);
+        return "try{var t=localStorage.getItem('hassTokens');var ok=false;if(t){var j=JSON.parse(t);ok=j.hassUrl==" + o
+                + "&&j.access_token==" + org.json.JSONObject.quote(token) + ";}"
+                + "if(!ok)localStorage.setItem('hassTokens',JSON.stringify({access_token:" + org.json.JSONObject.quote(token)
+                + ",token_type:'Bearer',expires_in:1800,hassUrl:" + o + ",clientId:" + o + "+'/',"
+                + "expires:Date.now()+315360000000,refresh_token:''}));}catch(e){}";
+    }
+
+    /** Lo que borra la sesión de la web al salir del panel (el token no se queda en el navegador). */
+    static final String SESSION_CLEAR = "try{localStorage.removeItem('hassTokens');}catch(e){}";
+
+    /** Puro: el origen de la dirección (esquema, servidor y puerto): «https://casa.duckdns.org:8123». */
+    static String origin(String url) {
+        try {
+            java.net.URI u = new java.net.URI(url);
+            if (u.getScheme() == null || u.getHost() == null) return url;
+            String scheme = u.getScheme().toLowerCase(Locale.US);
+            int port = u.getPort();
+            // Como lo escribe el navegador (location.host): sin el puerto de siempre del esquema.
+            boolean usual = port == -1 || port == 443 && scheme.equals("https") || port == 80 && scheme.equals("http");
+            return scheme + "://" + u.getHost().toLowerCase(Locale.US) + (usual ? "" : ":" + port);
+        } catch (java.net.URISyntaxException e) {
+            return url;
+        }
+    }
+
+    /** Puro: la dirección del panel path en la casa url («» = el panel de siempre). */
+    static String panelUrl(String url, String path) {
+        String p = normalizePanel(path);
+        return origin(url) + "/" + p;
+    }
+
+    /**
+     * Puro: «/dashboard-coche/0/» → «dashboard-coche/0»; una dirección entera pegada desde el navegador
+     * («https://casa…/lovelace/coche?edit=1») → su ruta, sin lo de después de «?».
+     */
+    static String normalizePanel(String p) {
+        String s = p == null ? "" : p.trim();
+        if (s.matches("(?i)^https?://.*")) {
+            int slash = s.indexOf('/', s.indexOf("://") + 3);
+            s = slash < 0 ? "" : s.substring(slash);
+        }
+        int q = s.indexOf('?');
+        if (q >= 0) s = s.substring(0, q);
+        int h = s.indexOf('#');
+        if (h >= 0) s = s.substring(0, h);
+        while (s.startsWith("/")) s = s.substring(1);
+        while (s.endsWith("/")) s = s.substring(0, s.length() - 1);
+        return s;
+    }
+
     /** Puro: «casa.duckdns.org:8123/» → «https://casa.duckdns.org:8123» (sin la barra final; https si no se dice). */
     static String normalizeUrl(String u) {
         String s = u == null ? "" : u.trim();

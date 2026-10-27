@@ -677,7 +677,7 @@ Everything is in the ⚙ menu on the main screen, a panel that slides up from th
 "Diagnostics" at the bottom. In between, groups that open when tapped (each one says how many options it has):
 
 - **Car:** "Requirements check", "Picture settings" and "Car data".
-- **Extended mode content** (only in "Auto extended"): "TV list", "Radio list" and "Web bookmarks".
+- **Extended mode content** (only in "Auto extended"): "TV list", "Radio list", "Web bookmarks" and "Home Assistant".
 - **Games** (only in "Auto extended"): "Games folder".
 - **App:** "Check for new version", "Language", "Add widget to the home screen" and "Add button to Quick Settings"
   (Android 13+).
@@ -798,6 +798,17 @@ Settings › "Car screen" › "Resume the radio when connecting".
 
 The shortcuts on the car's "Web" screen (YouTube, Google, Wikipedia and Twitch by default). Add your own with a
 name and an address, remove them or reorder them with the arrows; "Defaults" puts back the original four.
+
+### "Home Assistant" (Home, "Auto extended")
+
+If you have Home Assistant, enter your home's outside address (Nabu Casa or your own domain: in the car the phone uses
+mobile data) and a long-lived access token (Home Assistant › your profile › Security), and tap "Test and save". Then
+choose what shows in the car: the "Home" screen shows them as big buttons (lights, plugs, garage, blinds, scenes,
+sensors). At the top, **"My dashboard"** opens your full Home Assistant dashboard, with its cards, without logging in
+again (it uses the same token); "‹ Home" goes back to the buttons, and if you leave "Home" with the dashboard open, it
+comes back to it next time. In "My dashboard in the car" you pick another dashboard (its path, such as `lovelace/car`,
+or paste its address); empty, your usual one. The token is stored encrypted; while the dashboard is open its page uses
+it, and it is removed from it when you close it.
 
 ### "Aquarium" (Games › For the wait)
 

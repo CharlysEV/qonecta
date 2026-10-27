@@ -911,6 +911,9 @@
     <string name="hql_ha_menu">Home Assistant</string>
     <string name="hql_ha_label">Home in the car</string>
     <string name="hql_ha_intro">Control your Home Assistant from the car screen (Extended mode › Home): lights, plugs, garage door, blinds, scenes… Use your home\'s outside address (Nabu Casa or your own domain): in the car the phone uses mobile data. The token is created in Home Assistant › your profile › Security › Long-lived access tokens. It is stored encrypted on this phone and never written to the log.</string>
+    <string name="hql_ha_panel">My dashboard</string>
+    <string name="hql_ha_panel_field">My dashboard in the car (optional)</string>
+    <string name="hql_ha_panel_help">In the car, Home › My dashboard opens your full Home Assistant dashboard. Empty: your usual one; for another, its path (lovelace/car, dashboard-car…) or paste its address.</string>
     <string name="hql_ha_url">Home Assistant address</string>
     <string name="hql_ha_url_help">For example https://xxxx.ui.nabu.casa</string>
     <string name="hql_ha_token">Access token</string>

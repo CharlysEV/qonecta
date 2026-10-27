@@ -699,7 +699,7 @@ Está tudo no menu ⚙ do ecrã principal, um painel que sobe de baixo. Em cima 
 «Diagnóstico». No meio, grupos que se abrem ao tocar (cada um diz quantas opções tem):
 
 - **Carro:** «Verificação», «Definições de imagem» e «Dados do carro».
-- **Conteúdo do modo alargado** (só no «Auto estendido»): «Lista de TV», «Lista de rádio» e «Marcadores web».
+- **Conteúdo do modo alargado** (só no «Auto estendido»): «Lista de TV», «Lista de rádio», «Marcadores web» e «Home Assistant».
 - **Jogos** (só no «Auto estendido»): «Pasta de jogos».
 - **App:** «Procurar versão nova», «Idioma», «Adicionar widget ao ecrã principal» e «Adicionar botão às definições
   rápidas» (Android 13+).
@@ -823,6 +823,17 @@ do carro» › «Continuar a rádio ao ligar».
 
 Os atalhos do ecrã «Web» do carro (de origem, YouTube, Google, Wikipedia e Twitch). Adicione os seus com nome e
 endereço, retire-os ou mude a ordem com as setas; «Os de origem» repõe os quatro iniciais.
+
+### «Home Assistant» (Casa, «Auto estendido»)
+
+Se tem Home Assistant, ponha o endereço exterior da sua casa (Nabu Casa ou o seu domínio: no carro o telemóvel usa dados
+móveis) e um token de acesso de longa duração (Home Assistant › o seu perfil › Segurança), e toque em «Testar e
+guardar». Depois escolha o que aparece no carro: o ecrã «Casa» mostra-o em botões grandes (luzes, tomadas, garagem,
+estores, cenas, sensores). Em cima, **«O meu painel»** abre o seu painel completo do Home Assistant, com os seus
+cartões, sem voltar a iniciar sessão (usa o mesmo token); «‹ Casa» volta aos botões, e se sair de «Casa» com o painel
+aberto, da próxima vez volta a ele. Em «O meu painel no carro» escolhe outro painel (o seu caminho, como
+`lovelace/carro`, ou cole o seu endereço); vazio, o de sempre. O token fica cifrado; enquanto o painel está aberto, a
+sua página usa-o, e ao fechar é apagado dela.
 
 ### «Aquário» (Jogos › Para a espera)
 

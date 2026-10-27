@@ -739,7 +739,7 @@ Auto“, unten „Diagnose“. Dazwischen liegen Gruppen, die sich beim Antippen
 enthält):
 
 - **Auto:** „Voraussetzungen prüfen“, „Bildeinstellungen“ und „Fahrzeugdaten (Leapmotor-Konto)“.
-- **Inhalte des erweiterten Modus** (nur in „Auto erweitert“): „TV-Liste“, „Radioliste“ und „Web-Lesezeichen“.
+- **Inhalte des erweiterten Modus** (nur in „Auto erweitert“): „TV-Liste“, „Radioliste“, „Web-Lesezeichen“ und „Home Assistant“.
 - **Spiele** (nur in „Auto erweitert“): „Spieleordner“.
 - **App:** „Nach neuer Version suchen“, „Sprache“, „Widget zum Startbildschirm hinzufügen“ und „Schalter zu den
   Schnelleinstellungen hinzufügen“ (Android 13+).
@@ -876,6 +876,18 @@ Abschalten unter Einstellungen › „Fahrzeugbildschirm“ › „Radio beim Ve
 Die Verknüpfungen auf dem Bildschirm „Web“ im Fahrzeug (standardmäßig YouTube, Google, Wikipedia und Twitch). Füge
 eigene mit Name und Adresse hinzu, entferne sie oder ändere ihre Reihenfolge mit den Pfeilen; „Standard“ stellt den
 Ausgangszustand wieder her.
+
+### „Home Assistant“ (Zuhause, „Auto erweitert“)
+
+Wenn du Home Assistant hast, trag die externe Adresse deines Zuhauses ein (Nabu Casa oder eigene Domain: im Auto nutzt
+das Handy mobile Daten) und einen langlebigen Zugriffstoken (Home Assistant › dein Profil › Sicherheit), und tippe auf
+„Testen und speichern“. Dann wählst du, was im Auto erscheint: Der Bildschirm „Zuhause“ zeigt es als große Tasten
+(Lichter, Steckdosen, Garage, Rollläden, Szenen, Sensoren). Oben öffnet **„Mein Dashboard“** dein komplettes
+Home-Assistant-Dashboard mit seinen Karten, ohne erneute Anmeldung (es nutzt denselben Token); „‹ Zuhause“ führt zurück
+zu den Tasten, und verlässt du „Zuhause“ mit offenem Dashboard, kommst du beim nächsten Mal wieder dorthin. Unter „Mein
+Dashboard im Auto“ wählst du ein anderes Dashboard (seinen Pfad, etwa `lovelace/auto`, oder füge seine Adresse ein);
+leer bleibt es das übliche. Der Token wird verschlüsselt gespeichert; solange das Dashboard offen ist, nutzt ihn seine
+Seite, und beim Schließen wird er dort gelöscht.
 
 ### „Aquarium“ (Spiele › Für die Wartezeit)
 
