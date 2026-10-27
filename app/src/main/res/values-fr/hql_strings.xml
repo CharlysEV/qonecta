@@ -1281,6 +1281,10 @@
     <string name="hql_split_aa_right">Écran partagé : Android Auto à droite</string>
     <string name="hql_radio_resume">Reprendre la radio à la connexion</string>
     <string name="hql_radio_resume_help">Si la radio ou Ma musique jouait à la fin de la connexion avec la voiture, elle reprend toute seule à la suivante (un morceau, là où il en était). Pas si vous l\'aviez arrêtée.</string>
+    <string name="hql_radio_country_line">Les plus écoutées · %1$s</string>
+    <string name="hql_radio_country_change">Changer de pays</string>
+    <string name="hql_radio_country_title">Pays des stations populaires</string>
+    <string name="hql_radio_country_auto">Automatique · %1$s</string>
     <string name="hql_split_swap">Inverser les côtés</string>
     <string name="hql_settings_fuel">Carburant</string>
     <string name="hql_price_petrol">Prix de l\'essence</string>

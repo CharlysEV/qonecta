@@ -791,7 +791,9 @@ Android 12 o anterior, la app usa el idioma del sistema.
 
 Pega la URL de una lista M3U (en la de TV, también la JSON de TDTChannels: `https://www.tdtchannels.com/lists/tv.json`)
 y pulsa **«Añadir lista»**: aparece arriba con un ✓. Si cierras con la URL pegada sin pulsarlo, se añade igual. También
-puedes pulsar «Elegir archivo». Si no pones lista de radio, en el coche salen las emisoras populares.
+puedes pulsar «Elegir archivo». Si no pones lista de radio, en el coche salen las emisoras populares: las más
+escuchadas de tu país (el de la región del móvil o, si no la dice, el de la red móvil). En el coche, Radio ›
+«Populares» › «Cambiar país» elige otro, y «Automático» vuelve al tuyo.
 
 ### «Mi música» (Radio, «Auto extendido»)
 

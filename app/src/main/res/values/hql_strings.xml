@@ -1285,6 +1285,10 @@
     <string name="hql_split_aa_right">Split screen: Android Auto on the right</string>
     <string name="hql_radio_resume">Resume the radio when connecting</string>
     <string name="hql_radio_resume_help">If the radio or My music was playing when the connection with the car ended, it carries on by itself at the next one (a song, from where it was). Not if you had stopped it.</string>
+    <string name="hql_radio_country_line">Most listened to · %1$s</string>
+    <string name="hql_radio_country_change">Change country</string>
+    <string name="hql_radio_country_title">Country for the popular stations</string>
+    <string name="hql_radio_country_auto">Automatic · %1$s</string>
     <string name="hql_split_swap">Swap sides</string>
     <string name="hql_settings_fuel">Fuel</string>
     <string name="hql_price_petrol">Petrol price</string>

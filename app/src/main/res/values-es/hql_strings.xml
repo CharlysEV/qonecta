@@ -1286,6 +1286,10 @@
     <string name="hql_split_aa_right">Pantalla partida: Android Auto a la derecha</string>
     <string name="hql_radio_resume">Seguir con la radio al conectar</string>
     <string name="hql_radio_resume_help">Si la radio o Mi música sonaba al terminar la conexión con el coche, sigue sola en la siguiente (una canción, por donde iba). Si la habías parado, no.</string>
+    <string name="hql_radio_country_line">Las más escuchadas · %1$s</string>
+    <string name="hql_radio_country_change">Cambiar país</string>
+    <string name="hql_radio_country_title">País de las emisoras populares</string>
+    <string name="hql_radio_country_auto">Automático · %1$s</string>
     <string name="hql_split_swap">Cambiar de lado</string>
     <string name="hql_settings_fuel">Combustible</string>
     <string name="hql_price_petrol">Precio de la gasolina</string>

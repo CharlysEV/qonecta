@@ -870,6 +870,18 @@ final class Config {
         return sp.getBoolean(RADIO_RESUME, true);
     }
 
+    /** País de las emisoras «Populares» (código de dos letras), o "" = automático (RadioScreen.autoCountry). */
+    static final String RADIO_COUNTRY = "radio_country";
+
+    String radioCountry() {
+        String v = sp.getString(RADIO_COUNTRY, "");
+        return v == null ? "" : v;
+    }
+
+    void setRadioCountry(String iso) {
+        sp.edit().putString(RADIO_COUNTRY, iso == null ? "" : iso.toUpperCase(java.util.Locale.US)).apply();
+    }
+
     static final String FLOAT_CARD = "float_card";
 
     boolean floatCard() {

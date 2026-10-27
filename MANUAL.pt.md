@@ -799,7 +799,9 @@ sistema.
 
 Cole o URL de uma lista M3U (na TV, também a lista JSON do TDTChannels: `https://www.tdtchannels.com/lists/tv.json`) e
 toque em **«Adicionar lista»**: aparece em cima com um ✓. Se fechar com o URL colado sem tocar nele, é adicionada na
-mesma. Também pode tocar em «Escolher ficheiro». Sem lista de rádio, o carro mostra as estações populares.
+mesma. Também pode tocar em «Escolher ficheiro». Sem lista de rádio, o carro mostra as estações populares: as mais
+ouvidas do seu país (o da região do telemóvel ou, se não a indicar, o da rede móvel). No carro, Rádio › «Populares» ›
+«Mudar de país» escolhe outro, e «Automático» volta ao seu.
 
 ### «A minha música» (Rádio, «Auto estendido»)
 

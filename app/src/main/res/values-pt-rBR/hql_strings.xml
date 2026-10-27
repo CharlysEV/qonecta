@@ -1281,6 +1281,10 @@
     <string name="hql_split_aa_right">Tela dividida: Android Auto à direita</string>
     <string name="hql_radio_resume">Continuar o rádio ao conectar</string>
     <string name="hql_radio_resume_help">Se o rádio ou Minhas músicas estava tocando quando a conexão com o carro terminou, continua sozinho na próxima (uma música, de onde parou). Se você tinha parado, não.</string>
+    <string name="hql_radio_country_line">As mais ouvidas · %1$s</string>
+    <string name="hql_radio_country_change">Mudar de país</string>
+    <string name="hql_radio_country_title">País das rádios populares</string>
+    <string name="hql_radio_country_auto">Automático · %1$s</string>
     <string name="hql_split_swap">Trocar de lado</string>
     <string name="hql_settings_fuel">Combustível</string>
     <string name="hql_price_petrol">Preço da gasolina</string>

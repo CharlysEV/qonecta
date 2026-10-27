@@ -1280,6 +1280,10 @@
     <string name="hql_split_aa_right">Gesplitst scherm: Android Auto rechts</string>
     <string name="hql_radio_resume">Radio hervatten bij verbinden</string>
     <string name="hql_radio_resume_help">Speelde de radio of Mijn muziek toen de verbinding met de auto stopte, dan gaat die bij de volgende vanzelf verder (een nummer vanaf waar het was). Niet als je hem had gestopt.</string>
+    <string name="hql_radio_country_line">Meest beluisterd · %1$s</string>
+    <string name="hql_radio_country_change">Land wijzigen</string>
+    <string name="hql_radio_country_title">Land voor populaire zenders</string>
+    <string name="hql_radio_country_auto">Automatisch · %1$s</string>
     <string name="hql_split_swap">Kanten wisselen</string>
     <string name="hql_settings_fuel">Brandstof</string>
     <string name="hql_price_petrol">Benzineprijs</string>

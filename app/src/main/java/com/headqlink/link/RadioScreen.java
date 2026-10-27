@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Radio por internet: emisoras populares del país (directorio abierto radio-browser.info) o la
+ * Radio por internet: emisoras populares del país (directorio abierto radio-browser.info; el país, automático o el
+ * elegido en «Cambiar país», ver {@link #country}) o la
  * lista M3U del usuario (Config.radioSource, URL o archivo), y «Mi música» (las canciones del móvil, MusicLibrary). Lo
  * que suena sigue al salir de aquí (RadioPlayer); arriba, la emisora o canción actual con lo que emite y los controles.
  */
@@ -201,12 +202,14 @@ final class RadioScreen implements CarScreen {
         }
         String src = source >= 1 ? lists[source - 1][1] : "";
         if (source >= 1) new Config(c).setM3uSelected(Config.RADIO, source - 1);
+        String cc = source == 0 ? country(c) : "";
         showMessage(source == 0 ? Str.get(R.string.hql_radio_loading_popular) : Str.get(R.string.hql_radio_loading_list));
+        if (source == 0) addCountryBar(c, cc);
         new Thread(() -> {
             List<RadioPlayer.Station> list = new ArrayList<>();
             String error = null;
             try {
-                list = source == 0 ? popular() : fromM3u(c, src);
+                list = source == 0 ? popular(cc) : fromM3u(c, src);
             } catch (Exception e) {
                 error = e.getMessage();
                 L.w("radio: no se pudo cargar la lista: " + e);
@@ -217,13 +220,153 @@ final class RadioScreen implements CarScreen {
                 if (destroyed || seq != loadSeq) return;
                 if (fl.isEmpty()) {
                     showMessage(fe != null ? Str.get(R.string.hql_load_failed, fe) : Str.get(R.string.hql_radio_none));
-                    return;
+                } else {
+                    shown.clear();
+                    shown.addAll(fl);
+                    showGrid(c);
                 }
-                shown.clear();
-                shown.addAll(fl);
-                showGrid(c);
+                // Populares: arriba, de qué país son y «Cambiar país» (también sin emisoras, para poder cambiarlo).
+                if (source == 0) addCountryBar(c, cc);
             });
         }, "radio-load").start();
+    }
+
+    // ---------------------------------------------------------------- país de las populares
+
+    /** El país de las populares: el elegido a mano en «Cambiar país» o, si no, el automático. */
+    static String country(Context c) {
+        String manual = new Config(c).radioCountry();
+        return manual.isEmpty() ? autoCountry(c) : manual;
+    }
+
+    /**
+     * El país automático: el de la región del sistema (no cambia al poner la app en otro idioma, que puede venir sin
+     * país), el del idioma de la app, el de la red móvil (como los cargadores) y, si nada lo dice, España.
+     */
+    static String autoCountry(Context c) {
+        android.content.res.Configuration sys = android.content.res.Resources.getSystem().getConfiguration();
+        @SuppressWarnings("deprecation")
+        Locale system = android.os.Build.VERSION.SDK_INT >= 24 ? sys.getLocales().get(0) : sys.locale;
+        return pickCountry(system == null ? null : system.getCountry(), Locale.getDefault().getCountry(), Country.current(c));
+    }
+
+    /** Puro: el primero que sea un código de país de dos letras (en mayúsculas); si ninguno, España. */
+    static String pickCountry(String... candidates) {
+        for (String s : candidates) {
+            if (s != null && s.length() == 2 && Character.isLetter(s.charAt(0)) && Character.isLetter(s.charAt(1))) {
+                return s.toUpperCase(Locale.US);
+            }
+        }
+        return "ES";
+    }
+
+    /** Puro: la bandera (emoji) de un código de país de dos letras. */
+    static String flag(String iso) {
+        if (iso == null || iso.length() != 2) return "";
+        String u = iso.toUpperCase(Locale.US);
+        return new String(Character.toChars(0x1F1E6 + u.charAt(0) - 'A')) + new String(Character.toChars(0x1F1E6 + u.charAt(1) - 'A'));
+    }
+
+    /** Nombre del país en el idioma de la app («Alemania», «Deutschland»…). */
+    static String countryName(String iso) {
+        String n = new Locale("", iso).getDisplayCountry(Locale.getDefault());
+        return n == null || n.isEmpty() ? iso : n;
+    }
+
+    /** Encima de lo que haya en listArea: «Las más escuchadas · 🇩🇪 Alemania» y «Cambiar país». */
+    private void addCountryBar(Context c, String cc) {
+        LinearLayout bar = new LinearLayout(c);
+        bar.setGravity(Gravity.CENTER_VERTICAL);
+        bar.setPadding(24, 4, 24, 4);
+        TextView what = CarStyle.text(c, Str.get(R.string.hql_radio_country_line, flag(cc) + " " + countryName(cc)), 22,
+                CarStyle.TEXT_DIM);
+        what.setSingleLine(true);
+        bar.addView(what, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        TextView change = CarStyle.pill(c, Str.get(R.string.hql_radio_country_change));
+        change.setOnClickListener(v -> showCountries(c));
+        bar.addView(change);
+        wrapWithBar(c, bar);
+    }
+
+    /** Pone una barra encima de lo que haya en listArea (la cuadrícula o el mensaje). */
+    private void wrapWithBar(Context c, View bar) {
+        View content = listArea.getChildAt(0);
+        listArea.removeAllViews();
+        LinearLayout col = new LinearLayout(c);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.addView(bar);
+        if (content != null) col.addView(content, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        listArea.addView(col, CarStyle.match());
+    }
+
+    /** «Cambiar país»: «Automático» (con el país que saldría) y todos los países de la A a la Z; el elegido, marcado. */
+    private void showCountries(Context c) {
+        loadSeq++;
+        String manual = new Config(c).radioCountry();
+        String auto = autoCountry(c);
+        List<String[]> items = new ArrayList<>();
+        items.add(new String[]{"", Str.get(R.string.hql_radio_country_auto, flag(auto) + " " + countryName(auto))});
+        List<String[]> all = new ArrayList<>();
+        for (String iso : Locale.getISOCountries()) all.add(new String[]{iso, flag(iso) + " " + countryName(iso)});
+        java.text.Collator col = java.text.Collator.getInstance(Locale.getDefault());
+        java.util.Collections.sort(all, (a, b) -> col.compare(countryName(a[0]), countryName(b[0])));
+        items.addAll(all);
+        RecyclerView rv = new RecyclerView(c);
+        rv.setPadding(18, 6, 18, 6);
+        int cols = CarStyle.gridColumns(COLUMNS, host.width() - 36, CarStyle.MIN_CELL_SCREEN_PX);
+        rv.setLayoutManager(new GridLayoutManager(c, cols));
+        int cellW = (host.width() - 36) / cols;
+        rv.setAdapter(new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int type) {
+                TextView t = CarStyle.text(parent.getContext(), "", 24, CarStyle.TEXT);
+                t.setMaxLines(2);
+                t.setGravity(Gravity.CENTER_VERTICAL);
+                t.setPadding(20, 10, 14, 10);
+                RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(cellW - 12, 88);
+                lp.setMargins(6, 6, 6, 6);
+                t.setLayoutParams(lp);
+                return new RecyclerView.ViewHolder(t) {
+                };
+            }
+
+            @Override
+            public void onBindViewHolder(RecyclerView.ViewHolder vh, int pos) {
+                String[] it = items.get(pos);
+                boolean on = it[0].equals(manual);
+                TextView t = (TextView) vh.itemView;
+                t.setText(on ? "✓ " + it[1] : it[1]);
+                t.setTextColor(on ? CarStyle.ACCENT : CarStyle.TEXT);
+                t.setBackground(CarStyle.round(on ? CarStyle.ACCENT_BG : CarStyle.ITEM_BG, 16));
+                t.setOnClickListener(v -> {
+                    new Config(c).setRadioCountry(it[0]);
+                    L.i("radio: país de las populares " + (it[0].isEmpty() ? "automático (" + autoCountry(c) + ")" : it[0]));
+                    load(0);
+                });
+            }
+
+            @Override
+            public int getItemCount() {
+                return items.size();
+            }
+        });
+        // El elegido, a la vista (Automático ya está arriba).
+        int sel = 0;
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i)[0].equals(manual)) sel = i;
+        }
+        rv.scrollToPosition(sel);
+        listArea.removeAllViews();
+        listArea.addView(rv, CarStyle.match());
+        LinearLayout bar = new LinearLayout(c);
+        bar.setGravity(Gravity.CENTER_VERTICAL);
+        bar.setPadding(24, 4, 24, 4);
+        TextView title = CarStyle.text(c, Str.get(R.string.hql_radio_country_title), 22, CarStyle.TEXT_DIM);
+        bar.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        TextView back = CarStyle.pill(c, Str.get(R.string.hql_back));
+        back.setOnClickListener(v -> load(0));
+        bar.addView(back);
+        wrapWithBar(c, bar);
     }
 
     /** «Mi música»: las canciones del móvil, con «Aleatorio» arriba; sin permiso o sin canciones, lo dice. */
@@ -273,9 +416,8 @@ final class RadioScreen implements CarScreen {
         listArea.addView(CarStyle.message(host.context(), s), CarStyle.match());
     }
 
-    private static List<RadioPlayer.Station> popular() throws Exception {
-        String cc = Locale.getDefault().getCountry();
-        if (cc == null || cc.length() != 2) cc = "ES";
+    /** Las 150 emisoras más escuchadas del país cc (directorio radio-browser.info), sin las que no funcionan. */
+    private static List<RadioPlayer.Station> popular(String cc) throws Exception {
         String q = "/json/stations/search?countrycode=" + URLEncoder.encode(cc, "UTF-8")
                 + "&order=clickcount&reverse=true&hidebroken=true&limit=150";
         Exception last = null;

@@ -773,7 +773,9 @@ language.
 
 Paste the URL of an M3U list (for TV, also the TDTChannels JSON list: `https://www.tdtchannels.com/lists/tv.json`) and
 tap **"Add list"**: it appears at the top with a ✓. If you close with the URL pasted without tapping it, it is added
-anyway. You can also tap "Choose file". Without a radio list, the car shows the popular stations.
+anyway. You can also tap "Choose file". Without a radio list, the car shows the popular stations: the most listened
+to in your country (the phone's region or, if it has none, the mobile network's country). In the car, Radio ›
+"Popular" › "Change country" picks another one, and "Automatic" goes back to yours.
 
 ### "My music" (Radio, "Auto extended")
 
