@@ -54,11 +54,35 @@ final class ChargerFilter {
         NETWORKS.put("enel", new String[]{"Enel X", "enel"});
         NETWORKS.put("totalenergies", new String[]{"TotalEnergies", "totalenergies", "total energies"});
         NETWORKS.put("shell", new String[]{"Shell Recharge", "shell"});
-        NETWORKS.put("bp", new String[]{"bp pulse", "bp pulse", "aral pulse"});
+        // En el registro alemán, Aral pulse figura como «BP Europa SE».
+        NETWORKS.put("bp", new String[]{"bp pulse", "bp pulse", "aral pulse", "aral", "bp europa"});
         NETWORKS.put("plenoil", new String[]{"Plenoil", "plenoil"});
         NETWORKS.put("acciona", new String[]{"Acciona", "acciona"});
         NETWORKS.put("edp", new String[]{"EDP", "edp"});
         NETWORKS.put("instavolt", new String[]{"InstaVolt", "instavolt"});
+        // Alemania y alrededores (27-10, pedido en el foro LPMFF): las de más cargadores rápidos del registro de la
+        // Bundesnetzagentur (EnBW sola tiene ~2000 sitios) y las grandes de Austria, Suiza, Francia e Italia.
+        // «=…»: el campo entero, no una palabra suelta («Mer» sí; «Aire de la Mer», no).
+        NETWORKS.put("enbw", new String[]{"EnBW", "enbw"});
+        NETWORKS.put("ewego", new String[]{"EWE Go", "ewe go"});
+        NETWORKS.put("pfalzwerke", new String[]{"Pfalzwerke", "pfalzwerke"});
+        NETWORKS.put("kaufland", new String[]{"Kaufland", "kaufland"});
+        NETWORKS.put("vattenfall", new String[]{"Vattenfall InCharge", "vattenfall", "incharge"});
+        NETWORKS.put("aldi", new String[]{"Aldi", "aldi"});
+        NETWORKS.put("eon", new String[]{"E.ON Drive", "e on drive", "eon drive", "=e on", "=eon"});
+        NETWORKS.put("mer", new String[]{"Mer", "=mer", "mer germany", "mer norge", "mer sverige", "mer uk"});
+        NETWORKS.put("teag", new String[]{"TEAG", "teag"});
+        NETWORKS.put("citywatt", new String[]{"Citywatt", "citywatt"});
+        NETWORKS.put("edeka", new String[]{"EDEKA", "edeka"});
+        NETWORKS.put("comfortcharge", new String[]{"Comfortcharge", "comfortcharge", "comfort charge"});
+        NETWORKS.put("circlek", new String[]{"Circle K", "circle k"});
+        NETWORKS.put("mercedes", new String[]{"Mercedes-Benz", "mercedes benz high power", "mercedes benz charging", "mercedes benz hpc"});
+        NETWORKS.put("eviny", new String[]{"Eviny", "eviny", "bilkraft"});
+        NETWORKS.put("orlen", new String[]{"Orlen", "orlen"});
+        NETWORKS.put("smatrics", new String[]{"Smatrics", "smatrics"});
+        NETWORKS.put("gofast", new String[]{"GOFAST", "gofast"});
+        NETWORKS.put("izivia", new String[]{"Izivia", "izivia"});
+        NETWORKS.put("freetox", new String[]{"Free To X", "free to x"});
     }
 
     private ChargerFilter() {
@@ -79,8 +103,8 @@ final class ChargerFilter {
             for (Map.Entry<String, String[]> e : NETWORKS.entrySet()) {
                 String[] v = e.getValue();
                 for (int i = 1; i < v.length; i++) {
-                    // Palabra entera (o varias): «bp pulse» sí; «bp» dentro de otra palabra, no.
-                    if (n.contains(" " + v[i] + " ")) return e.getKey();
+                    // Palabra entera (o varias): «bp pulse» sí; «bp» dentro de otra palabra, no. «=…»: el campo entero.
+                    if (v[i].startsWith("=") ? n.trim().equals(v[i].substring(1)) : n.contains(" " + v[i] + " ")) return e.getKey();
                 }
             }
         }
@@ -177,6 +201,26 @@ final class ChargerFilter {
         BADGES.put("acciona", new Object[]{0xFFE2001A, "AC", 0});
         BADGES.put("edp", new Object[]{0xFFE32119, "EDP", 0});
         BADGES.put("instavolt", new Object[]{0xFF00A0DF, "IV", 0});
+        BADGES.put("enbw", new Object[]{0xFF1E50A0, "EB", 0});
+        BADGES.put("ewego", new Object[]{0xFF00A0DC, "EG", 0});
+        BADGES.put("pfalzwerke", new Object[]{0xFF0069B4, "PW", 0});
+        BADGES.put("kaufland", new Object[]{0xFFE10915, "K", 0});
+        BADGES.put("vattenfall", new Object[]{0xFFFFDA00, "V", 1});
+        BADGES.put("aldi", new Object[]{0xFF1C3F94, "AL", 0});
+        BADGES.put("eon", new Object[]{0xFFEA1C0A, "EO", 0});
+        BADGES.put("mer", new Object[]{0xFF00A88E, "ME", 0});
+        BADGES.put("teag", new Object[]{0xFF009FE3, "TG", 0});
+        BADGES.put("citywatt", new Object[]{0xFF2E7D32, "CW", 0});
+        BADGES.put("edeka", new Object[]{0xFFFFD500, "ED", 1});
+        BADGES.put("comfortcharge", new Object[]{0xFFE20074, "CC", 0});
+        BADGES.put("circlek", new Object[]{0xFFEE2E24, "CK", 0});
+        BADGES.put("mercedes", new Object[]{0xFF5B6770, "MB", 0});
+        BADGES.put("eviny", new Object[]{0xFF6B2C91, "EV", 0});
+        BADGES.put("orlen", new Object[]{0xFFD0021B, "OR", 0});
+        BADGES.put("smatrics", new Object[]{0xFF6CC24A, "SM", 1});
+        BADGES.put("gofast", new Object[]{0xFFE30613, "GF", 0});
+        BADGES.put("izivia", new Object[]{0xFF00A3A1, "IZ", 0});
+        BADGES.put("freetox", new Object[]{0xFF00B140, "FX", 0});
     }
 
     /**
@@ -202,6 +246,7 @@ final class ChargerFilter {
         FAST_ONLY.put("fastned", 300.0);
         FAST_ONLY.put("electra", 300.0);
         FAST_ONLY.put("atlante", 150.0);
+        FAST_ONLY.put("mercedes", 300.0);
     }
 
     /**
@@ -255,6 +300,90 @@ final class ChargerFilter {
             if (a.getKey().equals(OTHER) != b.getKey().equals(OTHER)) return a.getKey().equals(OTHER) ? 1 : -1;
             return Integer.compare(b.getValue(), a.getValue());
         });
+        return out;
+    }
+
+    /**
+     * Países (ISO en minúsculas) donde tiene cargadores cada red; «*»: en casi toda Europa. Aproximado y solo para ordenar
+     * el filtro (que salgan las de tu país), nunca para quitar cargadores de una ruta.
+     */
+    private static final Map<String, String[]> COUNTRIES = new LinkedHashMap<>();
+
+    static {
+        String[] eu = {"*"};
+        COUNTRIES.put("tesla", eu);
+        COUNTRIES.put("ionity", eu);
+        COUNTRIES.put("shell", eu);
+        COUNTRIES.put("lidl", eu);
+        COUNTRIES.put("zunder", new String[]{"es", "pt", "fr"});
+        COUNTRIES.put("iberdrola", new String[]{"es", "pt"});
+        COUNTRIES.put("endesa", new String[]{"es", "pt"});
+        COUNTRIES.put("repsol", new String[]{"es", "pt"});
+        COUNTRIES.put("wenea", new String[]{"es"});
+        COUNTRIES.put("moeve", new String[]{"es", "pt"});
+        COUNTRIES.put("galp", new String[]{"pt", "es"});
+        COUNTRIES.put("fastned", new String[]{"nl", "de", "be", "fr", "ch", "gb", "dk"});
+        COUNTRIES.put("electra", new String[]{"fr", "be", "it", "es", "nl", "de", "ch", "lu"});
+        COUNTRIES.put("allego", new String[]{"nl", "be", "de", "fr", "dk", "se", "no", "gb"});
+        COUNTRIES.put("powerdot", new String[]{"pt", "pl", "es", "fr", "be"});
+        COUNTRIES.put("atlante", new String[]{"it", "fr", "es", "pt"});
+        COUNTRIES.put("easycharger", new String[]{"es"});
+        COUNTRIES.put("plenitude", new String[]{"it", "es", "fr", "de"});
+        COUNTRIES.put("ewiva", new String[]{"it"});
+        COUNTRIES.put("enel", new String[]{"it", "es"});
+        COUNTRIES.put("totalenergies", new String[]{"fr", "be", "nl", "de", "lu", "gb"});
+        COUNTRIES.put("bp", new String[]{"de", "es", "gb", "nl", "pt", "at"});
+        COUNTRIES.put("plenoil", new String[]{"es"});
+        COUNTRIES.put("acciona", new String[]{"es"});
+        COUNTRIES.put("edp", new String[]{"pt", "es"});
+        COUNTRIES.put("instavolt", new String[]{"gb", "es", "ie"});
+        COUNTRIES.put("enbw", new String[]{"de", "at", "ch"});
+        COUNTRIES.put("ewego", new String[]{"de"});
+        COUNTRIES.put("pfalzwerke", new String[]{"de"});
+        COUNTRIES.put("kaufland", new String[]{"de", "cz", "pl", "sk", "hr", "ro", "bg"});
+        COUNTRIES.put("vattenfall", new String[]{"nl", "de", "se"});
+        COUNTRIES.put("aldi", new String[]{"de", "at", "ch", "nl", "be"});
+        COUNTRIES.put("eon", new String[]{"de", "se", "dk", "cz"});
+        COUNTRIES.put("mer", new String[]{"de", "no", "se", "gb"});
+        COUNTRIES.put("teag", new String[]{"de"});
+        COUNTRIES.put("citywatt", new String[]{"de"});
+        COUNTRIES.put("edeka", new String[]{"de"});
+        COUNTRIES.put("comfortcharge", new String[]{"de"});
+        COUNTRIES.put("circlek", new String[]{"no", "se", "dk", "de", "pl", "ie"});
+        COUNTRIES.put("mercedes", new String[]{"de", "at", "ch", "nl", "be", "it", "fr", "es"});
+        COUNTRIES.put("eviny", new String[]{"no", "de", "se"});
+        COUNTRIES.put("orlen", new String[]{"pl", "de", "cz"});
+        COUNTRIES.put("smatrics", new String[]{"at"});
+        COUNTRIES.put("gofast", new String[]{"ch", "at", "de"});
+        COUNTRIES.put("izivia", new String[]{"fr"});
+        COUNTRIES.put("freetox", new String[]{"it"});
+    }
+
+    /** Puro: ¿la red tiene cargadores en ese país (ISO en minúsculas)? Sin país ("" o null) o red sin datos: sí. */
+    static boolean inCountry(String key, String iso) {
+        if (iso == null || iso.isEmpty()) return true;
+        String[] cs = COUNTRIES.get(key);
+        if (cs == null) return true;
+        for (String c : cs) if (c.equals("*") || c.equals(iso)) return true;
+        return false;
+    }
+
+    /** Puro: las redes conocidas que no están en exclude, por su nombre de la A a la Z (para el filtro, debajo de las de la ruta). */
+    static List<String> others(Set<String> exclude) {
+        return others(exclude, null, null);
+    }
+
+    /**
+     * Puro: lo mismo, solo las del país iso (null o "": todas), más las de keep aunque sean de otro país (las elegidas,
+     * para poder quitarlas). OTHER no entra.
+     */
+    static List<String> others(Set<String> exclude, String iso, Set<String> keep) {
+        List<String> out = new ArrayList<>();
+        for (String k : NETWORKS.keySet()) {
+            if (exclude != null && exclude.contains(k)) continue;
+            if (inCountry(k, iso) || (keep != null && keep.contains(k))) out.add(k);
+        }
+        Collections.sort(out, (a, b) -> label(a).compareToIgnoreCase(label(b)));
         return out;
     }
 

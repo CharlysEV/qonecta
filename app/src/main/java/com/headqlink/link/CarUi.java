@@ -1388,6 +1388,13 @@ final class CarUi {
                 if (parts.length > 2 && parts[2].endsWith("cargadores")) RouteTab.previewChargers = true;
                 // "…-filtro": con el filtro de cargadores abierto.
                 if (parts.length > 2 && parts[2].endsWith("filtro")) RouteTab.previewFilter = true;
+                // «…-filtro-redes»: el filtro, bajado hasta las redes; «…-filtro-redes-de», como si el móvil estuviera en
+                // Alemania (las redes de allí).
+                if (parts.length > 2 && parts[2].contains("filtro-redes")) {
+                    RouteTab.previewFilter = true;
+                    RouteTab.previewFilterNets = true;
+                    if (parts[2].endsWith("-de")) RouteTab.previewCountry = "de";
+                }
                 split = parts.length > 2 && parts[2].startsWith("partida");
                 // "…-partida-derecha": con AA en la otra mitad (solo para la captura, no se guarda).
                 if (split && parts[2].contains("derecha")) aaRight = true;

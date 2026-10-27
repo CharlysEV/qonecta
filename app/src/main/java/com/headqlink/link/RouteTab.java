@@ -319,6 +319,12 @@ final class RouteTab implements CarScreen {
     static volatile boolean previewChargers;
     /** Capturas: abrir el filtro de cargadores. */
     static volatile boolean previewFilter;
+    /** Vista previa: el filtro, bajado hasta las redes. */
+    static volatile boolean previewFilterNets;
+    /** Vista previa: el país del móvil para el filtro (ISO; null, el de verdad). */
+    static volatile String previewCountry;
+    /** El apartado «Redes» del filtro abierto (para bajar hasta él). */
+    private View netsSection;
 
     /**
      * Buscador a pantalla completa de la pestaña: la caja con lo escrito, el micrófono, los resultados (o los destinos
@@ -1959,28 +1965,23 @@ final class RouteTab implements CarScreen {
             java.util.List<String> keys = new java.util.ArrayList<>();
             for (RoutePlanner.Charger c : all) keys.add(c.network == null ? ChargerFilter.OTHER : c.network);
             java.util.List<java.util.Map.Entry<String, Integer>> found = ChargerFilter.counts(keys);
-            LinearLayout row = CarKit.row(ctx);
-            row.setPadding(0, 10, 0, 0);
-            row.addView(chip(Str.get(R.string.hql_charger_all_networks), nearNets.isEmpty(), () -> {
+            LinearLayout allRow = CarKit.row(ctx);
+            allRow.setPadding(0, 10, 0, 10);
+            allRow.addView(chip(Str.get(R.string.hql_charger_all_networks), nearNets.isEmpty(), () -> {
                 nearNets.clear();
                 build[0].run();
             }), chipParams());
-            int i = 1;
+            body.addView(allRow);
+            java.util.List<String> nk = new java.util.ArrayList<>();
+            java.util.List<Integer> nc = new java.util.ArrayList<>();
             for (java.util.Map.Entry<String, Integer> e : found) {
-                if (i % 6 == 0) {
-                    body.addView(row);
-                    row = CarKit.row(ctx);
-                    row.setPadding(0, 10, 0, 0);
-                }
-                String k = e.getKey();
-                String name = k.equals(ChargerFilter.OTHER) ? Str.get(R.string.hql_charger_other) : ChargerFilter.label(k);
-                row.addView(chip(name + " · " + e.getValue(), nearNets.contains(k), () -> {
-                    if (!nearNets.remove(k)) nearNets.add(k);
-                    build[0].run();
-                }), chipParams());
-                i++;
+                nk.add(e.getKey());
+                nc.add(e.getValue());
             }
-            body.addView(row);
+            networkGrid(body, nk, nc, nearNets, k -> {
+                if (!nearNets.remove(k)) nearNets.add(k);
+                build[0].run();
+            });
             int shown = 0;
             int passing = 0;
             for (RoutePlanner.Charger c : all) {
@@ -2086,23 +2087,38 @@ final class RouteTab implements CarScreen {
         return item;
     }
 
+    /** Pestaña que se ve en el panel del filtro (se recuerda mientras dura la app): FILTER_TAB_*. */
+    private static int filterTab;
+    /** En el filtro, también las redes de otros países (si no, solo las del país en el que estás y las de toda Europa). */
+    private static boolean allCountryNets;
+    private static final int FILTER_TAB_CHARGERS = 0;
+    private static final int FILTER_TAB_PLAN = 1;
+    private static final int FILTER_TAB_MARKS = 2;
+
     /**
-     * Panel del filtro de cargadores: potencia mínima (una) y redes (varias; ninguna marcada = todas), con las redes que
-     * hay en esta ruta y cuántos cargadores tiene cada una.
+     * Panel del filtro de cargadores, en tres pestañas para no mezclar (27-10: era una sola lista larguísima con las
+     * redes al final y solo las de la ruta): «Cargadores» (potencia, voltaje y redes), «Plan de carga» (con cuánto
+     * llegar, hasta cuánto cargar, el destino, comer, la voz y el navegador) y «Favoritos y vetados». Las redes, en una
+     * cuadrícula ordenada: primero las de esta ruta, con cuántos cargadores tiene cada una; debajo, todas las demás de la
+     * A a la Z, para poder elegirlas aunque no salgan en la ruta de ahora. Ninguna marcada = todas.
      */
     private void openChargerFilter() {
         LinearLayout panel = new LinearLayout(ctx);
         panel.setOrientation(LinearLayout.VERTICAL);
         panel.setBackgroundColor(CarKit.BG);
         panel.setClickable(true);
+        panel.setContentDescription(Str.get(R.string.hql_charger_filter_title));
         panel.setPadding(CarKit.PAD, 18, CarKit.PAD, CarKit.PAD);
         LinearLayout bar = CarKit.row(ctx);
         bar.setGravity(Gravity.CENTER_VERTICAL);
-        TextView title = CarStyle.text(ctx, Str.get(R.string.hql_charger_filter_title), 34, CarKit.TEXT);
-        title.setTypeface(CarKit.MEDIUM);
-        bar.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        LinearLayout tabs = CarKit.row(ctx);
+        tabs.setGravity(Gravity.CENTER_VERTICAL);
+        android.widget.HorizontalScrollView tabScroll = new android.widget.HorizontalScrollView(ctx);
+        tabScroll.setHorizontalScrollBarEnabled(false);
+        tabScroll.addView(tabs);
+        bar.addView(tabScroll, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         TextView done = CarKit.pill(ctx, Str.get(R.string.hql_close), true);
-        bar.addView(done);
+        bar.addView(done, spaced());
         panel.addView(bar);
         LinearLayout body = CarKit.col(ctx);
         ScrollView sv = new ScrollView(ctx);
@@ -2110,168 +2126,288 @@ final class RouteTab implements CarScreen {
         panel.addView(sv, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         Runnable[] build = new Runnable[1];
         build[0] = () -> {
+            tabs.removeAllViews();
+            int[] labels = {R.string.hql_charger_tab_chargers, R.string.hql_charger_tab_plan, R.string.hql_charger_tab_marks};
+            for (int t = 0; t < labels.length; t++) {
+                final int tab = t;
+                tabs.addView(chip(Str.get(labels[t]), filterTab == t, () -> {
+                    filterTab = tab;
+                    build[0].run();
+                    sv.scrollTo(0, 0);
+                }), chipParams());
+            }
             body.removeAllViews();
-            body.addView(section(Str.get(R.string.hql_charger_min_power)));
-            LinearLayout kw = CarKit.row(ctx);
-            for (int v : ChargerFilter.MIN_KW_CHOICES) {
-                String label = v == 0 ? Str.get(R.string.hql_charger_any) : v + " kW";
-                kw.addView(chip(label, chargerMinKw == v, () -> {
-                    chargerMinKw = v;
-                    filterChanged();
-                    build[0].run();
-                }), chipParams());
-            }
-            // Siete potencias: en un panel estrecho (pantalla partida) se desliza en vez de cortarse.
-            android.widget.HorizontalScrollView kwScroll = new android.widget.HorizontalScrollView(ctx);
-            kwScroll.setHorizontalScrollBarEnabled(false);
-            kwScroll.addView(kw);
-            body.addView(kwScroll);
-            // Voltaje (20-10): 800 V o 400-500 V, el que declara cada cargador (en España, el registro de la DGT).
-            body.addView(section(Str.get(R.string.hql_charger_volts)));
-            LinearLayout vrow = CarKit.row(ctx);
-            for (int v : ChargerFilter.VOLTS_CHOICES) {
-                vrow.addView(chip(v == ChargerFilter.VOLTS_ANY ? Str.get(R.string.hql_charger_any) : voltsLabel(v), chargerVolts == v, () -> {
-                    chargerVolts = v;
-                    filterChanged();
-                    build[0].run();
-                }), chipParams());
-            }
-            body.addView(vrow);
-            // Casi ningún cargador de OpenStreetMap dice su potencia ni su voltaje: con un mínimo, ¿se cuentan esos también?
-            if (chargerMinKw > 0 || chargerVolts != ChargerFilter.VOLTS_ANY) {
-                Config ic = new Config(ctx);
-                LinearLayout un = CarKit.row(ctx);
-                un.addView(chip(Str.get(R.string.hql_charger_unknown_include), ic.chargerIncludeUnknown(), () -> {
-                    ic.setChargerIncludeUnknown(true);
-                    chargerUnknown = true;
-                    filterChanged();
-                    build[0].run();
-                }), chipParams());
-                un.addView(chip(Str.get(R.string.hql_charger_unknown_exclude), !ic.chargerIncludeUnknown(), () -> {
-                    ic.setChargerIncludeUnknown(false);
-                    chargerUnknown = false;
-                    filterChanged();
-                    build[0].run();
-                }), chipParams());
-                body.addView(un);
-                body.addView(hint(Str.get(R.string.hql_charger_unknown_note)));
-            }
-            body.addView(section(Str.get(R.string.hql_plan_arrive_min)));
-            Config pc = new Config(ctx);
-            LinearLayout arr = CarKit.row(ctx);
-            for (int v : new int[]{10, 15, 20, 25, 30}) {
-                arr.addView(chip(v + " %", pc.planArrivePct() == v, () -> {
-                    pc.setPlanArrivePct(v);
-                    filterChanged();
-                    build[0].run();
-                }), chipParams());
-            }
-            body.addView(arr);
-            body.addView(section(Str.get(R.string.hql_plan_max_charge)));
-            LinearLayout mx = CarKit.row(ctx);
-            for (int v : new int[]{70, 80, 90, 100}) {
-                mx.addView(chip(v + " %", pc.planMaxPct() == v, () -> {
-                    pc.setPlanMaxPct(v);
-                    filterChanged();
-                    build[0].run();
-                }), chipParams());
-            }
-            body.addView(mx);
-            body.addView(section(Str.get(R.string.hql_plan_voice)));
-            LinearLayout vo = CarKit.row(ctx);
-            vo.addView(chip(capital(Str.get(R.string.hql_yes)), pc.planVoice(), () -> {
-                pc.setPlanVoice(true);
-                build[0].run();
-            }), chipParams());
-            vo.addView(chip(capital(Str.get(R.string.hql_no)), !pc.planVoice(), () -> {
-                pc.setPlanVoice(false);
-                build[0].run();
-            }), chipParams());
-            body.addView(vo);
-            // Cargar en el destino: si se llega con menos de este % (o, de ida y vuelta, con menos de lo de volver).
-            body.addView(section(Str.get(R.string.hql_pl_dest_setting)));
-            LinearLayout dc = CarKit.row(ctx);
-            for (int v : new int[]{0, 10, 15, 20, 25, 30}) {
-                dc.addView(chip(v == 0 ? capital(Str.get(R.string.hql_no)) : v + " %", pc.destChargePct() == v, () -> {
-                    pc.setDestChargePct(v);
-                    filterChanged();
-                    build[0].run();
-                }), chipParams());
-            }
-            body.addView(dc);
-            body.addView(section(Str.get(R.string.hql_pl_food_pref)));
-            LinearLayout fo = CarKit.row(ctx);
-            fo.addView(chip(capital(Str.get(R.string.hql_yes)), pc.planPreferFood(), () -> {
-                pc.setPlanPreferFood(true);
-                filterChanged();
-                build[0].run();
-            }), chipParams());
-            fo.addView(chip(capital(Str.get(R.string.hql_no)), !pc.planPreferFood(), () -> {
-                pc.setPlanPreferFood(false);
-                filterChanged();
-                build[0].run();
-            }), chipParams());
-            body.addView(fo);
-            body.addView(hint(Str.get(R.string.hql_pl_food_note, Math.round(FoodNearby.LONG_STOP_MIN), Math.round(FoodNearby.RADIUS_M))));
-            addMarksSection(body, build[0]);
-            // Navegador para «Guiar», los «Ir» y las paradas (Waze, si está instalado).
-            if (NavApps.wazeInstalled(ctx)) {
-                body.addView(section(Str.get(R.string.hql_nav_app)));
-                LinearLayout na = CarKit.row(ctx);
-                na.addView(chip("Google Maps", !NavApps.useWaze(ctx), () -> {
-                    pc.setNavApp(Config.NAV_MAPS);
-                    build[0].run();
-                    tick();
-                }), chipParams());
-                na.addView(chip("Waze", NavApps.useWaze(ctx), () -> {
-                    pc.setNavApp(Config.NAV_WAZE);
-                    build[0].run();
-                    tick();
-                }), chipParams());
-                body.addView(na);
-            }
-            body.addView(section(Str.get(R.string.hql_charger_networks)));
-            java.util.List<String> keys = new java.util.ArrayList<>();
-            RoutePlanner.Plan pl = plan;
-            if (pl != null) for (RoutePlanner.Charger c : pl.chargers) keys.add(c.network == null ? ChargerFilter.OTHER : c.network);
-            java.util.List<java.util.Map.Entry<String, Integer>> found = ChargerFilter.counts(keys);
-            // Las marcadas que no salen en esta ruta también se ven (para poder quitarlas).
-            for (String k : chargerNets) {
-                boolean in = false;
-                for (java.util.Map.Entry<String, Integer> e : found) in |= e.getKey().equals(k);
-                if (!in) found.add(new java.util.AbstractMap.SimpleEntry<>(k, 0));
-            }
-            LinearLayout row = null;
-            int i = 0;
-            row = CarKit.row(ctx);
-            row.addView(chip(Str.get(R.string.hql_charger_all_networks), chargerNets.isEmpty(), () -> {
-                chargerNets.clear();
-                filterChanged();
-                build[0].run();
-            }), chipParams());
-            i++;
-            for (java.util.Map.Entry<String, Integer> e : found) {
-                if (i % 4 == 0) {
-                    body.addView(row);
-                    row = CarKit.row(ctx);
-                }
-                String k = e.getKey();
-                String name = k.equals(ChargerFilter.OTHER) ? Str.get(R.string.hql_charger_other) : ChargerFilter.label(k);
-                row.addView(chip(name + " · " + e.getValue(), chargerNets.contains(k), () -> {
-                    if (!chargerNets.remove(k)) chargerNets.add(k);
-                    filterChanged();
-                    build[0].run();
-                }), chipParams());
-                i++;
-            }
-            body.addView(row);
-            TextView note = CarStyle.text(ctx, Str.get(R.string.hql_charger_filter_note), 21, CarKit.FAINT);
-            note.setPadding(4, 26, 4, 0);
-            body.addView(note);
+            if (filterTab == FILTER_TAB_PLAN) buildPlanTab(body, build[0]);
+            else if (filterTab == FILTER_TAB_MARKS) addMarksSection(body, build[0]);
+            else buildChargerTab(body, build[0]);
         };
         build[0].run();
         done.setOnClickListener(v -> root.removeView(panel));
         root.addView(panel, CarStyle.match());
+        if (previewFilterNets) {
+            previewFilterNets = false;
+            filterTab = FILTER_TAB_CHARGERS;
+            build[0].run();
+            sv.postDelayed(() -> {
+                if (netsSection != null) sv.scrollTo(0, netsSection.getTop());
+            }, 200);
+        }
+    }
+
+    /** Pestaña «Cargadores»: potencia mínima, voltaje, los que no dicen sus datos y las redes. */
+    private void buildChargerTab(LinearLayout body, Runnable rebuild) {
+        body.addView(section(Str.get(R.string.hql_charger_min_power)));
+        LinearLayout kw = CarKit.row(ctx);
+        for (int v : ChargerFilter.MIN_KW_CHOICES) {
+            String label = v == 0 ? Str.get(R.string.hql_charger_any) : v + " kW";
+            kw.addView(chip(label, chargerMinKw == v, () -> {
+                chargerMinKw = v;
+                filterChanged();
+                rebuild.run();
+            }), chipParams());
+        }
+        // Siete potencias: en un panel estrecho (pantalla partida) se desliza en vez de cortarse.
+        android.widget.HorizontalScrollView kwScroll = new android.widget.HorizontalScrollView(ctx);
+        kwScroll.setHorizontalScrollBarEnabled(false);
+        kwScroll.addView(kw);
+        body.addView(kwScroll);
+        // Voltaje (20-10): 800 V o 400-500 V, el que declara cada cargador (en España, el registro de la DGT).
+        body.addView(section(Str.get(R.string.hql_charger_volts)));
+        LinearLayout vrow = CarKit.row(ctx);
+        for (int v : ChargerFilter.VOLTS_CHOICES) {
+            vrow.addView(chip(v == ChargerFilter.VOLTS_ANY ? Str.get(R.string.hql_charger_any) : voltsLabel(v), chargerVolts == v, () -> {
+                chargerVolts = v;
+                filterChanged();
+                rebuild.run();
+            }), chipParams());
+        }
+        body.addView(vrow);
+        // Casi ningún cargador de OpenStreetMap dice su potencia ni su voltaje: con un mínimo, ¿se cuentan esos también?
+        if (chargerMinKw > 0 || chargerVolts != ChargerFilter.VOLTS_ANY) {
+            Config ic = new Config(ctx);
+            LinearLayout un = CarKit.row(ctx);
+            un.addView(chip(Str.get(R.string.hql_charger_unknown_include), ic.chargerIncludeUnknown(), () -> {
+                ic.setChargerIncludeUnknown(true);
+                chargerUnknown = true;
+                filterChanged();
+                rebuild.run();
+            }), chipParams());
+            un.addView(chip(Str.get(R.string.hql_charger_unknown_exclude), !ic.chargerIncludeUnknown(), () -> {
+                ic.setChargerIncludeUnknown(false);
+                chargerUnknown = false;
+                filterChanged();
+                rebuild.run();
+            }), chipParams());
+            body.addView(un);
+        }
+
+        netsSection = section(Str.get(R.string.hql_charger_networks));
+        body.addView(netsSection);
+        // Arriba, qué vale ahora: todas, o solo las elegidas (y «Todas» para volver).
+        LinearLayout state = CarKit.row(ctx);
+        state.setGravity(Gravity.CENTER_VERTICAL);
+        state.addView(chip(Str.get(R.string.hql_charger_all_networks), chargerNets.isEmpty(), () -> {
+            chargerNets.clear();
+            filterChanged();
+            rebuild.run();
+        }), new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        TextView stateText = CarStyle.text(ctx, chargerNets.isEmpty() ? Str.get(R.string.hql_charger_nets_all_hint)
+                : Str.get(R.string.hql_charger_nets_only, chargerNets.size(), netNames(chargerNets)), 21,
+                chargerNets.isEmpty() ? CarKit.FAINT : CarKit.ACCENT);
+        stateText.setMaxLines(2);
+        stateText.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        stateText.setPadding(18, 0, 0, 0);
+        state.addView(stateText, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        body.addView(state);
+        NetToggle toggle = k -> {
+            if (!chargerNets.remove(k)) chargerNets.add(k);
+            filterChanged();
+            rebuild.run();
+        };
+        // En esta ruta: las redes que hay, de más a menos cargadores («Otras» al final).
+        java.util.Set<String> onRoute = new java.util.HashSet<>();
+        RoutePlanner.Plan pl = plan;
+        if (pl != null && !pl.chargers.isEmpty()) {
+            java.util.List<String> keys = new java.util.ArrayList<>();
+            for (RoutePlanner.Charger c : pl.chargers) keys.add(c.network == null ? ChargerFilter.OTHER : c.network);
+            java.util.List<String> rk = new java.util.ArrayList<>();
+            java.util.List<Integer> rc = new java.util.ArrayList<>();
+            for (java.util.Map.Entry<String, Integer> e : ChargerFilter.counts(keys)) {
+                rk.add(e.getKey());
+                rc.add(e.getValue());
+            }
+            onRoute.addAll(rk);
+            body.addView(subSection(Str.get(R.string.hql_charger_nets_on_route)));
+            networkGrid(body, rk, rc, chargerNets, toggle);
+        }
+        // Las demás, de la A a la Z: las del país en el que estás (y las de casi toda Europa); las de otros países, con
+        // «Ver redes de otros países». Las elegidas salen siempre, para poder quitarlas.
+        String iso = previewCountry != null ? previewCountry : Country.current(ctx);
+        if (iso.isEmpty()) iso = Locale.getDefault().getCountry().toLowerCase(Locale.ROOT);
+        boolean byCountry = !iso.isEmpty() && !allCountryNets;
+        java.util.List<String> rest = ChargerFilter.others(onRoute, byCountry ? iso : null, chargerNets);
+        if (!onRoute.contains(ChargerFilter.OTHER)) rest.add(ChargerFilter.OTHER);
+        String country = iso.isEmpty() ? "" : new Locale("", iso.toUpperCase(Locale.ROOT)).getDisplayCountry();
+        String head = byCountry
+                ? Str.get(onRoute.isEmpty() ? R.string.hql_charger_nets_in_country : R.string.hql_charger_nets_more_in_country, country)
+                : Str.get(onRoute.isEmpty() ? R.string.hql_charger_networks : R.string.hql_charger_nets_more);
+        body.addView(subSection(head));
+        networkGrid(body, rest, null, chargerNets, toggle);
+        if (!iso.isEmpty()) {
+            TextView more = CarKit.pill(ctx, Str.get(allCountryNets ? R.string.hql_charger_nets_hide_others : R.string.hql_charger_nets_show_all), false);
+            more.setOnClickListener(v -> {
+                allCountryNets = !allCountryNets;
+                rebuild.run();
+            });
+            LinearLayout.LayoutParams mlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            mlp.topMargin = 6;
+            body.addView(more, mlp);
+        }
+        // De dónde salen los datos, al final (en medio empujaba las redes fuera de la pantalla); con un mínimo de potencia
+        // o de voltaje, la nota que explica los que no dicen sus datos.
+        boolean limits = chargerMinKw > 0 || chargerVolts != ChargerFilter.VOLTS_ANY;
+        TextView note = CarStyle.text(ctx, Str.get(limits ? R.string.hql_charger_unknown_note : R.string.hql_charger_filter_note), 21,
+                CarKit.FAINT);
+        note.setPadding(4, 26, 4, 0);
+        body.addView(note);
+    }
+
+    /** Pestaña «Plan de carga»: con cuánto llegar, hasta cuánto cargar, cargar en el destino, comer, voz y navegador. */
+    private void buildPlanTab(LinearLayout body, Runnable rebuild) {
+        Config pc = new Config(ctx);
+        body.addView(section(Str.get(R.string.hql_plan_arrive_min)));
+        LinearLayout arr = CarKit.row(ctx);
+        for (int v : new int[]{10, 15, 20, 25, 30}) {
+            arr.addView(chip(v + " %", pc.planArrivePct() == v, () -> {
+                pc.setPlanArrivePct(v);
+                filterChanged();
+                rebuild.run();
+            }), chipParams());
+        }
+        body.addView(arr);
+        body.addView(section(Str.get(R.string.hql_plan_max_charge)));
+        LinearLayout mx = CarKit.row(ctx);
+        for (int v : new int[]{70, 80, 90, 100}) {
+            mx.addView(chip(v + " %", pc.planMaxPct() == v, () -> {
+                pc.setPlanMaxPct(v);
+                filterChanged();
+                rebuild.run();
+            }), chipParams());
+        }
+        body.addView(mx);
+        // Cargar en el destino: si se llega con menos de este % (o, de ida y vuelta, con menos de lo de volver).
+        body.addView(section(Str.get(R.string.hql_pl_dest_setting)));
+        LinearLayout dc = CarKit.row(ctx);
+        for (int v : new int[]{0, 10, 15, 20, 25, 30}) {
+            dc.addView(chip(v == 0 ? capital(Str.get(R.string.hql_no)) : v + " %", pc.destChargePct() == v, () -> {
+                pc.setDestChargePct(v);
+                filterChanged();
+                rebuild.run();
+            }), chipParams());
+        }
+        body.addView(dc);
+        body.addView(section(Str.get(R.string.hql_pl_food_pref)));
+        LinearLayout fo = CarKit.row(ctx);
+        fo.addView(chip(capital(Str.get(R.string.hql_yes)), pc.planPreferFood(), () -> {
+            pc.setPlanPreferFood(true);
+            filterChanged();
+            rebuild.run();
+        }), chipParams());
+        fo.addView(chip(capital(Str.get(R.string.hql_no)), !pc.planPreferFood(), () -> {
+            pc.setPlanPreferFood(false);
+            filterChanged();
+            rebuild.run();
+        }), chipParams());
+        body.addView(fo);
+        body.addView(hint(Str.get(R.string.hql_pl_food_note, Math.round(FoodNearby.LONG_STOP_MIN), Math.round(FoodNearby.RADIUS_M))));
+        body.addView(section(Str.get(R.string.hql_plan_voice)));
+        LinearLayout vo = CarKit.row(ctx);
+        vo.addView(chip(capital(Str.get(R.string.hql_yes)), pc.planVoice(), () -> {
+            pc.setPlanVoice(true);
+            rebuild.run();
+        }), chipParams());
+        vo.addView(chip(capital(Str.get(R.string.hql_no)), !pc.planVoice(), () -> {
+            pc.setPlanVoice(false);
+            rebuild.run();
+        }), chipParams());
+        body.addView(vo);
+        // Navegador para «Guiar», los «Ir» y las paradas (Waze, si está instalado).
+        if (NavApps.wazeInstalled(ctx)) {
+            body.addView(section(Str.get(R.string.hql_nav_app)));
+            LinearLayout na = CarKit.row(ctx);
+            na.addView(chip("Google Maps", !NavApps.useWaze(ctx), () -> {
+                pc.setNavApp(Config.NAV_MAPS);
+                rebuild.run();
+                tick();
+            }), chipParams());
+            na.addView(chip("Waze", NavApps.useWaze(ctx), () -> {
+                pc.setNavApp(Config.NAV_WAZE);
+                rebuild.run();
+                tick();
+            }), chipParams());
+            body.addView(na);
+        }
+    }
+
+    /** Qué hacer al tocar una red de la cuadrícula. */
+    private interface NetToggle {
+        void toggle(String key);
+    }
+
+    /**
+     * Las redes en una cuadrícula de casillas iguales (4 columnas; 2 en la pantalla partida), cada una con su distintivo,
+     * su nombre y, si se dan, cuántos cargadores tiene. Marcada, rellena con el acento.
+     */
+    private void networkGrid(LinearLayout body, java.util.List<String> keys, java.util.List<Integer> counts,
+                             java.util.Set<String> selected, NetToggle toggle) {
+        int cols = narrowUi ? 2 : 4;
+        LinearLayout row = null;
+        for (int i = 0; i < keys.size(); i++) {
+            if (i % cols == 0) {
+                row = CarKit.row(ctx);
+                row.setWeightSum(cols);
+                body.addView(row);
+            }
+            String k = keys.get(i);
+            int n = counts == null ? 0 : counts.get(i);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+            lp.setMargins(0, 0, 10, 10);
+            row.addView(netTile(k, n, selected.contains(k), () -> toggle.toggle(k)), lp);
+        }
+    }
+
+    /** Una casilla de red: distintivo (color e iniciales; «Otras», el rayo), nombre y número de cargadores. */
+    private View netTile(String key, int count, boolean on, Runnable action) {
+        LinearLayout t = CarKit.row(ctx);
+        t.setGravity(Gravity.CENTER_VERTICAL);
+        t.setPadding(12, 10, 18, 10);
+        t.setBackground(on ? CarStyle.accent(22) : CarKit.outlined(CarKit.SURFACE_TOP, CarKit.EDGE, 22));
+        t.addView(new ChargerDot(ctx, -1, key.equals(ChargerFilter.OTHER) ? null : key), new LinearLayout.LayoutParams(46, 46));
+        String name = key.equals(ChargerFilter.OTHER) ? Str.get(R.string.hql_charger_other) : ChargerFilter.label(key);
+        TextView n = CarStyle.text(ctx, name, 23, on ? CarKit.ON_ACCENT : CarKit.TEXT);
+        n.setSingleLine(true);
+        n.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        n.setPadding(14, 0, 8, 0);
+        t.addView(n, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        if (count > 0) t.addView(CarStyle.text(ctx, String.valueOf(count), 21, on ? CarKit.ON_ACCENT : CarKit.FAINT));
+        CarStyle.minTouch(t);
+        t.setOnClickListener(v -> action.run());
+        return t;
+    }
+
+    /** «EnBW, Ionity, Tesla» para la línea de estado de las redes. */
+    private String netNames(java.util.Set<String> nets) {
+        java.util.List<String> names = new java.util.ArrayList<>();
+        for (String k : nets) names.add(k.equals(ChargerFilter.OTHER) ? Str.get(R.string.hql_charger_other) : ChargerFilter.label(k));
+        java.util.Collections.sort(names, String::compareToIgnoreCase);
+        return android.text.TextUtils.join(", ", names);
+    }
+
+    /** Subtítulo dentro de un apartado («En esta ruta», «Más redes»). */
+    private TextView subSection(String s) {
+        TextView t = CarStyle.text(ctx, s, 21, CarKit.DIM);
+        t.setPadding(4, 18, 4, 10);
+        return t;
     }
 
     private TextView section(String s) {
@@ -2580,6 +2716,8 @@ final class RouteTab implements CarScreen {
         private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final int color;
         private final Object[] badge;
+        /** El punto de la potencia en la esquina (sin él, kw < 0: solo la red, en el filtro). */
+        private final boolean powerDot;
 
         ChargerDot(Context c, double kw) {
             this(c, kw, null);
@@ -2590,6 +2728,7 @@ final class RouteTab implements CarScreen {
             super(c);
             color = kw >= 150 ? CarKit.GREEN : kw >= 50 ? CarKit.ACCENT : CarKit.DIM;
             badge = network == null ? null : ChargerFilter.badge(network);
+            powerDot = kw >= 0;
         }
 
         @Override
@@ -2613,6 +2752,7 @@ final class RouteTab implements CarScreen {
             p.setColor(((Integer) badge[2]) == 1 ? 0xFF15181C : 0xFFFFFFFF);
             Paint.FontMetrics fm = p.getFontMetrics();
             cv.drawText(ini, cx, cy - (fm.ascent + fm.descent) / 2, p);
+            if (!powerDot) return;
             // La potencia, en un punto abajo a la derecha (verde ≥ 150 kW, acento ≥ 50, gris lento o sin saber).
             p.setColor(CarKit.SURFACE);
             cv.drawCircle(cx + r * 0.68f, cy + r * 0.68f, r * 0.34f, p);

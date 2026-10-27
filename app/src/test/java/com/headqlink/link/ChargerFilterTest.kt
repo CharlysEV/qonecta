@@ -89,4 +89,68 @@ class ChargerFilterTest {
         assertEquals(0, ChargerFilter.snapMinKw(-5))
         assertEquals("Endesa X", ChargerFilter.label("endesa"))
     }
+
+    @Test
+    fun germanOperatorsFromTheRegistry() {
+        // 27-10: los «Betreiber» tal cual del registro de la Bundesnetzagentur (antes caían todos en «Otras»).
+        fun op(s: String) = ChargerFilter.classify("", "", s, "")
+        assertEquals("enbw", op("EnBW mobility+ AG und Co.KG"))
+        assertEquals("ewego", op("EWE Go HOCHTIEF Ladepartner GmbH & Co. KG"))
+        assertEquals("pfalzwerke", op("Pfalzwerke AG"))
+        assertEquals("kaufland", op("Kaufland Dienstleistung GmbH & Co. KG"))
+        assertEquals("vattenfall", op("Vattenfall Smarter Living GmbH"))
+        assertEquals("aldi", op("ALDI SÜD Immobilienverwaltungs-GmbH & Co. oHG"))
+        assertEquals("aldi", op("ALDI Nord Deutschland Stiftung & Co. KG"))
+        assertEquals("eon", op("E.ON Drive Infrastructure GmbH"))
+        assertEquals("mer", op("Mer Germany GmbH"))
+        assertEquals("comfortcharge", op("Comfortcharge GmbH"))
+        assertEquals("mercedes", op("Mercedes-Benz High-Power Charging Europe GmbH"))
+        assertEquals("eviny", op("Bilkraft GmbH"))
+        // Aral pulse figura como BP; los de antes siguen igual.
+        assertEquals("bp", op("BP Europa SE"))
+        assertEquals("shell", op("Shell Deutschland GmbH"))
+        assertEquals("lidl", op("Lidl Dienstleistung GmbH & Co. KG"))
+        assertEquals("ionity", op("IONITY GmbH"))
+        assertEquals("tesla", op("Tesla Germany GmbH"))
+        // Un ayuntamiento o una empresa local, en «Otras».
+        assertEquals(ChargerFilter.OTHER, op("Stadtwerke Bochum GmbH"))
+    }
+
+    @Test
+    fun exactFieldOnlyForShortNames() {
+        // «Mer» como marca, sí; la palabra «mer» en un nombre francés, no.
+        assertEquals("mer", ChargerFilter.classify("Mer", "", "", ""))
+        assertEquals(ChargerFilter.OTHER, ChargerFilter.classify("", "", "", "Aire de la Mer"))
+        assertEquals("eon", ChargerFilter.classify("E.ON", "", "", ""))
+        assertEquals(ChargerFilter.OTHER, ChargerFilter.classify("", "", "", "Parking e on street"))
+    }
+
+    @Test
+    fun othersAreAlphabeticalAndSkipTheRouteOnes() {
+        val rest = ChargerFilter.others(setOf("enbw", "tesla"))
+        assertFalse(rest.contains("enbw"))
+        assertFalse(rest.contains("tesla"))
+        assertEquals(ChargerFilter.NETWORKS.size - 2, rest.size)
+        val labels = rest.map { ChargerFilter.label(it).lowercase() }
+        assertEquals(labels.sorted(), labels)
+        // Cada red conocida tiene su distintivo (color e iniciales).
+        for (k in ChargerFilter.NETWORKS.keys) assertTrue(k, ChargerFilter.badge(k) != null)
+    }
+
+    @Test
+    fun onlyTheNetworksOfYourCountry() {
+        // En Alemania: las alemanas y las de toda Europa; no las españolas.
+        val de = ChargerFilter.others(emptySet(), "de", emptySet())
+        for (k in listOf("enbw", "ewego", "aldi", "tesla", "ionity", "shell", "bp")) assertTrue(k, de.contains(k))
+        for (k in listOf("zunder", "iberdrola", "wenea", "plenoil")) assertFalse(k, de.contains(k))
+        // En España, al revés.
+        val es = ChargerFilter.others(emptySet(), "es", emptySet())
+        for (k in listOf("zunder", "iberdrola", "tesla", "ionity")) assertTrue(k, es.contains(k))
+        for (k in listOf("enbw", "ewego", "pfalzwerke")) assertFalse(k, es.contains(k))
+        // Una elegida de otro país sale igual (para poder quitarla); sin país, todas.
+        assertTrue(ChargerFilter.others(emptySet(), "es", setOf("enbw")).contains("enbw"))
+        assertEquals(ChargerFilter.NETWORKS.size, ChargerFilter.others(emptySet(), "", null).size)
+        // Toda red conocida tiene sus países (si no, saldría en todos sin querer): en un país sin redes, solo las de toda Europa.
+        assertEquals(setOf("tesla", "ionity", "shell", "lidl"), ChargerFilter.NETWORKS.keys.filter { ChargerFilter.inCountry(it, "zz") }.toSet())
+    }
 }

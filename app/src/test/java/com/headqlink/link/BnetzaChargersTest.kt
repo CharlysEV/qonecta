@@ -78,7 +78,9 @@ class BnetzaChargersTest {
         assertEquals("tesla", c.network)
         assertTrue(c.id.startsWith("de:") && c.maxVolts in 1.0..699.0)
         val e = hub.also { it.src = "de" }.toCharger()
-        assertEquals("EnBW mobility+ · Amstetten", e.name)
+        // EnBW es una red conocida (27-10): su nombre corto delante, y en el filtro sale como «EnBW».
+        assertEquals("enbw", e.network)
+        assertEquals("EnBW · Amstetten", e.name)
     }
 
     @Test
