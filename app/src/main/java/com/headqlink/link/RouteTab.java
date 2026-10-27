@@ -2113,6 +2113,8 @@ final class RouteTab implements CarScreen {
         bar.setGravity(Gravity.CENTER_VERTICAL);
         LinearLayout tabs = CarKit.row(ctx);
         tabs.setGravity(Gravity.CENTER_VERTICAL);
+        // Un poco de aire arriba: si no, el borde superior de las pestañas se cortaba.
+        tabs.setPadding(0, 6, 0, 0);
         android.widget.HorizontalScrollView tabScroll = new android.widget.HorizontalScrollView(ctx);
         tabScroll.setHorizontalScrollBarEnabled(false);
         tabScroll.addView(tabs);
