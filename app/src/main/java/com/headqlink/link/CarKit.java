@@ -135,6 +135,59 @@ final class CarKit {
     }
 
     /**
+     * Señal de límite de velocidad de radio rad (blanca con el aro rojo y la cifra) o, con limit ==
+     * {@link RoadInfo#UNLIMITED}, la de fin de limitación (blanca con franjas negras en diagonal). halo: 0, o el color
+     * (ámbar, rojo) del aro de fuera que avisa de que se va por encima.
+     */
+    static void limitSign(Canvas cv, float cx, float cy, float rad, int limit, int halo, Paint p) {
+        float k = rad / 80f;
+        p.setShader(null);
+        p.setStyle(Paint.Style.FILL);
+        if (halo != 0) {
+            p.setColor(halo);
+            cv.drawCircle(cx, cy, rad + 12 * k, p);
+        }
+        p.setColor(0xFFFFFFFF);
+        cv.drawCircle(cx, cy, rad, p);
+        if (limit == RoadInfo.UNLIMITED) {
+            p.setStyle(Paint.Style.STROKE);
+            p.setStrokeWidth(3 * k);
+            p.setColor(0xFF5F6368);
+            cv.drawCircle(cx, cy, rad * 0.95f, p);
+            // Cinco franjas de arriba a la derecha a abajo a la izquierda, dentro del círculo.
+            p.setStrokeWidth(5 * k);
+            p.setColor(0xFF15181C);
+            float in = rad * 0.84f;
+            for (int i = -2; i <= 2; i++) {
+                float off = i * 12 * k;
+                float half = (float) Math.sqrt(Math.max(0, in * in - off * off));
+                float px = cx + off * 0.7071f;
+                float py = cy + off * 0.7071f;
+                cv.drawLine(px + half * 0.7071f, py - half * 0.7071f, px - half * 0.7071f, py + half * 0.7071f, p);
+            }
+            p.setStyle(Paint.Style.FILL);
+            return;
+        }
+        p.setStyle(Paint.Style.STROKE);
+        p.setStrokeWidth(15 * k);
+        p.setColor(0xFFD93025);
+        cv.drawCircle(cx, cy, rad * 0.9f, p);
+        p.setStyle(Paint.Style.FILL);
+        text(cv, String.valueOf(limit), cx, cy + 24 * k, (limit >= 100 ? 60 : 68) * k, 0xFF15181C, MEDIUM, p, Paint.Align.CENTER);
+    }
+
+    /**
+     * Puro: el halo de exceso de la señal para la velocidad v con el límite limit: rojo más de un 10 % por encima (con 2
+     * km/h de margen), ámbar por encima; 0 si no (o sin límite, o sin velocidad al día).
+     */
+    static int speedingHalo(double v, int limit, boolean live) {
+        if (!live || limit <= 0) return 0;
+        if (v > limit * 1.1 + 2) return RED;
+        if (v > limit + 2) return AMBER;
+        return 0;
+    }
+
+    /**
      * Cifra grande con su unidad pequeña a continuación, en la misma línea base. align: dónde queda el conjunto
      * respecto a x. Devuelve el ancho total.
      */

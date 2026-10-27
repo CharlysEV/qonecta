@@ -14,8 +14,9 @@ import java.util.TimeZone;
 
 /**
  * Datos de la vía para la pestaña "Conducción", con OpenStreetMap (Overpass) y cálculos locales:
- * - Límite de velocidad de la vía por la que se circula (etiqueta maxspeed, o el genérico español
- *   según el tipo de vía, marcado como estimado).
+ * - Límite de velocidad de la vía por la que se circula (maxspeed, la del sentido de la marcha o la zona: «DE:urban»,
+ *   «AT:rural», «none» en la Autobahn sin límite…; si no lo dice, el genérico del país según el tipo de vía, marcado como
+ *   estimado). Ver {@link #limitFor}.
  * - Radares fijos cercanos (highway=speed_camera) delante, en la vía por la que se va y en el sentido de la marcha.
  * Dos hilos: uno pregunta a OpenStreetMap (puede tardar o fallar) y otro, cada segundo, mira los radares con la
  * posición de ese momento. Antes iban en el mismo y, si OpenStreetMap tardaba, el aviso salía con la posición de hacía
@@ -23,7 +24,13 @@ import java.util.TimeZone;
  * - Sol de cara: posición del sol (NOAA) frente al rumbo.
  */
 final class RoadInfo {
+    /** Límite «sin límite general» (maxspeed=none: la Autobahn): se enseña la señal de fin de limitación. */
+    static final int UNLIMITED = 0;
+    /** Límite que no se enseña ni se estima: paneles variables (signals), «a paso» (walk). */
+    static final int HIDDEN = -2;
+
     static final class State {
+        /** km/h; {@link #UNLIMITED} sin límite general; -1 si no se sabe (no se enseña). */
         int limitKmh = -1;
         boolean limitEstimated;
         String roadName = "";
@@ -322,6 +329,8 @@ final class RoadInfo {
                 .getJSONArray("elements");
         JSONObject best = null;
         double bestScore = Double.MAX_VALUE;
+        // Se va en el sentido en que está dibujada la vía (para maxspeed:forward / :backward).
+        boolean bestForward = true;
         for (int i = 0; i < els.length(); i++) {
             JSONObject w = els.getJSONObject(i);
             JSONArray g = w.optJSONArray("geometry");
@@ -330,18 +339,24 @@ final class RoadInfo {
             if (hw.matches("footway|cycleway|path|steps|pedestrian|track|service|bridleway|corridor")) continue;
             // Tramo más cercano y su rumbo: preferimos la vía alineada con nuestra marcha.
             double score = Double.MAX_VALUE;
+            boolean forward = true;
             for (int k = 1; k < g.length(); k++) {
                 JSONObject a = g.getJSONObject(k - 1);
                 JSONObject b = g.getJSONObject(k);
                 double d = dist(s.lat, s.lon, (a.getDouble("lat") + b.getDouble("lat")) / 2, (a.getDouble("lon") + b.getDouble("lon")) / 2);
                 double brg = bearing(a.getDouble("lat"), a.getDouble("lon"), b.getDouble("lat"), b.getDouble("lon"));
-                double diff = Math.abs(((brg - s.headingDeg) + 540) % 360 - 180);
-                diff = Math.min(diff, 180 - diff); // la vía vale en los dos sentidos
-                score = Math.min(score, d + (s.speedKmh > 5 ? diff * 2 : 0));
+                double raw = Math.abs(((brg - s.headingDeg) + 540) % 360 - 180);
+                double diff = Math.min(raw, 180 - raw); // la vía vale en los dos sentidos
+                double sc = d + (s.speedKmh > 5 ? diff * 2 : 0);
+                if (sc < score) {
+                    score = sc;
+                    forward = raw <= 90;
+                }
             }
             if (score < bestScore) {
                 bestScore = score;
                 best = w;
+                bestForward = forward;
             }
         }
         if (best == null) {
@@ -353,14 +368,28 @@ final class RoadInfo {
         JSONObject tags = best.getJSONObject("tags");
         roadOneway = oneway(tags) != 0;
         road = firstNonEmpty(tags.optString("name"), tags.optString("ref"));
-        int l = parseLimit(tags.optString("maxspeed"));
-        if (l > 0) {
-            limit = l;
-            limitEst = false;
-        } else {
-            limit = defaultLimit(tags.optString("highway"), tags.optString("lanes"));
-            limitEst = true;
+        String cc = Country.current(ctx).toUpperCase(Locale.US);
+        int[] l = limitFor(tags, bestForward, cc.isEmpty() ? "ES" : cc);
+        limit = l[0];
+        limitEst = l[1] == 1;
+    }
+
+    /**
+     * Puro: el límite de una vía por sus etiquetas, en el sentido de la marcha: maxspeed:forward/backward, maxspeed y la
+     * zona (zone:maxspeed, maxspeed:type, source:maxspeed: «DE:urban», «DE:30»…). Si ninguna lo dice, el genérico del
+     * país (country, ISO de dos letras) por el tipo de vía, estimado. {límite, 1 si estimado}; el límite, en km/h,
+     * {@link #UNLIMITED} o -1 (no se enseña: paneles variables, «a paso», o un país sin genéricos conocidos).
+     */
+    static int[] limitFor(JSONObject tags, boolean forward, String country) {
+        String[] keys = {forward ? "maxspeed:forward" : "maxspeed:backward", "maxspeed", "zone:maxspeed", "maxspeed:type",
+                "source:maxspeed"};
+        for (String k : keys) {
+            int v = parseLimit(tags.optString(k));
+            if (v == HIDDEN) return new int[]{-1, 0};
+            if (v >= 0) return new int[]{v, 0};
         }
+        int est = defaultLimit(country, tags.optString("highway"), tags.optString("lanes"));
+        return est >= 0 ? new int[]{est, 1} : new int[]{-1, 0};
     }
 
     /**
@@ -438,7 +467,9 @@ final class RoadInfo {
                 if (!Double.isNaN(dir)) fromRel++;
             }
             if (!Double.isNaN(dir)) withDir++;
-            list.add(new double[]{la, lo, t != null ? parseLimit(t.optString("maxspeed")) : -1, dir, e.optLong("id")});
+            // El límite del radar: solo un número (sin límite o variable, como si no lo dijera).
+            int cl = t != null ? parseLimit(t.optString("maxspeed")) : -1;
+            list.add(new double[]{la, lo, cl > 0 ? cl : -1, dir, e.optLong("id")});
         }
         stats[0] = withDir;
         stats[1] = fromRel;
@@ -663,44 +694,119 @@ final class RoadInfo {
         return along;
     }
 
-    /** "50", "50 mph", "ES:urban", "ES:rural", "ES:motorway"… */
+    /**
+     * Límites generales de cada país: ciudad, carretera, vía rápida (autovía, Kraftfahrstraße, Autostrasse…), autopista y
+     * calle residencial; {@link #UNLIMITED} en la Autobahn, {@link #HIDDEN} donde es «a paso». Los usan las zonas
+     * («DE:rural») y los estimados.
+     */
+    private static final java.util.Map<String, int[]> COUNTRY_LIMITS = new java.util.HashMap<>();
+
+    static {
+        COUNTRY_LIMITS.put("ES", new int[]{50, 90, 120, 120, 20});
+        COUNTRY_LIMITS.put("DE", new int[]{50, 100, 100, UNLIMITED, HIDDEN});
+        COUNTRY_LIMITS.put("AT", new int[]{50, 100, 100, 130, HIDDEN});
+        COUNTRY_LIMITS.put("CH", new int[]{50, 80, 100, 120, 20});
+        COUNTRY_LIMITS.put("IT", new int[]{50, 90, 110, 130, HIDDEN});
+        COUNTRY_LIMITS.put("PT", new int[]{50, 90, 100, 120, 20});
+        COUNTRY_LIMITS.put("FR", new int[]{50, 80, 110, 130, 20});
+        COUNTRY_LIMITS.put("NL", new int[]{50, 80, 100, 100, HIDDEN});
+        COUNTRY_LIMITS.put("BE", new int[]{50, 90, 120, 120, 20});
+        COUNTRY_LIMITS.put("LU", new int[]{50, 90, 90, 130, 20});
+    }
+
+    /**
+     * "50", "50 mph", "50 km/h", "50;30" (el primero), "none" (sin límite), "signals"/"variable"/"walk" ({@link #HIDDEN}),
+     * y las zonas de cada país: "DE:urban", "AT:rural", "CH:motorway", "ES:zone30", "DE:zone:30", "DE:30", "BE-VLG:rural"…
+     * -1 si no dice nada que valga.
+     */
     static int parseLimit(String v) {
-        if (v == null || v.isEmpty()) return -1;
-        if (v.matches("[0-9]+")) return Integer.parseInt(v);
-        if (v.endsWith("mph")) return (int) Math.round(Integer.parseInt(v.replaceAll("[^0-9]", "")) * 1.609);
+        if (v == null) return -1;
+        v = v.trim();
+        if (v.isEmpty()) return -1;
+        java.util.regex.Matcher num = java.util.regex.Pattern.compile("([0-9]+)\\s*(mph|km/h)?\\s*(;.*)?").matcher(v);
+        if (num.matches()) {
+            int n = Integer.parseInt(num.group(1));
+            return "mph".equals(num.group(2)) ? (int) Math.round(n * 1.609) : n;
+        }
         switch (v) {
-            case "ES:urban":
-                return 50;
-            case "ES:zone30":
+            case "none":
+                return UNLIMITED;
+            case "signals":
+            case "variable":
+            case "walk":
+                return HIDDEN;
+            default:
+                break;
+        }
+        int colon = v.indexOf(':');
+        if (colon < 2) return -1;
+        return zoneLimit(v.substring(0, colon), v.substring(colon + 1));
+    }
+
+    /** Puro: la zona «region:zone» («DE» y «urban», «BE-VLG» y «rural», «DE» y «zone:30»…), o -1. */
+    static int zoneLimit(String region, String zone) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?:zone:?)?([0-9]+)").matcher(zone);
+        if (m.matches()) return Integer.parseInt(m.group(1));
+        int[] t = COUNTRY_LIMITS.get(region.substring(0, 2).toUpperCase(Locale.US));
+        if (t == null) return -1;
+        switch (zone) {
+            case "urban":
+                // Bruselas: 30 en toda la ciudad desde 2021.
+                return "BE-BRU".equals(region) ? 30 : t[0];
+            case "rural":
+                // Flandes: 70 fuera de poblado desde 2017 (Valonia, 90).
+                return "BE-VLG".equals(region) ? 70 : t[1];
+            case "trunk":
+            case "expressway":
+                return t[2];
+            case "motorway":
+                return t[3];
+            case "living_street":
+                return t[4];
+            case "bicycle_road":
                 return 30;
-            case "ES:rural":
-                return 90;
-            case "ES:trunk":
-            case "ES:motorway":
-                return 120;
             default:
                 return -1;
         }
     }
 
-    /** Límites genéricos en España por tipo de vía (estimados cuando OSM no tiene maxspeed). */
-    private static int defaultLimit(String hw, String lanes) {
+    /**
+     * Puro: el límite genérico del país (ISO de dos letras) por el tipo de vía, cuando OpenStreetMap no lo tiene
+     * (estimado). -1 en un país sin genéricos conocidos, o donde no se puede suponer (un enlace fuera de España, «a paso»).
+     */
+    static int defaultLimit(String country, String hw, String lanes) {
+        int[] t = COUNTRY_LIMITS.get(country == null ? "" : country.toUpperCase(Locale.US));
+        if (t == null) return -1;
+        boolean es = "ES".equals(country.toUpperCase(Locale.US));
+        int v;
         switch (hw) {
             case "motorway":
+                v = t[3];
+                break;
             case "motorway_link":
-                return hw.endsWith("link") ? 60 : 120;
+                v = es ? 60 : -1;
+                break;
             case "trunk":
-                return 100;
+                // España: una «trunk» sin límite puede ser una nacional de 100 tanto como una autovía de 120.
+                v = es ? 100 : t[2];
+                break;
             case "primary":
             case "secondary":
             case "tertiary":
-                return 90;
+                v = t[1];
+                break;
             case "residential":
+                // España: 30 en las calles de un carril por sentido (desde 2021).
+                v = es && ("1".equals(lanes) || lanes.isEmpty()) ? 30 : t[0];
+                break;
             case "living_street":
-                return "1".equals(lanes) || lanes.isEmpty() ? 30 : 50;
+                v = t[4];
+                break;
             default:
-                return 50;
+                v = t[0];
+                break;
         }
+        return v == HIDDEN ? -1 : v;
     }
 
     private static String firstNonEmpty(String... s) {

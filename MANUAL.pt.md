@@ -484,8 +484,13 @@ admite.
     conhecem-se nas viagens a partir da 0.2.7. **O fantasma:** se repetir um caminho (mesma partida, mesmo percurso),
     «Em curso» diz-lhe em direto quanto vai à frente ou atrás do seu melhor tempo até onde está («Fantasma: 1:20 atrás
     do seu melhor tempo»), e a viagem mais rápida de cada caminho repetido leva «Recorde da rota».
-  - «Instrumentos»: velocímetro com o limite e a máxima, forças G com o rasto dos últimos segundos e os picos,
-    inclinação e uma nota de suavidade (0-100) pelos solavancos ao acelerar, travar e virar.
+  - «Instrumentos»: velocímetro com **o sinal do limite em grande** por baixo do número (com um anel âmbar se for acima
+    e vermelho se passar dos 10 %) e a máxima, forças G com o rasto dos últimos segundos e os picos, inclinação e uma
+    nota de suavidade (0-100) pelos solavancos ao acelerar, travar e virar.
+  - **O limite de velocidade** (Condução e Instrumentos) vem do OpenStreetMap: o da via no seu sentido ou o da sua zona
+    («DE:urban», «AT:rural»…). Onde falta, assume-se o limite geral do país para o tipo de via (Espanha, Portugal,
+    Alemanha, Áustria, Suíça, Itália, França, Países Baixos, Bélgica e Luxemburgo), com «estimado». Na Autobahn sem
+    limite aparece o sinal de fim de limitação, sem cores; com painéis variáveis, nenhum.
   - «Eficiência»: a potência dos últimos 2 minutos (a verde o que se recupera), o consumo agora, da viagem e médio, para
     onde vai a energia, o custo da viagem, o CO₂ que não saiu por um tubo de escape e uma dica.
   - «Estado» (com a conta Leapmotor): a bateria, a autonomia, a carga, as pressões, as portas e o conta-quilómetros

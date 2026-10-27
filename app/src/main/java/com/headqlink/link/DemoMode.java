@@ -128,7 +128,8 @@ final class DemoMode {
      * Leapmotor: todo estimado y Estado vacío), "cargando" (el coche cargando en un cargador rápido), "reev" (un C10
      * de autonomía extendida, con su depósito de gasolina) o "replan" (se gasta más de lo previsto: el plan de carga
      * cambia y avisa), "esperando_gps" (destino elegido y la ruta aún sin calcular: el móvil sin posición) o
-     * "recalculado" (el viaje lleva 48 km y se ha recalculado dos veces: la gráfica de Ruta, por tramos).
+     * "recalculado" (el viaje lleva 48 km y se ha recalculado dos veces: la gráfica de Ruta, por tramos), "sin_limite"
+     * o "exceso" (ver {@link #limitOverride}).
      */
     static void applyState(String state) {
         if (drive == null) return;
@@ -137,6 +138,8 @@ final class DemoMode {
         trips = "sin_viajes".equals(state) ? new ArrayList<>() : defaultTrips;
         cloudState = "sin_nube".equals(state) || "cargando".equals(state) ? state : "";
         reev = "reev".equals(state);
+        // «exceso»: 70; en Instrumentos (78 km/h) sale el halo ámbar y en Conducción (118), el rojo.
+        limitOverride = "sin_limite".equals(state) ? RoadInfo.UNLIMITED : "exceso".equals(state) ? 70 : -99;
         replan = "replan".equals(state);
         replanAsked = false;
         RoutePlanner.Plan dp = plan;
@@ -217,6 +220,12 @@ final class DemoMode {
         }
         return out;
     }
+
+    /**
+     * Estados "sin_limite" (una Autobahn sin límite: la señal de fin de limitación) y "exceso" (límite de 70, y el
+     * guion va más rápido: la señal con su halo): el límite de la vía en vez del del guion; -99, el del guion.
+     */
+    private static volatile int limitOverride = -99;
 
     /** Estado "replan": a mitad de la demostración se empieza a gastar un 45 % más (la parada del plan ya no se alcanza: se rehace y avisa). */
     private static volatile boolean replan;
@@ -310,7 +319,7 @@ final class DemoMode {
         DemoDrive d = drive;
         if (d == null) return st;
         int k = sample();
-        st.limitKmh = d.limitKmh(k);
+        st.limitKmh = limitOverride != -99 ? limitOverride : d.limitKmh(k);
         st.roadName = d.road(k);
         double ahead = (d.cameraKm - d.distKm[k]) * 1000;
         if (ahead > 0 && ahead < 1500 && d.speedKmh[k] > 5) {

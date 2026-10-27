@@ -37,6 +37,10 @@ final class PreviewShots {
             new Shot("coche_conduccion", "car-1", 572, 1800),
             new Shot("coche_viajes", "car-2", 600, 1800),
             new Shot("coche_instrumentos", "car-3", 408.6, 1800),
+            new Shot("coche_instrumentos_sin_limite", "car-3", 408.6, 1800, "sin_limite"),
+            new Shot("coche_instrumentos_exceso", "car-3", 408.6, 1800, "exceso"),
+            new Shot("coche_conduccion_sin_limite", "car-1", 572, 1800, "sin_limite"),
+            new Shot("coche_conduccion_exceso", "car-1", 572, 1800, "exceso"),
             new Shot("coche_eficiencia", "car-4", 396, 1800),
             // Estado: datos reales del coche (la nube de Leapmotor; en la demostración, inventados).
             new Shot("coche_estado", "car-5", 300, 1800),

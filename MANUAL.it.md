@@ -478,8 +478,14 @@ supporta.
     «Viaggio in corso» ti dice in diretta quanto sei avanti o indietro rispetto al tuo tempo migliore fin qui
     («Fantasma: 1:20 dietro il tuo tempo migliore»), e il viaggio più veloce di ogni percorso ripetuto ha «Record del
     percorso».
-  - «Strumenti»: tachimetro con il limite e la velocità massima, forze G con la scia degli ultimi secondi e i picchi,
-    inclinazione e un punteggio di dolcezza di guida (0-100) in base agli strappi in accelerazione, frenata e sterzata.
+  - «Strumenti»: tachimetro con **il cartello del limite in grande** sotto la cifra (con un anello ambra se vai oltre e
+    rosso sopra il 10 %) e la velocità massima, forze G con la scia degli ultimi secondi e i picchi, inclinazione e un
+    punteggio di dolcezza di guida (0-100) in base agli strappi in accelerazione, frenata e sterzata.
+  - **Il limite di velocità** (Guida e Strumenti) viene da OpenStreetMap: quello della strada nel tuo senso di marcia o
+    quello della sua zona («DE:urban», «AT:rural»…). Dove manca, si assume il limite generale del paese per il tipo di
+    strada (Spagna, Portogallo, Germania, Austria, Svizzera, Italia, Francia, Paesi Bassi, Belgio e Lussemburgo), con
+    «stimato». Sull'Autobahn senza limite compare il cartello di fine limitazioni, senza colori; con i pannelli
+    variabili, nessuno.
   - «Efficienza»: la potenza degli ultimi 2 minuti (in verde quella recuperata), il consumo attuale, del viaggio e
     medio, dove va l'energia, il costo del viaggio, la CO₂ che non è uscita da un tubo di scarico e un consiglio.
   - «Stato» (con l'account Leapmotor): batteria, autonomia, ricarica, pressione dei pneumatici, porte e contachilometri

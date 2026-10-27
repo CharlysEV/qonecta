@@ -462,8 +462,14 @@ version). That tells us whether the C10 supports it.
     are known for trips from 0.2.7 on. **The ghost:** if you repeat a road (same start, same way), "Current trip" tells
     you live how far ahead of or behind your best time to this point you are ("Ghost: 1:20 behind your best time"), and
     the fastest trip of each repeated road gets "Route record".
-  - "Gauges": speedometer with the limit and the maximum, G forces with the trail of the last seconds and the peaks,
-    inclination and a smoothness score (0-100) from the jerks when accelerating, braking and turning.
+  - "Gauges": speedometer with **the speed limit sign in large** under the figure (with an amber ring if you are above it
+    and red beyond 10 %) and the maximum, G forces with the trail of the last seconds and the peaks, inclination and a
+    smoothness score (0-100) from the jerks when accelerating, braking and turning.
+  - **The speed limit** (Driving and Gauges) comes from OpenStreetMap: the one of the road in your direction or that of
+    its zone ("DE:urban", "AT:rural"…). Where it is missing, the country's general limit for the road type is assumed
+    (Spain, Portugal, Germany, Austria, Switzerland, Italy, France, the Netherlands, Belgium and Luxembourg) and marked
+    "estimated". On an Autobahn without a limit you see the end-of-restrictions sign, with no colours; with variable
+    signs, none.
   - "Efficiency": the power of the last 2 minutes (what is recovered in green), consumption now, for the trip and on
     average, where the energy goes, the trip cost, the CO₂ that did not come out of a tailpipe and a tip.
   - "Status" (with the Leapmotor account): the car's real battery, range, charging, tyre pressures, doors and odometer,

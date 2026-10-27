@@ -504,9 +504,15 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
     erneut (gleicher Start, gleicher Weg), zeigt „Aktuelle Fahrt“ live, wie weit du vor oder hinter deiner Bestzeit bis
     hierher bist („Geist: 1:20 hinter deiner Bestzeit“), und die schnellste Fahrt jeder wiederholten Strecke bekommt
     „Streckenrekord“.
-  - „Instrumente“: Tacho mit Tempolimit und Höchstgeschwindigkeit, G-Kräfte mit der Spur der letzten Sekunden und den
+  - „Instrumente“: Tacho mit **großem Tempolimit-Schild** unter der Zahl (mit gelbem Ring, wenn du schneller fährst,
+    und rotem ab gut 10 % darüber) und Höchstgeschwindigkeit, G-Kräfte mit der Spur der letzten Sekunden und den
     Spitzenwerten, Neigung und eine Note für die Sanftheit (0–100) nach dem Rucken beim Beschleunigen, Bremsen und
     Lenken.
+  - **Das Tempolimit** („Fahren“ und „Instrumente“) kommt aus OpenStreetMap: das der Straße in deiner Fahrtrichtung oder
+    das ihrer Zone („DE:urban“, „AT:rural“ …). Fehlt es dort, nimmt die App die allgemeine Regel des Landes für den
+    Straßentyp an (Spanien, Portugal, Deutschland, Österreich, Schweiz, Italien, Frankreich, Niederlande, Belgien und
+    Luxemburg) und schreibt „geschätzt“ dazu. Auf der Autobahn ohne Tempolimit erscheint das Schild „Ende aller
+    Streckenverbote“, ohne Farben; bei Wechselverkehrszeichen erscheint keins.
   - „Effizienz“: die Leistung der letzten 2 Minuten (grün, was zurückgewonnen wird), der Verbrauch jetzt, auf der Fahrt
     und im Mittel, wofür die Energie verbraucht wird, die Kosten der Fahrt, das CO₂, das aus keinem Auspuff gekommen
     ist, und ein Tipp.

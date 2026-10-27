@@ -477,8 +477,13 @@ admite.
     vas por el mismo sitio), «En curso» te dice en directo cuánto vas por delante o por detrás de tu mejor vez hasta
     donde estás («Fantasma: 1:20 por detrás de tu mejor vez»), y el viaje más rápido de cada camino repetido lleva
     «Récord de ruta».
-  - «Instrumentos»: velocímetro con el límite y la máxima, fuerzas G con la estela de los últimos segundos y los picos,
+  - «Instrumentos»: velocímetro con **la señal del límite en grande** debajo de la cifra (con un aro ámbar si vas por
+    encima y rojo si pasas de un 10 %) y la máxima, fuerzas G con la estela de los últimos segundos y los picos,
     inclinación y una nota de suavidad (0-100) según los tirones al acelerar, frenar y girar.
+  - **El límite de velocidad** (Conducción e Instrumentos) sale de OpenStreetMap: el de la vía en tu sentido o el de su
+    zona («DE:urban», «AT:rural»…). Donde no lo tiene, se supone el general del país por el tipo de vía (España,
+    Portugal, Alemania, Austria, Suiza, Italia, Francia, Países Bajos, Bélgica y Luxemburgo) y pone «estimado». En la
+    Autobahn sin límite sale la señal de fin de limitación, sin colores; con paneles variables, no sale ninguna.
   - «Eficiencia»: la potencia de los últimos 2 minutos (en verde lo que se recupera), el consumo ahora, del viaje y
     medio, en qué se va la energía, el coste del viaje, el CO₂ que no ha salido por un tubo de escape y un consejo.
   - «Estado» (con la cuenta de Leapmotor): la batería, la autonomía, la carga, las presiones, las puertas y el

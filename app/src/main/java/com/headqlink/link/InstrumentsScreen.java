@@ -16,7 +16,7 @@ import java.util.Locale;
 
 /**
  * Instrumentos con los sensores del móvil: velocímetro de segmentos (GPS) con zonas de color según el límite de la
- * vía y la marca de la máxima, medidor de fuerzas G con la estela de los últimos segundos y los picos del viaje,
+ * vía, la señal del límite en grande (con el halo de exceso) y la marca de la máxima, medidor de fuerzas G con la estela de los últimos segundos y los picos del viaje,
  * inclinómetro (cabeceo por la pendiente; balanceo estimado por la fuerza lateral), nota de suavidad (tirones) y el
  * resumen del viaje con el cronómetro 0-50/0-100 automático.
  */
@@ -35,6 +35,7 @@ final class InstrumentsScreen implements CarScreen {
     private int ticks;
     private CarSensors.Snapshot s = new CarSensors.Snapshot();
     private int limit = -1;
+    private boolean limitEst;
     private CarKit.Card speedCard;
     private CarKit.Card gCard;
     private CarKit.Card inclCard;
@@ -94,7 +95,9 @@ final class InstrumentsScreen implements CarScreen {
     private void tick() {
         if (!running) return;
         s = sensors.snapshot();
-        limit = road.state().limitKmh;
+        RoadInfo.State rs = road.state();
+        limit = rs.limitKmh;
+        limitEst = rs.limitEstimated;
         trailN = sensors.gTrail(trailLat, trailLong, trailMs);
         // Sin posiciones al día, la aguja baja a cero (el número dice «—» y el motivo).
         float target = s.gpsLive() ? (float) Math.min(1, s.speedKmh / MAX_KMH) : 0;
@@ -172,15 +175,41 @@ final class InstrumentsScreen implements CarScreen {
         String gpsNote = CarSensors.gpsNote(s);
         int color = gpsNote != null ? CarKit.MUTED : limit > 0 && s.speedKmh > limit * 1.1 + 2 ? CarKit.RED
                 : limit > 0 && s.speedKmh > limit + 2 ? CarKit.AMBER : CarKit.TEXT;
+        // La señal del límite (o la de sin límite): en grande, en el hueco de abajo de la esfera (la cifra sube un poco
+        // para dejarle sitio); en el cuadro pequeño, a la izquierda de la esfera. Sin posiciones al día, no (el límite
+        // sería el de la última vía).
+        boolean sign = gpsNote == null && (limit > 0 || limit == RoadInfo.UNLIMITED);
+        float lift = sign && !small ? 30 : 0;
         // Pequeño: la cifra cabe dentro de la escala (no la tapa).
         float big = small ? Math.max(34, rad * 0.46f) : 136;
-        CarKit.text(cv, gpsNote != null ? "—" : String.format(Locale.getDefault(), "%.0f", s.speedKmh), cx, cy + big * 0.34f, big,
+        CarKit.text(cv, gpsNote != null ? "—" : String.format(Locale.getDefault(), "%.0f", s.speedKmh), cx, cy + big * 0.34f - lift, big,
                 color, CarKit.REGULAR, p, Paint.Align.CENTER);
-        CarKit.text(cv, "km/h", cx, cy + big * 0.34f + (small ? 24 : 46), small ? 17 : 28, CarKit.DIM, CarKit.MEDIUM, p,
-                Paint.Align.CENTER);
+        float unitY = cy + big * 0.34f + (small ? 24 : 46) - lift;
+        CarKit.text(cv, "km/h", cx, unitY, small ? 17 : 28, CarKit.DIM, CarKit.MEDIUM, p, Paint.Align.CENTER);
         String[] t = timer(s.timer);
-        if (!small && !t[1].equals("—")) {
-            CarKit.text(cv, Str.get(R.string.hql_timer_line, t[0], t[1]), cx, cy + rad * 0.71f + 64, 25, CarKit.ACCENT, CarKit.MEDIUM, p, Paint.Align.CENTER);
+        boolean timerShown = !small && !t[1].equals("—");
+        // Con la señal, el cronómetro va justo debajo de «km/h» (su sitio de siempre es el de la señal).
+        float timerY = sign ? unitY + 40 : cy + rad * 0.71f + 64;
+        if (timerShown) {
+            CarKit.text(cv, Str.get(R.string.hql_timer_line, t[0], t[1]), cx, timerY, 25, CarKit.ACCENT, CarKit.MEDIUM, p, Paint.Align.CENTER);
+        }
+        int halo = CarKit.speedingHalo(s.speedKmh, limit, true);
+        if (sign && small) {
+            float gap = cx - rad - stroke / 2 - r.left;
+            float sr = Math.min(40, (gap - 6) / 2.3f);
+            if (sr >= 14) CarKit.limitSign(cv, r.left + gap / 2, cy - rad * 0.4f, sr, limit, halo, p);
+        } else if (sign) {
+            float chipTop = r.bottom - 92;
+            float top = timerShown ? timerY + 16 : unitY + 18;
+            // El halo de exceso sale un 15 % por fuera de la señal.
+            float sr = Math.min(80, (chipTop - 10 - top) / 2.3f);
+            if (sr >= 16) {
+                float sy = top + sr * 1.15f;
+                CarKit.limitSign(cv, cx, sy, sr, limit, halo, p);
+                if (limitEst) {
+                    CarKit.label(cv, Str.get(R.string.hql_estimated), cx + sr * 1.15f + 12, sy + 7, CarKit.FAINT, p, Paint.Align.LEFT);
+                }
+            }
         }
         if (gpsNote != null) {
             float ns = small ? 17 : 22;

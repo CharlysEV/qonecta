@@ -314,19 +314,13 @@ final class DriveTab implements CarScreen {
         boolean small = k < 0.8f;
         CarKit.number(cv, gpsNote != null ? "—" : String.format(Locale.getDefault(), "%.0f", v), "km/h", r.left,
                 r.top + (small ? r.height() * 0.62f : 150), 156 * k, color, CarKit.REGULAR, p, Paint.Align.LEFT);
-        if (limit > 0) {
-            float rad = small ? Math.min(r.height() / 2f - 2, 80) : 80;
-            float cx = r.right - rad - 2;
-            float cy = small ? r.top + rad : r.top + 78;
-            p.setColor(0xFFFFFFFF);
-            cv.drawCircle(cx, cy, rad, p);
-            p.setStyle(Paint.Style.STROKE);
-            p.setStrokeWidth(15 * rad / 80);
-            p.setColor(0xFFD93025);
-            cv.drawCircle(cx, cy, rad * 0.9f, p);
-            p.setStyle(Paint.Style.FILL);
-            CarKit.text(cv, String.valueOf(limit), cx, cy + 24 * rad / 80, (limit >= 100 ? 60 : 68) * rad / 80, 0xFF15181C, CarKit.MEDIUM, p,
-                    Paint.Align.CENTER);
+        boolean sign = limit > 0 || limit == RoadInfo.UNLIMITED;
+        if (sign) {
+            // Con el halo, el aro de fuera también cabe.
+            float rad = small ? Math.min(r.height() / 2f - 2, 80) / 1.15f : 74;
+            float cx = r.right - rad * 1.15f - 2;
+            float cy = small ? r.top + rad * 1.15f : r.top + 82;
+            CarKit.limitSign(cv, cx, cy, rad, limit, CarKit.speedingHalo(v, limit, gpsNote == null), p);
             if (rs.limitEstimated && !small) CarKit.label(cv, Str.get(R.string.hql_estimated), cx, cy + 112, CarKit.FAINT, p, Paint.Align.CENTER);
         }
         // Pequeña: sin la línea de la vía (no cabe); la velocidad y la señal.
@@ -334,7 +328,7 @@ final class DriveTab implements CarScreen {
         String line = gpsNote != null ? gpsNote : rs.roadName;
         p.setTypeface(CarKit.REGULAR);
         p.setTextSize(small ? 20 : 27);
-        CarKit.text(cv, CarKit.ellipsize(line, r.width() - (limit > 0 ? 190 * k : 0), p), r.left, r.bottom - 6, small ? 20 : 27,
+        CarKit.text(cv, CarKit.ellipsize(line, r.width() - (sign ? 190 * k : 0), p), r.left, r.bottom - 6, small ? 20 : 27,
                 gpsNote == null ? CarKit.DIM : CarKit.RED, CarKit.REGULAR, p, Paint.Align.LEFT);
     }
 
