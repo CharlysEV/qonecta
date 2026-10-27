@@ -519,10 +519,12 @@ admite.
   (**5 minutos** por defecto; se cambia en «Ajustes de imagen» › «Avanzado»). La notificación dice «Esperando al coche ·
   Android Auto en pausa». Si el coche vuelve en ese tiempo, la imagen sale **al instante**, sin desbloquear el móvil ni
   pulsar nada.
-- Pasado «Esperar al coche», Qonecta+ lo cierra todo: Android Auto, su servidor y la conexión. Para volver a usarla,
-  pulsa «Conectar», o déjalo en manos de la conexión automática por Bluetooth. Con el arranque manual del servidor lo
-  cierra todo igual salvo el servidor, que sigue encendido para el próximo viaje ([Sin
-  accesibilidad](#sin-accesibilidad-arranque-manual-del-servidor-de-android-auto)).
+- Pasado «Esperar al coche», Qonecta+ cierra Android Auto y la conexión. **El servidor de Android Auto se queda
+  encendido para el próximo viaje**: así Android Auto arranca aunque el móvil esté bloqueado. Se apaga solo si el móvil
+  se conecta a una Wi-Fi sin contraseña (cafeterías, áreas de servicio…), o al cerrar si ya estás en una; lo cambia
+  Ajustes › «Conexión» › «Servidor de Android Auto encendido entre viajes». Con el arranque manual del servidor se queda
+  siempre encendido ([Sin accesibilidad](#sin-accesibilidad-arranque-manual-del-servidor-de-android-auto)). Para volver
+  a usar Qonecta+, pulsa «Conectar», o déjalo en manos de la conexión automática por Bluetooth.
 - Si pulsas «Conectar» y en **5 minutos** (o «Esperar al coche», si es más) no aparece ningún coche, Qonecta+ se para
   sola. Mientras el coche se siga anunciando, aunque no llegue a conectar, la espera vuelve a empezar.
 
@@ -753,6 +755,12 @@ Si estás conectado, al guardar otro perfil el coche y Android Auto se reconecta
 - «Avanzado ▾» › «Arranque del servidor de Android Auto»: «Automático (accesibilidad) · Recomendado» o «Manual (sin
   accesibilidad)» (sección 3, [Sin accesibilidad](#sin-accesibilidad-arranque-manual-del-servidor-de-android-auto)).
   Vale en el acto.
+- Ajustes › «Conexión» › «Servidor de Android Auto encendido entre viajes» (solo con el arranque automático; viene
+  activado): el servidor no se apaga al terminar, y el viaje siguiente arranca Android Auto con el móvil bloqueado
+  (encenderlo necesita los ajustes de Android Auto, que con el móvil bloqueado no se pueden manejar). Se apaga solo en
+  una Wi-Fi sin contraseña (Android 12 o superior; en los anteriores no se puede saber y sigue encendido). Al reiniciar
+  el móvil o actualizarse Android Auto se apaga, y la primera vez vuelve a salir «Desbloquea el móvil para iniciar
+  Android Auto». Desactivado: se apaga al terminar cada viaje, como antes.
 - El resto de «Avanzado» (fps, kbps, ancho, alto, perfil H.264, optimizaciones de latencia, freno) es para pruebas.
   Déjalo vacío o como viene.
 

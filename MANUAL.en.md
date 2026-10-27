@@ -503,10 +503,12 @@ version). That tells us whether the C10 supports it.
   car" (**5 minutes** by default; change it in "Picture settings" › "Advanced"). The notification says "Waiting for the
   car · Android Auto paused". If the car comes back within that time, the picture returns **instantly**, without
   unlocking the phone or tapping anything.
-- Once "Wait for the car" runs out, Qonecta+ closes everything: Android Auto, its server and the connection. To use it
-  again, tap "Connect", or let the Bluetooth automatic connection handle it. With the manual server start it closes
-  everything the same way except the server, which stays on for the next trip ([Without
-  accessibility](#without-accessibility-manual-start-of-the-android-auto-server)).
+- Once "Wait for the car" runs out, Qonecta+ closes Android Auto and the connection. **The Android Auto server stays on
+  for the next trip**: that way Android Auto starts even with the phone locked. It turns off by itself if the phone
+  joins a Wi-Fi without a password (cafés, service areas…), or on closing if you are already on one; change it in
+  Settings › "Connection" › "Android Auto server on between trips". With the manual server start it always stays on
+  ([Without accessibility](#without-accessibility-manual-start-of-the-android-auto-server)). To use Qonecta+ again, tap
+  "Connect", or let the Bluetooth automatic connection handle it.
 - If you tap "Connect" and no car shows up within **5 minutes** (or "Wait for the car", if longer), Qonecta+ stops by
   itself. As long as the car keeps announcing itself, even if it doesn't connect, the wait starts over.
 
@@ -738,6 +740,12 @@ If you're connected, saving another profile makes the car and Android Auto recon
 - "Advanced ▾" › "Android Auto server start": "Automatic (accessibility) · Recommended" or "Manual (no accessibility)"
   (section 3, [Without accessibility](#without-accessibility-manual-start-of-the-android-auto-server)). Applies
   immediately.
+- Settings › "Connection" › "Android Auto server on between trips" (automatic start only; on by default): the server
+  isn't turned off at the end, and the next trip starts Android Auto with the phone locked (starting it needs Android
+  Auto's settings, which can't be used with the phone locked). It turns off by itself on a Wi-Fi without a password
+  (Android 12 or later; on older versions this can't be known and it stays on). Restarting the phone or an Android Auto
+  update turns it off, and the first time "Unlock the phone to start Android Auto" shows again. Off: it is turned off
+  after every trip, as before.
 - The rest of "Advanced" (fps, kbps, width, height, H.264 profile, latency optimizations, throttle) is for testing.
   Leave it empty or as it is.
 

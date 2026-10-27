@@ -539,6 +539,8 @@
     <string name="hql_aa_server_start_title">Android Auto 服务器启动方式</string>
     <string name="hql_aa_server_start_auto">自动（无障碍）· 推荐</string>
     <string name="hql_aa_server_start_manual">手动（不使用无障碍）</string>
+    <string name="hql_aa_server_keep">行程之间保持 Android Auto 服务器开启</string>
+    <string name="hql_aa_server_keep_sum">这样上车时手机锁屏也能启动 Android Auto。如果手机连接到没有密码的 Wi-Fi（咖啡馆、服务区…），会自动关闭。关闭此项：每次行程结束都会关闭服务器，需要解锁手机才能开启。</string>
     <string name="hql_aa_server_start_help">自动：Qonecta+ 通过其无障碍服务自动启动和停止 Android Auto 服务器。手动：不使用无障碍；每次手机重启或 Android Auto 更新后，由你自己启动服务器（Android Auto › ⋮ › 启动主机服务器），Qonecta+ 从不停止它：服务器在行程之间保持运行，下次行程无需重启即可再次使用，即使手机已锁定。如果它某次没有响应（已关闭，或被中途断开的连接卡住），Qonecta+ 会提醒你并自动重试：请停止后重新启动（⋮ › 停止主机服务器，然后 ⋮ › 启动主机服务器）。在公共 Wi-Fi 上，该网络中的任何设备都可能尝试连接：不使用时请停止它。立即生效。</string>
     <string name="hql_aa_server_wait">正在等待 Android Auto 服务器</string>
     <string name="hql_aa_server_wait_hint">Android Auto 没有响应：请启动（或重启）其服务器：Android Auto › ⋮ › 停止主机服务器（如有显示），然后 ⋮ › 启动主机服务器。点按此处或“Auto”一行打开 Android Auto；Qonecta+ 每 5 秒重试一次，一旦响应便自动继续。</string>

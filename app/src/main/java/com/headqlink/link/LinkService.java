@@ -197,6 +197,7 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         e.canStopWithoutUi = AaServerStarter.canStopWithoutUi();
         e.stopServerOnExit = cfg.stopAaServerOnExit();
         e.manualServer = cfg.aaServerManual();
+        e.keepServerOn = cfg.aaServerKeepOn() && !OpenWifiGuard.onOpenWifi(this);
         return e;
     }
 
@@ -1050,6 +1051,20 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
                 AaPark.release("cierre del enlace");
                 AaClose.stopAa(this, why);
                 AaServerManual.onLinkClosed(this, why, connected);
+                return;
+            }
+            case KEEP_SERVER_ON: {
+                // Automático, encendido entre viajes: Android Auto con su ByeBye (su servidor vuelve a atender) y el servidor
+                // sigue encendido, así el viaje siguiente arranca AA con el móvil bloqueado. Si el móvil entra en una Wi-Fi sin
+                // contraseña, OpenWifiGuard lo apaga.
+                String why = userAction ? "Desconectar" : "fin del viaje";
+                L.life("cierre" + (userAction ? " (a mano)" : "") + ": cierro Android Auto con su ByeBye y dejo su servidor"
+                        + " encendido para el próximo viaje (arranca con el móvil bloqueado); se apagará si el móvil entra en"
+                        + " una Wi-Fi sin contraseña");
+                AaServerStarter.cancelPendingStop(this);
+                AaPark.release("cierre del enlace");
+                AaClose.stopAa(this, why);
+                OpenWifiGuard.arm(this);
                 return;
             }
             default:

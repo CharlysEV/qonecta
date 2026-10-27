@@ -458,6 +458,11 @@
             </intent-filter>
         </receiver>
 
+        <!-- headqlink: Wi-Fi nueva con el servidor de Android Auto encendido entre viajes (OpenWifiGuard; PendingIntent). -->
+        <receiver
+            android:name="com.headqlink.link.OpenWifiGuard$Receiver"
+            android:exported="false" />
+
         <receiver
             android:name=".app.AutoStartReceiver"
             android:directBootAware="true"

@@ -522,10 +522,12 @@ supporta.
   dell'auto» (**5 minuti** di default; si cambia in «Impostazioni immagine» › «Avanzate»). La notifica dice «In attesa
   dell'auto · Android Auto in pausa». Se l'auto torna entro quel tempo, l'immagine ricompare **all'istante**, senza
   sbloccare il telefono né toccare nulla.
-- Quando scade «Attesa dell'auto», Qonecta+ chiude tutto: Android Auto, il suo server e la connessione. Per riusarla,
-  tocca «Connetti», o lascia fare alla connessione automatica via Bluetooth. Con l'avvio manuale del server chiude tutto
-  allo stesso modo tranne il server, che resta acceso per il prossimo viaggio ([Senza
-  accessibilità](#senza-accessibilità-avvio-manuale-del-server-di-android-auto)).
+- Quando scade «Attesa dell'auto», Qonecta+ chiude Android Auto e la connessione. **Il server di Android Auto resta
+  acceso per il prossimo viaggio**: così Android Auto si avvia anche con il telefono bloccato. Si spegne da solo se il
+  telefono si connette a una Wi-Fi senza password (bar, aree di servizio…), o alla chiusura se ci sei già; si cambia in
+  Impostazioni › «Connessione» › «Server di Android Auto acceso tra un viaggio e l'altro». Con l'avvio manuale del
+  server resta sempre acceso ([Senza accessibilità](#senza-accessibilità-avvio-manuale-del-server-di-android-auto)). Per
+  riusare Qonecta+, tocca «Connetti», o lascia fare alla connessione automatica via Bluetooth.
 - Se tocchi «Connetti» ed entro **5 minuti** (o «Attesa dell'auto», se è di più) non compare nessuna auto, Qonecta+ si
   ferma da solo. Finché l'auto continua ad annunciarsi, anche se non riesce a connettersi, l'attesa ricomincia.
 
@@ -762,6 +764,12 @@ Se sei connesso, salvando un altro profilo l'auto e Android Auto si riconnettono
 - «Avanzate ▾» › «Avvio del server di Android Auto»: «Automatico (accessibilità) · Consigliato» o «Manuale (senza
   accessibilità)» (sezione 3, [Senza accessibilità](#senza-accessibilità-avvio-manuale-del-server-di-android-auto)).
   Si applica subito.
+- Impostazioni › «Connessione» › «Server di Android Auto acceso tra un viaggio e l'altro» (solo con l'avvio automatico;
+  attivo di default): il server non si spegne alla fine, e il viaggio successivo avvia Android Auto con il telefono
+  bloccato (per accenderlo servono le impostazioni di Android Auto, che a telefono bloccato non si possono usare). Si
+  spegne da solo su una Wi-Fi senza password (Android 12 o successivo; prima non si può sapere e resta acceso).
+  Riavviando il telefono o aggiornando Android Auto si spegne, e la prima volta ricompare «Sblocca il telefono per
+  avviare Android Auto». Disattivato: si spegne alla fine di ogni viaggio, come prima.
 - Il resto di «Avanzate» (fps, kbps, larghezza, altezza, profilo H.264, ottimizzazioni di latenza, freno video) serve per
   i test. Lascialo vuoto o com'è.
 

@@ -196,9 +196,41 @@ public final class AaServerStarter {
         }
     }
 
-    /** Último estado conocido del servidor: encendido (lo arrancamos y no lo hemos apagado después). */
+    /**
+     * Último estado conocido del servidor: encendido (lo arrancamos y no lo hemos apagado después). Con el servidor
+     * encendido entre viajes ese dato puede tener horas: no vale si el móvil se ha reiniciado o Android Auto se ha
+     * actualizado desde entonces (las dos cosas lo apagan), y entonces el arranque vuelve a avisar y encenderlo.
+     */
     static boolean serverLikelyOn(Context ctx) {
-        return prefs(ctx).getInt(SERVER_STATE, -1) == 1;
+        android.content.SharedPreferences sp = prefs(ctx);
+        if (sp.getInt(SERVER_STATE, -1) != 1) return false;
+        return stillValid(sp.getLong(SERVER_STATE_AT, 0), sp.getInt(SERVER_STATE_BOOT, -1), bootCount(ctx), aaUpdatedAt(ctx));
+    }
+
+    /**
+     * Puro: el «encendido» apuntado en at (con el arranque del móvil boot) sigue valiendo ahora (bootNow, y Android Auto
+     * actualizado por última vez en aaUpdated). -1 = no se sabe (no invalida).
+     */
+    static boolean stillValid(long at, int boot, int bootNow, long aaUpdated) {
+        if (boot >= 0 && bootNow >= 0 && boot != bootNow) return false;
+        return aaUpdated < 0 || aaUpdated <= at;
+    }
+
+    private static final String SERVER_STATE_BOOT = "aa_server_state_boot";
+
+    /** Cuántas veces ha arrancado el móvil (Settings.Global.BOOT_COUNT), o -1. */
+    private static int bootCount(Context ctx) {
+        if (android.os.Build.VERSION.SDK_INT < 24) return -1;
+        return android.provider.Settings.Global.getInt(ctx.getContentResolver(), android.provider.Settings.Global.BOOT_COUNT, -1);
+    }
+
+    /** Cuándo se actualizó Android Auto por última vez (ms), o -1. */
+    private static long aaUpdatedAt(Context ctx) {
+        try {
+            return ctx.getPackageManager().getPackageInfo("com.google.android.projection.gearhead", 0).lastUpdateTime;
+        } catch (Exception e) {
+            return -1;
+        }
     }
 
     /** Hay un apagado del servidor pendiente (se hará al desbloquear). */
@@ -214,7 +246,8 @@ public final class AaServerStarter {
 
     /** Resultado de una automatización (o del botón de la notificación): el servidor queda encendido o apagado. */
     private static void noteServerState(Context ctx, boolean on) {
-        prefs(ctx).edit().putInt(SERVER_STATE, on ? 1 : 0).putLong(SERVER_STATE_AT, System.currentTimeMillis()).apply();
+        prefs(ctx).edit().putInt(SERVER_STATE, on ? 1 : 0).putLong(SERVER_STATE_AT, System.currentTimeMillis())
+                .putInt(SERVER_STATE_BOOT, bootCount(ctx)).apply();
         NotificationManager nm = ctx.getSystemService(NotificationManager.class);
         // Encendido a propósito o apagado: el aviso «sigue encendido» ya no vale.
         nm.cancel(NOTIF_SERVER_ON);

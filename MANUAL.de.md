@@ -550,10 +550,13 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
   Dauer von „Auf das Fahrzeug warten“ (standardmäßig **5 Minuten**; einstellbar unter „Bildeinstellungen“ ›
   „Erweitert“). Die Benachrichtigung zeigt „Warte auf das Fahrzeug · Android Auto pausiert“. Kommt das Fahrzeug in
   dieser Zeit zurück, ist das Bild **sofort** da, ohne das Handy zu entsperren oder etwas zu drücken.
-- Nach Ablauf von „Auf das Fahrzeug warten“ beendet Qonecta+ alles: Android Auto, seinen Server und die Verbindung. Um
-  die App wieder zu nutzen, tippe auf „Verbinden“ oder überlass es der automatischen Verbindung per Bluetooth. Beim
-  manuellen Start des Servers wird ebenfalls alles beendet außer dem Server, der für die nächste Fahrt an bleibt
-  ([Ohne Bedienungshilfe](#ohne-bedienungshilfe-android-auto-server-manuell-starten)).
+- Nach Ablauf von „Auf das Fahrzeug warten“ beendet Qonecta+ Android Auto und die Verbindung. **Der Android-Auto-Server
+  bleibt für die nächste Fahrt an**: So startet Android Auto auch mit gesperrtem Handy. Er geht von selbst aus, wenn
+  sich das Handy mit einem WLAN ohne Passwort verbindet (Cafés, Raststätten …), oder beim Beenden, wenn du schon in
+  einem bist; ändern kannst du das unter Einstellungen › „Verbindung“ › „Android-Auto-Server zwischen Fahrten an
+  lassen“. Beim manuellen Start des Servers bleibt er immer an ([Ohne
+  Bedienungshilfe](#ohne-bedienungshilfe-android-auto-server-manuell-starten)). Um Qonecta+ wieder zu nutzen, tippe auf
+  „Verbinden“ oder überlass es der automatischen Verbindung per Bluetooth.
 - Tippst du auf „Verbinden“ und taucht innerhalb von **5 Minuten** (oder der Dauer von „Auf das Fahrzeug warten“, falls
   länger) kein Fahrzeug auf, stoppt Qonecta+ von selbst. Solange sich das Fahrzeug weiter meldet, auch ohne dass eine
   Verbindung zustande kommt, beginnt die Wartezeit von vorn.
@@ -805,6 +808,13 @@ von selbst neu.
 - „Erweitert ▾“ › „Start des Android-Auto-Servers“: „Automatisch (Bedienungshilfe) · Empfohlen“ oder „Manuell (ohne
   Bedienungshilfe)“ (Abschnitt 3, [Ohne Bedienungshilfe](#ohne-bedienungshilfe-android-auto-server-manuell-starten)).
   Gilt sofort.
+- Einstellungen › „Verbindung“ › „Android-Auto-Server zwischen Fahrten an lassen“ (nur beim automatischen Start;
+  standardmäßig an): Der Server wird am Ende nicht ausgeschaltet, und bei der nächsten Fahrt startet Android Auto mit
+  gesperrtem Handy (zum Einschalten braucht es die Android-Auto-Einstellungen, die sich bei gesperrtem Handy nicht
+  bedienen lassen). In einem WLAN ohne Passwort geht er von selbst aus (ab Android 12; davor lässt sich das nicht
+  erkennen, und er bleibt an). Nach einem Neustart des Handys oder einem Android-Auto-Update ist er aus, und beim ersten
+  Mal erscheint wieder „Entsperre das Handy, um Android Auto zu starten“. Aus: Er wird nach jeder Fahrt ausgeschaltet,
+  wie bisher.
 - Der Rest von „Erweitert“ (fps, kbps, Breite, Höhe, H.264-Profil, Latenzoptimierungen, Drosselung) ist für Tests. Lass
   ihn leer oder so, wie er ist.
 

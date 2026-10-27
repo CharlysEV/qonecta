@@ -5,9 +5,10 @@ package com.headqlink.link;
  * Android (lo prueban los tests): modo de arranque × estado × móvil bloqueado × motivo.
  *
  * - **Automático** (por defecto, recomendado): la accesibilidad pulsa el menú de desarrollador de AA para arrancarlo
- *   ({@link Action#AUTOMATE}) y, al terminar, para apagarlo. Con el móvil bloqueado no se pueden manejar los ajustes de
- *   AA: aviso «Desbloquea el móvil…» y arranque al desbloquear ({@link Action#AUTOMATE_ON_UNLOCK}). Es el comportamiento
- *   de siempre; LinkLifecycle, LinkControl y AaServerStarter lo siguen igual que antes.
+ *   ({@link Action#AUTOMATE}). Con el móvil bloqueado no se pueden manejar los ajustes de AA: aviso «Desbloquea el
+ *   móvil…» y arranque al desbloquear ({@link Action#AUTOMATE_ON_UNLOCK}). Al terminar se queda encendido entre viajes
+ *   ({@link End#KEEP_SERVER_ON}, por defecto: el siguiente arranca AA con el móvil bloqueado) o se apaga
+ *   ({@link End#STOP_SERVER}: sin ese ajuste, o con el móvil en una Wi-Fi sin contraseña).
  * - **Manual** (sin accesibilidad): nunca se pulsa nada y **nunca se sondea el puerto**: una conexión que abre y cierra
  *   sin hablar (una sonda) bloquea el servidor hasta pararlo y volver a iniciarlo (prueba real del 2026-10-06, docs §15),
  *   así que antes de la sesión no hay nada que hacer ({@link Action#AT_SESSION}): lo dice el intento de verdad del
@@ -54,8 +55,17 @@ final class AaServerPolicy {
     enum End {
         /** Sin Android Auto: nada. */
         NOTHING,
-        /** Automático: el cierre de siempre (apagarlo ya o al desbloquear; LinkLifecycle.shutdownPlan). */
+        /**
+         * Automático sin «dejarlo encendido entre viajes» (o con el móvil en una Wi-Fi sin contraseña): apagarlo ya o al
+         * desbloquear (LinkLifecycle.shutdownPlan).
+         */
         STOP_SERVER,
+        /**
+         * Automático, «encendido entre viajes» (por defecto): Android Auto se cierra con orden (ByeBye) y el servidor sigue
+         * encendido, así el viaje siguiente arranca AA con el móvil bloqueado. Se apaga si el móvil entra en una Wi-Fi sin
+         * contraseña (OpenWifiGuard).
+         */
+        KEEP_SERVER_ON,
         /**
          * Manual: se cierra Android Auto con orden (ByeBye) y el servidor se queda encendido (sin accesibilidad no se
          * para): tras un cierre limpio vuelve a atender, así que el próximo viaje lo usa sin reiniciarlo. Sin aviso.
@@ -73,9 +83,16 @@ final class AaServerPolicy {
         boolean locked;
         /** TouchService activo (solo cuenta en el automático). */
         boolean canAutomate = true;
+        /** Automático: dejarlo encendido entre viajes (el ajuste, y el móvil no está en una Wi-Fi sin contraseña). */
+        boolean keepOn;
 
         State manual(boolean v) {
             manual = v;
+            return this;
+        }
+
+        State keepOn(boolean v) {
+            keepOn = v;
             return this;
         }
 
@@ -116,12 +133,14 @@ final class AaServerPolicy {
     }
 
     /**
-     * Qué hacer con Android Auto y su servidor al cerrar el enlace (Desconectar o fin del viaje, igual): el automático lo
-     * apaga; el manual no puede, y no hace falta reiniciarlo: AA se cierra con orden y el servidor vuelve a atender.
+     * Qué hacer con Android Auto y su servidor al cerrar el enlace (Desconectar o fin del viaje, igual): el manual no puede
+     * apagarlo, y no hace falta reiniciarlo (AA se cierra con orden y el servidor vuelve a atender); el automático lo deja
+     * encendido entre viajes (por defecto) o lo apaga.
      */
     static End onEnd(boolean aaMode, State s) {
         if (!aaMode) return End.NOTHING;
-        return s.manual ? End.LEAVE_SERVER_ON : End.STOP_SERVER;
+        if (s.manual) return End.LEAVE_SERVER_ON;
+        return s.keepOn ? End.KEEP_SERVER_ON : End.STOP_SERVER;
     }
 
     static String needName(Need n) {

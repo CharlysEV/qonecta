@@ -25,8 +25,10 @@ import java.util.List;
  * búsqueda o «Esperar al coche» desde ese momento ({@link #carHeard}). Antes solo contaba la sesión, y con el coche
  * anunciándose sin conectar se cerraba todo igualmente al vencer (90 s después de verlo, en un caso real).
  *
- * Seguridad: sin coche, el servidor de head unit de AA sigue encendido como mucho lo que dure «Esperar al coche»; al
- * vencer, el cierre de siempre lo apaga (ya o, con el móvil bloqueado, al desbloquearlo, con AA aparcado mientras).
+ * Seguridad: con «dejar el servidor encendido entre viajes» (por defecto), el servidor de head unit de AA sigue encendido
+ * tras el cierre, salvo con el móvil en una Wi-Fi sin contraseña, y se apaga si el móvil entra en una (OpenWifiGuard). Sin
+ * ese ajuste, sigue encendido como mucho lo que dure «Esperar al coche»; al vencer, el cierre de siempre lo apaga (ya o,
+ * con el móvil bloqueado, al desbloquearlo, con AA aparcado mientras).
  *
  * Arranque manual del servidor (sin accesibilidad, {@link Env#manualServer}): aquí no se comprueba nada
  * ({@link AaServerPolicy.Action#AT_SESSION}): una conexión de prueba, que abre y cierra sin hablar, bloquearía el servidor;
@@ -92,6 +94,11 @@ final class LinkLifecycle {
          * puede), listo para el próximo viaje sin reiniciarlo. Bloqueado o no: sin apagado que esperar, nada que aparcar.
          */
         LEAVE_SERVER_ON,
+        /**
+         * Automático, «encendido entre viajes» (por defecto): como LEAVE_SERVER_ON (AA con su ByeBye, el servidor
+         * encendido), y vigilando las Wi-Fi: en una sin contraseña se apaga (OpenWifiGuard).
+         */
+        KEEP_SERVER_ON,
     }
 
     /** Lo que se ve del móvil en el momento del evento. */
@@ -119,6 +126,13 @@ final class LinkLifecycle {
         boolean stopServerOnExit = true;
         /** «Arranque del servidor de Android Auto»: manual (sin accesibilidad). */
         boolean manualServer;
+        /** Automático: dejar el servidor encendido entre viajes (el ajuste, y el móvil no está en una Wi-Fi sin contraseña). */
+        boolean keepServerOn;
+
+        Env keepOn(boolean v) {
+            keepServerOn = v;
+            return this;
+        }
 
         Env aa(boolean v) {
             aaMode = v;
@@ -265,9 +279,10 @@ final class LinkLifecycle {
         if (!e.aaMode) return ShutdownPlan.LINK_ONLY;
         // Arranque manual: el cierre del automático sin el apagado del servidor, que sin accesibilidad no se puede. Como no
         // hay apagado que esperar, tampoco se aparca AA hasta desbloquear (igual que el automático sin accesibilidad).
-        if (AaServerPolicy.onEnd(true, policyState(e)) == AaServerPolicy.End.LEAVE_SERVER_ON) {
-            return ShutdownPlan.LEAVE_SERVER_ON;
-        }
+        AaServerPolicy.End end = AaServerPolicy.onEnd(true, policyState(e));
+        if (end == AaServerPolicy.End.LEAVE_SERVER_ON) return ShutdownPlan.LEAVE_SERVER_ON;
+        // Encendido entre viajes: sin aparcar ni esperar a desbloquear (no hay apagado que hacer).
+        if (end == AaServerPolicy.End.KEEP_SERVER_ON) return ShutdownPlan.KEEP_SERVER_ON;
         // Con el botón «Detener» de la notificación del servidor se apaga ya, bloqueado o no; sin él, con el móvil
         // bloqueado no se pueden manejar los ajustes de AA: se aparca la sesión hasta desbloquear.
         if (e.stopServerOnExit && e.locked && e.aaConnected && e.canAutomate && !e.canStopWithoutUi) {
@@ -579,7 +594,7 @@ final class LinkLifecycle {
         AaServerPolicy.Server server = e.manualServer ? AaServerPolicy.Server.UNKNOWN
                 : e.serverOn ? AaServerPolicy.Server.UP : AaServerPolicy.Server.UNKNOWN;
         return new AaServerPolicy.State().manual(e.manualServer).server(server).connected(e.aaConnected)
-                .locked(e.locked).automate(e.canAutomate);
+                .locked(e.locked).automate(e.canAutomate).keepOn(e.keepServerOn);
     }
 
     private String phaseName() {

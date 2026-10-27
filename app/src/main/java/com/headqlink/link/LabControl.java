@@ -97,6 +97,13 @@ final class LabControl {
                 L.i("laboratorio: mensaje en el coche");
                 CarUi.videoInfoText("Claude · " + arg);
                 return "mensaje enseñado";
+            case "wifi":
+                // Vigilancia de las Wi-Fi del servidor encendido entre viajes (OpenWifiGuard), sin ir al coche: «wifi on»
+                // la arma (Android avisa enseguida de la Wi-Fi de ahora) y «wifi» dice qué se sabe.
+                if ("on".equals(a)) OpenWifiGuard.arm(ctx);
+                if ("off".equals(a)) OpenWifiGuard.disarm(ctx);
+                return "servidor encendido (último dato): " + AaServerStarter.serverLikelyOn(ctx) + " · encendido entre viajes: "
+                        + new Config(ctx).aaServerKeepOn() + " · ahora en una Wi-Fi sin contraseña: " + OpenWifiGuard.onOpenWifi(ctx);
             case "fps":
                 fpsCap = "auto".equals(a) ? 0 : clamp(parse(a), 10, 60);
                 done = fpsCap == 0 ? "fps sin tope (lo del perfil y el calor)" : "fps como mucho " + fpsCap;

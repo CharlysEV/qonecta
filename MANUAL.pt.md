@@ -526,10 +526,12 @@ admite.
   durante «Esperar pelo carro» (**5 minutos** por predefinição; muda-se em «Definições de imagem» › «Avançado»). A
   notificação diz «A aguardar o carro · Android Auto em pausa». Se o carro voltar nesse tempo, a imagem regressa **de
   imediato**, sem desbloquear o telemóvel nem tocar em nada.
-- Passado «Esperar pelo carro», o Qonecta+ fecha tudo: o Android Auto, o servidor dele e a ligação. Para voltar a
-  usá-lo, toque em «Ligar», ou deixe isso à ligação automática por Bluetooth. Com o arranque manual do servidor fecha
-  tudo da mesma forma exceto o servidor, que continua ligado para a próxima viagem ([Sem
-  acessibilidade](#sem-acessibilidade-arranque-manual-do-servidor-do-android-auto)).
+- Passado «Esperar pelo carro», o Qonecta+ fecha o Android Auto e a ligação. **O servidor do Android Auto fica ligado
+  para a próxima viagem**: assim o Android Auto arranca mesmo com o telemóvel bloqueado. Desliga-se sozinho se o
+  telemóvel se ligar a uma Wi-Fi sem palavra-passe (cafés, áreas de serviço…), ou ao fechar se já estiver numa; muda-se
+  em Definições › «Ligação» › «Servidor do Android Auto ligado entre viagens». Com o arranque manual do servidor fica
+  sempre ligado ([Sem acessibilidade](#sem-acessibilidade-arranque-manual-do-servidor-do-android-auto)). Para voltar a
+  usar o Qonecta+, toque em «Ligar», ou deixe isso à ligação automática por Bluetooth.
 - Se tocar em «Ligar» e em **5 minutos** (ou «Esperar pelo carro», se for mais) não aparecer nenhum carro, o Qonecta+
   para sozinho. Enquanto o carro se continuar a anunciar, mesmo sem chegar a ligar, a espera recomeça.
 
@@ -762,6 +764,12 @@ Se estiver ligado, ao guardar outro perfil o carro e o Android Auto voltam a lig
 - «Avançado ▾» › «Arranque do servidor do Android Auto»: «Automático (acessibilidade) · Recomendado» ou «Manual (sem
   acessibilidade)» (secção 3, [Sem acessibilidade](#sem-acessibilidade-arranque-manual-do-servidor-do-android-auto)).
   Vale de imediato.
+- Definições › «Ligação» › «Servidor do Android Auto ligado entre viagens» (só com o arranque automático; vem ativado):
+  o servidor não se desliga no fim, e a viagem seguinte arranca o Android Auto com o telemóvel bloqueado (ligá-lo
+  precisa das definições do Android Auto, que com o telemóvel bloqueado não se podem usar). Desliga-se sozinho numa
+  Wi-Fi sem palavra-passe (Android 12 ou superior; antes não se consegue saber e fica ligado). Ao reiniciar o telemóvel
+  ou atualizar o Android Auto desliga-se, e da primeira vez volta a aparecer «Desbloqueie o telemóvel para iniciar o
+  Android Auto». Desativado: desliga-se no fim de cada viagem, como antes.
 - O resto de «Avançado» (fps, kbps, largura, altura, perfil H.264, otimizações de latência, limitador) é para testes.
   Deixe-o vazio ou como está.
 

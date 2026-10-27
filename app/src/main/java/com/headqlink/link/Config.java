@@ -1286,6 +1286,17 @@ final class Config {
         sp.edit().putString(AA_SERVER_START, manual ? AA_SERVER_MANUAL : AA_SERVER_AUTO).apply();
     }
 
+    /**
+     * Arranque automático: dejar el servidor de Android Auto encendido entre viajes (por defecto, sí). Así el viaje
+     * siguiente arranca Android Auto con el móvil bloqueado (encenderlo necesita los ajustes de AA, que bloqueado no se
+     * pueden manejar). Se apaga solo si el móvil se conecta a una Wi-Fi sin contraseña (OpenWifiGuard).
+     */
+    static final String AA_SERVER_KEEP_ON = "aa_server_keep_on";
+
+    boolean aaServerKeepOn() {
+        return sp.getBoolean(AA_SERVER_KEEP_ON, true);
+    }
+
     /** Lo guardado si es una de las dos opciones; si no, el automático. */
     static String aaServerStartFor(String stored) {
         return AA_SERVER_MANUAL.equals(stored) ? AA_SERVER_MANUAL : AA_SERVER_AUTO;
