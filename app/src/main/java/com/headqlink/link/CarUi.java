@@ -108,7 +108,6 @@ final class CarUi {
     private boolean autoHide;
     private boolean hidden;
     private View expand;
-    private View panelSpacer;
     private View radioMini;
     private ImageView radioLogo;
     private FrameLayout root;
@@ -710,12 +709,6 @@ final class CarUi {
 
     /** En la barra reducida, todos los botones guardan la misma separación y cabe la flecha inferior. */
     private void fitPanelButtons(boolean rail, int panelWidth) {
-        LinearLayout.LayoutParams spacer = (LinearLayout.LayoutParams) panelSpacer.getLayoutParams();
-        float weight = rail ? 0 : 1;
-        if (spacer.weight != weight) {
-            spacer.weight = weight;
-            panelSpacer.setLayoutParams(spacer);
-        }
         int buttonHeight = 72;
         int buttons = navButtons.size() + (splitButton.getVisibility() == View.VISIBLE ? 1 : 0)
                 + (swapButton != null && swapButton.getVisibility() == View.VISIBLE ? 1 : 0);
@@ -2081,10 +2074,8 @@ final class CarUi {
         slp.bottomMargin = 6;
         p.addView(scroll, slp);
         panelScroll = scroll;
-
-        View spacer = new View(c);
-        p.addView(spacer, new LinearLayout.LayoutParams(1, 0, 0f));
-        panelSpacer = spacer;
+        // Sin hueco aparte: la lista (peso 1) ya deja «Ajustes» abajo. El hueco de antes, con peso 1 en el panel
+        // desplegado, se quedaba la mitad del alto y cortaba la lista (28-10: solo 5 de 8 botones a la vista).
         p.addView(navButton(c, Str.get(R.string.hql_settings), "settings", R.drawable.hql_ic_settings));
         // Desplegar el panel minimizado.
         ImageView ex = new ImageView(c);

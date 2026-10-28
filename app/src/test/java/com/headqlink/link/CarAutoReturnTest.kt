@@ -59,6 +59,37 @@ class CarAutoReturnTest {
         } finally { ui.stop() }
     }
 
+    /** 28-10: con el panel desplegado, la lista llega hasta «Ajustes» y caben los 8 botones del usuario (antes, 5). */
+    @Test fun expandedPanelListReachesSettingsAndShowsAllButtons() {
+        val context = RuntimeEnvironment.getApplication()
+        Str.init(context)
+        com.headqlink.link.Config(context).setPanelButtons(listOf("car", "web", "tv", "games", "guide", "companion", "karaoke"))
+        val ui = CarUi(context, 1920, 882, 320, 200) { }
+        val build = CarUi::class.java.getDeclaredMethod("buildRoot", android.content.Context::class.java)
+            .apply { isAccessible = true }
+        val open = CarUi::class.java.getDeclaredMethod("open", String::class.java).apply { isAccessible = true }
+        val hide = CarUi::class.java.getDeclaredMethod("setHidden", Boolean::class.javaPrimitiveType).apply { isAccessible = true }
+        fun field(name: String): Any = CarUi::class.java.getDeclaredField(name).apply { isAccessible = true }.get(ui)!!
+        val root = build.invoke(ui, context) as View
+        try {
+            open.invoke(ui, "settings")
+            hide.invoke(ui, false)
+            root.measure(View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(882, View.MeasureSpec.EXACTLY))
+            root.layout(0, 0, 1920, 882)
+            @Suppress("UNCHECKED_CAST")
+            val buttons = field("navButtons") as List<LinearLayout>
+            val settings = buttons.last()
+            val scroll = field("panelScroll") as ViewGroup
+            val list = scroll.getChildAt(0)
+            assertEquals(6, settings.top - scroll.bottom)
+            // Auto, los 7 elegidos y Ajustes; los de la lista, todos a la vista sin desplazar.
+            assertEquals(9, buttons.size)
+            assertTrue("la lista (" + list.height + ") debe caber en lo visible (" + scroll.height + ")", list.height <= scroll.height)
+            assertTrue(buttons[buttons.size - 2].bottom <= scroll.height)
+        } finally { ui.stop() }
+    }
+
     @Test fun returningFromSectionsImmediatelyGivesAutoTheFullWidthBesideTheRail() {
         val context = RuntimeEnvironment.getApplication()
         Str.init(context)
