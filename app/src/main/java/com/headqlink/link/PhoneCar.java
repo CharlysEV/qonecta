@@ -58,6 +58,9 @@ final class PhoneCar {
     private TextView lockText;
     private TextView ageText;
     private TextView stateText;
+    /** Los cinco colores de Leapmotor España del C10 (los mismos que assets/car3d.html), o los tres del T03. */
+    private static final int[] C10_PAINTS = {0xFF123C29, 0xFFE6E8E6, 0xFF121316, 0xFF34393F, 0xFF8C8A82};
+    private LinearLayout colorRow;
     private LinearLayout healthBody;
     private LinearLayout climateBody;
     private String lastShape = "";
@@ -195,6 +198,7 @@ final class PhoneCar {
         LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(250));
         slp.topMargin = dp(6);
         in.addView(stage, slp);
+        in.addView(colors());
         stateText = text("", com.google.android.material.R.style.TextAppearance_Material3_BodyMedium, PhoneCharts.DIM);
         stateText.setGravity(Gravity.CENTER);
         in.addView(stateText);
@@ -203,6 +207,52 @@ final class PhoneCar {
         in.addView(ageText);
         card.addView(in);
         return card;
+    }
+
+    /**
+     * El color de la carrocería (28-10: el selector del 3D no cabe en el móvil, así que va aquí fuera): un círculo por
+     * color, el elegido con el aro del acento. Se guarda en Config.carColor, el mismo que usa la pestaña Estado del coche.
+     */
+    private View colors() {
+        colorRow = new LinearLayout(act);
+        colorRow.setGravity(Gravity.CENTER);
+        colorRow.setPadding(0, dp(4), 0, dp(10));
+        int[] paints = CarSpec.current().isT03() ? CarArt.T03_PAINTS : C10_PAINTS;
+        for (int c : paints) {
+            String hex = CarArt.hex(c);
+            View dot = new View(act);
+            android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable();
+            g.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+            g.setColor(c);
+            dot.setBackground(g);
+            dot.setTag(hex);
+            dot.setContentDescription(hex);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(28), dp(28));
+            lp.setMargins(dp(7), 0, dp(7), 0);
+            dot.setOnClickListener(v -> {
+                new Config(act).setCarColor(hex);
+                L.i("mi coche: color " + hex);
+                paintColors();
+                push3d();
+            });
+            colorRow.addView(dot, lp);
+        }
+        paintColors();
+        return colorRow;
+    }
+
+    /** El aro en el color elegido (sin elegir, el primero). */
+    private void paintColors() {
+        if (colorRow == null) return;
+        String chosen = new Config(act).carColor();
+        for (int i = 0; i < colorRow.getChildCount(); i++) {
+            View dot = colorRow.getChildAt(i);
+            boolean on = chosen.isEmpty() ? i == 0 : chosen.equalsIgnoreCase((String) dot.getTag());
+            android.graphics.drawable.GradientDrawable g = (android.graphics.drawable.GradientDrawable) dot.getBackground();
+            g.setStroke(dp(on ? 3 : 1), on ? PhoneCharts.ACCENT : 0x59EAF2F7);
+            dot.setScaleX(on ? 1.15f : 1f);
+            dot.setScaleY(on ? 1.15f : 1f);
+        }
     }
 
     /** El C10 en 3D (o el T03): la misma página que la pestaña Estado del coche. Sin WebView, el hueco queda vacío. */
