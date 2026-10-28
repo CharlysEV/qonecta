@@ -382,6 +382,13 @@ final class CarStatusTab implements CarScreen {
             emptyCard.post(() -> new Config(ctx).setCarColor(hex));
         }
 
+
+        /** La imagen del coche pintado (PNG en base64) para la pantalla de arranque (SplashView.carImage). */
+        @android.webkit.JavascriptInterface
+        public void snapshot(String dataUrl) {
+            SplashView.saveCarImage(ctx, dataUrl);
+        }
+
         @android.webkit.JavascriptInterface
         public void failed(String why) {
             emptyCard.post(() -> {

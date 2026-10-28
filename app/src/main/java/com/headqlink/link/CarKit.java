@@ -69,12 +69,21 @@ final class CarKit {
     static void card(Canvas cv, RectF r, Paint p) {
         p.setShader(null);
         p.setStyle(Paint.Style.FILL);
-        p.setColor(SURFACE);
+        // Fondo con un degradado muy leve (más claro arriba) y el borde superior iluminado: la tarjeta «flota» sobre el
+        // fondo en vez de ser un rectángulo plano (28-10). Vale para todas las pantallas de la sección Coche.
+        p.setShader(new android.graphics.LinearGradient(0, r.top, 0, r.bottom, SURFACE_TOP, SURFACE, android.graphics.Shader.TileMode.CLAMP));
         cv.drawRoundRect(r, RADIUS, RADIUS, p);
+        p.setShader(null);
         p.setStyle(Paint.Style.STROKE);
         p.setStrokeWidth(BORDER);
         p.setColor(OUTLINE);
         cv.drawRoundRect(r, RADIUS, RADIUS, p);
+        // Una línea de luz en el borde de arriba, del acento muy atenuado, que se apaga hacia los lados.
+        p.setStrokeWidth(Math.max(1f, BORDER * 0.75f));
+        p.setShader(new android.graphics.LinearGradient(r.left, 0, r.right, 0,
+                new int[]{0x0000E5C7, 0x4000E5C7, 0x0000E5C7}, new float[]{0f, 0.5f, 1f}, android.graphics.Shader.TileMode.CLAMP));
+        cv.drawLine(r.left + RADIUS, r.top, r.right - RADIUS, r.top, p);
+        p.setShader(null);
         p.setStyle(Paint.Style.FILL);
     }
 

@@ -600,7 +600,9 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         LinearLayout shell = new LinearLayout(this);
         shell.setOrientation(LinearLayout.VERTICAL);
         shell.setFitsSystemWindows(true);
-        shell.setBackgroundColor(0xFF0A0E14);
+        // Degradado muy leve (28-10, «efecto WOW»): el mismo oscuro arriba y un punto más claro abajo.
+        shell.setBackground(new android.graphics.drawable.GradientDrawable(
+                android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM, new int[]{0xFF0A0E14, 0xFF0E141C}));
         android.widget.FrameLayout pages = new android.widget.FrameLayout(this);
         pages.addView(connectionPage);
         insights = new PhoneInsights(this);
@@ -625,6 +627,8 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         bar.setItemIconTintList(fg);
         bar.setItemTextColor(fg);
         bar.setItemActiveIndicatorColor(android.content.res.ColorStateList.valueOf(0xFF0E3B37));
+        // Un latido corto al tocar una pestaña (solo al tocar).
+        bar.setItemRippleColor(android.content.res.ColorStateList.valueOf(0x3300E5C7));
         bar.setOnItemSelectedListener(item -> {
             selectTab(item.getItemId());
             return true;

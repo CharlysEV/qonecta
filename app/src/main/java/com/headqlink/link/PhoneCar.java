@@ -77,7 +77,7 @@ final class PhoneCar {
         this.act = act;
         root = new ScrollView(act);
         root.setFillViewport(true);
-        root.setBackgroundColor(0xFF0A0E14);
+        root.setBackgroundColor(0x00000000);
         col = new LinearLayout(act);
         col.setOrientation(LinearLayout.VERTICAL);
         col.setPadding(dp(16), dp(16), dp(16), dp(28));
@@ -307,12 +307,28 @@ final class PhoneCar {
                 ready3d = true;
                 sent3d = "";
                 push3d();
+                // Entrada (28-10): el coche aparece girando desde −10° y creciendo desde el 85 %.
+                if (car3d != null) {
+                    car3d.setAlpha(0f);
+                    car3d.setRotation(-10f);
+                    car3d.setScaleX(0.85f);
+                    car3d.setScaleY(0.85f);
+                    car3d.animate().alpha(1f).rotation(0f).scaleX(1f).scaleY(1f).setDuration(700)
+                            .setInterpolator(new android.view.animation.DecelerateInterpolator()).start();
+                }
             });
         }
 
         @android.webkit.JavascriptInterface
         public void color(String hex) {
             main.post(() -> new Config(act).setCarColor(hex));
+        }
+
+
+        /** La imagen del coche pintado (PNG en base64) para la pantalla de arranque (SplashView.carImage). */
+        @android.webkit.JavascriptInterface
+        public void snapshot(String dataUrl) {
+            SplashView.saveCarImage(act, dataUrl);
         }
 
         @android.webkit.JavascriptInterface

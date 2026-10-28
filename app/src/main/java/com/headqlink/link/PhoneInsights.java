@@ -53,7 +53,7 @@ final class PhoneInsights {
         this.act = act;
         root = new ScrollView(act);
         root.setFillViewport(true);
-        root.setBackgroundColor(0xFF0A0E14);
+        root.setBackgroundColor(0x00000000);
         col = new LinearLayout(act);
         col.setOrientation(LinearLayout.VERTICAL);
         int pad = dp(20);

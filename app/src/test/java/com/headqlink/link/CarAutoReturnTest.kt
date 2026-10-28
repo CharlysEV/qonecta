@@ -48,8 +48,10 @@ class CarAutoReturnTest {
             val footer = field("railInfo") as View
             val beforeSplit = buttons[buttons.size - 2]
             val settings = buttons.last()
+            // Desde el 28-10 los botones van en una lista que se desplaza (panelScroll); «Ajustes» queda debajo de ella.
+            val scroll = field("panelScroll") as View
             assertEquals(6, split.top - beforeSplit.bottom)
-            assertEquals(6, settings.top - split.bottom)
+            assertEquals(6, settings.top - scroll.bottom)
             assertEquals(6, expand.top - settings.bottom)
             assertEquals(1, (buttons.map { it.height } + split.height).distinct().size)
             assertTrue(expand.bottom <= panel.height - panel.paddingBottom)

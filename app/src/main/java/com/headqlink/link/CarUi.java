@@ -2055,20 +2055,35 @@ final class CarUi {
     private View buildPanel(Context c) {
         LinearLayout p = new LinearLayout(c);
         p.setOrientation(LinearLayout.VERTICAL);
-        p.setBackgroundColor(panelColor);
+        p.setBackground(panelBackground(panelColor));
         p.setPadding(20, 20, 20, 20);
         navButtons.clear();
-        p.addView(navButton(c, Str.get(R.string.hql_mode_aa), "aa", R.drawable.hql_ic_aa));
+        // Los botones van en una lista que se desplaza arriba y abajo si no caben (muchos elegidos en Ajustes); «Ajustes»
+        // y el pie quedan fijos debajo. Sin barra: lo que no cabe se adivina por el botón cortado.
+        LinearLayout list = new LinearLayout(c);
+        list.setOrientation(LinearLayout.VERTICAL);
+        list.addView(navButton(c, Str.get(R.string.hql_mode_aa), "aa", R.drawable.hql_ic_aa));
         // Los botones que se eligieron en Ajustes, en su orden («Auto» arriba y «Ajustes» abajo van fijos).
         for (String id : new Config(ctx).panelButtons()) {
-            p.addView(navButton(c, navLabel(id), id, navIcon(id)));
-            if ("radio".equals(id)) p.addView(buildRadioMini(c));
+            list.addView(navButton(c, navLabel(id), id, navIcon(id)));
+            if ("radio".equals(id)) list.addView(buildRadioMini(c));
         }
-        p.addView(buildSplitButton(c));
-        p.addView(buildSwapButton(c));
+        list.addView(buildSplitButton(c));
+        list.addView(buildSwapButton(c));
+        android.widget.ScrollView scroll = new android.widget.ScrollView(c);
+        scroll.setVerticalScrollBarEnabled(false);
+        scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        scroll.addView(list, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        // Peso 1: ocupa lo que dejan «Ajustes» y el pie; si la lista es más corta, el hueco queda abajo (como el spacer).
+        // El hueco de 6 entre el último botón de la lista y «Ajustes» lo daba el margen inferior de ese botón; dentro
+        // de la lista ya no separa, así que va en la propia lista.
+        LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f);
+        slp.bottomMargin = 6;
+        p.addView(scroll, slp);
+        panelScroll = scroll;
 
         View spacer = new View(c);
-        p.addView(spacer, new LinearLayout.LayoutParams(1, 0, 1f));
+        p.addView(spacer, new LinearLayout.LayoutParams(1, 0, 0f));
         panelSpacer = spacer;
         p.addView(navButton(c, Str.get(R.string.hql_settings), "settings", R.drawable.hql_ic_settings));
         // Desplegar el panel minimizado.
@@ -2362,8 +2377,18 @@ final class CarUi {
         l.setOrientation(LinearLayout.VERTICAL);
         l.setGravity(Gravity.CENTER_HORIZONTAL);
         l.setPadding(0, 4, 0, 4);
+        // El tiempo dibujado y animado (WeatherGlyph) a la izquierda de la temperatura.
+        LinearLayout tempRow = new LinearLayout(c);
+        tempRow.setOrientation(LinearLayout.HORIZONTAL);
+        tempRow.setGravity(Gravity.CENTER);
+        railSky = new WeatherGlyph(c);
+        railSky.setVisibility(View.GONE);
+        tempRow.addView(railSky, new LinearLayout.LayoutParams(30, 30));
         railTemp = CarStyle.text(c, "", 18, CarTheme.navTextDim());
         railTemp.setGravity(Gravity.CENTER);
+        railTemp.setPadding(4, 0, 0, 0);
+        tempRow.addView(railTemp);
+        railTempRow = tempRow;
         railSoc = CarStyle.text(c, "", 18, CarTheme.navTextDim());
         railSoc.setGravity(Gravity.CENTER);
         // Un móvil pequeño delante: que se vea que es la batería del móvil, no la del coche.
@@ -2376,12 +2401,17 @@ final class CarUi {
             railSoc.setCompoundDrawablePadding(4);
         }
         railSoc.setContentDescription(Str.get(R.string.hql_phone_battery, 0));
-        l.addView(railTemp);
+        l.addView(tempRow);
         l.addView(railSoc);
         l.setVisibility(View.GONE);
         railInfo = l;
         return l;
     }
+
+    /** La lista de botones del panel (se desplaza cuando no caben). */
+    private android.widget.ScrollView panelScroll;
+    private WeatherGlyph railSky;
+    private LinearLayout railTempRow;
 
     private boolean renderRailInfo() {
         main.removeCallbacks(railTick);
@@ -2389,9 +2419,12 @@ final class CarUi {
         int oldTempVisibility = railTemp.getVisibility();
         int oldSocVisibility = railSoc.getVisibility();
         double t = CarSensors.outsideTempC();
-        String sky = CarSensors.weatherEmoji();
-        railTemp.setText(Double.isNaN(t) ? "" : (sky.isEmpty() ? "" : sky + " ") + Math.round(t) + "\u00b0");
+        railTemp.setText(Double.isNaN(t) ? "" : Math.round(t) + "\u00b0");
         railTemp.setVisibility(Double.isNaN(t) ? View.GONE : View.VISIBLE);
+        // El dibujo del tiempo: con el móvil caliente o el perfil «Coche» sin animar (solo quieto).
+        int[] wx = CarSensors.weather();
+        boolean calm = ThermalGuard.level() >= 2 || VideoProfile.CAR.equals(new Config(ctx).videoProfile().id);
+        if (railSky != null) railSky.set(Double.isNaN(t) ? -1 : wx[0], wx[1] == 1, CarTheme.navTextDim(), !calm);
         railSoc.setText(phoneLevel < 0 ? "" : phoneLevel + " %" + (phoneCharging ? " \u26A1" : ""));
         railSoc.setVisibility(phoneLevel < 0 ? View.GONE : View.VISIBLE);
         main.postDelayed(railTick, 30_000);
@@ -2437,6 +2470,33 @@ final class CarUi {
         return b;
     }
 
+    /**
+     * Fondo del panel (28-10): el color elegido arriba y un 18 % más oscuro abajo. Da profundidad sin cambiar el color
+     * que puso el usuario (vale para los 16 colores y el oscuro de serie).
+     */
+    static android.graphics.drawable.GradientDrawable panelBackground(int color) {
+        return new android.graphics.drawable.GradientDrawable(android.graphics.drawable.GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{color, CarTheme.dim(color, 18)});
+    }
+
+    /** Píldora del botón activo con un halo suave del acento por fuera: se ve que «brilla», no solo que está rellena. */
+    static android.graphics.drawable.Drawable activeNav(int radius) {
+        android.graphics.drawable.GradientDrawable halo = new android.graphics.drawable.GradientDrawable(
+                android.graphics.drawable.GradientDrawable.Orientation.LEFT_RIGHT, new int[]{0x4000E5C7, 0x404CFF9F});
+        halo.setCornerRadius(radius + 4);
+        android.graphics.drawable.LayerDrawable d = new android.graphics.drawable.LayerDrawable(
+                new android.graphics.drawable.Drawable[]{halo, CarStyle.accent(radius)});
+        d.setLayerInset(0, -4, -4, -4, -4);
+        return d;
+    }
+
+    /** Al tocar un botón: un latido corto (1 → 1,06 → 1 en 150 ms). Solo al tocar: no cuesta nada el resto del tiempo. */
+    private static void pulse(View v) {
+        v.animate().cancel();
+        v.animate().scaleX(1.06f).scaleY(1.06f).setDuration(75).withEndAction(() ->
+                v.animate().scaleX(1f).scaleY(1f).setDuration(75).start()).start();
+    }
+
     private LinearLayout navButton(Context c, String label, String target, int icon) {
         LinearLayout b = new LinearLayout(c);
         b.setOrientation(LinearLayout.HORIZONTAL);
@@ -2455,6 +2515,7 @@ final class CarUi {
         lp.bottomMargin = 6;
         b.setLayoutParams(lp);
         b.setOnClickListener(v -> {
+            pulse(v);
             // Con el panel minimizado, el icono de AA (ya abierto) lo despliega.
             if (hidden && "aa".equals(target) && "aa".equals(screenName)) {
                 setHidden(false);
@@ -2528,7 +2589,7 @@ final class CarUi {
         for (LinearLayout b : navButtons) {
             boolean on = screenName.equals(b.getTag());
             int fg = on ? CarStyle.ON_ACCENT : alertPending && "car".equals(b.getTag()) ? CarKit.AMBER : CarTheme.navText();
-            b.setBackground(on ? CarStyle.accent(36) : null);
+            b.setBackground(on ? activeNav(36) : null);
             if (radioMini != null) radioMini.setBackground(CarStyle.round(CarStyle.lighter(panelColor, 14), 36));
             ((ImageView) b.getChildAt(0)).setImageTintList(ColorStateList.valueOf(fg));
             ((TextView) b.getChildAt(1)).setTextColor(fg);
@@ -2608,6 +2669,10 @@ final class CarUi {
             } else {
                 content.addView(v, CarStyle.match());
             }
+            // Entra con un desvanecido y un deslizamiento de 12 px (28-10): un cambio de golpe parecía un parpadeo.
+            v.setAlpha(0f);
+            v.setTranslationY(12f);
+            v.animate().alpha(1f).translationY(0f).setDuration(120).start();
         } else if (!aaReady) {
             // Zona de AA antes de su primer frame: animación de carga (GlFrameRelay aún no dibuja AA).
             splash = new SplashView(content.getContext(), panelColor);

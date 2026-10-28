@@ -52,7 +52,7 @@ final class PhoneHome {
         ha = new HomeAssistant(act);
         root = new ScrollView(act);
         root.setFillViewport(true);
-        root.setBackgroundColor(0xFF0A0E14);
+        root.setBackgroundColor(0x00000000);
         col = new LinearLayout(act);
         col.setOrientation(LinearLayout.VERTICAL);
         col.setPadding(dp(16), dp(16), dp(16), dp(28));

@@ -287,6 +287,13 @@ final class CarSensors implements SensorEventListener, LocationListener {
         return instance == null ? Double.NaN : instance.snapshot().tempC;
     }
 
+    /** El tiempo de ahora {código WMO (-1 sin dato), 1 de día / 0 de noche}, para el dibujo del pie (WeatherGlyph). */
+    static synchronized int[] weather() {
+        if (instance == null) return new int[]{-1, 1};
+        Snapshot c = instance.snapshot();
+        return new int[]{c.weatherCode, c.day ? 1 : 0};
+    }
+
     /** El tiempo de ahora como emoticono (RouteTab.weatherEmoji), o vacío si los sensores aún no lo tienen. */
     static synchronized String weatherEmoji() {
         if (instance == null) return "";
