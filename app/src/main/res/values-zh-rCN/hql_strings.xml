@@ -909,6 +909,11 @@
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>
     <string name="hql_ins_max">最高</string>
     <string name="hql_ha_title">Home Assistant</string>
+    <string name="hql_car_tab">我的车</string>
+    <string name="hql_car_parked">已停车</string>
+    <string name="hql_car_health">车况</string>
+    <string name="hql_car_last_order">最近指令</string>
+    <string name="hql_car_intro">像零跑 App 一样查看你的车，但就在这里：续航、电量、锁车状态、3D 车辆以及指令（解锁、上锁、后备箱、空调、找车）。需要零跑账号；指令还需要车辆 PIN。</string>
     <string name="hql_ha_menu">Home Assistant</string>
     <string name="hql_ha_label">在车上</string>
     <string name="hql_ha_intro">在车机屏幕上控制你的 Home Assistant（扩展模式 › Home Assistant）：灯、插座、车库门、窗帘、场景… 请使用你家的外网地址（Nabu Casa 或你自己的域名）：在车上手机使用移动数据。令牌在 Home Assistant › 你的个人资料 › 安全 › 长期访问令牌中创建。它会加密保存在这部手机上，并且绝不会写入日志。</string>

@@ -892,6 +892,13 @@ estendido»:
   dos outros, ou com o aviso do próprio carro); as portas e a mala abertas (abertas no modelo), o fecho, o
   conta-quilómetros e de quando é o dado. A nuvem não indica as janelas. O 3D só se desenha enquanto o move (não aquece o
   telemóvel); sem WebGL aparece o carro visto de cima.
+- **«O meu carro»** (quarto separador da app do telemóvel, 0.3.10): o seu carro como na app da Leapmotor, mas aqui. Em
+  cima a autonomia, a bateria e se está trancado; no meio **o C10 em 3D** (roda com o dedo; portas e mala abertas
+  abrem no modelo); em baixo, a fila de ordens **Abrir · Fechar · Mala · Clima · Localizar** (as mesmas do widget
+  «Carro», com confirmação: precisam do PIN do carro guardado em «Dados do carro» e das ordens ativadas; sem isso a
+  fila aparece apagada) e dois cartões que se abrem: **«Clima»** (temperatura do habitáculo, o clima ligado daqui e o
+  botão do clima) e **«Estado»** (as quatro pressões, a âmbar a roda baixa ou com aviso; portas e mala; temperatura da
+  bateria; conta-quilómetros). Só lê a nuvem enquanto o separador está à vista.
 - **C10 REEV (autonomia alargada):** o Qonecta+ reconhece-o sozinho (o carro envia o depósito) e passa a bateria a
   28,4 kWh. Em «Estado», o **depósito** (%, litros exatos, autonomia com gasolina e autonomia total); em «Viagens», os
   **litros** de cada viagem e os L/100 km (com o gerador parado, «0 L: tudo elétrico»), e o custo com a gasolina; em
@@ -933,7 +940,7 @@ do carro» desativa-o sem apagar nada.
 
 **Privacidade e segurança.**
 
-- Só de leitura, com uma exceção opcional: as **ordens do widget «Carro»** (trancar, destrancar, bagageira,
+- Só de leitura, com uma exceção opcional: as **ordens do widget «Carro» e do separador «O meu carro»** (trancar, destrancar, bagageira,
   climatização e localizar), e só se guardar o PIN do carro em «Dados do carro» → «5 · PIN do carro» e aí ativar as
   ordens a partir do widget (o PIN é o da app da Leapmotor; fica cifrado no telemóvel e nunca vai para o registo). Sem
   PIN, o Qonecta+ **nunca envia ordens ao carro**, e não existe nenhuma outra (nem carga nem limites). Cada ordem é

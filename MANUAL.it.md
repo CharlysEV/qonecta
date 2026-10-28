@@ -894,6 +894,13 @@ e lo usa in «Auto esteso»:
   2,1 bar, 0,3 bar o più sotto gli altri, o con l'avviso dell'auto stessa); porte e bagagliaio aperti (aperti anche nel
   modello), la chiusura, il contachilometri e quanto è vecchio il dato. Il cloud non indica i finestrini. La vista 3D si
   ridisegna solo mentre la muovi (non scalda il telefono); senza WebGL compare l'auto vista dall'alto.
+- **«La mia auto»** (quarta scheda dell'app del telefono, 0.3.10): la tua auto come nell'app Leapmotor, ma qui. In
+  alto autonomia, batteria e se è chiusa a chiave; al centro **la C10 in 3D** (si gira con il dito; porte e bagagliaio
+  aperti si aprono nel modello); sotto, la fila di comandi **Apri · Chiudi · Bagagliaio · Clima · Localizza** (gli
+  stessi del widget «Auto», con conferma: servono il PIN dell'auto salvato in «Dati dell'auto» e i comandi attivati;
+  senza, la fila è spenta) e due schede che si aprono: **«Clima»** (temperatura dell'abitacolo, il clima acceso da qui
+  e il pulsante del clima) e **«Stato»** (le quattro pressioni, in ambra la gomma bassa o con avviso; porte e
+  bagagliaio; temperatura della batteria; contachilometri). Legge il cloud solo mentre la scheda è visibile.
 - **C10 REEV (range extender):** Qonecta+ la riconosce da solo (l'auto comunica il suo serbatoio) e porta la batteria a
   28,4 kWh. In «Stato», il **serbatoio** (%, litri esatti, autonomia a benzina e autonomia totale); in «Viaggi», i
   **litri** di ogni viaggio e i L/100 km (con il generatore spento, «0 L di benzina: tutto elettrico»), e il costo
@@ -939,7 +946,7 @@ cancellare nulla.
 
 **Privacy e sicurezza.**
 
-- Sola lettura, con un'eccezione facoltativa: i **comandi del widget «Auto»** (chiudere, aprire, bagagliaio, clima e
+- Sola lettura, con un'eccezione facoltativa: i **comandi del widget «Auto» e della scheda «La mia auto»** (chiudere, aprire, bagagliaio, clima e
   localizzare), e solo se salvi il PIN dell'auto in «Dati dell'auto» → «5 · PIN dell'auto» e lì attivi i comandi dal
   widget (il PIN è quello dell'app Leapmotor; resta cifrato sul telefono e non finisce mai nel registro). Senza PIN,
   Qonecta+ **non invia mai comandi all'auto**, e non esiste nessun altro comando (niente ricarica né limiti). Ogni

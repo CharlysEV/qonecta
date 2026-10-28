@@ -910,6 +910,11 @@
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>
     <string name="hql_ins_max">max.</string>
     <string name="hql_ha_title">Home Assistant</string>
+    <string name="hql_car_tab">Mijn auto</string>
+    <string name="hql_car_parked">Geparkeerd</string>
+    <string name="hql_car_health">Conditie</string>
+    <string name="hql_car_last_order">Laatste opdracht</string>
+    <string name="hql_car_intro">Je auto zoals in de Leapmotor-app, maar hier: actieradius, accu, vergrendeling, de auto in 3D en de opdrachten (openen, sluiten, kofferbak, klimaat, zoeken). Vereist het Leapmotor-account; voor de opdrachten ook de pincode van de auto.</string>
     <string name="hql_ha_menu">Home Assistant</string>
     <string name="hql_ha_label">In de auto</string>
     <string name="hql_ha_intro">Bedien je Home Assistant vanaf het scherm van de auto (uitgebreide modus › Home Assistant): lampen, stekkers, garage, rolluiken, scènes… Gebruik het externe adres van je huis (Nabu Casa of je eigen domein): in de auto gebruikt de telefoon mobiele data. Het token maak je in Home Assistant › je profiel › Beveiliging › Langlevende toegangstokens. Het wordt versleuteld op deze telefoon bewaard en komt nooit in het logboek.</string>

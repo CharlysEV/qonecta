@@ -866,6 +866,13 @@ extended":
   warning); open doors and boot (open on the model), the lock, the odometer and how old the data is. The cloud does not
   report the windows. The 3D view only redraws while you move it (it doesn't heat the phone); without WebGL you get the
   car seen from above.
+- **"My car"** (fourth tab of the phone app, 0.3.10): your car as in the Leapmotor app, but here. At the top the
+  range, the battery and whether it is locked; in the middle **the C10 in 3D** (turn it with your finger; open doors
+  and boot open in the drawing); below, the row of orders **Unlock · Lock · Boot · Climate · Locate** (the same as the
+  "Car" widget, with their confirmation: they need the car's PIN saved in "Car data" and the orders enabled; without
+  them the row is dimmed) and two cards that unfold: **"Climate"** (cabin temperature, the climate turned on from here
+  and the climate button) and **"Health"** (the four pressures, amber for a low tyre or a warning; doors and boot;
+  battery temperature; odometer). It only reads the cloud while the tab is visible.
 - **C10 REEV (range extender):** Qonecta+ recognises it by itself (the car reports its tank) and switches the battery
   to 28.4 kWh. In "Status", the **tank** (%, exact litres, range on petrol and total range); in "Trips", the **litres**
   of each trip and L/100 km (with the generator off, "0 L: all electric"), and the cost including petrol; in "Route",
@@ -908,7 +915,7 @@ data" turns it off without deleting anything.
 
 **Privacy and security.**
 
-- Read-only, with one optional exception: the **commands of the "Car" widget** (lock, unlock, boot, climate and find),
+- Read-only, with one optional exception: the **commands of the "Car" widget and of the "My car" tab** (lock, unlock, boot, climate and find),
   and only if you save your car PIN in "Car data" → "5 · Car PIN" and turn on the widget commands there (the PIN is
   the one in the Leapmotor app; stored encrypted on the phone and never logged). Without a PIN, Qonecta+ **never sends
   commands to the car**, and no other command exists (no charging or limits). Every command is confirmed before it is

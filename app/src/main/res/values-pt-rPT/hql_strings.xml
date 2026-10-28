@@ -911,6 +911,11 @@
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>
     <string name="hql_ins_max">máx.</string>
     <string name="hql_ha_title">Home Assistant</string>
+    <string name="hql_car_tab">O meu carro</string>
+    <string name="hql_car_parked">Estacionado</string>
+    <string name="hql_car_health">Estado</string>
+    <string name="hql_car_last_order">Última ordem</string>
+    <string name="hql_car_intro">O seu carro como na app da Leapmotor, mas aqui: autonomia, bateria, fecho, o carro em 3D e as ordens (abrir, fechar, mala, clima, localizar). Precisa da conta Leapmotor; as ordens, além disso, do PIN do carro.</string>
     <string name="hql_ha_menu">Home Assistant</string>
     <string name="hql_ha_label">No carro</string>
     <string name="hql_ha_intro">Controle o seu Home Assistant a partir do ecrã do carro (modo alargado › Home Assistant): luzes, tomadas, garagem, estores, cenas… Use o endereço exterior da sua casa (Nabu Casa ou o seu domínio): no carro o telemóvel usa dados móveis. O token cria-se em Home Assistant › o seu perfil › Segurança › Tokens de acesso de longa duração. Fica cifrado neste telemóvel e nunca vai para o registo.</string>

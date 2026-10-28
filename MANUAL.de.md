@@ -962,6 +962,14 @@ Kilometerstand) und nutzt ihn in „Auto erweitert“:
   selbst); offene Türen und Kofferraum (in der Zeichnung geöffnet), die Verriegelung, den Kilometerstand und wie alt
   die Daten sind. Die Fenster liefert die Cloud nicht. Das 3D-Modell wird nur gezeichnet, während du es bewegst (das
   Handy wird dabei nicht warm); ohne WebGL erscheint das Fahrzeug von oben.
+- **„Mein Auto“** (vierter Reiter der Handy-App, 0.3.10): dein Auto wie in der Leapmotor-App, nur hier. Oben
+  Reichweite, Akku und ob es verriegelt ist; in der Mitte **der C10 in 3D** (mit dem Finger drehen; offene Türen und
+  Kofferraum sind im Modell offen); darunter die Befehlsreihe **Entriegeln · Verriegeln · Kofferraum · Klima ·
+  Finden** (dieselben wie im Widget „Auto“, mit Bestätigung: Sie brauchen die in „Fahrzeugdaten“ gespeicherte PIN des
+  Autos und eingeschaltete Befehle; sonst ist die Reihe ausgegraut) und zwei aufklappbare Karten: **„Klima“**
+  (Innenraumtemperatur, das von hier eingeschaltete Klima und die Klima-Taste) und **„Zustand“** (die vier
+  Reifendrücke, gelb bei zu wenig Druck oder Warnung; Türen und Kofferraum; Akkutemperatur; Kilometerstand). Die Cloud
+  wird nur gelesen, solange der Reiter sichtbar ist.
 - **C10 REEV (mit Range Extender):** Qonecta+ erkennt ihn von selbst (das Fahrzeug meldet seinen Tank) und stellt den
   Akku auf 28,4 kWh um. In „Status“ der **Tank** (%, genaue Liter, Reichweite mit Benzin und Gesamtreichweite); in
   „Fahrten“ die **Liter** jeder Fahrt und die L/100 km (bei stehendem Generator „0 L Benzin: rein elektrisch“) sowie die
@@ -1007,7 +1015,7 @@ auf. „Echte Fahrzeugdaten nutzen“ schaltet es ab, ohne etwas zu löschen.
 
 **Datenschutz und Sicherheit.**
 
-- Nur lesend, mit einer optionalen Ausnahme: die **Befehle des Widgets „Auto“** (verriegeln, entriegeln, Kofferraum,
+- Nur lesend, mit einer optionalen Ausnahme: die **Befehle des Widgets „Auto“ und des Reiters „Mein Auto“** (verriegeln, entriegeln, Kofferraum,
   Klima und finden), und nur, wenn du die PIN des Fahrzeugs in „Fahrzeugdaten“ → „5 · PIN des Autos“ speicherst und dort
   die Befehle über das Widget einschaltest (es ist die PIN der Leapmotor-App; sie wird verschlüsselt auf dem Handy
   gespeichert und landet nie im Log). Ohne PIN **sendet Qonecta+ nie Befehle an das Fahrzeug**, und andere Befehle gibt

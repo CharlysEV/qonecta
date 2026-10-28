@@ -884,6 +884,14 @@ en «Auto extendido»:
   0,3 bar o más por debajo de las demás, o con el aviso del propio coche); las puertas y el maletero abiertos (abiertos
   en el dibujo), el cierre, el cuentakilómetros y de cuándo es el dato. Las ventanillas no las da la nube. El 3D solo se
   dibuja mientras lo mueves (no calienta el móvil); sin WebGL sale el coche visto desde arriba.
+- **«Mi coche»** (cuarta pestaña de la app del móvil, 0.3.10): tu coche como en la app de Leapmotor, pero aquí. Arriba
+  la autonomía, la batería y si está cerrado con llave; en medio **el C10 en 3D** (se gira con el dedo; las puertas y
+  el maletero abiertos se abren en el dibujo); debajo, la fila de órdenes **Abrir · Cerrar · Maletero · Clima ·
+  Localizar** (las mismas del widget «Coche», con su confirmación: necesitan el PIN del coche guardado en «Datos del
+  coche» y las órdenes activadas; sin ellas la fila sale apagada) y dos tarjetas que se despliegan: **«Clima»**
+  (temperatura del habitáculo, el clima encendido desde aquí y el botón del clima) y **«Salud»** (las cuatro
+  presiones, en ámbar la rueda baja o con aviso; puertas y maletero; temperatura de la batería; cuentakilómetros).
+  Solo lee la nube mientras la pestaña está a la vista.
 - **C10 REEV (autonomía extendida):** Qonecta+ lo reconoce solo (el coche manda su depósito) y pasa la batería a
   28,4 kWh. En «Estado», el **depósito** (%, litros exactos, autonomía con gasolina y autonomía total); en «Viajes», los
   **litros** de cada viaje y los L/100 km (con el generador parado, «0 L: todo eléctrico»), y el coste con la gasolina;
@@ -925,7 +933,7 @@ del coche» lo apaga sin borrar nada.
 
 **Privacidad y seguridad.**
 
-- Solo lectura, con una excepción opcional: las **órdenes del widget «Coche»** (cerrar, abrir, maletero, clima y
+- Solo lectura, con una excepción opcional: las **órdenes del widget «Coche» y de la pestaña «Mi coche»** (cerrar, abrir, maletero, clima y
   localizar), y solo si guardas el PIN del coche en «Datos del coche» → «5 · PIN del coche» y activas allí las órdenes
   desde el widget (el PIN es el de la app de Leapmotor; se guarda cifrado en el móvil y nunca va al log). Sin PIN,
   Qonecta+ **nunca manda órdenes al coche**, y no existe ninguna otra (ni carga ni límites). Cada orden se confirma

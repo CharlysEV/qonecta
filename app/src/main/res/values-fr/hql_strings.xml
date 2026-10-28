@@ -911,6 +911,11 @@
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>
     <string name="hql_ins_max">max</string>
     <string name="hql_ha_title">Home Assistant</string>
+    <string name="hql_car_tab">Ma voiture</string>
+    <string name="hql_car_parked">Garée</string>
+    <string name="hql_car_health">État</string>
+    <string name="hql_car_last_order">Dernière commande</string>
+    <string name="hql_car_intro">Votre voiture comme dans l\'appli Leapmotor, mais ici : autonomie, batterie, verrouillage, la voiture en 3D et les commandes (ouvrir, fermer, coffre, climatisation, localiser). Nécessite le compte Leapmotor ; les commandes demandent aussi le PIN de la voiture.</string>
     <string name="hql_ha_menu">Home Assistant</string>
     <string name="hql_ha_label">Dans la voiture</string>
     <string name="hql_ha_intro">Pilotez votre Home Assistant depuis l’écran de la voiture (mode étendu › Home Assistant) : lumières, prises, garage, volets, scènes… Utilisez l’adresse extérieure de votre maison (Nabu Casa ou votre domaine) : dans la voiture le téléphone passe par les données mobiles. Le jeton se crée dans Home Assistant › votre profil › Sécurité › Jetons d’accès longue durée. Il est chiffré sur ce téléphone et n’apparaît jamais dans le journal.</string>
