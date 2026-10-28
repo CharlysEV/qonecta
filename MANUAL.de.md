@@ -507,7 +507,7 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
   - „Instrumente“: Tacho mit **großem Tempolimit-Schild** unter der Zahl (mit gelbem Ring, wenn du schneller fährst,
     und rotem ab gut 10 % darüber) und Höchstgeschwindigkeit, G-Kräfte mit der Spur der letzten Sekunden und den
     Spitzenwerten, Neigung und eine Note für die Sanftheit (0–100) nach dem Rucken beim Beschleunigen, Bremsen und
-    Lenken.
+    Lenken. Unter den km/h die **Stoppuhr 0–50 und 0–100 km/h**: Sie startet von selbst, wenn du aus dem Stand losfährst, und ist mit dem GPS des Handys auf ein bis zwei Zehntel genau.
   - **Das Tempolimit** („Fahren“ und „Instrumente“) kommt aus OpenStreetMap: das der Straße in deiner Fahrtrichtung oder
     das ihrer Zone („DE:urban“, „AT:rural“ …). Fehlt es dort, nimmt die App die allgemeine Regel des Landes für den
     Straßentyp an (Spanien, Portugal, Deutschland, Österreich, Schweiz, Italien, Frankreich, Niederlande, Belgien und

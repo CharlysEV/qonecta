@@ -479,7 +479,7 @@ admite.
     «Récord de ruta».
   - «Instrumentos»: velocímetro con **la señal del límite en grande** debajo de la cifra (con un aro ámbar si vas por
     encima y rojo si pasas de un 10 %) y la máxima, fuerzas G con la estela de los últimos segundos y los picos,
-    inclinación y una nota de suavidad (0-100) según los tirones al acelerar, frenar y girar.
+    inclinación y una nota de suavidad (0-100) según los tirones al acelerar, frenar y girar. Debajo de los km/h, el **cronómetro 0-50 y 0-100 km/h**: se pone solo al salir desde parado y, con el GPS del móvil, acierta a una o dos décimas.
   - **El límite de velocidad** (Conducción e Instrumentos) sale de OpenStreetMap: el de la vía en tu sentido o el de su
     zona («DE:urban», «AT:rural»…). Donde no lo tiene, se supone el general del país por el tipo de vía (España,
     Portugal, Alemania, Austria, Suiza, Italia, Francia, Países Bajos, Bélgica y Luxemburgo) y pone «estimado». En la

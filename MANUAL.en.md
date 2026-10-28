@@ -464,7 +464,7 @@ version). That tells us whether the C10 supports it.
     the fastest trip of each repeated road gets "Route record".
   - "Gauges": speedometer with **the speed limit sign in large** under the figure (with an amber ring if you are above it
     and red beyond 10 %) and the maximum, G forces with the trail of the last seconds and the peaks, inclination and a
-    smoothness score (0-100) from the jerks when accelerating, braking and turning.
+    smoothness score (0-100) from the jerks when accelerating, braking and turning. Under the km/h, the **0-50 and 0-100 km/h timer**: it starts by itself when you pull away from a stop and, with the phone's GPS, is accurate to one or two tenths of a second.
   - **The speed limit** (Driving and Gauges) comes from OpenStreetMap: the one of the road in your direction or that of
     its zone ("DE:urban", "AT:rural"…). Where it is missing, the country's general limit for the road type is assumed
     (Spain, Portugal, Germany, Austria, Switzerland, Italy, France, the Netherlands, Belgium and Luxembourg) and marked

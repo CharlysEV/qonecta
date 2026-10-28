@@ -480,7 +480,7 @@ supporta.
     percorso».
   - «Strumenti»: tachimetro con **il cartello del limite in grande** sotto la cifra (con un anello ambra se vai oltre e
     rosso sopra il 10 %) e la velocità massima, forze G con la scia degli ultimi secondi e i picchi, inclinazione e un
-    punteggio di dolcezza di guida (0-100) in base agli strappi in accelerazione, frenata e sterzata.
+    punteggio di dolcezza di guida (0-100) in base agli strappi in accelerazione, frenata e sterzata. Sotto i km/h, il **cronometro 0-50 e 0-100 km/h**: parte da solo quando riparti da fermo e, con il GPS del telefono, è preciso a uno o due decimi.
   - **Il limite di velocità** (Guida e Strumenti) viene da OpenStreetMap: quello della strada nel tuo senso di marcia o
     quello della sua zona («DE:urban», «AT:rural»…). Dove manca, si assume il limite generale del paese per il tipo di
     strada (Spagna, Portogallo, Germania, Austria, Svizzera, Italia, Francia, Paesi Bassi, Belgio e Lussemburgo), con

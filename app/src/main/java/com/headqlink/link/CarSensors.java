@@ -151,9 +151,7 @@ final class CarSensors implements SensorEventListener, LocationListener {
     /** A la altura del coche el viento es menor que a 10 m, la del parte (perfil logarítmico, ~0,7). */
     static final double WIND_AT_CAR = 0.7;
     // Cronómetro 0-50 / 0-100.
-    private long launchStartMs;
-    private boolean launchArmed;
-    private String lastTimer = "";
+    private final LaunchTimer launch = new LaunchTimer();
     private final EnergyModel model = new EnergyModel();
     private long lastEnergyNs;
     // Modo demostración: trayecto, última muestra aplicada, su reloj (ns) y su posición.
@@ -618,16 +616,21 @@ final class CarSensors implements SensorEventListener, LocationListener {
         double step = lastLoc != null ? lastLoc.distanceTo(loc) : 0;
         lastLoc = loc;
         boolean altGood = loc.hasAltitude() && loc.hasVerticalAccuracy() && loc.getVerticalAccuracyMeters() < 15;
-        fix(SystemClock.elapsedRealtimeNanos(), loc.hasSpeed() ? loc.getSpeed() : 0, loc.hasBearing(), loc.getBearing(),
+        // Para el cronómetro, la hora de la posición (no la de cuando llega a la app, que baila); si no es creíble, la de ahora.
+        long nowNs = SystemClock.elapsedRealtimeNanos();
+        long fixNs = loc.getElapsedRealtimeNanos();
+        if (fixNs <= 0 || fixNs > nowNs || nowNs - fixNs > 5_000_000_000L) fixNs = nowNs;
+        fix(nowNs, fixNs, loc.hasSpeed() ? loc.getSpeed() : 0, loc.hasBearing(), loc.getBearing(),
                 loc.getLatitude(), loc.getLongitude(), step, loc.hasAltitude() ? loc.getAltitude() : Double.NaN, altGood);
         maybeFetchWeather(loc);
     }
 
     /**
-     * Una posición nueva (del GPS o de la demostración): reloj (ns), velocidad (m/s), rumbo, coordenadas, metros
-     * desde la anterior (0 en la primera) y altitud del GPS (NaN si no hay; altGood si es precisa).
+     * Una posición nueva (del GPS o de la demostración): reloj (ns), hora de la posición (ns, para el cronómetro),
+     * velocidad (m/s), rumbo, coordenadas, metros desde la anterior (0 en la primera) y altitud del GPS (NaN si no hay;
+     * altGood si es precisa).
      */
-    private void fix(long now, double v, boolean hasBearing, double bearing, double lat, double lon, double step,
+    private void fix(long now, long fixNs, double v, boolean hasBearing, double bearing, double lat, double lon, double step,
                      double gpsAlt, boolean altGood) {
         // Hueco del GPS (más de 5 s sin posición, p. ej. con el móvil bloqueado): se suma aparte (bridgeGap).
         long gapMs = lastFixNs != 0 ? (now - lastFixNs) / 1_000_000 : 0;
@@ -652,7 +655,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
         }
         lastSpeed = v;
         lastSpeedNs = now;
-        launchTimer(s.speedKmh, now / 1_000_000);
+        String launchText = launch.fix(fixNs / 1e6, s.speedKmh);
+        if (launchText != null) s.timer = launchText;
 
         // Distancia del viaje (la de un hueco, en bridgeGap).
         if (!gap && step > 0 && step < 200) s.tripKm += step / 1000;
@@ -745,33 +749,6 @@ final class CarSensors implements SensorEventListener, LocationListener {
         smoothNs = nowNs;
     }
 
-    /** 0-50 y 0-100 km/h: se arma parado (< 2 km/h) y cuenta desde que pasa de 3 km/h. now: reloj en ms. */
-    private void launchTimer(double kmh, long now) {
-        if (kmh < 2) {
-            launchArmed = true;
-            launchStartMs = 0;
-            return;
-        }
-        if (launchArmed && launchStartMs == 0 && kmh > 3) launchStartMs = now;
-        if (launchStartMs == 0) return;
-        double t = (now - launchStartMs) / 1000.0;
-        if (t > 30) {
-            launchArmed = false;
-            launchStartMs = 0;
-            return;
-        }
-        if (kmh >= 50 && !lastTimer.contains("0-50")) {
-            lastTimer = String.format(Locale.getDefault(), "0-50 km/h: %.1f s", t);
-            s.timer = lastTimer;
-        }
-        if (kmh >= 100) {
-            s.timer = lastTimer + String.format(Locale.getDefault(), " · 0-100 km/h: %.1f s", t);
-            launchArmed = false;
-            launchStartMs = 0;
-            lastTimer = "";
-        }
-    }
-
     // ------------------------------------------------------------------ modo demostración
 
     /** DemoMode cambió el instante (capturas): se recalcula todo desde el principio del trayecto. */
@@ -800,9 +777,7 @@ final class CarSensors implements SensorEventListener, LocationListener {
         gradeRefAlt = Double.NaN;
         gradeDist = 0;
         lastAlt = Double.NaN;
-        launchStartMs = 0;
-        launchArmed = false;
-        lastTimer = "";
+        launch.reset();
         lastEnergyNs = 0;
         lastFixNs = 0;
         gaps = 0;
@@ -847,7 +822,7 @@ final class CarSensors implements SensorEventListener, LocationListener {
         demoLat = d.lat[k];
         demoLon = d.lon[k];
         yawRate = d.yawRad[k];
-        fix(demoNs, Math.max(0, d.speedKmh[k]) / 3.6, true, d.headingDeg[k], d.lat[k], d.lon[k], step, d.altM[k], true);
+        fix(demoNs, demoNs, Math.max(0, d.speedKmh[k]) / 3.6, true, d.headingDeg[k], d.lat[k], d.lon[k], step, d.altM[k], true);
         updateLateral();
         demoK = k;
     }
