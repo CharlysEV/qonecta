@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- headqlink: icono del widget «Coche» (Material Design, Apache 2.0). -->
+<!-- headqlink: icono del widget «Coche» y de la pestaña «Mi coche»: el coche de lado con el portón levantado (28-10:
+     antes era el coche genérico de Material, igual que el icono de la pestaña). Dibujo propio, 24x24. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
+    <!-- Carrocería de lado: techo, capó hacia la derecha, bajos. -->
     <path
         android:fillColor="#FFFFFFFF"
-        android:pathData="M18.92,6.01C18.72,5.42 18.16,5 17.5,5h-11c-0.66,0 -1.21,0.42 -1.42,1.01L3,12v8c0,0.55 0.45,1 1,1h1c0.55,0 1,-0.45 1,-1v-1h12v1c0,0.55 0.45,1 1,1h1c0.55,0 1,-0.45 1,-1v-8l-2.08,-5.99zM6.5,16c-0.83,0 -1.5,-0.67 -1.5,-1.5S5.67,13 6.5,13s1.5,0.67 1.5,1.5S7.33,16 6.5,16zM17.5,16c-0.83,0 -1.5,-0.67 -1.5,-1.5s0.67,-1.5 1.5,-1.5 1.5,0.67 1.5,1.5 -0.67,1.5 -1.5,1.5zM5,11l1.5,-4.5h11L19,11H5z" />
+        android:pathData="M3,16v-4.5l1.6,-4.2C4.9,6.5 5.6,6 6.4,6H14l-1.1,2H6.6L5.5,11.5H19.3c0.9,0 1.7,0.8 1.7,1.7V16c0,0.55 -0.45,1 -1,1h-0.3a2.5,2.5 0 0 1 -4.9,0H9.2a2.5,2.5 0 0 1 -4.9,0H4C3.45,17 3,16.55 3,16zM6.8,15.3a1,1 0 1 0 0,2 1,1 0 0 0 0,-2zM16.9,15.3a1,1 0 1 0 0,2 1,1 0 0 0 0,-2z" />
+    <!-- Portón trasero levantado (a la izquierda), inclinado hacia arriba. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M4.2,10.6L2.3,4.3c-0.15,-0.5 0.2,-1 0.72,-1h0.3c0.33,0 0.63,0.22 0.72,0.54l1.8,6.2z" />
 </vector>

@@ -915,6 +915,8 @@
     <string name="hql_car_health">Health</string>
     <string name="hql_car_last_order">Last order</string>
     <string name="hql_car_intro">Your car as in the Leapmotor app, but here: range, battery, lock, the car in 3D, and the orders (unlock, lock, boot, climate, locate). It needs the Leapmotor account; the orders also need the car\'s PIN.</string>
+    <string name="hql_car_note">Unofficial. Read-only, except the orders of the widget and of this tab if you save your car PIN.</string>
+    <string name="hql_car_doors">Doors</string>
     <string name="hql_ha_menu">Home Assistant</string>
     <string name="hql_ha_label">In the car</string>
     <string name="hql_ha_intro">Control your Home Assistant from the car screen (Extended mode › Home Assistant): lights, plugs, garage door, blinds, scenes… Use your home\'s outside address (Nabu Casa or your own domain): in the car the phone uses mobile data. The token is created in Home Assistant › your profile › Security › Long-lived access tokens. It is stored encrypted on this phone and never written to the log.</string>

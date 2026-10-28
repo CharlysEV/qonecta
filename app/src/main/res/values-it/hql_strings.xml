@@ -916,6 +916,8 @@
     <string name="hql_car_health">Stato</string>
     <string name="hql_car_last_order">Ultimo comando</string>
     <string name="hql_car_intro">La tua auto come nell\'app Leapmotor, ma qui: autonomia, batteria, chiusura, l\'auto in 3D e i comandi (apri, chiudi, bagagliaio, clima, localizza). Serve l\'account Leapmotor; per i comandi, anche il PIN dell\'auto.</string>
+    <string name="hql_car_note">Non ufficiale. Sola lettura, tranne i comandi del widget e di questa scheda se salvi il PIN dell\'auto.</string>
+    <string name="hql_car_doors">Porte</string>
     <string name="hql_ha_menu">Home Assistant</string>
     <string name="hql_ha_label">In auto</string>
     <string name="hql_ha_intro">Controlla il tuo Home Assistant dallo schermo dell\'auto (modalità estesa › Home Assistant): luci, prese, garage, tapparelle, scene… Usa l\'indirizzo esterno di casa (Nabu Casa o il tuo dominio): in auto il telefono usa i dati mobili. Il token si crea in Home Assistant › il tuo profilo › Sicurezza › Token di accesso di lunga durata. Resta cifrato su questo telefono e non va mai nel registro.</string>

@@ -52,6 +52,9 @@ final class PhoneCar {
     /** Lo que se repinta sin reconstruir la pantalla (el 3D no se destruye en cada tick). */
     private TextView rangeText;
     private TextView socText;
+    /** Barra fina del % de batería bajo la cifra, como en la app de Leapmotor; su ancho y color siguen al dato. */
+    private View socBar;
+    private FrameLayout socTrack;
     private TextView lockText;
     private TextView ageText;
     private TextView stateText;
@@ -130,7 +133,7 @@ final class PhoneCar {
         col.addView(orders());
         col.addView(section(Str.get(R.string.hql_cw_climate), climateOpen, () -> climateOpen = !climateOpen, b -> climateBody = b));
         col.addView(section(Str.get(R.string.hql_car_health), healthOpen, () -> healthOpen = !healthOpen, b -> healthBody = b));
-        TextView note = text(Str.get(R.string.hql_cloud_readonly_note), com.google.android.material.R.style.TextAppearance_Material3_BodySmall,
+        TextView note = text(Str.get(R.string.hql_car_note), com.google.android.material.R.style.TextAppearance_Material3_BodySmall,
                 PhoneCharts.FAINT);
         note.setPadding(dp(4), dp(14), dp(4), 0);
         col.addView(note);
@@ -171,6 +174,14 @@ final class PhoneCar {
         rangeText = text("", com.google.android.material.R.style.TextAppearance_Material3_DisplaySmall, PhoneCharts.TEXT);
         rangeText.setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL));
         left.addView(rangeText);
+        socTrack = new FrameLayout(act);
+        socTrack.setBackgroundColor(0xFF1C2631);
+        socBar = new View(act);
+        socTrack.addView(socBar, new FrameLayout.LayoutParams(0, FrameLayout.LayoutParams.MATCH_PARENT));
+        LinearLayout.LayoutParams tlp = new LinearLayout.LayoutParams(dp(150), dp(5));
+        tlp.topMargin = dp(6);
+        tlp.bottomMargin = dp(6);
+        left.addView(socTrack, tlp);
         socText = text("", com.google.android.material.R.style.TextAppearance_Material3_BodyMedium, PhoneCharts.DIM);
         left.addView(socText);
         top.addView(left, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
@@ -181,7 +192,7 @@ final class PhoneCar {
         in.addView(top);
         FrameLayout stage = new FrameLayout(act);
         setup3d(stage);
-        LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(230));
+        LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(250));
         slp.topMargin = dp(6);
         in.addView(stage, slp);
         stateText = text("", com.google.android.material.R.style.TextAppearance_Material3_BodyMedium, PhoneCharts.DIM);
@@ -218,7 +229,7 @@ final class PhoneCar {
                 v.getParent().requestDisallowInterceptTouchEvent(true);
                 return false;
             });
-            w.loadUrl("file:///android_asset/car3d.html" + (CarSpec.current().isT03() ? "?model=t03" : ""));
+            w.loadUrl("file:///android_asset/car3d.html?mode=phone" + (CarSpec.current().isT03() ? "&model=t03" : ""));
             stage.addView(w, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
             car3d = w;
             ready3d = false;
@@ -302,7 +313,7 @@ final class PhoneCar {
     private View orders() {
         LinearLayout row = new LinearLayout(act);
         row.setGravity(Gravity.CENTER);
-        row.setPadding(0, dp(14), 0, dp(6));
+        row.setPadding(0, dp(14), 0, dp(4));
         int[][] items = {
                 {R.drawable.hql_ic_cw_unlock, R.string.hql_cw_unlock},
                 {R.drawable.hql_ic_cw_lock, R.string.hql_cw_lock},
@@ -336,7 +347,7 @@ final class PhoneCar {
         LinearLayout v = new LinearLayout(act);
         v.setOrientation(LinearLayout.VERTICAL);
         v.setGravity(Gravity.CENTER_HORIZONTAL);
-        v.setPadding(dp(2), dp(4), dp(2), dp(4));
+        v.setPadding(0, dp(4), 0, dp(4));
         MaterialCardView circle = new MaterialCardView(act);
         circle.setRadius(dp(30));
         circle.setCardElevation(0);
@@ -357,6 +368,9 @@ final class PhoneCar {
         t.setGravity(Gravity.CENTER);
         t.setPadding(0, dp(6), 0, 0);
         t.setSingleLine(true);
+        // «Localizar» y «Maletero» no caben a 12 sp en 1/5 del ancho: un poco más pequeño y, si aun así no cabe, encoge.
+        t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 11);
+        t.setAutoSizeTextTypeUniformWithConfiguration(8, 11, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
         v.addView(t);
         return v;
     }
@@ -419,6 +433,12 @@ final class PhoneCar {
         String socLine = Str.get(R.string.hql_cloud_battery) + " " + soc;
         if (s.reev() && !Double.isNaN(s.combinedRangeKm)) socLine += " · " + Str.get(R.string.hql_cloud_total_range, num(s.combinedRangeKm, 0));
         socText.setText(socLine);
+        double pct = Double.isNaN(s.socBest()) ? 0 : Math.max(0, Math.min(100, s.socBest()));
+        int level = pct >= 20 ? PhoneCharts.ACCENT_2 : pct >= 8 ? PhoneCharts.WARN : PhoneCharts.BAD;
+        socBar.setBackgroundColor(level);
+        FrameLayout.LayoutParams blp = (FrameLayout.LayoutParams) socBar.getLayoutParams();
+        blp.width = (int) Math.round(dp(150) * pct / 100.0);
+        socBar.setLayoutParams(blp);
         Boolean locked = s.locked;
         lockText.setText(locked == null ? "—" : (locked ? "🔒 " : "🔓 ")
                 + Str.get(locked ? R.string.hql_cloud_locked : R.string.hql_cloud_unlocked));
@@ -482,7 +502,7 @@ final class PhoneCar {
             double bar = s.tyreBar(i);
             String v = Double.isNaN(bar) ? "—" : num(bar, 2) + " bar";
             if (s.tyreStateAlert(i)) v += " · " + Str.get(R.string.hql_cloud_tyre_tpms_short);
-            View cell = kv(Str.get(PLACES[i]), v, s.tyreWarning(i) ? PhoneCharts.WARN : PhoneCharts.TEXT);
+            View cell = kv(capital(Str.get(PLACES[i])), v, s.tyreWarning(i) ? PhoneCharts.WARN : PhoneCharts.TEXT);
             GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
             lp.width = 0;
             lp.columnSpec = GridLayout.spec(i % 2, 1f);
@@ -490,7 +510,7 @@ final class PhoneCar {
         }
         healthBody.addView(grid);
         String open = openList(s);
-        healthBody.addView(kv(Str.get(R.string.hql_cloud_tyres_doors),
+        healthBody.addView(kv(Str.get(R.string.hql_car_doors),
                 open == null ? Str.get(R.string.hql_cloud_doors_closed) : Str.get(R.string.hql_cloud_open_list, open),
                 open == null ? PhoneCharts.TEXT : PhoneCharts.WARN));
         if (!Double.isNaN(s.minBatteryTempC)) {
@@ -502,6 +522,11 @@ final class PhoneCar {
                 PhoneCharts.FAINT);
         note.setPadding(0, dp(8), 0, 0);
         healthBody.addView(note);
+    }
+
+    /** «delantera izquierda» (la etiqueta de las presiones, en minúscula para las frases) como título: «Delantera izquierda». */
+    private static String capital(String t) {
+        return t == null || t.isEmpty() ? "" : t.substring(0, 1).toUpperCase(Locale.getDefault()) + t.substring(1);
     }
 
     private static String openList(LeapStatus s) {
