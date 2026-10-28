@@ -253,6 +253,9 @@ final class PhoneCar {
         colorRow = new LinearLayout(act);
         colorRow.setGravity(Gravity.CENTER);
         colorRow.setPadding(0, dp(4), 0, dp(10));
+        // El elegido crece un 15 % (paintColors): que su aro se dibuje sobre el margen y no salga cortado (28-10).
+        colorRow.setClipToPadding(false);
+        colorRow.setClipChildren(false);
         int[] paints = CarSpec.current().isT03() ? CarArt.T03_PAINTS : C10_PAINTS;
         for (int c : paints) {
             String hex = CarArt.hex(c);
@@ -970,7 +973,12 @@ final class PhoneCar {
         u.setPadding(0, 0, 0, dp(3));
         line.addView(u);
         v.addView(line);
-        v.addView(text(label, com.google.android.material.R.style.TextAppearance_Material3_BodySmall, PhoneCharts.FAINT));
+        // En una línea: «Consumo por 100 km» no deja «km» solo debajo con la letra grande del móvil; si no cabe, encoge.
+        TextView l = text(label, com.google.android.material.R.style.TextAppearance_Material3_BodySmall, PhoneCharts.FAINT);
+        l.setSingleLine(true);
+        androidx.core.widget.TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(l, 8, 12, 1,
+                android.util.TypedValue.COMPLEX_UNIT_SP);
+        v.addView(l, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return v;
     }
 
