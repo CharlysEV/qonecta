@@ -503,16 +503,22 @@ final class PhoneInsights {
         addCard(c);
     }
 
-    private void chargesCard(Data d) {
-        LinearLayout c = card(Str.get(R.string.hql_ins_charges));
-        // Sin las de un momento (enchufar y desenchufar): menos de 0,5 kWh no es una carga.
+    /** Las cargas de verdad, de la más reciente a la más antigua: sin las de un momento (menos de 0,5 kWh). */
+    static List<ChargeSession> realCharges(List<ChargeSession> all) {
         List<ChargeSession> list = new ArrayList<>();
-        for (ChargeSession s : d.charges) {
+        if (all == null) return list;
+        for (ChargeSession s : all) {
             ChargeSession.Sample l = s.last();
             double e = l == null ? 0 : (l.soc - s.startSoc) * s.capacityKwh / 100;
             if (e >= 0.5) list.add(s);
         }
         list.sort((a, b) -> Long.compare(b.startMs, a.startMs));
+        return list;
+    }
+
+    private void chargesCard(Data d) {
+        LinearLayout c = card(Str.get(R.string.hql_ins_charges));
+        List<ChargeSession> list = realCharges(d.charges);
         if (list.isEmpty()) {
             c.addView(note(Str.get(R.string.hql_ins_no_charges)));
             addCard(c);
@@ -542,7 +548,7 @@ final class PhoneInsights {
             txt.setOrientation(LinearLayout.VERTICAL);
             String where = s.charger != null ? RoutePlanner.chargerName(s.charger) : Str.get(s.dc ? R.string.hql_ins_dc : R.string.hql_ins_ac);
             txt.addView(title(day(s.startMs) + " · " + where));
-            txt.addView(small(Str.get(R.string.hql_ins_charge_line, fmt0(s.startSoc), fmt0(endSoc), fmt1(kwh), String.valueOf(min),
+            txt.addView(small(Str.get(R.string.hql_ins_charge_line, fmt0(s.startSoc), fmt0(endSoc), fmt1(kwh), duration(min),
                     peak > 0 ? fmt0(peak) : "—")));
             row.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             PhoneCharts.Curve curve = new PhoneCharts.Curve(act, true);

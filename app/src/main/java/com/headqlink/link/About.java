@@ -155,7 +155,8 @@ final class About {
         section(c, col, R.string.hql_about_cloud,
                 "LMB10 · txurtxil (GPL-3.0) — " + Str.get(R.string.hql_about_role_protocol),
                 "leapmotor-api · markoceri (AGPL-3.0) — " + Str.get(R.string.hql_about_role_commands),
-                "leapmotor-mate · ProtossBlaster (AGPL-3.0) — " + Str.get(R.string.hql_about_role_reev));
+                "leapmotor-mate · ProtossBlaster (AGPL-3.0) — " + Str.get(R.string.hql_about_role_reev),
+                "leapmotor-ha · kerniger (MIT) — " + Str.get(R.string.hql_about_role_usage));
         section(c, col, R.string.hql_about_data,
                 Str.get(R.string.hql_about_osm),
                 Str.get(R.string.hql_about_weather),

@@ -24,7 +24,14 @@ import com.google.android.material.card.MaterialCardView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Pestaña «Mi coche» de la app del móvil (28-10, pedida en el foro LPMFF por dominik): lo de la app de Leapmotor, a
@@ -64,6 +71,23 @@ final class PhoneCar {
     private LinearLayout healthBody;
     private LinearLayout climateBody;
     private String lastShape = "";
+    /** «Carga» y «Consumo» (28-10): lo leído de ficheros y de la nube guardada, en otro hilo al entrar y cada minuto. */
+    private static final long LOAD_MS = 60_000;
+    private List<CloudHistory.Trip> history = new ArrayList<>();
+    private List<TripLog.Trip> appTrips = new ArrayList<>();
+    private Map<String, MonthlyReport.Summary> months = new HashMap<>();
+    private List<ChargeSession> charges = new ArrayList<>();
+    /** Cuándo se pidió por última vez a la nube lo de cada periodo. */
+    private final Map<CarUsage.Period, Long> windowTriedAt = new HashMap<>();
+    private long loadedAt;
+    private boolean loading;
+    private CarUsage.Period period = CarUsage.Period.WEEK;
+    private TextView chargePct;
+    private Battery battery;
+    private TextView chargeState;
+    private LinearLayout chargeBody;
+    private TextView odoText;
+    private LinearLayout usageBody;
     private final Runnable ticker = new Runnable() {
         @Override
         public void run() {
@@ -93,6 +117,7 @@ final class PhoneCar {
         if (PhoneInsights.hasAccount(act)) CarCloud.acquire(act, CLOUD_OWNER);
         snap = CarCloud.snapshot();
         build();
+        load();
         main.removeCallbacks(ticker);
         main.post(ticker);
     }
@@ -109,6 +134,7 @@ final class PhoneCar {
         snap = CarCloud.snapshot();
         if (!shape().equals(lastShape)) build();
         else repaint();
+        if (System.currentTimeMillis() - loadedAt > LOAD_MS) load();
     }
 
     private String shape() {
@@ -120,6 +146,10 @@ final class PhoneCar {
         drop3d();
         col.removeAllViews();
         rangeText = null;
+        chargePct = null;
+        chargeBody = null;
+        odoText = null;
+        usageBody = null;
         TextView title = text(Str.get(R.string.hql_car_tab), com.google.android.material.R.style.TextAppearance_Material3_HeadlineSmall,
                 PhoneCharts.TEXT);
         title.setPadding(dp(4), 0, 0, dp(12));
@@ -134,6 +164,12 @@ final class PhoneCar {
         }
         col.addView(hero());
         col.addView(orders());
+        col.addView(chargeCard());
+        col.addView(usageCard());
+        if (loadedAt > 0) {
+            paintRecords();
+            paintUsage();
+        }
         col.addView(section(Str.get(R.string.hql_cw_climate), climateOpen, () -> climateOpen = !climateOpen, b -> climateBody = b));
         col.addView(section(Str.get(R.string.hql_car_health), healthOpen, () -> healthOpen = !healthOpen, b -> healthBody = b));
         TextView note = text(Str.get(R.string.hql_car_note), com.google.android.material.R.style.TextAppearance_Material3_BodySmall,
@@ -512,6 +548,11 @@ final class PhoneCar {
         stateText.setText(stateLine(s, now));
         ageText.setText(Str.get(R.string.hql_cloud_car_data) + " · " + CarCloud.ago(snap.ageMs(now)));
         push3d();
+        paintChargeNow(s, now);
+        if (odoText != null) {
+            odoText.setVisibility(Double.isNaN(s.odometerKm) ? View.GONE : View.VISIBLE);
+            odoText.setText(Str.get(R.string.hql_car_use_odo, CarStatusTab.odometer(s.odometerKm), CarSpec.current().name));
+        }
         if (climateBody != null && climateBody.getVisibility() == View.VISIBLE) paintClimate(s);
         if (healthBody != null && healthBody.getVisibility() == View.VISIBLE) paintHealth(s);
     }
@@ -602,6 +643,441 @@ final class PhoneCar {
         }
         if (Boolean.TRUE.equals(s.bootOpen)) b.append(b.length() > 0 ? ", " : "").append(Str.get(R.string.hql_cloud_pos_boot));
         return b.length() == 0 ? null : b.toString();
+    }
+
+    // ------------------------------------------------------------------ carga y consumo (como la app de Leapmotor)
+
+    /** Lee en otro hilo lo de «Carga» y «Consumo»: el historial de la nube, los viajes, los meses y las cargas. */
+    private void load() {
+        if (loading) return;
+        loading = true;
+        loadedAt = System.currentTimeMillis();
+        // El periodo que se ve se pide aquí: que el repintado no lo pida otra vez a la vez.
+        if (PhoneInsights.hasAccount(act)) windowTriedAt.put(period, loadedAt);
+        Activity a = act;
+        new Thread(() -> {
+            List<CloudHistory.Trip> h = new ArrayList<>(CarCloud.history());
+            if (h.isEmpty() && !DemoMode.active()) {
+                JSONObject o = new CarCloudStore(a).history();
+                if (o != null) h = CloudHistory.tripsFromJson(o);
+            }
+            List<TripLog.Trip> t = TripLog.recent(a, 600);
+            Map<String, MonthlyReport.Summary> m;
+            try {
+                m = MonthlyReport.refresh(a);
+            } catch (RuntimeException e) {
+                m = new HashMap<>();
+            }
+            List<ChargeSession> c;
+            try {
+                c = ChargeLog.load(a);
+            } catch (RuntimeException e) {
+                c = new ArrayList<>();
+            }
+            // Con la cuenta de Leapmotor, lo del coche para el periodo que se ve (km y reparto).
+            boolean account = PhoneInsights.hasAccount(a);
+            CarUsage.Period p = period;
+            if (account) {
+                long now = System.currentTimeMillis();
+                CarCloud.usage(a, CarUsage.key(p), CarUsage.fromMs(p, now, TimeZone.getDefault()), now);
+            }
+            List<CloudHistory.Trip> fh = h;
+            Map<String, MonthlyReport.Summary> fm = m;
+            List<ChargeSession> fc = c;
+            main.post(() -> {
+                loading = false;
+                history = fh;
+                appTrips = t;
+                months = fm;
+                charges = fc;
+                if (!visible) return;
+                paintRecords();
+                paintUsage();
+            });
+        }, "hql-phone-car").start();
+    }
+
+    /** Pide a la nube lo de un periodo (al cambiar de Semana / Mes / Año) y repinta; una vez cada 30 min por periodo. */
+    private void fetchWindow(CarUsage.Period p) {
+        if (!PhoneInsights.hasAccount(act)) return;
+        long now = System.currentTimeMillis();
+        Long tried = windowTriedAt.get(p);
+        if (tried != null && now - tried < CarCloud.USAGE_MS) return;
+        windowTriedAt.put(p, now);
+        Activity a = act;
+        new Thread(() -> {
+            long t = System.currentTimeMillis();
+            CarCloud.usage(a, CarUsage.key(p), CarUsage.fromMs(p, t, TimeZone.getDefault()), t);
+            main.post(() -> {
+                if (visible && period == p) paintUsage();
+            });
+        }, "hql-phone-usage").start();
+    }
+
+    /** «Carga», como el «Centro de carga» de Leapmotor: el % grande, la batería dibujada, el estado y los registros. */
+    private View chargeCard() {
+        MaterialCardView card = card();
+        LinearLayout in = new LinearLayout(act);
+        in.setOrientation(LinearLayout.VERTICAL);
+        in.setPadding(dp(18), dp(16), dp(18), dp(16));
+        in.addView(text(Str.get(R.string.hql_car_charge_title), com.google.android.material.R.style.TextAppearance_Material3_TitleMedium,
+                PhoneCharts.TEXT));
+        chargePct = text("", com.google.android.material.R.style.TextAppearance_Material3_DisplayMedium, PhoneCharts.TEXT);
+        chargePct.setTypeface(android.graphics.Typeface.create("sans-serif-medium", android.graphics.Typeface.NORMAL));
+        chargePct.setGravity(Gravity.CENTER);
+        in.addView(chargePct, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        battery = new Battery(act);
+        LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(46));
+        blp.topMargin = dp(8);
+        blp.leftMargin = dp(16);
+        blp.rightMargin = dp(16);
+        in.addView(battery, blp);
+        chargeState = text("", com.google.android.material.R.style.TextAppearance_Material3_BodyMedium, PhoneCharts.DIM);
+        chargeState.setGravity(Gravity.CENTER);
+        chargeState.setPadding(0, dp(10), 0, 0);
+        in.addView(chargeState);
+        chargeBody = new LinearLayout(act);
+        chargeBody.setOrientation(LinearLayout.VERTICAL);
+        in.addView(chargeBody);
+        card.addView(in);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(10);
+        card.setLayoutParams(lp);
+        return card;
+    }
+
+    /** Con cada dato: el %, la batería y el estado («Cargando · CC · 85 kW…», y en la carga en directo, el objetivo). */
+    private void paintChargeNow(LeapStatus s, long now) {
+        if (chargePct == null) return;
+        double soc = s.socBest();
+        chargePct.setText(Double.isNaN(soc) ? "—" : num(soc, 0) + " %");
+        battery.set(Double.isNaN(soc) ? -1 : soc, s.charging());
+        boolean plugged = s.charging() || s.pluggedIn();
+        String st = plugged ? stateLine(s, now) : Str.get(R.string.hql_car_unplugged);
+        ChargeSession live = s.charging() ? ChargeWatch.session() : null;
+        if (live != null) {
+            double target = ChargeWatch.barTarget(live);
+            double at = live.atMs(target);
+            if (live.minutesUntil(target) == 0) st += "\n" + Str.get(R.string.hql_live_ready_title);
+            else if (!Double.isNaN(at)) st += "\n" + Str.get(R.string.hql_live_now_at, target) + " · " + ChargeWatch.time((long) at);
+        }
+        chargeState.setText(st);
+        chargeState.setTextColor(s.charging() ? PhoneCharts.ACCENT_2 : PhoneCharts.DIM);
+    }
+
+    /**
+     * Los últimos registros de carga: los que vio Qonecta+ (ChargeLog, con el % y el cargador; el historial de cargas de
+     * la nube la rechaza, 28-10). El enlace lleva a Viajes › Cargas (con sus curvas).
+     */
+    private void paintRecords() {
+        if (chargeBody == null) return;
+        chargeBody.removeAllViews();
+        chargeBody.addView(subhead(Str.get(R.string.hql_car_charge_records)));
+        List<ChargeSession> list = PhoneInsights.realCharges(charges);
+        if (list.isEmpty()) {
+            chargeBody.addView(small(Str.get(R.string.hql_ins_no_charges)));
+            return;
+        }
+        for (int i = 0; i < list.size() && i < 3; i++) {
+            ChargeSession s = list.get(i);
+            ChargeSession.Sample last = s.last();
+            double endSoc = last != null ? last.soc : s.startSoc;
+            double kwh = Math.max(0, endSoc - s.startSoc) * s.capacityKwh / 100;
+            long min = Math.max(0, ((s.endMs > 0 ? s.endMs : (last != null ? last.atMs : s.startMs)) - s.startMs) / 60_000);
+            double peak = 0;
+            for (ChargeSession.Sample sm : s.samples) if (!Double.isNaN(sm.kw)) peak = Math.max(peak, sm.kw);
+            String where = s.charger != null ? RoutePlanner.chargerName(s.charger) : Str.get(s.dc ? R.string.hql_ins_dc : R.string.hql_ins_ac);
+            chargeBody.addView(row(day(s.startMs) + " · " + where, Str.get(R.string.hql_ins_charge_line, num(s.startSoc, 0), num(endSoc, 0),
+                    num(kwh, 1), PhoneInsights.duration(min), peak > 0 ? num(peak, 0) : "—")));
+        }
+        chargeBody.addView(link(Str.get(R.string.hql_car_charge_all)));
+    }
+
+    /** «Consumo», como el de la app de Leapmotor: los km del coche, Semana / Mes / Año, las cifras y los últimos viajes. */
+    private View usageCard() {
+        MaterialCardView card = card();
+        LinearLayout in = new LinearLayout(act);
+        in.setOrientation(LinearLayout.VERTICAL);
+        in.setPadding(dp(18), dp(16), dp(18), dp(16));
+        in.addView(text(Str.get(R.string.hql_car_use_title), com.google.android.material.R.style.TextAppearance_Material3_TitleMedium,
+                PhoneCharts.TEXT));
+        odoText = text("", com.google.android.material.R.style.TextAppearance_Material3_BodyMedium, PhoneCharts.DIM);
+        odoText.setPadding(0, dp(2), 0, 0);
+        in.addView(odoText);
+        com.google.android.material.button.MaterialButtonToggleGroup g = new com.google.android.material.button.MaterialButtonToggleGroup(act);
+        g.setSingleSelection(true);
+        g.setSelectionRequired(true);
+        int[] labels = {R.string.hql_car_use_week, R.string.hql_car_use_month, R.string.hql_car_use_year};
+        CarUsage.Period[] values = CarUsage.Period.values();
+        for (int i = 0; i < values.length; i++) {
+            MaterialButton b = new MaterialButton(act, null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
+            b.setId(View.generateViewId());
+            b.setText(Str.get(labels[i]));
+            // Sin el relleno ancho de serie: «Semana» cabe entero en un tercio del ancho.
+            b.setPaddingRelative(dp(4), b.getPaddingTop(), dp(4), b.getPaddingBottom());
+            b.setMinWidth(0);
+            b.setMinimumWidth(0);
+            b.setSingleLine(true);
+            CarUsage.Period p = values[i];
+            g.addView(b, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+            if (p == period) g.check(b.getId());
+            b.addOnCheckedChangeListener((btn, on) -> {
+                if (!on || period == p) return;
+                period = p;
+                paintUsage();
+            });
+        }
+        LinearLayout.LayoutParams glp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        glp.topMargin = dp(12);
+        in.addView(g, glp);
+        usageBody = new LinearLayout(act);
+        usageBody.setOrientation(LinearLayout.VERTICAL);
+        in.addView(usageBody);
+        card.addView(in);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(10);
+        card.setLayoutParams(lp);
+        return card;
+    }
+
+    /** Las cifras del periodo elegido y sus últimos viajes. */
+    private void paintUsage() {
+        if (usageBody == null) return;
+        usageBody.removeAllViews();
+        TimeZone tz = TimeZone.getDefault();
+        long now = System.currentTimeMillis();
+        CarUsage.Totals t = CarUsage.compute(period, now, tz, history, appTrips, months);
+        // Con la cuenta: los km y la energía que da el coche para la ventana (los mismos que su app); si no, lo nuestro.
+        CloudUsage.Window w = CarCloud.usageCached(CarUsage.key(period));
+        if (w == null || now - w.atMs >= CarCloud.USAGE_MS || !CarUsage.matches(w, t.fromMs)) fetchWindow(period);
+        if (!CarUsage.matches(w, t.fromMs)) w = null;
+        boolean carKm = w != null && !Double.isNaN(w.km);
+        boolean carKwh = w != null && w.split != null;
+        double km = carKm ? w.km : t.km;
+        double kwh = carKwh ? w.kwh() : t.kwh;
+        double per100 = km >= 1 && kwh > 0 ? kwh / km * 100 : Double.NaN;
+        CloudUsage.Split split = carKwh ? w.split : null;
+        // La demostración enseña también el reparto (inventado, con la energía de sus viajes).
+        if (split == null && DemoMode.active() && t.kwh > 0) split = new CloudUsage.Split(t.kwh * 0.931, t.kwh * 0.032, t.kwh * 0.037);
+        LinearLayout head = new LinearLayout(act);
+        head.setGravity(Gravity.BOTTOM);
+        TextView kmText = text(String.format(Locale.getDefault(), "%,.0f km", km), com.google.android.material.R.style.TextAppearance_Material3_HeadlineMedium,
+                PhoneCharts.TEXT);
+        head.addView(kmText, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        head.addView(text(periodLabel(t, carKm || carKwh), com.google.android.material.R.style.TextAppearance_Material3_BodySmall,
+                PhoneCharts.FAINT));
+        LinearLayout.LayoutParams hlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        hlp.topMargin = dp(14);
+        usageBody.addView(head, hlp);
+        if (t.trips == 0 && !(km >= 0.5)) {
+            usageBody.addView(small(Str.get(R.string.hql_car_use_none)));
+            return;
+        }
+        LinearLayout two = new LinearLayout(act);
+        two.addView(stat(num(kwh, 1), "kWh", Str.get(R.string.hql_car_use_energy)), new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        two.addView(stat(num(per100, 1), "kWh/100", Str.get(R.string.hql_car_use_per100)),
+                new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        usageBody.addView(two);
+        if (split != null && split.percents() != null) usageBody.addView(splitBar(split.percents()));
+        // Los viajes se cuentan si nuestros datos cubren la ventana (el año del coche puede ir más atrás que la app).
+        String extra = "";
+        if (!(carKm && period == CarUsage.Period.YEAR)) extra = t.trips + " " + Str.plural(R.plurals.hql_ins_trips, t.trips);
+        double price = new Config(act).electricityPrice();
+        if (kwh > 0 && price > 0) extra += (extra.isEmpty() ? "" : " · ") + "≈ " + Money.format(kwh * price);
+        boolean fromCar = carKm || carKwh || t.fromCar;
+        extra += (extra.isEmpty() ? "" : " · ") + Str.get(fromCar ? R.string.hql_ins_from_car : R.string.hql_ins_from_app);
+        TextView ex = small(extra);
+        ex.setPadding(0, dp(10), 0, 0);
+        usageBody.addView(ex);
+        if (t.rows.isEmpty()) return;
+        usageBody.addView(subhead(Str.get(R.string.hql_car_use_trips)));
+        SimpleDateFormat hm = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        for (CarUsage.Row r : t.rows) {
+            String when = day(r.startMs) + " · " + hm.format(new Date(r.startMs)) + "–" + hm.format(new Date(r.endMs));
+            String what = num(r.km, 1) + " km";
+            if (!Double.isNaN(r.kwh)) what += " · " + num(r.kwh, 1) + " kWh";
+            if (r.km >= 1 && r.kwh > 0) what += " · " + num(r.kwh / r.km * 100, 1) + " kWh/100";
+            usageBody.addView(row(when, what));
+        }
+        usageBody.addView(link(Str.get(R.string.hql_car_use_all)));
+    }
+
+    /** Colores del reparto: conducción (verde), clima (azul) y otros (ámbar), como en la app de Leapmotor. */
+    private static final int[] SPLIT_COLORS = {PhoneCharts.ACCENT_2, 0xFF4FA3FF, PhoneCharts.WARN};
+    private static final int[] SPLIT_LABELS = {R.string.hql_car_use_drive, R.string.hql_car_use_ac, R.string.hql_car_use_other};
+
+    /** La barra del reparto (conducción, clima, otros) y su leyenda con el % de cada uno. */
+    private View splitBar(double[] pct) {
+        LinearLayout v = new LinearLayout(act);
+        v.setOrientation(LinearLayout.VERTICAL);
+        v.setPadding(0, dp(14), 0, 0);
+        LinearLayout bar = new LinearLayout(act);
+        for (int i = 0; i < 3; i++) {
+            if (pct[i] <= 0) continue;
+            View seg = new View(act);
+            android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable();
+            g.setColor(SPLIT_COLORS[i]);
+            g.setCornerRadius(dp(4));
+            seg.setBackground(g);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT,
+                    (float) Math.max(pct[i], 0.8));
+            lp.rightMargin = dp(2);
+            bar.addView(seg, lp);
+        }
+        v.addView(bar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(8)));
+        LinearLayout legend = new LinearLayout(act);
+        legend.setPadding(0, dp(8), 0, 0);
+        for (int i = 0; i < 3; i++) {
+            LinearLayout cell = new LinearLayout(act);
+            cell.setOrientation(LinearLayout.VERTICAL);
+            TextView name = text("● " + Str.get(SPLIT_LABELS[i]), com.google.android.material.R.style.TextAppearance_Material3_BodySmall,
+                    PhoneCharts.DIM);
+            android.text.SpannableString dot = new android.text.SpannableString(name.getText());
+            dot.setSpan(new android.text.style.ForegroundColorSpan(SPLIT_COLORS[i]), 0, 1, 0);
+            name.setText(dot);
+            cell.addView(name);
+            cell.addView(text(num(pct[i], 1) + " %", com.google.android.material.R.style.TextAppearance_Material3_TitleMedium, PhoneCharts.TEXT));
+            legend.addView(cell, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        }
+        v.addView(legend);
+        return v;
+    }
+
+    /** «últimos 7 días», «octubre» o «2026 · desde agosto» (con los datos del coche, el año entero: sin «desde»). */
+    private static String periodLabel(CarUsage.Totals t, boolean fromCar) {
+        switch (t.period) {
+            case WEEK:
+                return Str.get(R.string.hql_car_use_last7);
+            case MONTH:
+                return new SimpleDateFormat("LLLL", Locale.getDefault()).format(new Date(t.fromMs));
+            default: {
+                String y = new SimpleDateFormat("yyyy", Locale.getDefault()).format(new Date(t.fromMs));
+                if (t.sinceMs <= 0 || fromCar) return y;
+                return y + " · " + Str.get(R.string.hql_car_use_since, new SimpleDateFormat("LLLL", Locale.getDefault()).format(new Date(t.sinceMs)));
+            }
+        }
+    }
+
+    /** Cifra grande con su unidad y la etiqueta debajo. */
+    private View stat(String value, String unit, String label) {
+        LinearLayout v = new LinearLayout(act);
+        v.setOrientation(LinearLayout.VERTICAL);
+        v.setPadding(0, dp(10), dp(8), 0);
+        LinearLayout line = new LinearLayout(act);
+        line.setGravity(Gravity.BOTTOM);
+        line.addView(text(value, com.google.android.material.R.style.TextAppearance_Material3_HeadlineSmall, PhoneCharts.TEXT));
+        TextView u = text(" " + unit, com.google.android.material.R.style.TextAppearance_Material3_BodyMedium, PhoneCharts.DIM);
+        u.setPadding(0, 0, 0, dp(3));
+        line.addView(u);
+        v.addView(line);
+        v.addView(text(label, com.google.android.material.R.style.TextAppearance_Material3_BodySmall, PhoneCharts.FAINT));
+        return v;
+    }
+
+    /** Título pequeño de una lista dentro de una tarjeta, con una raya encima. */
+    private View subhead(String s) {
+        LinearLayout v = new LinearLayout(act);
+        v.setOrientation(LinearLayout.VERTICAL);
+        View line = new View(act);
+        line.setBackgroundColor(PhoneCharts.GRID);
+        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, dp(1)));
+        llp.topMargin = dp(14);
+        llp.bottomMargin = dp(10);
+        v.addView(line, llp);
+        v.addView(text(s, com.google.android.material.R.style.TextAppearance_Material3_LabelLarge, PhoneCharts.DIM));
+        return v;
+    }
+
+    /** Una fila de lista: el título y una línea pequeña debajo. */
+    private View row(String title, String line) {
+        LinearLayout v = new LinearLayout(act);
+        v.setOrientation(LinearLayout.VERTICAL);
+        v.setPadding(0, dp(8), 0, 0);
+        v.addView(text(title, com.google.android.material.R.style.TextAppearance_Material3_BodyLarge, PhoneCharts.TEXT));
+        v.addView(text(line, com.google.android.material.R.style.TextAppearance_Material3_BodySmall, PhoneCharts.DIM));
+        return v;
+    }
+
+    private TextView small(String s) {
+        TextView t = text(s, com.google.android.material.R.style.TextAppearance_Material3_BodySmall, PhoneCharts.FAINT);
+        t.setPadding(0, dp(6), 0, 0);
+        return t;
+    }
+
+    /** «Todos los viajes ›» / «Todas las cargas ›»: lleva a la pestaña Viajes, donde está todo con sus mapas y curvas. */
+    private View link(String s) {
+        TextView b = text(s, com.google.android.material.R.style.TextAppearance_Material3_LabelLarge, PhoneCharts.ACCENT);
+        b.setPadding(0, dp(10), dp(12), dp(4));
+        b.setClickable(true);
+        b.setBackgroundResource(android.R.drawable.list_selector_background);
+        b.setOnClickListener(v -> {
+            if (act instanceof HomeActivity) ((HomeActivity) act).showTab(1);
+        });
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(6);
+        lp.gravity = Gravity.START;
+        b.setLayoutParams(lp);
+        return b;
+    }
+
+    private static String day(long ms) {
+        return new SimpleDateFormat("EEE d MMM", Locale.getDefault()).format(new Date(ms));
+    }
+
+    /**
+     * La batería del «Centro de carga»: el cuerpo redondeado con la parte llena en degradado verde (ámbar por debajo del
+     * 20 %, rojo del 8 %), el borne a la derecha y, cargando, el rayo encima.
+     */
+    static final class Battery extends View {
+        private final android.graphics.Paint p = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+        private final android.graphics.RectF body = new android.graphics.RectF();
+        private final android.graphics.RectF fill = new android.graphics.RectF();
+        private double pct = -1;
+        private boolean charging;
+
+        Battery(android.content.Context c) {
+            super(c);
+        }
+
+        void set(double pct, boolean charging) {
+            if (pct == this.pct && charging == this.charging) return;
+            this.pct = pct;
+            this.charging = charging;
+            invalidate();
+        }
+
+        @Override
+        protected void onDraw(android.graphics.Canvas cv) {
+            float d = getResources().getDisplayMetrics().density;
+            float w = getWidth(), h = getHeight();
+            float nub = 5 * d, stroke = 2 * d, gap = 2 * d, inset = 4 * d;
+            body.set(stroke / 2, stroke / 2, w - nub - gap - stroke / 2, h - stroke / 2);
+            float rad = h * 0.28f;
+            p.setStyle(android.graphics.Paint.Style.FILL);
+            p.setColor(PhoneCharts.TRACK);
+            cv.drawRoundRect(body, rad, rad, p);
+            if (pct >= 0) {
+                float left = body.left + inset, right = body.right - inset;
+                float to = left + (right - left) * (float) Math.max(0, Math.min(100, pct)) / 100f;
+                if (to > left + 1) {
+                    int c0 = pct < 8 ? PhoneCharts.BAD : pct < 20 ? PhoneCharts.WARN : 0xFF00A86B;
+                    int c1 = pct < 8 ? PhoneCharts.BAD : pct < 20 ? PhoneCharts.WARN : PhoneCharts.ACCENT_2;
+                    p.setShader(new android.graphics.LinearGradient(left, 0, right, 0, c0, c1, android.graphics.Shader.TileMode.CLAMP));
+                    fill.set(left, body.top + inset, to, body.bottom - inset);
+                    float fr = Math.max(2 * d, rad - inset);
+                    cv.drawRoundRect(fill, fr, fr, p);
+                    p.setShader(null);
+                }
+            }
+            p.setStyle(android.graphics.Paint.Style.STROKE);
+            p.setStrokeWidth(stroke);
+            p.setColor(PhoneCharts.GRID);
+            cv.drawRoundRect(body, rad, rad, p);
+            p.setStyle(android.graphics.Paint.Style.FILL);
+            fill.set(body.right + gap, h * 0.32f, body.right + gap + nub, h * 0.68f);
+            cv.drawRoundRect(fill, 2 * d, 2 * d, p);
+            if (charging) CarIcons.bolt(cv, (body.left + body.right) / 2, h / 2, h * 0.62f, PhoneCharts.TEXT, p);
+        }
     }
 
     // ------------------------------------------------------------------ piezas

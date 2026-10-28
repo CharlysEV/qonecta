@@ -563,6 +563,51 @@ final class CarCloud {
         }
     }
 
+    // ------------------------------------------------------------------ «Consumo» (Mi coche)
+
+    /** Lo leído de una ventana vale 30 min; tras un fallo no se insiste en ese tiempo. */
+    static final long USAGE_MS = 30 * 60_000L;
+    private static final java.util.Map<String, CloudUsage.Window> usage = new java.util.HashMap<>();
+    private static final java.util.Map<String, Long> usageFailUntil = new java.util.HashMap<>();
+
+    /** Lo guardado de una ventana (key: semana, mes o año), aunque sea viejo, o null. Sin red. */
+    static synchronized CloudUsage.Window usageCached(String key) {
+        return usage.get(key);
+    }
+
+    /**
+     * Lo de una ventana según el coche (km y reparto), leído si toca: dos lecturas del tope diario. Bloquea: solo desde
+     * otro hilo. Sin cuenta, en la demostración o si falla, lo que hubiera guardado (o null).
+     */
+    static CloudUsage.Window usage(Context ctx, String key, long fromMs, long toMs) {
+        long now = System.currentTimeMillis();
+        CloudUsage.Window old;
+        synchronized (CarCloud.class) {
+            old = usage.get(key);
+            if (old != null && now - old.atMs < USAGE_MS && Math.abs(old.fromMs - fromMs) < USAGE_MS) return old;
+            Long fail = usageFailUntil.get(key);
+            if (fail != null && now < fail) return old;
+        }
+        if (DemoMode.active() || !takeDailyQuota() || !takeDailyQuota()) return old;
+        try {
+            CloudUsage.Window w = CarCloudSession.readWindow(ctx.getApplicationContext(), fromMs, toMs);
+            synchronized (CarCloud.class) {
+                usage.put(key, w);
+            }
+            L.i("nube Leapmotor: consumo de " + key + " según el coche: " + (Double.isNaN(w.km) ? "sin km"
+                    : String.format(Locale.US, "%.0f km", w.km)) + (w.split == null ? ", sin reparto"
+                    : String.format(Locale.US, ", %.1f kWh (conducción %.1f, clima %.1f, otros %.1f)", w.kwh(),
+                    w.split.driveKwh, w.split.acKwh, w.split.otherKwh)));
+            return w;
+        } catch (Exception e) {
+            synchronized (CarCloud.class) {
+                usageFailUntil.put(key, now + USAGE_MS);
+            }
+            L.w("nube Leapmotor: consumo de " + key + " no disponible (" + safeError(e) + ")");
+            return old;
+        }
+    }
+
     /** El error para el log: el tipo y el mensaje, sin URLs con datos (el de la API no lleva el cuerpo). */
     static String safeError(Throwable e) {
         return Http.safeError(e);

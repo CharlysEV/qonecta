@@ -55,7 +55,7 @@ Du kannst zwischen zwei Modi wählen:
 |---|---|
 | Fahrzeug | Leapmotor C10 mit seiner Spiegelungsapp (Handy-Projektion) auf dem Display. Funktioniert auch in einem **T03** mit normalem Android Auto (von einem Nutzer bestätigt). |
 | Handy | Android mit installiertem **Android Auto**. Empfohlen ist **Android 10 oder neuer**; um die Sprache der App zu wählen, brauchst du Android 13. |
-| Getestet mit | Samsung Galaxy **S25 Ultra** mit **Android 16** und Android Auto 17.7. Andere Handys können funktionieren, sind aber nicht getestet. |
+| Getestet mit | Samsung Galaxy **S25 Ultra** mit **Android 16** und Android Auto 17.7 und 17.9. Andere Handys können funktionieren, sind aber nicht getestet. |
 | Android Auto 17.4 oder neuer | Du musst einmalig den **Entwicklermodus** von Android Auto und die **Bedienungshilfe** von Qonecta+ aktivieren. Die App führt dich durch (Abschnitt 3). Bei älteren Versionen ist das nicht nötig. |
 | Internet (optional) | Nur für Funktionen von „Auto erweitert“ wie Routen, Wetter oder Radio. |
 
@@ -281,7 +281,8 @@ diesen Versionen wurde getestet:
 | Android Auto | Status |
 |---|---|
 | 17.7.x | Mit Qonecta+ **getestet** (Oktober 2026) |
-| 17.8, 17.9 und neuer | **Noch nicht getestet.** Andere Projekte (Open Headunit) berichten von Problemen: Mit 17.8 bricht die Verbindung nach 1–2 s ab; mit 17.9 funktioniert der automatische Start des Servers nicht mehr |
+| 17.9.x | Mit Qonecta+ **getestet** (Oktober 2026): Dutzende Fahrten per Wi-Fi Direct und Kabel ohne Probleme |
+| 17.8, 18 und neuer | **Noch nicht getestet.** Andere Projekte (Open Headunit) berichten, dass mit 17.8 die Verbindung nach 1–2 s abbricht |
 
 „Voraussetzungen prüfen“ zeigt das in der Zeile „Android Auto 17.x“ (getestet / noch nicht getestet), und das Log hält es
 beim Start (`androidAuto=…`) und bei jeder Sitzung fest (Spalte `aa_version` in `sessions.csv`).
@@ -306,7 +307,7 @@ Wenn eine neue Version nicht mehr funktioniert:
 > [!WARNING]
 > **Zu einer älteren Android-Auto-Version zurückzukehren heißt nicht „Updates deinstallieren“.** Auf vielen Handys ist
 > die vorinstallierte Android-Auto-Version nur ein Grundgerüst (1.x), das für Qonecta+ nicht taugt: Du musst die APK der
-> getesteten Version (17.7.x), die zu deinem Handy passt (Architektur und Android-Version), von Hand installieren und
+> getesteten Version (17.9.x oder 17.7.x), die zu deinem Handy passt (Architektur und Android-Version), von Hand installieren und
 > danach das automatische Update ausschalten, sonst spielt der Play Store sie wieder auf.
 
 ---
@@ -966,7 +967,7 @@ Kilometerstand) und nutzt ihn in „Auto erweitert“:
   Reichweite, Akku und ob es verriegelt ist; in der Mitte **der C10 in 3D** (mit dem Finger drehen; offene Türen und
   Kofferraum sind im Modell offen); darunter die Befehlsreihe **Entriegeln · Verriegeln · Kofferraum · Klima ·
   Finden** (dieselben wie im Widget „Auto“, mit Bestätigung: Sie brauchen die in „Fahrzeugdaten“ gespeicherte PIN des
-  Autos und eingeschaltete Befehle; sonst ist die Reihe ausgegraut) und zwei aufklappbare Karten: **„Klima“**
+  Autos und eingeschaltete Befehle; sonst ist die Reihe ausgegraut) die Karten **„Laden“** (wie das Ladezentrum der Leapmotor-App: der Akkustand über einer gezeichneten Batterie, der Ladezustand und die letzten Ladevorgänge, die Qonecta+ gesehen hat, mit % und Ladesäule) und **„Verbrauch“** (Woche / Monat / Jahr: km, Energie, Verbrauch pro 100 km und die Aufteilung Fahren / Klima / Sonstiges, dieselben Werte wie in der Leapmotor-App, und die letzten Fahrten; „Alle Fahrten ›“ und „Alle Ladevorgänge ›“ führen zu „Fahrten“), und zwei aufklappbare Karten: **„Klima“**
   (Innenraumtemperatur, das von hier eingeschaltete Klima und die Klima-Taste) und **„Zustand“** (die vier
   Reifendrücke, gelb bei zu wenig Druck oder Warnung; Türen und Kofferraum; Akkutemperatur; Kilometerstand). Die Cloud
   wird nur gelesen, solange der Reiter sichtbar ist.

@@ -21,16 +21,18 @@ class AaVersionsTest {
     }
 
     @Test
-    fun only177IsVerified() {
+    fun only177And179AreVerified() {
         assertEquals(State.VERIFIED, AaVersions.state("17.7.663654-release"))
         assertEquals(State.VERIFIED, AaVersions.state("17.7.1"))
         assertEquals("2026-10", AaVersions.verifiedDate("17.7.663654-release"))
-        for (v in listOf("17.8.661234-release", "17.9.1", "17.6.1", "17.70.1", "18.7.1", "1.2", "?")) {
+        // 28-10: la 17.9 también (15 sesiones con el coche).
+        assertEquals(State.VERIFIED, AaVersions.state("17.9.664044-release"))
+        for (v in listOf("17.8.661234-release", "17.6.1", "17.70.1", "17.90.1", "18.7.1", "1.2", "?")) {
             assertEquals(v, State.UNTESTED, AaVersions.state(v))
             assertNull(v, AaVersions.verifiedDate(v))
         }
         assertEquals(State.MISSING, AaVersions.state(null))
-        assertEquals("17.7.x", AaVersions.verifiedList())
+        assertEquals("17.7.x, 17.9.x", AaVersions.verifiedList())
     }
 
     @Test
@@ -40,11 +42,10 @@ class AaVersionsTest {
             AaVersions.describe("17.7.663654-release", 177663654),
         )
         val d178 = AaVersions.describe("17.8.661234-release", 178661234)
-        assertTrue(d178, d178.startsWith("17.8.661234-release (código 178661234): sin probar todavía con HeadQLink (probadas: 17.7.x"))
+        assertTrue(d178, d178.startsWith("17.8.661234-release (código 178661234): sin probar todavía con HeadQLink (probadas: 17.7.x, 17.9.x"))
         assertTrue(d178, d178.contains("Open Headunit #985"))
-        val d179 = AaVersions.describe("17.9.1", -1)
-        assertTrue(d179, d179.startsWith("17.9.1: sin probar todavía") && d179.contains("helper"))
-        assertEquals("18.0.1: sin probar todavía con HeadQLink (probadas: 17.7.x)", AaVersions.describe("18.0.1", -1))
+        assertEquals("17.9.1: probada con HeadQLink (2026-10)", AaVersions.describe("17.9.1", -1))
+        assertEquals("18.0.1: sin probar todavía con HeadQLink (probadas: 17.7.x, 17.9.x)", AaVersions.describe("18.0.1", -1))
         assertEquals("no instalado", AaVersions.describe(null, -1))
     }
 

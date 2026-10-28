@@ -271,6 +271,45 @@ final class CarCloudSession {
         }
     }
 
+    /**
+     * «Consumo» de una ventana según el coche (28-10): los km y el reparto de la energía (conducción, clima, otros). Si
+     * una de las dos lecturas falla, la otra vale sola; si fallan las dos, el error.
+     */
+    static synchronized CloudUsage.Window readWindow(Context ctx, long fromMs, long toMs)
+            throws IOException, GeneralSecurityException {
+        CarCloudStore st = new CarCloudStore(ctx);
+        ensure(st);
+        if (saved.vin.isEmpty()) throw new NotConfiguredException("sin coche elegido");
+        int v0 = api.sessionVersion();
+        try {
+            IOException first = null;
+            double km = Double.NaN;
+            CloudUsage.Split split = null;
+            try {
+                km = CloudUsage.parseKm(api.mileage(saved.vin, fromMs, toMs));
+            } catch (LeapApi.SessionExpiredException e) {
+                throw e;
+            } catch (IOException e) {
+                first = e;
+            }
+            try {
+                split = CloudUsage.parseSplit(api.energySplit(saved.vin, fromMs / 1000, toMs / 1000));
+            } catch (LeapApi.SessionExpiredException e) {
+                throw e;
+            } catch (IOException e) {
+                if (first == null) first = e;
+            }
+            CloudUsage.Window w = new CloudUsage.Window(fromMs, km, split, System.currentTimeMillis());
+            if (!w.useful() && first != null) throw first;
+            return w;
+        } catch (LeapApi.SessionExpiredException e) {
+            api = null;
+            throw e;
+        } finally {
+            if (api != null && api.sessionVersion() != v0) persist(st);
+        }
+    }
+
     /** Consumo medio de las últimas semanas según el coche, o null si la nube no da cifras. */
     static synchronized CloudHistory.Weekly readWeekly(Context ctx) throws IOException, GeneralSecurityException {
         CarCloudStore st = new CarCloudStore(ctx);

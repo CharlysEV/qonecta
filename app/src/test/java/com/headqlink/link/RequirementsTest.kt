@@ -453,9 +453,11 @@ class RequirementsTest {
         val verified = item(eval { aaVersion = "17.7.663654-release" }, Id.AA_VERSION)
         assertEquals(Importance.INFO, verified.importance)
         assertEquals(Status.OK, verified.status)
+        // 28-10: la 17.9 también está probada.
+        assertEquals(Status.OK, item(eval { aaVersion = "17.9.664044-release" }, Id.AA_VERSION).status)
 
-        // 17.8 / 17.9: sin probar todavía (consejo), nunca cuenta ni bloquea Conectar.
-        for (v in listOf("17.8.661234-release", "17.9.1", "18.0.5")) {
+        // 17.8 y 18: sin probar todavía (consejo), nunca cuenta ni bloquea Conectar.
+        for (v in listOf("17.8.661234-release", "18.0.5")) {
             val items = eval { aaVersion = v }
             val row = item(items, Id.AA_VERSION)
             assertEquals(v, Importance.INFO, row.importance)

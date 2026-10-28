@@ -241,6 +241,9 @@ class LeapApiTest {
         assertTrue(LeapApi.allowed(LeapApi.PATH_STATUS + "c10"))
         assertTrue(LeapApi.allowed(LeapApi.PATH_TRIPS))
         assertTrue(LeapApi.allowed(LeapApi.PATH_WEEKLY_EC))
+        // 28-10: «Consumo» y «Registros de carga» de «Mi coche» (también de lectura).
+        assertTrue(LeapApi.allowed(LeapApi.PATH_ENERGY_SPLIT))
+        assertTrue(LeapApi.allowed(LeapApi.PATH_MILEAGE))
         for (p in listOf(
             "/carownerservice/oversea/vehicle/v1/app/remote/ctl",
             "/carownerservice/oversea/vehicle/v1/app/remote/ctl/result/query",
@@ -249,6 +252,7 @@ class LeapApiTest {
             "/carownerservice/oversea/vehicle/v1/cert/sync",
             "/carownerservice/oversea/message/v1/list",
             "/carownerservice/charge/daily/detail/page",
+            "/carownerservice/charge/statistic/days",
             LeapApi.PATH_STATUS + "c10/../../app/remote/ctl",
             LeapApi.PATH_STATUS,
             null,
@@ -378,6 +382,28 @@ class LeapApiTest {
         assertEquals(LeapApi.PATH_WEEKLY_EC, c.path)
         assertEquals("carvin=VIN000000000000A1", c.body)
         assertSigned(c, mapOf("carvin" to "VIN000000000000A1"))
+    }
+
+    @Test
+    fun energySplitIsAFormWithTheWindowInSecondsSigned() {
+        val (a, fake) = loggedIn { ok("""{"driverEC":"50.1","acEC":"1.1","otherEC":"1.5"}""") }
+        val d = a.energySplit("VIN000000000000A1", 1790000000L, 1790604800L)
+        assertEquals("50.1", d.getString("driverEC"))
+        val c = fake.calls.single()
+        assertEquals(LeapApi.PATH_ENERGY_SPLIT, c.path)
+        assertEquals("endtime=1790604800&begintime=1790000000&carvin=VIN000000000000A1", c.body)
+        assertSigned(c, mapOf("begintime" to "1790000000", "endtime" to "1790604800", "carvin" to "VIN000000000000A1"))
+    }
+
+    @Test
+    fun mileageSignsTheWindowInMillisecondsWithTheVin() {
+        val (a, fake) = loggedIn { ok("""{"totalAccumulatedMileage":283}""") }
+        val d = a.mileage("VIN000000000000A1", 1790000000000L, 1790604800000L)
+        assertEquals(283, d.getInt("totalAccumulatedMileage"))
+        val c = fake.calls.single()
+        assertEquals(LeapApi.PATH_MILEAGE, c.path)
+        assertEquals("endtime=1790604800000&begintime=1790000000000&vin=VIN000000000000A1", c.body)
+        assertSigned(c, mapOf("vin" to "VIN000000000000A1", "begintime" to "1790000000000", "endtime" to "1790604800000"))
     }
 
     @Test

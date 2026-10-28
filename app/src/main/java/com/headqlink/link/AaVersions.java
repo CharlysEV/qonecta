@@ -7,7 +7,8 @@ import android.content.pm.PackageInfo;
  * Las versiones de Android Auto con las que se ha probado HeadQLink. Desde AA 17.4 el Self-Mode depende del servidor de
  * head unit de desarrollador de AA (127.0.0.1:5277) y de los textos de su menú ⋮, y cada versión nueva puede cambiar las
  * dos cosas: Open Headunit #985 (AA 17.8: conecta y se desconecta a los 1-2 s; volver a 17.7 lo arregla), #1022 (no
- * responde hasta borrar la caché de AA) y, en AA 17.9, «el helper ya no funciona». Aquí, la tabla de las probadas (lo
+ * responde hasta borrar la caché de AA) y, en AA 17.9, «el helper ya no funciona» (aquí la 17.9 sí funciona: probada el
+ * 28-10 con 15 sesiones en el C10). Aquí, la tabla de las probadas (lo
  * demás: «sin probar todavía»), la lectura de la versión instalada (versionName y versionCode) y su texto para el log,
  * la «Comprobación» y {@code sessions.csv}. La parte pura la prueban los tests.
  */
@@ -15,12 +16,14 @@ final class AaVersions {
     /** Serie (mayor.menor) probada en el móvil y cuándo. */
     static final String[][] VERIFIED = {
             {"17.7", "2026-10"},
+            // 28-10: 15 sesiones con el C10 en 17.9.664044 (Wi-Fi Direct y cable) sin el fallo de «el helper ya no
+            // funciona» de Open Headunit; el usuario la da por válida.
+            {"17.9", "2026-10"},
     };
 
     /** Lo que se sabe de fuera (Open Headunit) de las series sin probar aquí; solo para el log. */
     private static final String[][] UPSTREAM = {
             {"17.8", "Open Headunit #985: el Self-Mode conecta y se desconecta a los 1-2 s; volver a 17.7 lo arregla"},
-            {"17.9", "Open Headunit: «el helper ya no funciona» (comentario de un usuario)"},
     };
 
     enum State {

@@ -26,6 +26,9 @@ Range-extender (REEV) signals and the Leapmotor cloud trip history:
   consumption endpoint follows leapmotor-api (https://github.com/markoceri/leapmotor-api) by markoceri.
   Both are licensed under the GNU Affero General Public License v3.0. No code was copied; Qonecta+
   reimplements the read-only requests in LeapApi.java, LeapStatus.java and CloudHistory.java.
+  The energy split (getLastweekEC) and the mileage of a window (mileage/energy/detail) used by the "My car"
+  tab follow leapmotor-api and leapmotor-ha (https://github.com/kerniger/leapmotor-ha, MIT) by kerniger;
+  no code was copied either (LeapApi.java, CloudUsage.java).
   The only commands to the car are the opt-in ones of the "Car" widget (lock, unlock, boot, climate and
   find; sent only if the user saves the car PIN and turns them on). They follow leapmotor-api's flow
   (certificate sync, AES-encrypted PIN verify, remote/ctl with cmdId 110, 120, 130 and 170, result query),

@@ -48,10 +48,17 @@ final class LeapApi {
     static final String PATH_TRIPS = "/carownerservice/mileage/daily/detail/page";
     /** Consumo medio de las últimas semanas según el coche (kWh/100 km). */
     static final String PATH_WEEKLY_EC = "/carownerservice/oversea/drivingRecord/v1/getLastNweeks100kmECAndRank";
+    /**
+     * «Consumo» de la app oficial (28-10): la energía de una ventana cualquiera (segundos) repartida en conducción, clima
+     * y otros (kWh). Pese al nombre, vale cualquier ventana (leapmotor-api, markoceri; leapmotor-ha, kerniger).
+     */
+    static final String PATH_ENERGY_SPLIT = "/carownerservice/oversea/drivingRecord/v1/getLastweekEC";
+    /** Los km de una ventana (milisegundos, firmados) y los de cada día (leapmotor-api). */
+    static final String PATH_MILEAGE = "/carownerservice/oversea/drivingRecord/v1/mileage/energy/detail";
 
     /** Las únicas rutas que se piden. Todas leen; ninguna manda nada al coche. */
     static final List<String> ALLOWED_PATHS = Collections.unmodifiableList(java.util.Arrays.asList(
-            PATH_LOGIN, PATH_REFRESH, PATH_VEHICLES, PATH_STATUS, PATH_TRIPS, PATH_WEEKLY_EC));
+            PATH_LOGIN, PATH_REFRESH, PATH_VEHICLES, PATH_STATUS, PATH_TRIPS, PATH_WEEKLY_EC, PATH_ENERGY_SPLIT, PATH_MILEAGE));
 
     // Órdenes (opcionales, con el PIN del coche): sincronizar el certificado, comprobar el PIN, la orden y su resultado.
     static final String PATH_CERT_SYNC = "/carownerservice/oversea/vehicle/v1/cert/sync";
@@ -73,7 +80,7 @@ final class LeapApi {
     static boolean allowed(String path) {
         if (path == null) return false;
         if (path.equals(PATH_LOGIN) || path.equals(PATH_REFRESH) || path.equals(PATH_VEHICLES) || path.equals(PATH_TRIPS)
-                || path.equals(PATH_WEEKLY_EC)) {
+                || path.equals(PATH_WEEKLY_EC) || path.equals(PATH_ENERGY_SPLIT) || path.equals(PATH_MILEAGE)) {
             return true;
         }
         return path.startsWith(PATH_STATUS) && path.substring(PATH_STATUS.length()).matches("[a-z0-9_-]{1,24}");
@@ -409,6 +416,39 @@ final class LeapApi {
             h.putAll(authHeaders(s));
             JSONObject res = parse(call(accountIdentity, PATH_WEEKLY_EC, h, "carvin=" + LeapCrypto.encodeComponent(vin)),
                     "weekly consumption");
+            JSONObject d = res.optJSONObject("data");
+            return d != null ? d : new JSONObject();
+        });
+    }
+
+    /** La energía entre fromS y toS (segundos) repartida según el coche: el objeto «data» (driverEC, acEC, otherEC). */
+    JSONObject energySplit(String vin, long fromS, long toS) throws IOException {
+        return withTokenRetry(() -> {
+            Session s = requireSession();
+            Map<String, String> params = new LinkedHashMap<>();
+            params.put("begintime", String.valueOf(fromS));
+            params.put("endtime", String.valueOf(toS));
+            params.put("carvin", vin);
+            Map<String, String> h = signedHeaders(null, params);
+            h.putAll(authHeaders(s));
+            String body = "endtime=" + toS + "&begintime=" + fromS + "&carvin=" + LeapCrypto.encodeComponent(vin);
+            JSONObject res = parse(call(accountIdentity, PATH_ENERGY_SPLIT, h, body), "energy split");
+            JSONObject d = res.optJSONObject("data");
+            return d != null ? d : new JSONObject();
+        });
+    }
+
+    /** Los km entre fromMs y toMs (milisegundos, firmados con el VIN): el objeto «data» (totalAccumulatedMileage, detail). */
+    JSONObject mileage(String vin, long fromMs, long toMs) throws IOException {
+        return withTokenRetry(() -> {
+            Session s = requireSession();
+            Map<String, String> params = new LinkedHashMap<>();
+            params.put("begintime", String.valueOf(fromMs));
+            params.put("endtime", String.valueOf(toMs));
+            Map<String, String> h = signedHeaders(vin, params);
+            h.putAll(authHeaders(s));
+            String body = "endtime=" + toMs + "&begintime=" + fromMs + "&vin=" + LeapCrypto.encodeComponent(vin);
+            JSONObject res = parse(call(accountIdentity, PATH_MILEAGE, h, body), "mileage");
             JSONObject d = res.optJSONObject("data");
             return d != null ? d : new JSONObject();
         });

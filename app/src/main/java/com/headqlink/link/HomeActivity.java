@@ -640,6 +640,11 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         applyTab();
     }
 
+    /** Lleva a una pestaña (0 Conexión, 1 Viajes, 2 Home Assistant, 3 Mi coche): los enlaces «Todos los viajes ›». */
+    void showTab(int i) {
+        selectTab(i);
+    }
+
     private void selectTab(int i) {
         if (i == tab) return;
         tab = i;

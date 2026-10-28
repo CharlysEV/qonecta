@@ -52,7 +52,7 @@ There are two modes:
 |---|---|
 | Car | Leapmotor C10 with its mirroring (phone projection) app on the screen. It also works on a **T03** with plain Android Auto (confirmed by a user). |
 | Phone | Android with **Android Auto** installed. **Android 10 or later** is recommended; choosing the app language needs Android 13. |
-| Tested on | Samsung Galaxy **S25 Ultra** with **Android 16** and Android Auto 17.7. Other phones may work but haven't been tested. |
+| Tested on | Samsung Galaxy **S25 Ultra** with **Android 16** and Android Auto 17.7 and 17.9. Other phones may work but haven't been tested. |
 | Android Auto 17.4 or later | You need to turn on Android Auto's **developer mode** once and Qonecta+'s **accessibility** service. The app guides you (section 3). Older versions don't need either. |
 | Internet (optional) | Only for "Auto extended" features such as routes, weather or radio. |
 
@@ -268,7 +268,8 @@ can change it (the texts of its ⋮ menu or how it handles the connection). Vers
 | Android Auto | Status |
 |---|---|
 | 17.7.x | **Tested** with Qonecta+ (October 2026) |
-| 17.8, 17.9 and later | **Not tested yet.** Other projects (Open Headunit) report problems: with 17.8 the connection drops after 1-2 s; with 17.9 the automatic server start stops working |
+| 17.9.x | **Tested** with Qonecta+ (October 2026): dozens of trips over Wi-Fi Direct and cable without problems |
+| 17.8, 18 and later | **Not tested yet.** Other projects (Open Headunit) report that with 17.8 the connection drops after 1-2 s |
 
 The "Checklist" shows it in the "Android Auto 17.x" row (tested / not tested yet), and the log records it at start-up
 (`androidAuto=…`) and for every session (`aa_version` column of `sessions.csv`).
@@ -290,7 +291,7 @@ If a new version stops working:
 
 > [!WARNING]
 > **Going back to an older Android Auto is not "Uninstall updates".** On many phones the factory copy of Android Auto is
-> just a stub (1.x) that's useless for Qonecta+: you have to install by hand the APK of the tested version (17.7.x)
+> just a stub (1.x) that's useless for Qonecta+: you have to install by hand the APK of the tested version (17.9.x or 17.7.x)
 > that matches your phone (architecture and Android version) and then turn off auto-update, or the Play Store will
 > upgrade it again.
 
@@ -870,7 +871,7 @@ extended":
   range, the battery and whether it is locked; in the middle **the C10 in 3D** (turn it with your finger; open doors
   and boot open in the drawing); below, the row of orders **Unlock · Lock · Boot · Climate · Locate** (the same as the
   "Car" widget, with their confirmation: they need the car's PIN saved in "Car data" and the orders enabled; without
-  them the row is dimmed) and two cards that unfold: **"Climate"** (cabin temperature, the climate turned on from here
+  them the row is dimmed) the cards **"Charging"** (like the charging centre of the Leapmotor app: the % over a drawn battery, the charging state and the latest charges Qonecta+ saw, with the % and the charger) and **"Consumption"** (Week / Month / Year: km, energy, consumption per 100 km and the Driving / A/C / Other split, the same figures as the Leapmotor app, and the latest trips; "All trips ›" and "All charges ›" open Trips), and two cards that unfold: **"Climate"** (cabin temperature, the climate turned on from here
   and the climate button) and **"Health"** (the four pressures, amber for a low tyre or a warning; doors and boot;
   battery temperature; odometer). It only reads the cloud while the tab is visible.
 - **C10 REEV (range extender):** Qonecta+ recognises it by itself (the car reports its tank) and switches the battery
