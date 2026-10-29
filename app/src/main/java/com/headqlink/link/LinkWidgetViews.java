@@ -98,7 +98,7 @@ final class LinkWidgetViews {
             option(c, rv, LINK_IDS[i], name, name, LINKS[i].equals(g.linkMode),
                     broadcast(c, RC_LINK + i, LinkWidget.ACTION_LINK, LINKS[i]));
         }
-        car(c, rv, size == LinkGlance.Size.WIDE_CAR);
+        car(c, rv, size == LinkGlance.Size.WIDE_CAR, g.cable);
         return rv;
     }
 
@@ -107,7 +107,7 @@ final class LinkWidgetViews {
      * las órdenes activadas, la misma fila atenuada y «Toca para activar las órdenes»: tocarla abre el aviso de
      * CarControlActivity, que lleva a Datos del coche (20-10: sin ella, el 4x4 de un compañero salía con un hueco).
      */
-    private static void car(Context c, RemoteViews rv, boolean show) {
+    private static void car(Context c, RemoteViews rv, boolean show, boolean cable) {
         rv.setViewVisibility(R.id.hql_w_car, show ? View.VISIBLE : View.GONE);
         if (!show) return;
         boolean on = CarOrders.enabled(c);
@@ -132,7 +132,11 @@ final class LinkWidgetViews {
         rv.setTextViewText(R.id.hql_w_car_climate_label, c.getString(climate == CarCommand.Mode.COLD ? R.string.hql_cc_mode_cold
                 : climate == CarCommand.Mode.HEAT ? R.string.hql_cc_mode_heat
                 : climate == CarCommand.Mode.AUTO ? R.string.hql_cc_mode_auto : R.string.hql_cw_climate));
-        rv.setOnClickPendingIntent(R.id.hql_w_car_find, CarOrders.tap(c, "find", 5));
+        // Con el cable de carga enchufado (cargando o ya cargado), «Localizar» deja su sitio a «Cable»: desbloquearlo
+        // (29-10, LPMFF). Junto al cargador, localizar el coche hace menos falta, y no cabe un botón más.
+        rv.setImageViewResource(R.id.hql_w_car_find_icon, cable ? R.drawable.hql_ic_cw_cable : R.drawable.hql_ic_cw_find);
+        rv.setTextViewText(R.id.hql_w_car_find_label, c.getString(cable ? R.string.hql_cw_cable : R.string.hql_cw_find));
+        rv.setOnClickPendingIntent(R.id.hql_w_car_find, cable ? CarOrders.tap(c, "cable", 8) : CarOrders.tap(c, "find", 5));
         rv.setOnClickPendingIntent(R.id.hql_w_car_voice, CarOrders.tap(c, CarControlActivity.VOICE, 6));
     }
 

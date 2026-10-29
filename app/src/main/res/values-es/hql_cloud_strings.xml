@@ -202,6 +202,10 @@
     <string name="hql_cc_retry">Repetir</string>
     <string name="hql_cc_confirm_unlock">¿Abrir el coche?</string>
     <string name="hql_cc_confirm_trunk">¿Abrir el maletero?</string>
+    <string name="hql_cc_cable_unlock">Desbloquear el cable de carga</string>
+    <string name="hql_cc_confirm_cable">¿Desbloquear el cable de carga?</string>
+    <string name="hql_cc_confirm_cable_text">El conector se suelta y el cable se puede sacar del coche.</string>
+    <string name="hql_cw_cable">Cable</string>
     <string name="hql_cc_confirm_yes">Sí, abrir</string>
     <string name="hql_cc_sending">%1$s: enviando al coche… (puede tardar hasta 30 s)</string>
     <string name="hql_cc_done">✓ %1$s</string>

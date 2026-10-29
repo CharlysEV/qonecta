@@ -72,9 +72,14 @@ final class LeapApi {
     static final String CMD_FIND = "120";
     static final String CMD_TRUNK = "130";
     static final String CMD_CLIMATE = "170";
+    /**
+     * Desbloquear el cable de carga (29-10, LPMFF: lo único que aún pedía la app de Leapmotor); de leapmotor-mate y
+     * leapmotor-ha (MIT). El T03 no la tiene.
+     */
+    static final String CMD_CHARGE_CABLE = "192";
     /** Las únicas órdenes que se mandan. */
     static final List<String> COMMANDS = Collections.unmodifiableList(java.util.Arrays.asList(
-            CMD_LOCK, CMD_FIND, CMD_TRUNK, CMD_CLIMATE));
+            CMD_LOCK, CMD_FIND, CMD_TRUNK, CMD_CLIMATE, CMD_CHARGE_CABLE));
 
     /** true si la ruta es una de las de lectura (el estado, con el modelo detrás: /status/get/c10). */
     static boolean allowed(String path) {

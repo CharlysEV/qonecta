@@ -901,7 +901,7 @@ estendido»:
   cima a autonomia, a bateria e se está trancado; no meio **o C10 em 3D** (roda com o dedo; portas e mala abertas
   abrem no modelo); em baixo, a fila de ordens **Abrir · Fechar · Mala · Clima · Localizar** (as mesmas do widget
   «Carro», com confirmação: precisam do PIN do carro guardado em «Dados do carro» e das ordens ativadas; sem isso a
-  fila aparece apagada) os cartões **«Carregamento»** (como o centro de carregamento da app da Leapmotor: a % sobre uma bateria desenhada, o estado do carregamento e os últimos carregamentos que o Qonecta+ viu, com a % e o carregador) e **«Consumo»** (Semana / Mês / Ano: km, energia, consumo aos 100 km e a repartição Condução / Climatização / Outros, os mesmos valores da app da Leapmotor, e as últimas viagens; «Todas as viagens ›» e «Todos os carregamentos ›» levam a Viagens), e dois cartões que se abrem: **«Clima»** (temperatura do habitáculo, o clima ligado daqui e o
+  fila aparece apagada) os cartões **«Carregamento»** (como o centro de carregamento da app da Leapmotor: a % sobre uma bateria desenhada, o estado do carregamento, o botão **«Desbloquear o cabo de carregamento»** enquanto o cabo está ligado, a carregar ou já carregado (no widget «Carro», «Localizar» passa a «Cabo» entretanto), e os últimos carregamentos que o Qonecta+ viu, com a % e o carregador) e **«Consumo»** (Semana / Mês / Ano: km, energia, consumo aos 100 km e a repartição Condução / Climatização / Outros, os mesmos valores da app da Leapmotor, e as últimas viagens; «Todas as viagens ›» e «Todos os carregamentos ›» levam a Viagens), e dois cartões que se abrem: **«Clima»** (temperatura do habitáculo, o clima ligado daqui e o
   botão do clima) e **«Estado»** (as quatro pressões, a âmbar a roda baixa ou com aviso; portas e mala; temperatura da
   bateria; conta-quilómetros). Só lê a nuvem enquanto o separador está à vista.
 - **C10 REEV (autonomia alargada):** o Qonecta+ reconhece-o sozinho (o carro envia o depósito) e passa a bateria a
@@ -946,9 +946,9 @@ do carro» desativa-o sem apagar nada.
 **Privacidade e segurança.**
 
 - Só de leitura, com uma exceção opcional: as **ordens do widget «Carro» e do separador «O meu carro»** (trancar, destrancar, bagageira,
-  climatização e localizar), e só se guardar o PIN do carro em «Dados do carro» → «5 · PIN do carro» e aí ativar as
+  climatização, localizar e desbloquear o cabo de carregamento), e só se guardar o PIN do carro em «Dados do carro» → «5 · PIN do carro» e aí ativar as
   ordens a partir do widget (o PIN é o da app da Leapmotor; fica cifrado no telemóvel e nunca vai para o registo). Sem
-  PIN, o Qonecta+ **nunca envia ordens ao carro**, e não existe nenhuma outra (nem carga nem limites). Cada ordem é
+  PIN, o Qonecta+ **nunca envia ordens ao carro**, e não existe nenhuma outra (nem o limite nem a programação do carregamento). Cada ordem é
   confirmada antes de ser enviada; «Esquecer PIN» apaga-o.
 - Os seus dados vão **só para os servidores da Leapmotor**. A posição do carro não é lida nem guardada.
 - O certificado, a sessão e o histórico de viagens ficam **cifrados** com uma chave do Android Keystore, fora das

@@ -202,6 +202,10 @@
     <string name="hql_cc_retry">Wiederholen</string>
     <string name="hql_cc_confirm_unlock">Auto entriegeln?</string>
     <string name="hql_cc_confirm_trunk">Kofferraum öffnen?</string>
+    <string name="hql_cc_cable_unlock">Ladekabel entriegeln</string>
+    <string name="hql_cc_confirm_cable">Ladekabel entriegeln?</string>
+    <string name="hql_cc_confirm_cable_text">Der Stecker wird freigegeben, und das Kabel lässt sich aus dem Auto ziehen.</string>
+    <string name="hql_cw_cable">Kabel</string>
     <string name="hql_cc_confirm_yes">Ja, öffnen</string>
     <string name="hql_cc_sending">%1$s: wird an das Auto gesendet… (bis zu 30 s)</string>
     <string name="hql_cc_done">✓ %1$s</string>

@@ -200,6 +200,17 @@ class LinkGlanceTest {
     }
 
     @Test
+    fun pluggingTheChargingCableRepaintsTheWidget() {
+        // «Localizar» pasa a «Cable» en la fila de órdenes: el widget se repinta al enchufar y al desenchufar.
+        val off = glance()
+        val plugged = glance { cable = true }
+        assertTrue(plugged.cable)
+        assertEquals(0L, LinkGlance.pushDelay(off, 1_000, plugged, 1_100))
+        assertEquals(0L, LinkGlance.pushDelay(plugged, 1_000, off, 1_100))
+        assertEquals(-1L, LinkGlance.pushDelay(plugged, 1_000, glance { cable = true }, 1_100))
+    }
+
+    @Test
     fun repaintOnlyWhatChangesAndTheFiguresAtMostEveryFiveSeconds() {
         val live30 = running { car = LinkState.Car.CONNECTED; video = "30 fps · 4,8 Mbps" }
         val live29 = running { car = LinkState.Car.CONNECTED; video = "29 fps · 4,6 Mbps" }

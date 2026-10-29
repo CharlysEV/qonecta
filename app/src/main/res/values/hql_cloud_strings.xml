@@ -202,6 +202,10 @@
     <string name="hql_cc_retry">Repeat</string>
     <string name="hql_cc_confirm_unlock">Unlock the car?</string>
     <string name="hql_cc_confirm_trunk">Open the trunk?</string>
+    <string name="hql_cc_cable_unlock">Unlock the charging cable</string>
+    <string name="hql_cc_confirm_cable">Unlock the charging cable?</string>
+    <string name="hql_cc_confirm_cable_text">The connector is released and the cable can be pulled out of the car.</string>
+    <string name="hql_cw_cable">Cable</string>
     <string name="hql_cc_confirm_yes">Yes, open</string>
     <string name="hql_cc_sending">%1$s: sending to the car… (it can take up to 30 s)</string>
     <string name="hql_cc_done">✓ %1$s</string>

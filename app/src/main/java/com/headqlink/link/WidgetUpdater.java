@@ -170,6 +170,8 @@ public final class WidgetUpdater implements LinkState.Listener, SharedPreference
         in.locale = locale(c);
         // «¿Llego a Casa?»: cuentas con lo que ya hay en el móvil (sin red); se rehace solo si cambia el % o la posición.
         in.home = HomeReach.line(c);
+        // Con el cable de carga enchufado (la última lectura de la nube), «Cable» en lugar de «Localizar».
+        in.cable = CarOrders.cableShown(c);
         return LinkGlance.of(in);
     }
 

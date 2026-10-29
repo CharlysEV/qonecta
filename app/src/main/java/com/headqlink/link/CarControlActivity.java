@@ -307,10 +307,14 @@ public final class CarControlActivity extends AppCompatActivity {
             send(c);
             return;
         }
-        show(new MaterialAlertDialogBuilder(this)
-                .setTitle(c.kind == CarCommand.Kind.UNLOCK ? R.string.hql_cc_confirm_unlock : R.string.hql_cc_confirm_trunk)
-                .setPositiveButton(R.string.hql_cc_confirm_yes, (d, w) -> send(c))
-                .setNegativeButton(android.R.string.cancel, (d, w) -> finish()));
+        boolean cable = c.kind == CarCommand.Kind.CABLE_UNLOCK;
+        MaterialAlertDialogBuilder b = new MaterialAlertDialogBuilder(this)
+                .setTitle(c.kind == CarCommand.Kind.UNLOCK ? R.string.hql_cc_confirm_unlock
+                        : cable ? R.string.hql_cc_confirm_cable : R.string.hql_cc_confirm_trunk)
+                .setPositiveButton(cable ? R.string.hql_cc_cable_unlock : R.string.hql_cc_confirm_yes, (d, w) -> send(c))
+                .setNegativeButton(android.R.string.cancel, (d, w) -> finish());
+        if (cable) b.setMessage(R.string.hql_cc_confirm_cable_text);
+        show(b);
     }
 
     private void send(CarCommand c) {

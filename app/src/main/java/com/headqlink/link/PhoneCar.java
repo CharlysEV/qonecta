@@ -85,6 +85,8 @@ final class PhoneCar {
     private TextView chargePct;
     private Battery battery;
     private TextView chargeState;
+    /** «Desbloquear el cable de carga»: solo con el cable enchufado (29-10, LPMFF). */
+    private View cableButton;
     private LinearLayout chargeBody;
     private TextView odoText;
     private LinearLayout usageBody;
@@ -147,6 +149,7 @@ final class PhoneCar {
         col.removeAllViews();
         rangeText = null;
         chargePct = null;
+        cableButton = null;
         chargeBody = null;
         odoText = null;
         usageBody = null;
@@ -739,6 +742,20 @@ final class PhoneCar {
         chargeState.setGravity(Gravity.CENTER);
         chargeState.setPadding(0, dp(10), 0, 0);
         in.addView(chargeState);
+        com.google.android.material.button.MaterialButton cable = new com.google.android.material.button.MaterialButton(act, null,
+                com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        cable.setText(Str.get(R.string.hql_cc_cable_unlock));
+        cable.setIconResource(R.drawable.hql_ic_cw_cable);
+        cable.setIconTint(ColorStateList.valueOf(PhoneCharts.ACCENT_2));
+        cable.setTextColor(PhoneCharts.TEXT);
+        cable.setOnClickListener(v -> order("cable"));
+        cable.setVisibility(View.GONE);
+        LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        clp.gravity = Gravity.CENTER_HORIZONTAL;
+        clp.topMargin = dp(8);
+        in.addView(cable, clp);
+        cableButton = cable;
         chargeBody = new LinearLayout(act);
         chargeBody.setOrientation(LinearLayout.VERTICAL);
         in.addView(chargeBody);
@@ -766,6 +783,11 @@ final class PhoneCar {
         }
         chargeState.setText(st);
         chargeState.setTextColor(s.charging() ? PhoneCharts.ACCENT_2 : PhoneCharts.DIM);
+        // Cargando o ya cargado con el cable puesto: soltarlo desde aquí (el T03 no tiene la orden).
+        if (cableButton != null) {
+            boolean show = CarOrders.cableShown(plugged, new CarCloudStore(act).carType());
+            cableButton.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
     }
 
     /**

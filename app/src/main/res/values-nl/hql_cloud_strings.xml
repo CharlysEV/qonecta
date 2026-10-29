@@ -202,6 +202,10 @@
     <string name="hql_cc_retry">Herhalen</string>
     <string name="hql_cc_confirm_unlock">Auto ontgrendelen?</string>
     <string name="hql_cc_confirm_trunk">Kofferbak openen?</string>
+    <string name="hql_cc_cable_unlock">Laadkabel ontgrendelen</string>
+    <string name="hql_cc_confirm_cable">Laadkabel ontgrendelen?</string>
+    <string name="hql_cc_confirm_cable_text">De stekker komt vrij en de kabel kan uit de auto worden getrokken.</string>
+    <string name="hql_cw_cable">Kabel</string>
     <string name="hql_cc_confirm_yes">Ja, openen</string>
     <string name="hql_cc_sending">%1$s: wordt naar de auto gestuurd… (kan tot 30 s duren)</string>
     <string name="hql_cc_done">✓ %1$s</string>

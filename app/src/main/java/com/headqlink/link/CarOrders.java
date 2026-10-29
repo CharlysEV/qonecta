@@ -53,6 +53,21 @@ final class CarOrders {
         return new Config(c).getBool(K_ENABLED) && new CarCloudStore(c).hasPin();
     }
 
+    /**
+     * ¿«Cable» (desbloquear el cable de carga) en lugar de «Localizar»? Con el cable enchufado según la última lectura
+     * de la nube, cargando o ya cargado (29-10, LPMFF: se quiere al acabar la carga, con el conector aún bloqueado).
+     */
+    static boolean cableShown(Context c) {
+        CarCloud.Snapshot s = CarCloud.car();
+        if (s == null || !s.hasData() || s.status == null) return false;
+        return cableShown(s.status.pluggedIn(), s.carType.isEmpty() ? new CarCloudStore(c).carType() : s.carType);
+    }
+
+    /** Puro: enchufado y no un T03 (no tiene la orden). */
+    static boolean cableShown(boolean plugged, String carType) {
+        return plugged && !CarCloudStore.isT03(carType);
+    }
+
     /** Repinta el widget de Qonecta+ (tras una orden o al cambiar el ajuste). */
     static void refresh(Context c) {
         AppWidgetManager m = AppWidgetManager.getInstance(c);
@@ -60,7 +75,7 @@ final class CarOrders {
         if (ids != null && ids.length > 0) WidgetUpdater.render(c, m, ids, WidgetUpdater.glance(c));
     }
 
-    /** El toque de un botón («lock», «unlock», «trunk», «climate», «find» o la voz). */
+    /** El toque de un botón («lock», «unlock», «trunk», «climate», «find», «cable» o la voz). */
     static PendingIntent tap(Context c, String what, int code) {
         Intent i = new Intent(c, CarControlActivity.class).putExtra(CarControlActivity.EXTRA_WHAT, what)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

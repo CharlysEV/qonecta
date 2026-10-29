@@ -9,11 +9,12 @@ import java.util.regex.Pattern;
 
 /**
  * Una orden al coche por la nube de Leapmotor (widget «Coche» y voz): cerrar, abrir, maletero, clima, desempañar,
- * apagar el clima y localizar. Los cmdId y cuerpos son los documentados por leapmotor-api (markoceri, AGPL-3.0,
- * docs/api.md «Remote Commands»). Abrir el coche y el maletero piden confirmación (por si la voz entiende mal).
+ * apagar el clima, localizar y desbloquear el cable de carga. Los cmdId y cuerpos son los documentados por
+ * leapmotor-api (markoceri, AGPL-3.0, docs/api.md «Remote Commands»); el del cable, por leapmotor-ha (kerniger, MIT).
+ * Abrir el coche, el maletero y soltar el cable piden confirmación (por si la voz entiende mal).
  */
 final class CarCommand {
-    enum Kind { LOCK, UNLOCK, TRUNK_OPEN, TRUNK_CLOSE, CLIMATE_ON, CLIMATE_OFF, DEFROST, FIND }
+    enum Kind { LOCK, UNLOCK, TRUNK_OPEN, TRUNK_CLOSE, CLIMATE_ON, CLIMATE_OFF, DEFROST, FIND, CABLE_UNLOCK }
 
     /** Clima: automático (el coche decide), frío o calefacción. */
     enum Mode { AUTO, COLD, HEAT }
@@ -44,7 +45,7 @@ final class CarCommand {
 
     /** Lo que se abre pide un toque de confirmación. */
     boolean needsConfirm() {
-        return kind == Kind.UNLOCK || kind == Kind.TRUNK_OPEN;
+        return kind == Kind.UNLOCK || kind == Kind.TRUNK_OPEN || kind == Kind.CABLE_UNLOCK;
     }
 
     String cmdId() {
@@ -57,6 +58,8 @@ final class CarCommand {
                 return LeapApi.CMD_TRUNK;
             case FIND:
                 return LeapApi.CMD_FIND;
+            case CABLE_UNLOCK:
+                return LeapApi.CMD_CHARGE_CABLE;
             default:
                 return LeapApi.CMD_CLIMATE;
         }
@@ -78,6 +81,8 @@ final class CarCommand {
                 return "{\"value\":\"true\"}";
             case TRUNK_CLOSE:
                 return "{\"value\":\"false\"}";
+            case CABLE_UNLOCK:
+                return "{\"operation\":\"unlock\"}";
             case DEFROST:
                 return climate("in", "hot", 32, 7, 1);
             case CLIMATE_OFF:
@@ -123,6 +128,8 @@ final class CarCommand {
                 return Str.get(R.string.hql_cc_defrost);
             case FIND:
                 return Str.get(R.string.hql_cc_find);
+            case CABLE_UNLOCK:
+                return Str.get(R.string.hql_cc_cable_unlock);
             default:
                 return Str.get(mode == Mode.COLD ? R.string.hql_cc_climate_cold : mode == Mode.HEAT ? R.string.hql_cc_climate_heat
                         : R.string.hql_cc_climate_on, tempC);
@@ -149,6 +156,8 @@ final class CarCommand {
                 return new CarCommand(Kind.CLIMATE_ON);
             case "find":
                 return new CarCommand(Kind.FIND);
+            case "cable":
+                return new CarCommand(Kind.CABLE_UNLOCK);
             default:
                 return null;
         }
@@ -172,6 +181,10 @@ final class CarCommand {
         t = " " + t.replaceAll("[^a-z0-9 ]", " ").replaceAll("\\s+", " ").trim() + " ";
         boolean close = has(t, " cierra", " cerrar", " cierre", " bloquea", " close", " lock ");
         boolean off = has(t, " apaga", " apagar", " quita", " para el", " parar", " desconecta", " off ", " stop ");
+        if (has(t, " cable", " conector", " manguera", " charging plug", " charge plug")
+                && has(t, " desbloque", " suelta", " soltar", " libera", " quita", " unlock", " release")) {
+            return new CarCommand(Kind.CABLE_UNLOCK);
+        }
         if (has(t, " maleter", " porton", " trunk", " boot ", " tailgate")) {
             return new CarCommand(close ? Kind.TRUNK_CLOSE : Kind.TRUNK_OPEN);
         }

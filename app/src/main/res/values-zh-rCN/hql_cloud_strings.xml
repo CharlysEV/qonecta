@@ -202,6 +202,10 @@
     <string name="hql_cc_retry">重试</string>
     <string name="hql_cc_confirm_unlock">解锁车辆？</string>
     <string name="hql_cc_confirm_trunk">打开后备箱？</string>
+    <string name="hql_cc_cable_unlock">解锁充电枪</string>
+    <string name="hql_cc_confirm_cable">解锁充电枪？</string>
+    <string name="hql_cc_confirm_cable_text">充电枪解锁后即可从车上拔出。</string>
+    <string name="hql_cw_cable">充电枪</string>
     <string name="hql_cc_confirm_yes">是，打开</string>
     <string name="hql_cc_sending">%1$s：正在发送到车辆…（最多 30 秒）</string>
     <string name="hql_cc_done">✓ %1$s</string>

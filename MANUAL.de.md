@@ -972,7 +972,7 @@ Kilometerstand) und nutzt ihn in „Auto erweitert“:
   Reichweite, Akku und ob es verriegelt ist; in der Mitte **der C10 in 3D** (mit dem Finger drehen; offene Türen und
   Kofferraum sind im Modell offen); darunter die Befehlsreihe **Entriegeln · Verriegeln · Kofferraum · Klima ·
   Finden** (dieselben wie im Widget „Auto“, mit Bestätigung: Sie brauchen die in „Fahrzeugdaten“ gespeicherte PIN des
-  Autos und eingeschaltete Befehle; sonst ist die Reihe ausgegraut) die Karten **„Laden“** (wie das Ladezentrum der Leapmotor-App: der Akkustand über einer gezeichneten Batterie, der Ladezustand und die letzten Ladevorgänge, die Qonecta+ gesehen hat, mit % und Ladesäule) und **„Verbrauch“** (Woche / Monat / Jahr: km, Energie, Verbrauch pro 100 km und die Aufteilung Fahren / Klima / Sonstiges, dieselben Werte wie in der Leapmotor-App, und die letzten Fahrten; „Alle Fahrten ›“ und „Alle Ladevorgänge ›“ führen zu „Fahrten“), und zwei aufklappbare Karten: **„Klima“**
+  Autos und eingeschaltete Befehle; sonst ist die Reihe ausgegraut) die Karten **„Laden“** (wie das Ladezentrum der Leapmotor-App: der Akkustand über einer gezeichneten Batterie, der Ladezustand, die Taste **„Ladekabel entriegeln“**, solange das Kabel steckt, beim Laden oder danach (im Widget „Auto“ wird „Finden“ so lange zu „Kabel“), und die letzten Ladevorgänge, die Qonecta+ gesehen hat, mit % und Ladesäule) und **„Verbrauch“** (Woche / Monat / Jahr: km, Energie, Verbrauch pro 100 km und die Aufteilung Fahren / Klima / Sonstiges, dieselben Werte wie in der Leapmotor-App, und die letzten Fahrten; „Alle Fahrten ›“ und „Alle Ladevorgänge ›“ führen zu „Fahrten“), und zwei aufklappbare Karten: **„Klima“**
   (Innenraumtemperatur, das von hier eingeschaltete Klima und die Klima-Taste) und **„Zustand“** (die vier
   Reifendrücke, gelb bei zu wenig Druck oder Warnung; Türen und Kofferraum; Akkutemperatur; Kilometerstand). Die Cloud
   wird nur gelesen, solange der Reiter sichtbar ist.
@@ -1022,10 +1022,10 @@ auf. „Echte Fahrzeugdaten nutzen“ schaltet es ab, ohne etwas zu löschen.
 **Datenschutz und Sicherheit.**
 
 - Nur lesend, mit einer optionalen Ausnahme: die **Befehle des Widgets „Auto“ und des Reiters „Mein Auto“** (verriegeln, entriegeln, Kofferraum,
-  Klima und finden), und nur, wenn du die PIN des Fahrzeugs in „Fahrzeugdaten“ → „5 · PIN des Autos“ speicherst und dort
+  Klima, finden und Ladekabel entriegeln), und nur, wenn du die PIN des Fahrzeugs in „Fahrzeugdaten“ → „5 · PIN des Autos“ speicherst und dort
   die Befehle über das Widget einschaltest (es ist die PIN der Leapmotor-App; sie wird verschlüsselt auf dem Handy
   gespeichert und landet nie im Log). Ohne PIN **sendet Qonecta+ nie Befehle an das Fahrzeug**, und andere Befehle gibt
-  es nicht (weder Laden noch Limits). Jeder Befehl wird vor dem Senden bestätigt; „PIN vergessen“ löscht die PIN.
+  es nicht (weder das Ladelimit noch die Ladeplanung). Jeder Befehl wird vor dem Senden bestätigt; „PIN vergessen“ löscht die PIN.
 - Deine Daten gehen **nur an die Server von Leapmotor**. Die Position des Fahrzeugs wird weder gelesen noch gespeichert.
 - Zertifikat, Sitzung und Fahrtenverlauf werden mit einem Schlüssel aus dem Android Keystore **verschlüsselt**
   gespeichert, außerhalb der Backups. Das Passwort wird nicht gespeichert: Läuft die Sitzung ab, zeigt „Status“ das an,

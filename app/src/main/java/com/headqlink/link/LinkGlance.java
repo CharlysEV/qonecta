@@ -137,6 +137,8 @@ final class LinkGlance {
         String locale = "";
         /** «Casa: llegas con ~34 %» (HomeReach), ya en el idioma de la app; "" si nada. */
         String home = "";
+        /** El cable de carga enchufado (CarOrders.cableShown): en el 4x3, «Cable» en lugar de «Localizar». */
+        boolean cable;
     }
 
     final Look look;
@@ -156,6 +158,8 @@ final class LinkGlance {
     final String locale;
     /** La línea «¿llego a Casa?» (HomeReach), o "". */
     final String home;
+    /** «Cable» (desbloquear el cable de carga) en lugar de «Localizar» en la fila de órdenes. */
+    final boolean cable;
 
     private LinkGlance(Look look, Action action, Status status, Detail detail, String text, float fps, float mbps,
                        Input in) {
@@ -172,6 +176,7 @@ final class LinkGlance {
         this.mode = in.mode == null ? Config.MODE_AA : in.mode;
         this.locale = in.locale == null ? "" : in.locale;
         this.home = in.home == null ? "" : in.home;
+        this.cable = in.cable;
     }
 
     private static LinkGlance make(Look look, Action action, Status status, Detail detail, String text, Input in) {
@@ -262,7 +267,7 @@ final class LinkGlance {
     /** Lo que se ve salvo las cifras del vídeo (cambia con el estado, la conexión, el modo o el idioma). */
     String stateKey() {
         return look + "|" + action + "|" + status + "|" + detail + "|" + text + "|" + linkMode + "|" + transport + "|"
-                + mode + "|" + locale + "|" + home;
+                + mode + "|" + locale + "|" + home + (cable ? "|cable" : "");
     }
 
     /**

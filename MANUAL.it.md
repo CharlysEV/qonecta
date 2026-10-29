@@ -903,7 +903,7 @@ e lo usa in «Auto esteso»:
   alto autonomia, batteria e se è chiusa a chiave; al centro **la C10 in 3D** (si gira con il dito; porte e bagagliaio
   aperti si aprono nel modello); sotto, la fila di comandi **Apri · Chiudi · Bagagliaio · Clima · Localizza** (gli
   stessi del widget «Auto», con conferma: servono il PIN dell'auto salvato in «Dati dell'auto» e i comandi attivati;
-  senza, la fila è spenta) le schede **«Ricarica»** (come il centro di ricarica dell'app Leapmotor: la % sopra una batteria disegnata, lo stato della ricarica e le ultime ricariche viste da Qonecta+, con la % e la colonnina) e **«Consumi»** (Settimana / Mese / Anno: km, energia, consumo ogni 100 km e la ripartizione Guida / Clima / Altro, gli stessi valori dell'app Leapmotor, e gli ultimi viaggi; «Tutti i viaggi ›» e «Tutte le ricariche ›» portano a Viaggi), e due schede che si aprono: **«Clima»** (temperatura dell'abitacolo, il clima acceso da qui
+  senza, la fila è spenta) le schede **«Ricarica»** (come il centro di ricarica dell'app Leapmotor: la % sopra una batteria disegnata, lo stato della ricarica, il pulsante **«Sblocca il cavo di ricarica»** finché il cavo è collegato, in ricarica o già carica (nel widget «Auto», «Trova» diventa «Cavo» nel frattempo), e le ultime ricariche viste da Qonecta+, con la % e la colonnina) e **«Consumi»** (Settimana / Mese / Anno: km, energia, consumo ogni 100 km e la ripartizione Guida / Clima / Altro, gli stessi valori dell'app Leapmotor, e gli ultimi viaggi; «Tutti i viaggi ›» e «Tutte le ricariche ›» portano a Viaggi), e due schede che si aprono: **«Clima»** (temperatura dell'abitacolo, il clima acceso da qui
   e il pulsante del clima) e **«Stato»** (le quattro pressioni, in ambra la gomma bassa o con avviso; porte e
   bagagliaio; temperatura della batteria; contachilometri). Legge il cloud solo mentre la scheda è visibile.
 - **C10 REEV (range extender):** Qonecta+ la riconosce da solo (l'auto comunica il suo serbatoio) e porta la batteria a
@@ -952,9 +952,9 @@ cancellare nulla.
 **Privacy e sicurezza.**
 
 - Sola lettura, con un'eccezione facoltativa: i **comandi del widget «Auto» e della scheda «La mia auto»** (chiudere, aprire, bagagliaio, clima e
-  localizzare), e solo se salvi il PIN dell'auto in «Dati dell'auto» → «5 · PIN dell'auto» e lì attivi i comandi dal
+  localizzare e sbloccare il cavo di ricarica), e solo se salvi il PIN dell'auto in «Dati dell'auto» → «5 · PIN dell'auto» e lì attivi i comandi dal
   widget (il PIN è quello dell'app Leapmotor; resta cifrato sul telefono e non finisce mai nel registro). Senza PIN,
-  Qonecta+ **non invia mai comandi all'auto**, e non esiste nessun altro comando (niente ricarica né limiti). Ogni
+  Qonecta+ **non invia mai comandi all'auto**, e non esiste nessun altro comando (né il limite né la programmazione della ricarica). Ogni
   comando va confermato prima dell'invio; «Dimentica PIN» lo cancella.
 - I tuoi dati vanno **solo ai server di Leapmotor**. La posizione dell'auto non viene né letta né salvata.
 - Il certificato, la sessione e lo storico dei viaggi vengono salvati **cifrati** con una chiave dell'Android Keystore,

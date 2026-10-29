@@ -98,6 +98,22 @@ class CarCommandTest {
 
     @Test
     fun onlyTheseCommandsCanBeSent() {
-        assertEquals(listOf("110", "120", "130", "170"), LeapApi.COMMANDS)
+        assertEquals(listOf("110", "120", "130", "170", "192"), LeapApi.COMMANDS)
+    }
+
+    @Test
+    fun unlockTheChargingCable() {
+        // 29-10, LPMFF: soltar el conector al acabar la carga (orden 192 de leapmotor-ha).
+        val c = CarCommand(CarCommand.Kind.CABLE_UNLOCK)
+        assertEquals("192", c.cmdId())
+        assertEquals("{\"operation\":\"unlock\"}", c.content("C10", Double.NaN))
+        assertTrue(c.needsConfirm())
+        assertEquals(CarCommand.Kind.CABLE_UNLOCK, CarCommand.fromButton("cable")!!.kind)
+        assertEquals(CarCommand.Kind.CABLE_UNLOCK, kind("Desbloquea el cable"))
+        assertEquals(CarCommand.Kind.CABLE_UNLOCK, kind("suelta el cable de carga"))
+        assertEquals(CarCommand.Kind.CABLE_UNLOCK, kind("unlock the charging cable"))
+        // Sin «cable», lo de siempre.
+        assertEquals(CarCommand.Kind.UNLOCK, kind("desbloquea el coche"))
+        assertEquals(CarCommand.Kind.CLIMATE_OFF, kind("quita el aire"))
     }
 }

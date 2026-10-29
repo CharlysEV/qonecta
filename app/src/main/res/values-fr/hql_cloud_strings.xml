@@ -202,6 +202,10 @@
     <string name="hql_cc_retry">Répéter</string>
     <string name="hql_cc_confirm_unlock">Déverrouiller la voiture ?</string>
     <string name="hql_cc_confirm_trunk">Ouvrir le coffre ?</string>
+    <string name="hql_cc_cable_unlock">Déverrouiller le câble de recharge</string>
+    <string name="hql_cc_confirm_cable">Déverrouiller le câble de recharge ?</string>
+    <string name="hql_cc_confirm_cable_text">Le connecteur est libéré et le câble peut être retiré de la voiture.</string>
+    <string name="hql_cw_cable">Câble</string>
     <string name="hql_cc_confirm_yes">Oui, ouvrir</string>
     <string name="hql_cc_sending">%1$s : envoi à la voiture… (jusqu\'à 30 s)</string>
     <string name="hql_cc_done">✓ %1$s</string>

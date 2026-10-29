@@ -893,7 +893,7 @@ en «Auto extendido»:
   la autonomía, la batería y si está cerrado con llave; en medio **el C10 en 3D** (se gira con el dedo; las puertas y
   el maletero abiertos se abren en el dibujo); debajo, la fila de órdenes **Abrir · Cerrar · Maletero · Clima ·
   Localizar** (las mismas del widget «Coche», con su confirmación: necesitan el PIN del coche guardado en «Datos del
-  coche» y las órdenes activadas; sin ellas la fila sale apagada) las tarjetas **«Carga»** (como el «Centro de carga» de Leapmotor: el % sobre una batería dibujada, el estado de la carga y las últimas cargas que vio Qonecta+, con el % y el cargador) y **«Consumo»** (Semana / Mes / Año: km, energía, consumo por 100 km y el reparto Conducción / Clima / Otros, las mismas cifras que la app de Leapmotor, y los últimos viajes; «Todos los viajes ›» y «Todas las cargas ›» llevan a Viajes), y dos tarjetas que se despliegan: **«Clima»**
+  coche» y las órdenes activadas; sin ellas la fila sale apagada) las tarjetas **«Carga»** (como el «Centro de carga» de Leapmotor: el % sobre una batería dibujada, el estado de la carga, el botón **«Desbloquear el cable de carga»** mientras el cable está puesto, cargando o ya cargado (en el widget «Coche», «Localizar» pasa a ser «Cable» mientras tanto), y las últimas cargas que vio Qonecta+, con el % y el cargador) y **«Consumo»** (Semana / Mes / Año: km, energía, consumo por 100 km y el reparto Conducción / Clima / Otros, las mismas cifras que la app de Leapmotor, y los últimos viajes; «Todos los viajes ›» y «Todas las cargas ›» llevan a Viajes), y dos tarjetas que se despliegan: **«Clima»**
   (temperatura del habitáculo, el clima encendido desde aquí y el botón del clima) y **«Salud»** (las cuatro
   presiones, en ámbar la rueda baja o con aviso; puertas y maletero; temperatura de la batería; cuentakilómetros).
   Solo lee la nube mientras la pestaña está a la vista.
@@ -938,10 +938,10 @@ del coche» lo apaga sin borrar nada.
 
 **Privacidad y seguridad.**
 
-- Solo lectura, con una excepción opcional: las **órdenes del widget «Coche» y de la pestaña «Mi coche»** (cerrar, abrir, maletero, clima y
-  localizar), y solo si guardas el PIN del coche en «Datos del coche» → «5 · PIN del coche» y activas allí las órdenes
+- Solo lectura, con una excepción opcional: las **órdenes del widget «Coche» y de la pestaña «Mi coche»** (cerrar, abrir, maletero, clima,
+  localizar y desbloquear el cable de carga), y solo si guardas el PIN del coche en «Datos del coche» → «5 · PIN del coche» y activas allí las órdenes
   desde el widget (el PIN es el de la app de Leapmotor; se guarda cifrado en el móvil y nunca va al log). Sin PIN,
-  Qonecta+ **nunca manda órdenes al coche**, y no existe ninguna otra (ni carga ni límites). Cada orden se confirma
+  Qonecta+ **nunca manda órdenes al coche**, y no existe ninguna otra (ni el límite ni la programación de la carga). Cada orden se confirma
   antes de mandarla; «Olvidar PIN» lo borra.
 - Tus datos van **solo a los servidores de Leapmotor**. No se lee ni se guarda la posición del coche.
 - El certificado, la sesión y el historial de viajes se guardan **cifrados** con una clave del Android Keystore, fuera

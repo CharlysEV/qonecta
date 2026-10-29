@@ -202,6 +202,10 @@
     <string name="hql_cc_retry">Ripeti</string>
     <string name="hql_cc_confirm_unlock">Aprire l\'auto?</string>
     <string name="hql_cc_confirm_trunk">Aprire il bagagliaio?</string>
+    <string name="hql_cc_cable_unlock">Sblocca il cavo di ricarica</string>
+    <string name="hql_cc_confirm_cable">Sbloccare il cavo di ricarica?</string>
+    <string name="hql_cc_confirm_cable_text">Il connettore si sblocca e il cavo si può estrarre dall\'auto.</string>
+    <string name="hql_cw_cable">Cavo</string>
     <string name="hql_cc_confirm_yes">Sì, apri</string>
     <string name="hql_cc_sending">%1$s: invio all\'auto… (può richiedere fino a 30 s)</string>
     <string name="hql_cc_done">✓ %1$s</string>

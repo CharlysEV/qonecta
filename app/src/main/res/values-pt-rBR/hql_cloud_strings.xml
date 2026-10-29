@@ -202,6 +202,10 @@
     <string name="hql_cc_retry">Repetir</string>
     <string name="hql_cc_confirm_unlock">Destrancar o carro?</string>
     <string name="hql_cc_confirm_trunk">Abrir o porta-malas?</string>
+    <string name="hql_cc_cable_unlock">Destravar o cabo de recarga</string>
+    <string name="hql_cc_confirm_cable">Destravar o cabo de recarga?</string>
+    <string name="hql_cc_confirm_cable_text">O conector é liberado e o cabo pode ser retirado do carro.</string>
+    <string name="hql_cw_cable">Cabo</string>
     <string name="hql_cc_confirm_yes">Sim, abrir</string>
     <string name="hql_cc_sending">%1$s: enviando ao carro… (pode levar até 30 s)</string>
     <string name="hql_cc_done">✓ %1$s</string>

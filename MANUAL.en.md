@@ -875,7 +875,7 @@ extended":
   range, the battery and whether it is locked; in the middle **the C10 in 3D** (turn it with your finger; open doors
   and boot open in the drawing); below, the row of orders **Unlock · Lock · Boot · Climate · Locate** (the same as the
   "Car" widget, with their confirmation: they need the car's PIN saved in "Car data" and the orders enabled; without
-  them the row is dimmed) the cards **"Charging"** (like the charging centre of the Leapmotor app: the % over a drawn battery, the charging state and the latest charges Qonecta+ saw, with the % and the charger) and **"Consumption"** (Week / Month / Year: km, energy, consumption per 100 km and the Driving / A/C / Other split, the same figures as the Leapmotor app, and the latest trips; "All trips ›" and "All charges ›" open Trips), and two cards that unfold: **"Climate"** (cabin temperature, the climate turned on from here
+  them the row is dimmed) the cards **"Charging"** (like the charging centre of the Leapmotor app: the % over a drawn battery, the charging state, the **"Unlock the charging cable"** button while the cable is plugged in, charging or already charged (in the "Car" widget, "Find" becomes "Cable" meanwhile), and the latest charges Qonecta+ saw, with the % and the charger) and **"Consumption"** (Week / Month / Year: km, energy, consumption per 100 km and the Driving / A/C / Other split, the same figures as the Leapmotor app, and the latest trips; "All trips ›" and "All charges ›" open Trips), and two cards that unfold: **"Climate"** (cabin temperature, the climate turned on from here
   and the climate button) and **"Health"** (the four pressures, amber for a low tyre or a warning; doors and boot;
   battery temperature; odometer). It only reads the cloud while the tab is visible.
 - **C10 REEV (range extender):** Qonecta+ recognises it by itself (the car reports its tank) and switches the battery
@@ -920,7 +920,7 @@ data" turns it off without deleting anything.
 
 **Privacy and security.**
 
-- Read-only, with one optional exception: the **commands of the "Car" widget and of the "My car" tab** (lock, unlock, boot, climate and find),
+- Read-only, with one optional exception: the **commands of the "Car" widget and of the "My car" tab** (lock, unlock, boot, climate, find and unlock the charging cable),
   and only if you save your car PIN in "Car data" → "5 · Car PIN" and turn on the widget commands there (the PIN is
   the one in the Leapmotor app; stored encrypted on the phone and never logged). Without a PIN, Qonecta+ **never sends
   commands to the car**, and no other command exists (no charging or limits). Every command is confirmed before it is
