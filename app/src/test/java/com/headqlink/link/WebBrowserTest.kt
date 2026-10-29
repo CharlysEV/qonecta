@@ -37,6 +37,26 @@ class WebBrowserTest {
     }
 
     @Test
+    fun desktopModeAlsoInTheClientHints() {
+        val mobile = "Mozilla/5.0 (Linux; Android 17; Pixel Build/X; wv) AppleWebKit/537.36 (KHTML, like Gecko) " +
+            "Version/4.0 Chrome/156.0.8078.47 Mobile Safari/537.36"
+        assertEquals("156.0.8078.47", WebScreen.chromeVersion(mobile))
+        assertEquals("", WebScreen.chromeVersion(null))
+        assertEquals("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.47 " +
+            "Safari/537.36", WebScreen.desktopUa(mobile))
+        // Netflix mira navigator.userAgentData: tiene que decir ordenador con Linux y Chrome, no «Android WebView».
+        val meta = WebScreen.desktopMeta(mobile)!!
+        assertEquals("Linux", meta.platform)
+        assertEquals(false, meta.isMobile)
+        assertEquals(64, meta.bitness)
+        assertEquals("156.0.8078.47", meta.fullVersion)
+        val brands = meta.brandVersionList.map { it.brand + " " + it.majorVersion }
+        assertTrue(brands.toString(), "Google Chrome 156" in brands && "Chromium 156" in brands)
+        assertTrue(brands.none { "Android" in it || "WebView" in it })
+        assertNull(WebScreen.desktopMeta("sin versión"))
+    }
+
+    @Test
     fun recentKeepsOnePerSiteNewestFirstAndCaps() {
         var json = "[]"
         json = WebScreen.recentAdd(json, "https://a.org/1", "A1", 3)

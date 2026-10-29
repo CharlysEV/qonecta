@@ -31,6 +31,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.webkit.UserAgentMetadata;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewFeature;
 
@@ -93,9 +94,11 @@ final class WebScreen implements CarScreen {
     private final StringBuilder addressBuf = new StringBuilder();
     private android.speech.SpeechRecognizer speech;
     private boolean loading;
-    /** «PC»: la web como en un ordenador (Netflix, Disney+… no dejan verlas en un móvil). Se recuerda. */
+    /** «PC»: la web como en un ordenador (Disney+ y otras no dejan verlas en un móvil). Se recuerda. */
     private boolean desktop;
     private String mobileUa;
+    /** Las client hints propias del WebView (las de móvil), para volver a ellas al quitar «PC». */
+    private UserAgentMetadata mobileMeta;
 
     /** Una pestaña: su WebView (creada al verla por primera vez), su sonido y lo último que cargó. */
     private static final class Tab {
@@ -534,7 +537,7 @@ final class WebScreen implements CarScreen {
 
             @Override
             public void onPermissionRequest(android.webkit.PermissionRequest r) {
-                // Solo el contenido protegido (Widevine: Netflix, Disney+…), sin preguntar; cámara y micrófono, no.
+                // Solo el contenido protegido (Widevine: Disney+…), sin preguntar; cámara y micrófono, no.
                 for (String res : r.getResources()) {
                     if (android.webkit.PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID.equals(res)) {
                         r.grant(new String[]{res});
@@ -564,8 +567,30 @@ final class WebScreen implements CarScreen {
     private void applyUa(WebSettings s) {
         if (mobileUa == null) return;
         s.setUserAgentString(desktop ? desktopUa(mobileUa) : mobileUa);
+        applyMeta(s, desktop);
         s.setLoadWithOverviewMode(true);
         s.setUseWideViewPort(true);
+    }
+
+    /**
+     * Lo que la web lee además del agente de usuario (navigator.userAgentData y las cabeceras Sec-CH-UA-*): en «PC»,
+     * Chrome de ordenador en Linux como desktopUa. Si no, sigue diciendo «Android WebView, móvil» y webs como Netflix
+     * responden «Actualización necesaria» (a Disney+ le basta con el agente de usuario). Netflix aun así no
+     * reproduce: su servidor no da licencia al Widevine de Android, ni en Firefox (29-10). true si ha cambiado.
+     */
+    private boolean applyMeta(WebSettings s, boolean pc) {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.USER_AGENT_METADATA)) return false;
+        try {
+            UserAgentMetadata now = WebSettingsCompat.getUserAgentMetadata(s);
+            if (mobileMeta == null) mobileMeta = now;
+            UserAgentMetadata want = pc ? desktopMeta(mobileUa) : mobileMeta;
+            if (want == null || want.equals(now)) return false;
+            WebSettingsCompat.setUserAgentMetadata(s, want);
+            return true;
+        } catch (RuntimeException e) {
+            L.w("navegador: sin client hints de ordenador (" + e.getClass().getSimpleName() + ")");
+            return false;
+        }
     }
 
     /**
@@ -573,10 +598,33 @@ final class WebScreen implements CarScreen {
      * «Android», «wv», «Version/4.0» ni «Mobile».
      */
     static String desktopUa(String mobile) {
-        String chrome = "";
-        java.util.regex.Matcher m = java.util.regex.Pattern.compile("Chrome/[0-9.]+").matcher(mobile == null ? "" : mobile);
-        if (m.find()) chrome = m.group() + " ";
+        String v = chromeVersion(mobile);
+        String chrome = v.isEmpty() ? "" : "Chrome/" + v + " ";
         return "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) " + chrome + "Safari/537.36";
+    }
+
+    /** Puro: la versión de Chrome del agente de usuario («156.0.8078.47»), o "" si no la lleva. */
+    static String chromeVersion(String ua) {
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("Chrome/([0-9.]+)").matcher(ua == null ? "" : ua);
+        return m.find() ? m.group(1) : "";
+    }
+
+    /** Puro: las client hints de Chrome de ordenador en Linux, con la versión de Chrome de mobile; null si no la lleva. */
+    static UserAgentMetadata desktopMeta(String mobile) {
+        String full = chromeVersion(mobile);
+        if (full.isEmpty()) return null;
+        String major = full.split("\\.")[0];
+        List<UserAgentMetadata.BrandVersion> brands = new ArrayList<>();
+        brands.add(brand("Chromium", major, full));
+        brands.add(brand("Google Chrome", major, full));
+        brands.add(brand("Not_A Brand", "99", "99.0.0.0"));
+        return new UserAgentMetadata.Builder().setBrandVersionList(brands).setFullVersion(full).setPlatform("Linux")
+                .setPlatformVersion("").setArchitecture("x86").setBitness(64).setModel("").setMobile(false).build();
+    }
+
+    private static UserAgentMetadata.BrandVersion brand(String name, String major, String full) {
+        return new UserAgentMetadata.BrandVersion.Builder().setBrand(name).setMajorVersion(major).setFullVersion(full)
+                .build();
     }
 
     // ------------------------------------------------------------------ pestañas
@@ -903,10 +951,10 @@ final class WebScreen implements CarScreen {
         if (mobileUa == null) mobileUa = s.getUserAgentString();
         boolean pc = sp.getBoolean("pc:" + h, false);
         String want = pc ? desktopUa(mobileUa) : mobileUa;
-        if (!want.equals(s.getUserAgentString())) {
-            s.setUserAgentString(want);
-            if (reloadIfChanged) w.post(w::reload);
-        }
+        boolean changed = !want.equals(s.getUserAgentString());
+        if (changed) s.setUserAgentString(want);
+        if (applyMeta(s, pc)) changed = true;
+        if (changed && reloadIfChanged) w.post(w::reload);
         if (w == web) desktop = pc;
         s.setTextZoom(sp.getInt("zoom:" + h, 100));
     }
