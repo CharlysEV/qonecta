@@ -136,6 +136,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
     private boolean hasGravity;
     private double yawRate;
     private double lastSpeed = -1;
+    /** Cuánto se fía el GPS de la velocidad de la posición que llega (km/h); NaN si no lo dice. */
+    private double speedAccKmh = Double.NaN;
     private long lastSpeedNs;
     private double longFilt;
     private Location lastLoc;
@@ -550,15 +552,19 @@ final class CarSensors implements SensorEventListener, LocationListener {
     /**
      * Vuelven las posiciones tras un hueco (más de 5 s): la línea recta entre la última y la nueva (lo mínimo recorrido)
      * cuenta para el viaje y, a la velocidad media del hueco, para la energía. Así el viaje y el consumo no quedan como
-     * si el coche hubiera estado parado. Con una media imposible (un salto de la posición) no se suma nada.
+     * si el coche hubiera estado parado. Con una media imposible (un salto de la posición) no se suma nada, ni con el
+     * coche parado antes y después (kmhBefore, kmhAfter) y un salto corto: es la posición que se desvía al volver la señal.
      */
-    private void bridgeGap(double distM, long gapMs) {
+    private void bridgeGap(double distM, long gapMs, double kmhBefore, double kmhAfter) {
         gaps++;
         gapMsTotal += gapMs;
-        double km = GpsWatch.bridgeKm(distM, gapMs);
+        double km = GpsWatch.bridgeKm(distM, gapMs, kmhBefore, kmhAfter);
         double kmh = GpsWatch.bridgeKmh(km, gapMs);
         String what;
-        if (km > 0) {
+        if (km == 0 && distM > 0 && GpsWatch.bridgeKm(distM, gapMs) > 0) {
+            what = String.format(Locale.US, "%.0f m con el coche parado antes y después: es la posición que se desvía al "
+                    + "volver la señal, no se suman", distM);
+        } else if (km > 0) {
             s.tripKm += km;
             if (kmh > 2) {
                 double hours = gapMs / 3.6e6;
@@ -627,6 +633,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
         long nowNs = SystemClock.elapsedRealtimeNanos();
         long fixNs = loc.getElapsedRealtimeNanos();
         if (fixNs <= 0 || fixNs > nowNs || nowNs - fixNs > 5_000_000_000L) fixNs = nowNs;
+        speedAccKmh = android.os.Build.VERSION.SDK_INT >= 26 && loc.hasSpeedAccuracy()
+                ? loc.getSpeedAccuracyMetersPerSecond() * 3.6 : Double.NaN;
         fix(nowNs, fixNs, loc.hasSpeed() ? loc.getSpeed() : 0, loc.hasBearing(), loc.getBearing(),
                 loc.getLatitude(), loc.getLongitude(), step, loc.hasAltitude() ? loc.getAltitude() : Double.NaN, altGood);
         maybeFetchWeather(loc);
@@ -642,6 +650,7 @@ final class CarSensors implements SensorEventListener, LocationListener {
         // Hueco del GPS (más de 5 s sin posición, p. ej. con el móvil bloqueado): se suma aparte (bridgeGap).
         long gapMs = lastFixNs != 0 ? (now - lastFixNs) / 1_000_000 : 0;
         boolean gap = lastFixNs != 0 && GpsWatch.isGap(gapMs);
+        double kmhBefore = lastSpeed >= 0 ? lastSpeed * 3.6 : Double.NaN;
         lastFixNs = now;
         s.gps = true;
         s.speedKmh = v * 3.6;
@@ -708,8 +717,8 @@ final class CarSensors implements SensorEventListener, LocationListener {
         s.lat = lat;
         s.lon = lon;
         // Energía estimada acumulada (para el % de batería y los viajes) y su reparto.
-        if (gap) bridgeGap(step, gapMs);
-        boolean moving = s.speedKmh > 2;
+        if (gap) bridgeGap(step, gapMs, kmhBefore, s.speedKmh);
+        boolean moving = GpsWatch.moving(s.speedKmh, speedAccKmh);
         s.powerKw = moving ? model.compute(s.speedKmh, s.gradePct, s.headwindKmh, s.tempC, s.longG)
                 : EnergyModel.AUX_KW + EnergyModel.hvac(Double.isNaN(s.tempC) ? 15 : s.tempC);
         if (lastEnergyNs != 0 && !gap) {
@@ -829,6 +838,7 @@ final class CarSensors implements SensorEventListener, LocationListener {
         demoLat = d.lat[k];
         demoLon = d.lon[k];
         yawRate = d.yawRad[k];
+        speedAccKmh = Double.NaN;
         fix(demoNs, demoNs, Math.max(0, d.speedKmh[k]) / 3.6, true, d.headingDeg[k], d.lat[k], d.lon[k], step, d.altM[k], true);
         updateLateral();
         demoK = k;

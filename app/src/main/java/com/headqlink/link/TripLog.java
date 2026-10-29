@@ -291,12 +291,36 @@ final class TripLog {
         return CloudEnergy.between(st.soc, st.odo, now.status.socBest(), now.status.odometerKm, now.capacityKwh, charged);
     }
 
+    /** Un viaje que nunca se alejó más de esto de la salida… */
+    static final double PARKED_RADIUS_M = 200;
+    /** …ni pasó de esto (km/h) es el coche aparcado con el GPS bailando: no se guarda. */
+    static final double PARKED_MAX_KMH = 20;
+
+    /** Puro: ¿el recorrido (lat, lon, …) nunca se alejó de su primera posición ni pasó de la velocidad de aparcado? */
+    static boolean parkedOnly(List<double[]> track, double maxKmh) {
+        if (track.isEmpty() || maxKmh > PARKED_MAX_KMH) return false;
+        double[] a = track.get(0);
+        for (double[] p : track) {
+            if (RoadInfo.dist(a[0], a[1], p[0], p[1]) > PARKED_RADIUS_M) return false;
+        }
+        return true;
+    }
+
     private void save() {
         if (demo) return;
         CarSensors.Snapshot s = sensors.snapshot();
         if (Double.isNaN(startKwh)) return;
         double km = s.kmTotal - startKm;
         if (km < 0.3) return;
+        boolean parked;
+        synchronized (track) {
+            parked = parkedOnly(track, maxKmh);
+        }
+        if (parked) {
+            L.i(String.format(Locale.US, "viaje: no se guarda (%.1f km contados, pero el coche no se alejó más de %.0f m de la "
+                    + "salida ni pasó de %.0f km/h: el GPS bailando con el coche aparcado)", km, PARKED_RADIUS_M, PARKED_MAX_KMH));
+            return;
+        }
         try {
             JSONObject o = new JSONObject();
             o.put("start", startMs);

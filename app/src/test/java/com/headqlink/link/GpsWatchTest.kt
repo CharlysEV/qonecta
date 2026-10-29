@@ -65,6 +65,32 @@ class GpsWatchTest {
     }
 
     @Test
+    fun aParkedCarDoesNotAddTheJumpWhenTheSignalComesBack() {
+        // 28-10, LPMFF: aparcado, la señal va y viene y la primera posición al volver sale 300 m más allá.
+        assertEquals(0.0, GpsWatch.bridgeKm(300.0, 30_000, 0.4, 1.1), 0.0)
+        // Sin saber la velocidad de antes (primera posición tras arrancar) y parado después: tampoco.
+        assertEquals(0.0, GpsWatch.bridgeKm(300.0, 30_000, Double.NaN, 0.0), 0.0)
+        // En marcha antes o después (túnel): la línea recta, como siempre.
+        assertEquals(0.3, GpsWatch.bridgeKm(300.0, 30_000, 48.0, 0.0), 1e-9)
+        assertEquals(0.3, GpsWatch.bridgeKm(300.0, 30_000, 0.0, 30.0), 1e-9)
+        // El móvil sin GPS todo el viaje, parado al salir y al llegar: más de 1 km sí es camino.
+        assertEquals(12.0, GpsWatch.bridgeKm(12_000.0, 900_000, 0.0, 0.0), 1e-9)
+        // Y lo imposible sigue sin contar aunque fuera en marcha.
+        assertEquals(0.0, GpsWatch.bridgeKm(10_000.0, 60_000, 90.0, 90.0), 0.0)
+    }
+
+    @Test
+    fun movingNeedsASpeedAboveItsOwnError() {
+        assertTrue(GpsWatch.moving(50.0, 1.5))
+        // Sin el error de la velocidad (Android 7 o menos, la demostración): basta con pasar de 2 km/h.
+        assertTrue(GpsWatch.moving(3.0, Double.NaN))
+        assertFalse(GpsWatch.moving(1.8, Double.NaN))
+        // Aparcado: 4 km/h con un error de 6 km/h no es ir en marcha.
+        assertFalse(GpsWatch.moving(4.0, 6.0))
+        assertTrue(GpsWatch.moving(4.0, 2.0))
+    }
+
+    @Test
     fun probeSaysItArrivesWhenFixesKeepComingAfterTheLock() {
         val p = LockProbe()
         assertNull(p.tick(0, false, 0))

@@ -20,6 +20,15 @@ final class GpsWatch {
     static final double MAX_BRIDGE_KMH = 200;
     /** Huecos más largos no se puentean (el coche pudo parar y arrancar varias veces). */
     static final long MAX_BRIDGE_MS = 3 * 3_600_000L;
+    /** Por encima de esto (km/h), antes o después de un hueco, el coche iba en marcha: el salto es camino hecho. */
+    static final double BRIDGE_MOVING_KMH = 5;
+    /**
+     * Con el coche parado a los dos lados de un hueco, un salto menor que esto es la posición que se desvía al volver la
+     * señal (bajo un techo, entre edificios), no camino. 28-10, LPMFF: 2,4 km en 18 min con el coche aparcado.
+     */
+    static final double PARKED_JUMP_M = 1000;
+    /** Para estar en marcha: por encima de esto (km/h). */
+    static final double MOVING_KMH = 2;
 
     enum State {
         /** Aún no ha llegado ninguna posición. */
@@ -58,6 +67,25 @@ final class GpsWatch {
         if (gapMs <= 0 || gapMs > MAX_BRIDGE_MS || !(distM > 0)) return 0;
         double kmh = distM / 1000 / (gapMs / 3_600_000.0);
         return kmh <= MAX_BRIDGE_KMH ? distM / 1000 : 0;
+    }
+
+    /**
+     * Como {@link #bridgeKm(double, long)}, sabiendo la velocidad (km/h) de la última posición antes del hueco y de la
+     * primera después (NaN si no se sabe): con el coche parado a los dos lados, solo un salto de más de
+     * {@link #PARKED_JUMP_M} cuenta (el móvil sin GPS todo el viaje, que se vuelve a ver al llegar).
+     */
+    static double bridgeKm(double distM, long gapMs, double kmhBefore, double kmhAfter) {
+        boolean moved = kmhBefore > BRIDGE_MOVING_KMH || kmhAfter > BRIDGE_MOVING_KMH;
+        if (!moved && !(distM >= PARKED_JUMP_M)) return 0;
+        return bridgeKm(distM, gapMs);
+    }
+
+    /**
+     * ¿En marcha? Más de {@link #MOVING_KMH} y, si el GPS dice cuánto se fía de su velocidad (accKmh; NaN si no lo
+     * dice), más que ese error: parado, la velocidad baila unos km/h con un error mayor que ella.
+     */
+    static boolean moving(double kmh, double accKmh) {
+        return kmh > MOVING_KMH && !(accKmh >= kmh);
     }
 
     /** Velocidad media (km/h) de un hueco con km recorridos en gapMs. */
