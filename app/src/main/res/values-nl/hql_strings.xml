@@ -977,6 +977,12 @@
     <string name="hql_ha_confirm_open">%1$s openen?</string>
     <string name="hql_ha_confirm_close">%1$s sluiten?</string>
     <string name="hql_ha_yes">Ja</string>
+    <string name="hql_ha_pin">Vastzetten in het zijpaneel van de auto</string>
+    <string name="hql_ha_pin_full">Maximaal %1$d in het zijpaneel</string>
+    <string name="hql_ha_pin_hint">📌 zet een knop vast in het zijpaneel van de auto (maximaal 3): één tik is genoeg, zonder Android Auto te verlaten.</string>
+    <string name="hql_ha_done">Gedaan</string>
+    <string name="hql_ha_not_done">Mislukt</string>
+    <string name="hql_ha_tap_again">Tik nogmaals</string>
     <string name="hql_ha_setup">Home Assistant instellen</string>
     <string name="hql_ha_edit">Kiezen</string>
     <string name="hql_web_recent">Onlangs bezocht</string>

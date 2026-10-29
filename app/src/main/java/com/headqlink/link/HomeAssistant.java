@@ -96,6 +96,89 @@ final class HomeAssistant {
 
     void setEntities(List<String> ids) {
         sp.edit().putString(K_ENTITIES, String.join(",", new LinkedHashSet<>(ids))).apply();
+        // Un elemento que deja de estar elegido deja de estar fijado.
+        List<Entity> pins = pinned();
+        List<Entity> keep = keepChosen(pins, ids);
+        if (keep.size() != pins.size()) setPinned(keep);
+    }
+
+    // ------------------------------------------------------------------ fijados en la barra lateral del coche
+    private static final String K_PINNED = "pinned";
+    /** Como mucho estos fijados (29-10, LPMFF: el garaje a mano al salir de casa sin dejar Android Auto). */
+    static final int MAX_PINNED = 3;
+
+    /** Los fijados en la barra lateral del coche, en su orden: id, nombre, tipo y clase (el dibujo, sin leer la casa). */
+    List<Entity> pinned() {
+        return pinnedFrom(sp.getString(K_PINNED, ""));
+    }
+
+    boolean isPinned(String id) {
+        for (Entity e : pinned()) if (e.id.equals(id)) return true;
+        return false;
+    }
+
+    void setPinned(List<Entity> list) {
+        sp.edit().putString(K_PINNED, pinnedJson(list)).apply();
+    }
+
+    /** Puro: fija e (al final) o lo quita si ya estaba; null si ya hay max fijados y e no estaba. */
+    static List<Entity> togglePin(List<Entity> pins, Entity e, int max) {
+        List<Entity> out = new ArrayList<>();
+        boolean was = false;
+        for (Entity p : pins) {
+            if (p.id.equals(e.id)) was = true;
+            else out.add(p);
+        }
+        if (was) return out;
+        if (pins.size() >= max) return null;
+        out.add(e);
+        return out;
+    }
+
+    /** Puro: los fijados que siguen elegidos. */
+    static List<Entity> keepChosen(List<Entity> pins, List<String> chosen) {
+        List<Entity> out = new ArrayList<>();
+        for (Entity p : pins) if (chosen.contains(p.id)) out.add(p);
+        return out;
+    }
+
+    /** Puro: los fijados como JSON (lo que se guarda). */
+    static String pinnedJson(List<Entity> list) {
+        JSONArray a = new JSONArray();
+        for (Entity e : list) {
+            try {
+                a.put(new JSONObject().put("id", e.id).put("name", e.name).put("domain", e.domain)
+                        .put("dc", e.deviceClass == null ? "" : e.deviceClass));
+            } catch (org.json.JSONException ignored) {
+            }
+        }
+        return a.toString();
+    }
+
+    /** Puro: lo guardado a fijados (sin estado: se lee al tocarlos). */
+    static List<Entity> pinnedFrom(String json) {
+        List<Entity> out = new ArrayList<>();
+        if (json == null || json.isEmpty()) return out;
+        try {
+            JSONArray a = new JSONArray(json);
+            for (int i = 0; i < a.length(); i++) {
+                JSONObject o = a.optJSONObject(i);
+                if (o == null || o.optString("id").isEmpty()) continue;
+                Entity e = new Entity();
+                e.id = o.optString("id");
+                e.name = o.optString("name", e.id);
+                e.domain = o.optString("domain");
+                e.deviceClass = o.optString("dc");
+                out.add(e);
+            }
+        } catch (org.json.JSONException ignored) {
+        }
+        return out;
+    }
+
+    /** El estado de ahora de un solo elemento (/api/states/id): unos cientos de bytes, no toda la casa. */
+    Entity state(String id) throws Exception {
+        return parse(new JSONObject(request("GET", "/api/states/" + id, null)));
     }
 
     // ------------------------------------------------------------------ «Mi panel» (el panel completo en el coche)

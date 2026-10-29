@@ -852,6 +852,10 @@ prese, garage, tapparelle, scene, sensori), «‹ I miei pulsanti» li mostra co
 torna al pannello; resta salvato l'ultimo visto. Il token è salvato cifrato; mentre il pannello è aperto lo usa la sua
 pagina, e alla chiusura viene cancellato da lì.
 
+Con 📌 accanto a un elemento scelto lo **fissi nel pannello laterale** dell'auto (fino a 3): basta un tocco, senza uscire
+da Android Auto (il garage quando esci di casa). Serrature e porte chiedono un secondo tocco entro 4 s. Quando tocchi un
+pulsante, lì o in «I miei pulsanti», compare una **✓ verde** se Home Assistant l'ha fatto, o una ✕ rossa se no.
+
 ### «Acquario» (Giochi › Per l'attesa)
 
 Per i bambini, ad auto ferma: pesci colorati che nuotano, bolle, alghe e raggi di luce. **Toccando l'acqua** cade il

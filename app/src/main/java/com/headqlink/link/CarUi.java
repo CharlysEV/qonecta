@@ -97,6 +97,8 @@ final class CarUi {
     private int phoneLevel = -1;
     private boolean phoneCharging;
     private final List<LinearLayout> navButtons = new ArrayList<>();
+    /** Los botones de Home Assistant fijados en la barra (HomeAssistant.pinned), al final de la lista. */
+    private final List<LinearLayout> haButtons = new ArrayList<>();
     /** Ancho del panel reducido (solo iconos) mientras algo ocupa la pantalla grande. */
     private static final int COMPACT_W = 96;
     private boolean compact;
@@ -665,7 +667,7 @@ final class CarUi {
         boolean rail = sp || rail();
         panel.getLayoutParams().width = pw;
         panel.requestLayout();
-        for (LinearLayout b : navButtons) {
+        for (LinearLayout b : labelledButtons()) {
             b.getChildAt(1).setVisibility(rail ? View.GONE : View.VISIBLE);
             b.setGravity(rail ? Gravity.CENTER : Gravity.CENTER_VERTICAL);
             b.setPadding(rail ? 0 : 18, 0, rail ? 0 : 18, 0);
@@ -710,7 +712,7 @@ final class CarUi {
     /** En la barra reducida, todos los botones guardan la misma separación y cabe la flecha inferior. */
     private void fitPanelButtons(boolean rail, int panelWidth) {
         int buttonHeight = 72;
-        int buttons = navButtons.size() + (splitButton.getVisibility() == View.VISIBLE ? 1 : 0)
+        int buttons = navButtons.size() + haButtons.size() + (splitButton.getVisibility() == View.VISIBLE ? 1 : 0)
                 + (swapButton != null && swapButton.getVisibility() == View.VISIBLE ? 1 : 0);
         if (rail) {
             railInfo.measure(View.MeasureSpec.makeMeasureSpec(Math.max(1, panelWidth - 24), View.MeasureSpec.EXACTLY),
@@ -725,7 +727,7 @@ final class CarUi {
                     ? radioMini.getLayoutParams().height + 6 : 0);
             buttonHeight = navButtonHeight(CarStyle.uiScale(), false, height - 40 - footer, buttons);
         }
-        for (LinearLayout button : navButtons) {
+        for (LinearLayout button : labelledButtons()) {
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) button.getLayoutParams();
             if (lp.height != buttonHeight) {
                 lp.height = buttonHeight;
@@ -2051,6 +2053,9 @@ final class CarUi {
         p.setBackground(panelBackground(panelColor));
         p.setPadding(20, 20, 20, 20);
         navButtons.clear();
+        haButtons.clear();
+        for (Runnable r : haRestore.values()) main.removeCallbacks(r);
+        haRestore.clear();
         // Los botones van en una lista que se desplaza arriba y abajo si no caben (muchos elegidos en Ajustes); «Ajustes»
         // y el pie quedan fijos debajo. Sin barra: lo que no cabe se adivina por el botón cortado.
         LinearLayout list = new LinearLayout(c);
@@ -2063,6 +2068,7 @@ final class CarUi {
         }
         list.addView(buildSplitButton(c));
         list.addView(buildSwapButton(c));
+        addHaButtons(c, list);
         android.widget.ScrollView scroll = new android.widget.ScrollView(c);
         scroll.setVerticalScrollBarEnabled(false);
         scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -2517,6 +2523,161 @@ final class CarUi {
         });
         navButtons.add(b);
         return b;
+    }
+
+    /** Los botones del panel con su texto al lado: los de la app y los fijados de Home Assistant. */
+    private List<LinearLayout> labelledButtons() {
+        List<LinearLayout> all = new ArrayList<>(navButtons);
+        all.addAll(haButtons);
+        return all;
+    }
+
+    // ------------------------------------------------------------------ Home Assistant en la barra
+
+    /*
+     * 29-10, LPMFF: el garaje de Home Assistant a mano al salir de casa, sin dejar Android Auto. Los elegidos en el móvil
+     * con 📌 (como mucho 3) van en la barra, al final de la lista. Un toque lee su estado (el garaje abierto se cierra) y
+     * lo hace; las cerraduras y las puertas, con un segundo toque en 4 s. El resultado se ve en el botón: ✓ en verde
+     * (como el widget de Home Assistant en Android) o ✕ en rojo.
+     */
+    private static final int HA_IDLE = 0;
+    private static final int HA_BUSY = 1;
+    private static final int HA_ARMED = 2;
+    private static final int HA_DONE = 3;
+    private static final int HA_FAIL = 4;
+    private static final long HA_CONFIRM_MS = 4000;
+    private static final long HA_DONE_MS = 1500;
+    private static final long HA_FAIL_MS = 3000;
+    /** El que espera el segundo toque, hasta cuándo (uptime) y su acción ya decidida. */
+    private String haArmedId;
+    private long haArmedUntil;
+    private String[] haArmedAct;
+    private final java.util.Set<String> haBusy = new java.util.HashSet<>();
+    private final java.util.Map<LinearLayout, Runnable> haRestore = new java.util.HashMap<>();
+
+    private void addHaButtons(Context c, LinearLayout list) {
+        HomeAssistant ha = new HomeAssistant(ctx);
+        if (!ha.configured()) return;
+        for (HomeAssistant.Entity e : ha.pinned()) list.addView(haButton(c, e));
+    }
+
+    private LinearLayout haButton(Context c, HomeAssistant.Entity e) {
+        LinearLayout b = new LinearLayout(c);
+        b.setOrientation(LinearLayout.HORIZONTAL);
+        b.setGravity(Gravity.CENTER_VERTICAL);
+        b.setPadding(18, 0, 18, 0);
+        TextView icon = CarStyle.text(c, HomeScreen.glyph(e), 28, 0xFFFFFFFF);
+        icon.setGravity(Gravity.CENTER);
+        icon.setIncludeFontPadding(false);
+        b.addView(icon, new LinearLayout.LayoutParams(40, 40));
+        TextView t = CarStyle.text(c, e.name, 25, CarTheme.navText());
+        t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        t.setPadding(20, 0, 0, 0);
+        t.setSingleLine(true);
+        t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        b.addView(t);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 72);
+        lp.bottomMargin = 6;
+        b.setLayoutParams(lp);
+        b.setOnClickListener(v -> {
+            pulse(v);
+            haTap(b, e);
+        });
+        haButtons.add(b);
+        return b;
+    }
+
+    private void haTap(LinearLayout b, HomeAssistant.Entity e) {
+        if (haBusy.contains(e.id)) return;
+        String[] armed = e.id.equals(haArmedId) && SystemClock.uptimeMillis() < haArmedUntil ? haArmedAct : null;
+        haArmedId = null;
+        haBusy.add(e.id);
+        haShow(b, e, HA_BUSY);
+        new Thread(() -> {
+            HomeAssistant ha = new HomeAssistant(ctx);
+            try {
+                String[] act = armed;
+                if (act == null) {
+                    HomeAssistant.Entity now = ha.state(e.id);
+                    act = HomeAssistant.action(now);
+                    if (act == null) throw new IllegalStateException("solo se mira");
+                    if (HomeAssistant.needsConfirm(now)) {
+                        String[] a = act;
+                        main.post(() -> {
+                            haBusy.remove(e.id);
+                            haArmedId = e.id;
+                            haArmedAct = a;
+                            haArmedUntil = SystemClock.uptimeMillis() + HA_CONFIRM_MS;
+                            L.i("Casa: " + a[0] + "." + a[1] + " desde la barra: espero el segundo toque");
+                            haShow(b, e, HA_ARMED);
+                        });
+                        return;
+                    }
+                }
+                ha.call(act[0], act[1], e.id);
+                L.i("Casa: " + act[0] + "." + act[1] + " desde la barra lateral");
+                main.post(() -> {
+                    haBusy.remove(e.id);
+                    haShow(b, e, HA_DONE);
+                });
+            } catch (Exception ex) {
+                L.w("Casa: no se pudo desde la barra lateral (" + HomeAssistant.reason(ex) + ")");
+                main.post(() -> {
+                    haBusy.remove(e.id);
+                    haShow(b, e, HA_FAIL);
+                });
+            }
+        }, "hql-ha-pin").start();
+    }
+
+    /** El botón fijado según cómo va: normal, «…», «¿?» esperando el segundo toque, ✓ en verde o ✕ en rojo. */
+    private void haShow(LinearLayout b, HomeAssistant.Entity e, int kind) {
+        if (!haButtons.contains(b)) return;
+        Runnable old = haRestore.remove(b);
+        if (old != null) main.removeCallbacks(old);
+        TextView icon = (TextView) b.getChildAt(0);
+        TextView label = (TextView) b.getChildAt(1);
+        int nav = CarTheme.navText();
+        switch (kind) {
+            case HA_BUSY:
+                b.setBackground(null);
+                icon.setText("…");
+                icon.setTextColor(nav);
+                label.setText(e.name);
+                label.setTextColor(nav);
+                break;
+            case HA_ARMED:
+                b.setBackground(CarStyle.round(0xFFFFB547, 36));
+                icon.setText("?");
+                icon.setTextColor(0xFF1A1200);
+                label.setText(Str.get(R.string.hql_ha_tap_again));
+                label.setTextColor(0xFF1A1200);
+                break;
+            case HA_DONE:
+            case HA_FAIL:
+                boolean ok = kind == HA_DONE;
+                b.setBackground(CarStyle.round(ok ? 0xFF178A4C : 0xFFC62837, 36));
+                icon.setText(ok ? "✓" : "✕");
+                icon.setTextColor(0xFFFFFFFF);
+                label.setText(Str.get(ok ? R.string.hql_ha_done : R.string.hql_ha_not_done));
+                label.setTextColor(0xFFFFFFFF);
+                break;
+            default:
+                b.setBackground(null);
+                icon.setText(HomeScreen.glyph(e));
+                icon.setTextColor(0xFFFFFFFF);
+                label.setText(e.name);
+                label.setTextColor(nav);
+                return;
+        }
+        if (kind == HA_BUSY) return;
+        Runnable back = () -> {
+            haRestore.remove(b);
+            if (kind == HA_ARMED && e.id.equals(haArmedId)) haArmedId = null;
+            haShow(b, e, HA_IDLE);
+        };
+        haRestore.put(b, back);
+        main.postDelayed(back, kind == HA_ARMED ? HA_CONFIRM_MS : kind == HA_DONE ? HA_DONE_MS : HA_FAIL_MS);
     }
 
     /**

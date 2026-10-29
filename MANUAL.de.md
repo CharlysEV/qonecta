@@ -908,6 +908,11 @@ Tasten“ sie als große Tasten, und „▦ Mein Dashboard“ führt zurück zum
 gespeichert. Der Token wird verschlüsselt gespeichert; solange das Dashboard offen ist, nutzt ihn seine Seite, und beim
 Schließen wird er dort gelöscht.
 
+Mit 📌 neben einem ausgewählten Element **heftest du es an die Seitenleiste** im Auto (bis zu 3): ein Tipp genügt, ohne
+Android Auto zu verlassen (zum Beispiel das Garagentor beim Losfahren). Schlösser und Türen verlangen einen zweiten Tipp
+innerhalb von 4 s. Nach dem Tippen, dort oder unter „Meine Tasten“, erscheint ein **grünes ✓**, wenn Home Assistant es
+ausgeführt hat, sonst ein rotes ✕.
+
 ### „Aquarium“ (Spiele › Für die Wartezeit)
 
 Für die Kinder, bei stehendem Fahrzeug: bunte Fische, die schwimmen, Blasen, Algen und Lichtstrahlen. **Tippst du ins

@@ -145,6 +145,16 @@
                 android:text="@string/hql_ha_pick"
                 android:visibility="gone" />
 
+            <TextView
+                android:id="@+id/hql_ha_pin_hint"
+                style="@style/HQL.Text.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/hql_ha_pin_hint"
+                android:textColor="@color/hql_text_dim"
+                android:visibility="gone" />
+
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/hql_ha_filters"
                 android:layout_width="match_parent"

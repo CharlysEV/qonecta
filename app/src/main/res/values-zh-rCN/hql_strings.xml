@@ -976,6 +976,12 @@
     <string name="hql_ha_confirm_open">打开 %1$s？</string>
     <string name="hql_ha_confirm_close">关闭 %1$s？</string>
     <string name="hql_ha_yes">是</string>
+    <string name="hql_ha_pin">固定到车机侧边面板</string>
+    <string name="hql_ha_pin_full">侧边面板最多 %1$d 个</string>
+    <string name="hql_ha_pin_hint">📌 将按钮固定到车机侧边面板（最多 3 个）：点一下即可执行，无需离开 Android Auto。</string>
+    <string name="hql_ha_done">完成</string>
+    <string name="hql_ha_not_done">失败</string>
+    <string name="hql_ha_tap_again">再点一次</string>
     <string name="hql_ha_setup">设置 Home Assistant</string>
     <string name="hql_ha_edit">选择</string>
     <string name="hql_web_recent">最近访问</string>

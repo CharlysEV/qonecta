@@ -27,6 +27,14 @@ import java.util.List;
 final class HomeScreen implements CarScreen {
     private static final int COLUMNS = 4;
     private static final long REFRESH_MS = 5_000;
+    /** Cuánto se ve el ✓ (o la ✕) en el botón tocado, como el widget de Home Assistant en Android (29-10, LPMFF). */
+    private static final long DONE_MS = 1500;
+    private static final long FAIL_MS = 3000;
+    /** El último tocado, si fue bien y hasta cuándo se ve (uptime). */
+    private String doneId;
+    private boolean doneOk;
+    private long doneUntil;
+    private final android.os.Handler later = new android.os.Handler(android.os.Looper.getMainLooper());
 
     private Host host;
     private HomeAssistant ha;
@@ -128,6 +136,7 @@ final class HomeScreen implements CarScreen {
     @Override
     public void destroy() {
         running = false;
+        later.removeCallbacksAndMessages(null);
         closePanelWeb();
     }
 
@@ -303,12 +312,16 @@ final class HomeScreen implements CarScreen {
         t.setOrientation(LinearLayout.VERTICAL);
         t.setPadding(22, 18, 22, 18);
         int bg = on ? (e.domain.equals("light") ? 0xFF4A3B12 : CarStyle.ACCENT_BG) : CarStyle.CARD;
+        boolean flash = e.id.equals(doneId) && android.os.SystemClock.uptimeMillis() < doneUntil;
+        if (flash) bg = doneOk ? 0xFF178A4C : 0xFFC62837;
         t.setBackground(CarStyle.round(bg, 28));
         LinearLayout top = new LinearLayout(c);
         top.setGravity(Gravity.CENTER_VERTICAL);
-        TextView icon = CarStyle.text(c, glyph(e), 40, 0xFFFFFFFF);
+        TextView icon = CarStyle.text(c, flash ? (doneOk ? "✓" : "✕") : glyph(e), flash ? 52 : 40, 0xFFFFFFFF);
         top.addView(icon);
-        TextView state = CarStyle.text(c, e.id.equals(busy) ? "…" : stateText(e), 22, on ? (e.domain.equals("light") ? 0xFFFFD27A
+        String stateLine = flash ? Str.get(doneOk ? R.string.hql_ha_done : R.string.hql_ha_not_done)
+                : e.id.equals(busy) ? "…" : stateText(e);
+        TextView state = CarStyle.text(c, stateLine, 22, flash ? 0xFFFFFFFF : on ? (e.domain.equals("light") ? 0xFFFFD27A
                 : CarStyle.ACCENT) : CarStyle.TEXT_DIM);
         state.setGravity(Gravity.END);
         state.setSingleLine(true);
@@ -372,16 +385,34 @@ final class HomeScreen implements CarScreen {
             try {
                 ha.call(act[0], act[1], e.id);
                 L.i("Casa: " + act[0] + "." + act[1]);
+                flash(e.id, true);
                 // Home Assistant tarda un poco en cambiar el estado (el garaje, más): se relee enseguida y otra vez luego.
                 Thread.sleep(700);
             } catch (Exception ex) {
                 String why = HomeAssistant.reason(ex);
                 L.w("Casa: no se pudo (" + why + ")");
+                flash(e.id, false);
                 host.post(() -> status.setText(Str.get(R.string.hql_ha_error, why)));
             }
             busy = null;
             load();
         }, "hql-home-call").start();
+    }
+
+    /** ✓ (o ✕) en el botón tocado un momento, y luego el botón de siempre. Desde cualquier hilo. */
+    private void flash(String id, boolean ok) {
+        host.post(() -> {
+            doneId = id;
+            doneOk = ok;
+            long keep = ok ? DONE_MS : FAIL_MS;
+            doneUntil = android.os.SystemClock.uptimeMillis() + keep;
+            busy = null;
+            if (running) render();
+            later.removeCallbacksAndMessages(null);
+            later.postDelayed(() -> {
+                if (running) render();
+            }, keep + 50);
+        });
     }
 
     static String stateText(HomeAssistant.Entity e) {

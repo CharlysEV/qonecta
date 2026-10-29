@@ -978,6 +978,12 @@
     <string name="hql_ha_confirm_open">Abrir %1$s?</string>
     <string name="hql_ha_confirm_close">Fechar %1$s?</string>
     <string name="hql_ha_yes">Sim</string>
+    <string name="hql_ha_pin">Fixar no painel lateral do carro</string>
+    <string name="hql_ha_pin_full">No máximo %1$d no painel lateral</string>
+    <string name="hql_ha_pin_hint">📌 fixa um botão no painel lateral do carro (até 3): basta um toque, sem sair do Android Auto.</string>
+    <string name="hql_ha_done">Feito</string>
+    <string name="hql_ha_not_done">Falhou</string>
+    <string name="hql_ha_tap_again">Toque outra vez</string>
     <string name="hql_ha_setup">Configurar o Home Assistant</string>
     <string name="hql_ha_edit">Escolher</string>
     <string name="hql_web_recent">Visitados recentemente</string>

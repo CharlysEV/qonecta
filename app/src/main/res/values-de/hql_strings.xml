@@ -977,6 +977,12 @@
     <string name="hql_ha_confirm_open">%1$s öffnen?</string>
     <string name="hql_ha_confirm_close">%1$s schließen?</string>
     <string name="hql_ha_yes">Ja</string>
+    <string name="hql_ha_pin">In der Seitenleiste im Auto anheften</string>
+    <string name="hql_ha_pin_full">Höchstens %1$d in der Seitenleiste</string>
+    <string name="hql_ha_pin_hint">📌 heftet eine Taste an die Seitenleiste im Auto (bis zu 3): ein Tipp genügt, ohne Android Auto zu verlassen.</string>
+    <string name="hql_ha_done">Erledigt</string>
+    <string name="hql_ha_not_done">Fehlgeschlagen</string>
+    <string name="hql_ha_tap_again">Nochmal tippen</string>
     <string name="hql_ha_setup">Home Assistant einrichten</string>
     <string name="hql_ha_edit">Auswählen</string>
     <string name="hql_web_recent">Kürzlich besucht</string>

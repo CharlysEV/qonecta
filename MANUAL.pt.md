@@ -851,6 +851,10 @@ tomadas, garagem, estores, cenas, sensores), «‹ Os meus botões» mostra-os e
 painel; fica guardado o último que viu. O token fica cifrado; enquanto o painel está aberto, a sua página usa-o, e ao
 fechar é apagado dela.
 
+Com 📌 ao lado de um elemento escolhido **fixa-o no painel lateral** do carro (até 3): basta um toque, sem sair do
+Android Auto (a garagem ao sair de casa). Fechaduras e portas pedem um segundo toque em 4 s. Ao tocar num botão, aí ou
+em «Os meus botões», aparece um **✓ verde** se o Home Assistant o fez, ou um ✕ vermelho se não.
+
 ### «Aquário» (Jogos › Para a espera)
 
 Para as crianças, com o carro parado: peixes coloridos a nadar, bolhas, algas e raios de luz. Ao **tocar na água** cai

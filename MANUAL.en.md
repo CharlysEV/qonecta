@@ -825,6 +825,10 @@ garage, blinds, scenes, sensors), "‹ My buttons" shows them as big buttons and
 dashboard; the last one you saw is remembered. The token is stored encrypted; while the dashboard is open its page uses
 it, and it is removed from it when you close it.
 
+With 📌 next to a chosen item you **pin it to the side panel** in the car (up to 3): one tap does it, without leaving
+Android Auto (the garage door when you leave home). Locks and doors ask for a second tap within 4 s. When you tap a
+button, there or in "My buttons", a **green ✓** shows if Home Assistant did it, or a red ✕ if not.
+
 ### "Aquarium" (Games › For the wait)
 
 For the kids, with the car parked: colourful fish swimming, bubbles, seaweed and rays of light. **Tap the water** and

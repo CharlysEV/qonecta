@@ -842,6 +842,10 @@ su dirección); vacío, el de siempre. Si además eliges elementos en el móvil 
 escenas, sensores), «‹ Mis botones» los enseña en botones grandes y «▦ Mi panel» vuelve al panel; se recuerda lo último
 que viste. El token se guarda cifrado; mientras el panel está abierto lo usa su página, y al cerrarlo se borra de ella.
 
+Con 📌 junto a un elemento elegido lo **fijas en el panel lateral** del coche (hasta 3): un toque y se hace, sin dejar
+Android Auto (el garaje al salir de casa). Las cerraduras y las puertas piden un segundo toque en 4 s. Al tocar un
+botón, allí o en «Mis botones», sale un **✓ verde** si Home Assistant lo ha hecho, o una ✕ roja si no.
+
 ### «Acuario» (Juegos › Para la espera)
 
 Para los niños, con el coche parado: peces de colores que nadan, burbujas, algas y rayos de luz. Al **tocar el agua**

@@ -33,6 +33,8 @@ public class HomeAssistantActivity extends Activity {
     private ChipGroup filters;
     private LinearLayout list;
     private View pickTitle;
+    /** «📌 fija hasta 3 en la barra lateral del coche», con la lista. */
+    private View pinHint;
     private final List<HomeAssistant.Entity> all = new ArrayList<>();
     private String filter = "chosen";
 
@@ -59,6 +61,7 @@ public class HomeAssistantActivity extends Activity {
         filters = findViewById(R.id.hql_ha_filters);
         list = findViewById(R.id.hql_ha_list);
         pickTitle = findViewById(R.id.hql_ha_pick_title);
+        pinHint = findViewById(R.id.hql_ha_pin_hint);
         url.setText(ha.url());
         if (ha.configured()) tokenBox.setHelperText(Str.get(R.string.hql_ha_token_saved));
         TextInputEditText panel = findViewById(R.id.hql_ha_panel);
@@ -185,6 +188,7 @@ public class HomeAssistantActivity extends Activity {
         list.removeAllViews();
         boolean has = !all.isEmpty();
         pickTitle.setVisibility(has ? View.VISIBLE : View.GONE);
+        pinHint.setVisibility(has ? View.VISIBLE : View.GONE);
         filters.setVisibility(has ? View.VISIBLE : View.GONE);
         if (!has) return;
         List<String> chosen = ha.entities();
@@ -211,11 +215,35 @@ public class HomeAssistantActivity extends Activity {
             cb.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyLarge);
             cb.setTextColor(getColor(R.color.hql_text));
             cb.setChecked(chosen.contains(e.id));
+            // 📌: fijado en la barra lateral del coche (solo lo elegido que hace algo al tocarlo; los sensores, no).
+            TextView pin = new TextView(this);
+            pin.setText("📌");
+            pin.setTextSize(20);
+            pin.setPadding(dp(12), dp(8), dp(4), dp(8));
+            pin.setContentDescription(Str.get(R.string.hql_ha_pin));
+            boolean pinnable = HomeAssistant.action(e) != null;
+            pin.setVisibility(pinnable && chosen.contains(e.id) ? View.VISIBLE : View.GONE);
+            pin.setAlpha(ha.isPinned(e.id) ? 1f : 0.3f);
+            pin.setOnClickListener(v -> {
+                List<HomeAssistant.Entity> next = HomeAssistant.togglePin(ha.pinned(), e, HomeAssistant.MAX_PINNED);
+                if (next == null) {
+                    android.widget.Toast.makeText(this, Str.get(R.string.hql_ha_pin_full, HomeAssistant.MAX_PINNED),
+                            android.widget.Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                ha.setPinned(next);
+                pin.setAlpha(ha.isPinned(e.id) ? 1f : 0.3f);
+                CarUi.applyPanelButtons();
+            });
             cb.setOnCheckedChangeListener((v, on) -> {
                 List<String> ids = new ArrayList<>(ha.entities());
                 if (on && !ids.contains(e.id)) ids.add(e.id);
                 if (!on) ids.remove(e.id);
+                boolean wasPinned = ha.isPinned(e.id);
                 ha.setEntities(ids);
+                pin.setVisibility(pinnable && on ? View.VISIBLE : View.GONE);
+                pin.setAlpha(ha.isPinned(e.id) ? 1f : 0.3f);
+                if (wasPinned) CarUi.applyPanelButtons();
                 buildFilters();
             });
             row.addView(cb, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
@@ -225,6 +253,7 @@ public class HomeAssistantActivity extends Activity {
             st.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium);
             st.setSingleLine(true);
             row.addView(st);
+            row.addView(pin);
             list.addView(row);
         }
     }
