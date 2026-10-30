@@ -317,6 +317,93 @@ class LeapApiTest {
     }
 
     @Test
+    fun anOrderThatNeverLeftIsRepeatedWhileThereIsNoNetwork() {
+        // 30-10: «Abrir» desde el widget falló a la primera con «Unable to resolve host» al salir de casa.
+        var fails = 2
+        var orders = 0
+        val (a, fake) = loggedIn { c ->
+            if (fails > 0) {
+                fails--
+                throw java.net.UnknownHostException("Unable to resolve host")
+            }
+            when (c.path) {
+                LeapApi.PATH_REMOTE_CTL -> {
+                    orders++
+                    ok("""{"remoteCtlId":"rc-9","queryRemoteCtlResultTimeout":6000,"queryInterval":2000}""")
+                }
+                LeapApi.PATH_REMOTE_RESULT -> ok("1")
+                else -> ok("{}")
+            }
+        }
+        val slept = ArrayList<Long>()
+        a.sleeper = LeapApi.Sleeper { slept.add(it) }
+        assertTrue(a.remote("VIN000000000000A1", LeapApi.CMD_LOCK, UNLOCK, "1234"))
+        assertEquals(2, a.lastRemoteRetries)
+        assertEquals(listOf(LeapApi.REMOTE_RETRY_MS, LeapApi.REMOTE_RETRY_MS), slept)
+        assertEquals(1, orders)
+        assertEquals(LeapApi.PATH_REMOTE_RESULT, fake.calls.last().path)
+    }
+
+    @Test
+    fun withoutNetworkForLongTheOrderFailsAfterTheRetries() {
+        val (a, fake) = loggedIn { throw java.net.UnknownHostException("Unable to resolve host") }
+        a.sleeper = LeapApi.Sleeper { }
+        try {
+            a.remote("VIN000000000000A1", LeapApi.CMD_LOCK, UNLOCK, "1234")
+            fail("sin red")
+        } catch (e: java.net.UnknownHostException) {
+            // bien
+        }
+        assertEquals(LeapApi.REMOTE_RETRIES + 1, fake.calls.size)
+    }
+
+    @Test
+    fun anOrderThatMayHaveLeftIsNotRepeated() {
+        var orders = 0
+        val (a, _) = loggedIn { c ->
+            if (c.path == LeapApi.PATH_REMOTE_CTL) {
+                orders++
+                throw java.net.SocketTimeoutException("timeout")
+            }
+            ok("{}")
+        }
+        a.sleeper = LeapApi.Sleeper { }
+        try {
+            a.remote("VIN000000000000A1", LeapApi.CMD_LOCK, UNLOCK, "1234")
+            fail("tiempo agotado")
+        } catch (e: java.net.SocketTimeoutException) {
+            // bien
+        }
+        assertEquals(1, orders)
+        assertTrue(LeapApi.notSent(java.net.SocketTimeoutException("failed to connect to host/1.2.3.4 (port 443) after 15000ms")))
+        assertTrue(LeapApi.notSent(java.io.IOException("x", java.net.ConnectException("refused"))))
+        assertFalse(LeapApi.notSent(java.io.IOException("HTTP 500")))
+    }
+
+    @Test
+    fun noNetworkWhileAskingForTheResultIsNotAFailedOrder() {
+        var polls = 0
+        var orders = 0
+        val (a, _) = loggedIn { c ->
+            when (c.path) {
+                LeapApi.PATH_REMOTE_CTL -> {
+                    orders++
+                    ok("""{"remoteCtlId":"rc-9","queryRemoteCtlResultTimeout":6000,"queryInterval":2000}""")
+                }
+                LeapApi.PATH_REMOTE_RESULT -> {
+                    polls++
+                    if (polls < 3) throw java.net.UnknownHostException("Unable to resolve host") else ok("1")
+                }
+                else -> ok("{}")
+            }
+        }
+        a.sleeper = LeapApi.Sleeper { }
+        assertTrue(a.remote("VIN000000000000A1", LeapApi.CMD_LOCK, UNLOCK, "1234"))
+        assertEquals(1, orders)
+        assertEquals(0, a.lastRemoteRetries)
+    }
+
+    @Test
     fun theRealTransportRefusesOrderPathsOutsideRemote() {
         val http = LeapHttps(LeapTls.PinTrust(emptySet()))
         for (p in LeapApi.REMOTE_PATHS) {

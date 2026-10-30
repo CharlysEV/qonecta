@@ -182,17 +182,30 @@ final class RoadInfo {
         Exception camError = null;
         if (shouldLoadCameras(camLat, camLon, s.lat, s.lon, now - camMs, camFailed)) {
             camMs = now;
-            try {
-                loadCameras(s.lat, s.lon);
-                // Solo una carga buena cuenta como hecha aquí; si falla, se reintenta a los CAM_RETRY_MS.
-                camLat = s.lat;
-                camLon = s.lon;
-                camFailed = false;
-            } catch (Exception e) {
-                camFailed = true;
-                camError = e;
-                if (!(e instanceof Http.OverpassPausedException)) L.w("vía: radares sin cargar (" + Http.safeError(e) + "); reintento en "
-                        + CAM_RETRY_MS / 1000 + " s");
+            long wall = System.currentTimeMillis();
+            // Los guardados en el móvil si son recientes (RoadCache.CAM_FRESH_MS): en los trayectos de siempre, sin Overpass.
+            RoadCache.Cams hit = RoadCache.findCameras(ctx, s.lat, s.lon, wall, RoadCache.CAM_FRESH_MS);
+            if (hit != null) {
+                useSavedCameras(hit, wall);
+            } else {
+                try {
+                    loadCameras(s.lat, s.lon);
+                    // Solo una carga buena cuenta como hecha aquí; si falla, se reintenta a los CAM_RETRY_MS.
+                    camLat = s.lat;
+                    camLon = s.lon;
+                    camFailed = false;
+                } catch (Exception e) {
+                    camFailed = true;
+                    camError = e;
+                    if (!(e instanceof Http.OverpassPausedException)) L.w("vía: radares sin cargar (" + Http.safeError(e) + "); reintento en "
+                            + CAM_RETRY_MS / 1000 + " s");
+                    // Sin respuesta de Overpass: mejor los guardados aunque sean viejos que ninguno.
+                    RoadCache.Cams old = RoadCache.findCameras(ctx, s.lat, s.lon, wall, RoadCache.MAX_AGE_MS);
+                    if (old != null) {
+                        useSavedCameras(old, wall);
+                        camError = null;
+                    }
+                }
             }
         }
         // Las carreteras de alrededor (RoadAhead), para el límite de la vía y los radares sin ruta: al empezar y cada
@@ -449,6 +462,19 @@ final class RoadInfo {
             cameras.addAll(list);
         }
         L.i("vía: " + list.size() + " radares en 15 km (" + withDir + " con sentido conocido, " + fromRel + " por su relación de control)");
+        RoadCache.saveCameras(ctx, lat, lon, list, System.currentTimeMillis());
+    }
+
+    /** Radares guardados en el móvil (RoadCache): cuentan como una carga buena hecha desde su centro. */
+    private void useSavedCameras(RoadCache.Cams hit, long wallMs) {
+        synchronized (cameras) {
+            cameras.clear();
+            cameras.addAll(hit.cams);
+        }
+        camLat = hit.lat;
+        camLon = hit.lon;
+        camFailed = false;
+        L.i("vía: " + hit.cams.size() + " radares en 15 km, guardados en el móvil (de hace " + (wallMs - hit.atMs) / 86_400_000L + " días)");
     }
 
     /**

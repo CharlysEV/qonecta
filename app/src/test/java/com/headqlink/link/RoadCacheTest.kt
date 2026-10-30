@@ -118,4 +118,39 @@ class RoadCacheTest {
         assertTrue(gone.contains(names[RoadCache.MAX_FILES + 1]))
         assertTrue(gone.contains(names[RoadCache.MAX_FILES]))
     }
+
+    @Test
+    fun camerasComeBackFromTheFileWithoutADirectionToo() {
+        val cams = listOf(
+            doubleArrayOf(40.123456, -3.654321, 120.0, 87.5, 1.2345678901e10),
+            doubleArrayOf(40.2, -3.6, -1.0, Double.NaN, 42.0),
+        )
+        val back = RoadCache.camerasFromJson(JSONArray(RoadCache.camerasToJson(cams).toString()))
+        assertEquals(2, back.size)
+        assertEquals(cams[0].toList(), back[0].toList())
+        assertEquals(-1.0, back[1][2], 0.0)
+        assertTrue(back[1][3].isNaN())
+        assertEquals(42.0, back[1][4], 0.0)
+    }
+
+    @Test
+    fun savedCamerasFreshFirstAndOldOnlyAsAFallback() {
+        // 30-10: Overpass sin responder dejaba hasta 4 min sin radares.
+        val ctx = org.robolectric.RuntimeEnvironment.getApplication()
+        val now = 100 * day
+        val cams = listOf(doubleArrayOf(40.0, -3.7, 100.0, Double.NaN, 7.0))
+        RoadCache.saveCameras(ctx, 40.0, -3.7, cams, now - 10 * day)
+        // A 4,4 km del centro: vale (quedan 10 km por delante de los 15), pero tiene 10 días: no es reciente.
+        assertNull(RoadCache.findCameras(ctx, 40.04, -3.7, now, RoadCache.CAM_FRESH_MS))
+        val old = RoadCache.findCameras(ctx, 40.04, -3.7, now, RoadCache.MAX_AGE_MS)!!
+        assertEquals(40.0, old.lat, 1e-9)
+        assertEquals(now - 10 * day, old.atMs)
+        assertEquals(100.0, old.cams[0][2], 0.0)
+        // A 5,5 km, ya no.
+        assertNull(RoadCache.findCameras(ctx, 40.05, -3.7, now, RoadCache.MAX_AGE_MS))
+        // Una carga nueva gana, y las carreteras no se mezclan con los radares.
+        RoadCache.saveCameras(ctx, 40.01, -3.7, emptyList(), now - day)
+        assertEquals(0, RoadCache.findCameras(ctx, 40.0, -3.7, now, RoadCache.CAM_FRESH_MS)!!.cams.size)
+        assertNull(RoadCache.find(ctx, 40.0, -3.7, now))
+    }
 }

@@ -370,7 +370,7 @@ final class TripLog {
                 ph.put("pct0", p0[PhoneBattery.PCT]);
                 ph.put("pct1", p1[PhoneBattery.PCT]);
                 if (p0[PhoneBattery.UAH] > 0) ph.put("uah0", p0[PhoneBattery.UAH]);
-                boolean plugged = p0[PhoneBattery.PLUGGED] != 0 || p1[PhoneBattery.PLUGGED] != 0;
+                boolean plugged = PhoneBattery.charged(p0, p1);
                 ph.put("plugged", plugged);
                 if (!plugged && p0[PhoneBattery.UAH] > 0 && p1[PhoneBattery.UAH] > 0 && p0[PhoneBattery.UAH] >= p1[PhoneBattery.UAH]) {
                     ph.put("mah", Math.round((p0[PhoneBattery.UAH] - p1[PhoneBattery.UAH]) / 1000.0));

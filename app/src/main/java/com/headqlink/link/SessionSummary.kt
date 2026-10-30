@@ -342,14 +342,14 @@ internal object SessionSummary {
      * Puro: lo que gastó el móvil entero en el viaje, para el resumen: «batería del móvil: 82 % → 76 % en 25 min · 312 mAh
      * (≈ 750 mA de media, −14 % por hora) · sin enchufar». Los mAh salen del contador de carga de la batería (µAh; más fino
      * que el %); sin él (Long.MIN_VALUE o 0), solo los %. Enchufado al empezar o al acabar, solo los % («enchufado»): la
-     * carga del coche lo tapa. "" si no se sabe el %.
+     * carga del coche lo tapa; igual si subió el % (enchufado solo por el camino). "" si no se sabe el %.
      */
     @JvmStatic
     fun batteryLine(startPct: Int, endPct: Int, startUah: Long, endUah: Long, minutes: Double, plugged: Boolean): String {
         if (startPct < 0 || endPct < 0) return ""
         val sb = StringBuilder("batería del móvil: ").append(startPct).append(" % → ").append(endPct).append(" %")
         if (minutes > 0) sb.append(" en ").append(f1(minutes)).append(" min")
-        if (plugged) return sb.append(" · enchufado").toString()
+        if (plugged || endPct > startPct) return sb.append(" · enchufado").toString()
         val parts = ArrayList<String>()
         if (startUah > 0 && endUah > 0 && startUah >= endUah && minutes > 0) {
             val mah = (startUah - endUah) / 1000.0

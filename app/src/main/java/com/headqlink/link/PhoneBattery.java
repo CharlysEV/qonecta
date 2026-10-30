@@ -41,6 +41,14 @@ final class PhoneBattery {
     }
 
     /**
+     * Puro: ¿se cargó el móvil en el viaje? Enchufado al empezar o al acabar, o con más % al acabar: enchufado solo por
+     * el camino (30-10: 23 % → 41 % por cable salía «−-68 % por hora · sin enchufar»).
+     */
+    static boolean charged(long[] b0, long[] b1) {
+        return b0[PLUGGED] != 0 || b1[PLUGGED] != 0 || b1[PCT] > b0[PCT];
+    }
+
+    /**
      * Puro: la capacidad de la batería (mAh) por el contador y el %: si con el 50 % quedan 2.500.000 µAh, son 5.000 mAh.
      * 0 si no se puede saber.
      */

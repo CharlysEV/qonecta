@@ -62,7 +62,7 @@ final class TripNotice {
     /** phoneText con dos lecturas de PhoneBattery (inicio y fin), o "". */
     static String phoneText(long[] b0, long[] b1) {
         if (b0 == null || b1 == null) return "";
-        boolean plugged = b0[PhoneBattery.PLUGGED] != 0 || b1[PhoneBattery.PLUGGED] != 0;
+        boolean plugged = PhoneBattery.charged(b0, b1);
         double mah = b0[PhoneBattery.UAH] > 0 && b1[PhoneBattery.UAH] > 0 && b0[PhoneBattery.UAH] >= b1[PhoneBattery.UAH]
                 ? (b0[PhoneBattery.UAH] - b1[PhoneBattery.UAH]) / 1000.0 : Double.NaN;
         return phoneText((int) b0[PhoneBattery.PCT], (int) b1[PhoneBattery.PCT], mah, plugged);

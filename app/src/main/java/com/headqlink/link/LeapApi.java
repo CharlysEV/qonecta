@@ -244,6 +244,14 @@ final class LeapApi {
     }
 
     Sleeper sleeper = Thread::sleep;
+    /**
+     * Una orden que no llegó a salir del móvil (sin DNS o sin conexión un momento) se repite hasta REMOTE_RETRIES veces,
+     * cada REMOTE_RETRY_MS (30-10: «Abrir» desde el widget falló a la primera con «Unable to resolve host» al salir de casa).
+     */
+    static final int REMOTE_RETRIES = 4;
+    static final long REMOTE_RETRY_MS = 3000;
+    /** Los reintentos que necesitó la última orden (para el log). */
+    int lastRemoteRetries;
     /** Sube cada vez que cambia la sesión (login o refresco): quien la guarda sabe si tiene que volver a hacerlo. */
     private int sessionVersion;
 
@@ -497,62 +505,99 @@ final class LeapApi {
         if (pin == null || pin.isEmpty()) throw new IOException("sin PIN del coche");
         REMOTE_NOW.set(Boolean.TRUE);
         try {
-            return withTokenRetry(() -> {
-                Session s = requireSession();
-                String op;
+            for (int t = 0; ; t++) {
+                lastRemoteRetries = t;
                 try {
-                    op = LeapCrypto.operatePassword(pin, s.token);
-                } catch (GeneralSecurityException e) {
-                    throw new IOException("no se pudo cifrar el PIN");
+                    return withTokenRetry(() -> remoteOnce(vin, cmdId, cmdContent, pin));
+                } catch (IOException e) {
+                    if (t >= REMOTE_RETRIES || !notSent(e)) throw e;
                 }
-                if (!certSynced) {
-                    Map<String, String> h = signedHeaders(null, null);
-                    h.putAll(authHeaders(s));
-                    parse(call(clientIdentity, PATH_CERT_SYNC, h, ""), "cert sync");
-                    certSynced = true;
+                try {
+                    sleeper.sleep(REMOTE_RETRY_MS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("orden interrumpida");
                 }
-                Map<String, String> p = new LinkedHashMap<>();
-                p.put("operatePassword", op);
-                Map<String, String> h = signedHeaders(vin, p);
-                h.putAll(authHeaders(s));
-                parse(call(accountIdentity, PATH_OPER_VERIFY, h, "operatePassword=" + LeapCrypto.encodeComponent(op) + "&vin="
-                        + LeapCrypto.encodeComponent(vin)), "PIN");
-                p = new LinkedHashMap<>();
-                p.put("cmdContent", cmdContent);
-                p.put("cmdId", cmdId);
-                p.put("operatePassword", op);
-                h = signedHeaders(vin, p);
-                h.putAll(authHeaders(s));
-                JSONObject res = parse(call(accountIdentity, PATH_REMOTE_CTL, h, "cmdContent=" + LeapCrypto.encodeComponent(cmdContent)
-                        + "&vin=" + LeapCrypto.encodeComponent(vin) + "&cmdId=" + LeapCrypto.encodeComponent(cmdId)
-                        + "&operatePassword=" + LeapCrypto.encodeComponent(op)), "remote");
-                JSONObject d = res.optJSONObject("data");
-                String id = d == null ? "" : d.optString("remoteCtlId");
-                // Sin número de orden no se puede preguntar si el coche la recibió: no se da por confirmada.
-                if (id.isEmpty()) return false;
-                long timeout = Math.max(1000, d.optLong("queryRemoteCtlResultTimeout", 30_000));
-                long interval = Math.max(250, d.optLong("queryInterval", 2000));
-                for (long waited = 0; waited <= timeout; waited += interval) {
-                    p = new LinkedHashMap<>();
-                    p.put("remoteCtlId", id);
-                    h = signedHeaders(null, p);
-                    h.putAll(authHeaders(s));
-                    JSONObject r = parse(call(accountIdentity, PATH_REMOTE_RESULT, h, "remoteCtlId=" + LeapCrypto.encodeComponent(id)),
-                            "remote result");
-                    Object v = r.opt("data");
-                    if (v instanceof Number && ((Number) v).intValue() == 1) return true;
-                    try {
-                        sleeper.sleep(interval);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        return false;
-                    }
-                }
-                return false;
-            });
+            }
         } finally {
             REMOTE_NOW.remove();
         }
+    }
+
+    /**
+     * Sin red antes de que la petición salga (no se encuentra el servidor, conexión rechazada o sin ruta): se puede repetir
+     * sin mandar la orden dos veces. Un tiempo agotado leyendo la respuesta no: la orden pudo llegar.
+     */
+    static boolean notSent(Throwable e) {
+        for (Throwable c = e; c != null; c = c.getCause()) {
+            if (c instanceof java.net.UnknownHostException || c instanceof java.net.ConnectException
+                    || c instanceof java.net.NoRouteToHostException) return true;
+            if (c instanceof java.net.SocketTimeoutException && String.valueOf(c.getMessage()).startsWith("failed to connect")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Un intento de remote(): certificado (una vez), PIN, orden y su resultado. */
+    private boolean remoteOnce(String vin, String cmdId, String cmdContent, String pin) throws IOException {
+        Session s = requireSession();
+        String op;
+        try {
+            op = LeapCrypto.operatePassword(pin, s.token);
+        } catch (GeneralSecurityException e) {
+            throw new IOException("no se pudo cifrar el PIN");
+        }
+        if (!certSynced) {
+            Map<String, String> h = signedHeaders(null, null);
+            h.putAll(authHeaders(s));
+            parse(call(clientIdentity, PATH_CERT_SYNC, h, ""), "cert sync");
+            certSynced = true;
+        }
+        Map<String, String> p = new LinkedHashMap<>();
+        p.put("operatePassword", op);
+        Map<String, String> h = signedHeaders(vin, p);
+        h.putAll(authHeaders(s));
+        parse(call(accountIdentity, PATH_OPER_VERIFY, h, "operatePassword=" + LeapCrypto.encodeComponent(op) + "&vin="
+                + LeapCrypto.encodeComponent(vin)), "PIN");
+        p = new LinkedHashMap<>();
+        p.put("cmdContent", cmdContent);
+        p.put("cmdId", cmdId);
+        p.put("operatePassword", op);
+        h = signedHeaders(vin, p);
+        h.putAll(authHeaders(s));
+        JSONObject res = parse(call(accountIdentity, PATH_REMOTE_CTL, h, "cmdContent=" + LeapCrypto.encodeComponent(cmdContent)
+                + "&vin=" + LeapCrypto.encodeComponent(vin) + "&cmdId=" + LeapCrypto.encodeComponent(cmdId)
+                + "&operatePassword=" + LeapCrypto.encodeComponent(op)), "remote");
+        JSONObject d = res.optJSONObject("data");
+        String id = d == null ? "" : d.optString("remoteCtlId");
+        // Sin número de orden no se puede preguntar si el coche la recibió: no se da por confirmada.
+        if (id.isEmpty()) return false;
+        long timeout = Math.max(1000, d.optLong("queryRemoteCtlResultTimeout", 30_000));
+        long interval = Math.max(250, d.optLong("queryInterval", 2000));
+        for (long waited = 0; waited <= timeout; waited += interval) {
+            p = new LinkedHashMap<>();
+            p.put("remoteCtlId", id);
+            h = signedHeaders(null, p);
+            h.putAll(authHeaders(s));
+            try {
+                JSONObject r = parse(call(accountIdentity, PATH_REMOTE_RESULT, h,
+                        "remoteCtlId=" + LeapCrypto.encodeComponent(id)), "remote result");
+                Object v = r.opt("data");
+                if (v instanceof Number && ((Number) v).intValue() == 1) return true;
+            } catch (ApiException e) {
+                throw e;
+            } catch (IOException e) {
+                // La orden ya salió: sin red un momento, se sigue preguntando (sin respuesta, «sin confirmar»).
+            }
+            try {
+                sleeper.sleep(interval);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        return false;
     }
 
     private Session requireSession() throws IOException {

@@ -2,6 +2,7 @@ package com.headqlink.link
 
 import android.app.Application
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -74,6 +75,14 @@ class AppEnergyTest {
             && line.contains("≈ 749 mA de media") && line.contains("−14 % por hora") && line.endsWith("sin enchufar"))
         assertEquals("batería del móvil: 60 % → 68 % en 20,0 min · enchufado".replace("20,0", SessionSummaryTestHelper.f1(20.0)),
             SessionSummary.batteryLine(60, 68, 1, 2, 20.0, true))
+        // 30-10: enchufado solo por el camino (sin cable al empezar ni al acabar) salía «−-68 % por hora · sin enchufar».
+        val road = SessionSummary.batteryLine(23, 41, 1_100_000, 2_050_000, 15.9, false)
+        assertTrue(road, road.endsWith("· enchufado") && !road.contains("por hora"))
+        val start = longArrayOf(23, 1_100_000, 0, 0)
+        val end = longArrayOf(41, 2_050_000, 0, 0)
+        assertTrue(PhoneBattery.charged(start, end))
+        assertFalse(PhoneBattery.charged(end, start))
+        assertEquals("Batería del móvil: 23 % → 41 % (cargando)", TripNotice.phoneText(start, end))
         // Para ti: en el aviso del viaje y en el detalle.
         assertEquals("Batería del móvil: −6 % (312 mAh)", TripNotice.phoneText(82, 76, 312.0, false))
         assertEquals("Batería del móvil: −6 %", TripNotice.phoneText(82, 76, Double.NaN, false))

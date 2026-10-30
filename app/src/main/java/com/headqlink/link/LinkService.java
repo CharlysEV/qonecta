@@ -1203,7 +1203,7 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
             if (b0 != null && b1 != null) {
                 String bl = SessionSummary.batteryLine((int) b0[PhoneBattery.PCT], (int) b1[PhoneBattery.PCT], b0[PhoneBattery.UAH],
                         b1[PhoneBattery.UAH], (System.currentTimeMillis() - b0[PhoneBattery.AT]) / 60_000.0,
-                        b0[PhoneBattery.PLUGGED] != 0 || b1[PhoneBattery.PLUGGED] != 0);
+                        PhoneBattery.charged(b0, b1));
                 if (!bl.isEmpty()) trip = trip + "\n" + bl;
                 lastTripBattery = new long[][]{b0, b1};
             }

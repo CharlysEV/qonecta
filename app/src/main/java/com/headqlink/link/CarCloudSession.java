@@ -228,7 +228,8 @@ final class CarCloudSession {
         int v0 = api.sessionVersion();
         try {
             boolean ok = api.remote(saved.vin, c.cmdId(), c.content(saved.carType, inside), pin);
-            L.i("nube Leapmotor: orden " + c + (ok ? " (confirmada por el coche)" : " (sin confirmar)"));
+            L.i("nube Leapmotor: orden " + c + (ok ? " (confirmada por el coche)" : " (sin confirmar)")
+                    + (api.lastRemoteRetries > 0 ? " tras " + api.lastRemoteRetries + " reintentos sin red" : ""));
             return ok;
         } catch (LeapApi.SessionExpiredException e) {
             api = null;
