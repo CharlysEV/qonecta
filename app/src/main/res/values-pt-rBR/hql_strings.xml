@@ -779,6 +779,15 @@
     <string name="hql_charger_nets_hide_others">Ocultar outros países</string>
     <string name="hql_charger_summary_all">Todos os carregadores</string>
     <string name="hql_charger_summary_kw">≥ %1$d kW</string>
+    <string name="hql_adhoc_max">Preço ad hoc máximo (Alemanha)</string>
+    <string name="hql_adhoc_summary">≤ %1$s/kWh ad hoc</string>
+    <string name="hql_adhoc_price">%1$s ad hoc</string>
+    <string name="hql_adhoc_minute">+%1$s</string>
+    <string name="hql_adhoc_minute_from">+%1$s a partir do minuto %2$d</string>
+    <string name="hql_adhoc_session">+%1$s por recarga</string>
+    <string name="hql_adhoc_stop_cost">≈ %1$s nesta parada</string>
+    <string name="hql_adhoc_note">Preço ad hoc (pagar no carregador, sem contrato), só na Alemanha: o que cada operador publica (dados AFIR da Mobilithek, reunidos pelo Ladekönig), atualizado uma vez por dia. Com um limite, os carregadores alemães sem preço publicado contam como os sem dados (a opção acima).</string>
+    <string name="hql_adhoc_source">Preços ad hoc: dados AFIR dos operadores (Mobilithek, CC0 / CC BY 4.0), reunidos pelo Ladekönig.</string>
     <string name="hql_charger_none_filtered">Nenhum carregador na rota com estes filtros.</string>
     <string name="hql_charger_clear_filters">Limpar filtros</string>
     <string name="hql_key_space">espaço</string>
@@ -922,6 +931,7 @@
     <string name="hql_car_charge_records">Registros de carregamento</string>
     <string name="hql_car_charge_all">Todos os carregamentos ›</string>
     <string name="hql_car_unplugged">Desconectado</string>
+    <string name="hql_car_since_charge">%1$s km desde o último carregamento (%2$s)</string>
     <string name="hql_car_use_title">Consumo</string>
     <string name="hql_car_use_odo">Você já rodou %1$s km com seu %2$s</string>
     <string name="hql_car_use_week">Semana</string>
@@ -1310,6 +1320,7 @@
     <string name="hql_ch_live_busy">Agora: todos ocupados</string>
     <string name="hql_ch_live_out">Agora: fora de serviço</string>
     <string name="hql_about_bnetza">Carregadores na Alemanha: Ladesäulenregister da Bundesnetzagentur (CC BY 4.0)</string>
+    <string name="hql_about_adhoc">Preços ad hoc na Alemanha: dados AFIR dos operadores na Mobilithek (CC0 e CC BY 4.0: EnBW mobility+, Eco-Movement, GLS Mobility…), reunidos pelo Ladekönig · uekala (MIT)</string>
     <string name="hql_about_bfe">Carregadores na Suíça: Escritório Federal de Energia (BFE), ich-tanke-strom.ch (dados abertos)</string>
     <string name="hql_trip_phone_used">Bateria do celular: −%1$d %%</string>
     <string name="hql_trip_phone_used_mah">Bateria do celular: −%1$d %% (%2$d mAh)</string>

@@ -778,6 +778,15 @@
     <string name="hql_charger_nets_hide_others">Andere landen verbergen</string>
     <string name="hql_charger_summary_all">Alle laadpalen</string>
     <string name="hql_charger_summary_kw">≥ %1$d kW</string>
+    <string name="hql_adhoc_max">Maximale ad-hocprijs (Duitsland)</string>
+    <string name="hql_adhoc_summary">≤ %1$s/kWh ad hoc</string>
+    <string name="hql_adhoc_price">%1$s ad hoc</string>
+    <string name="hql_adhoc_minute">+%1$s</string>
+    <string name="hql_adhoc_minute_from">+%1$s vanaf minuut %2$d</string>
+    <string name="hql_adhoc_session">+%1$s per laadsessie</string>
+    <string name="hql_adhoc_stop_cost">≈ %1$s voor deze stop</string>
+    <string name="hql_adhoc_note">Ad-hocprijs (betalen bij de laadpaal, zonder abonnement), alleen in Duitsland: de prijs die elke exploitant publiceert (AFIR-gegevens uit de Mobilithek, verzameld door Ladekönig), één keer per dag bijgewerkt. Met een maximum tellen Duitse laadpalen zonder gepubliceerde prijs als die zonder gegevens (de optie hierboven).</string>
+    <string name="hql_adhoc_source">Ad-hocprijzen: AFIR-gegevens van de exploitanten (Mobilithek, CC0 / CC BY 4.0), verzameld door Ladekönig.</string>
     <string name="hql_charger_none_filtered">Geen laadpalen langs de route die aan deze filters voldoen.</string>
     <string name="hql_charger_clear_filters">Filters wissen</string>
     <string name="hql_key_space">spatie</string>
@@ -921,6 +930,7 @@
     <string name="hql_car_charge_records">Laadsessies</string>
     <string name="hql_car_charge_all">Alle laadsessies ›</string>
     <string name="hql_car_unplugged">Niet ingeplugd</string>
+    <string name="hql_car_since_charge">%1$s km sinds de laatste laadbeurt (%2$s)</string>
     <string name="hql_car_use_title">Verbruik</string>
     <string name="hql_car_use_odo">Je hebt %1$s km gereden met je %2$s</string>
     <string name="hql_car_use_week">Week</string>
@@ -1309,6 +1319,7 @@
     <string name="hql_ch_live_busy">Nu: alle bezet</string>
     <string name="hql_ch_live_out">Nu: buiten gebruik</string>
     <string name="hql_about_bnetza">Laadpalen in Duitsland: Ladesäulenregister van de Bundesnetzagentur (CC BY 4.0)</string>
+    <string name="hql_about_adhoc">Ad-hocprijzen in Duitsland: AFIR-gegevens van de exploitanten in de Mobilithek (CC0 en CC BY 4.0: EnBW mobility+, Eco-Movement, GLS Mobility…), verzameld door Ladekönig · uekala (MIT)</string>
     <string name="hql_about_bfe">Laadpalen in Zwitserland: Zwitsers federaal energiebureau (BFE), ich-tanke-strom.ch (open data)</string>
     <string name="hql_trip_phone_used">Telefoonaccu: −%1$d %%</string>
     <string name="hql_trip_phone_used_mah">Telefoonaccu: −%1$d %% (%2$d mAh)</string>

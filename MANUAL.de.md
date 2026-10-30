@@ -473,6 +473,14 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
       immer sind, auch wenn das Register es nicht angibt) und lässt die 400–500-V-Stationen als Reserve: Die Liste
       markiert sie orange („470 V: dein 800-V-Auto lädt hier mit halber Leistung“), und der Plan sagt, wie viele es
       unterwegs gibt. Die Tesla-Supercharger in Spanien arbeiten mit 400–500 V.
+    - **Ad-hoc-Preis (Deutschland):** Dort zeigt jede Ladestation, was spontanes Laden ohne Vertrag kostet („0,59
+      €/kWh ad hoc“, mit dem, was extra berechnet wird: „+0,24 €/min ab Minute 30“, „+0,50 € pro Ladevorgang“), und
+      jeder Stopp des Plans, was er kosten würde („≈ 24 € für diesen Stopp“). Es ist der Preis, den jeder Betreiber
+      gesetzlich veröffentlicht (AFIR-Daten aus der Mobilithek, gesammelt von Ladekönig), einmal täglich
+      aktualisiert und mit seinen Zeitfenstern. Unter „Filter“ › „Ladesäulen“ › „Maximaler Ad-hoc-Preis“ setzt du
+      eine Obergrenze (0,50, 0,60 oder 0,70 €/kWh): Der Plan hält nicht an teureren; Ladestationen ohne
+      veröffentlichten Preis folgen der Option, solche ohne Angaben einzubeziehen oder nicht. Geladen werden nur die
+      Zonen der Route oder der Suche in Deutschland (wenige KB pro Zone).
     - **Laden live:** Mit dem Leapmotor-Konto erscheint beim Einstecken über der Route ein Block mit den kW, dem % und
       dem Ziel („54 % → 64 %“), der Uhrzeit, zu der das Laden fertig ist, und mit wie viel du am nächsten Stopp oder am
       Ziel ankommst; sparst du dir durch etwas mehr Laden den nächsten Stopp, sagt er es dir („Bis 85 % sparst du dir
@@ -972,7 +980,7 @@ Kilometerstand) und nutzt ihn in „Auto erweitert“:
   Reichweite, Akku und ob es verriegelt ist; in der Mitte **der C10 in 3D** (mit dem Finger drehen; offene Türen und
   Kofferraum sind im Modell offen); darunter die Befehlsreihe **Entriegeln · Verriegeln · Kofferraum · Klima ·
   Finden** (dieselben wie im Widget „Auto“, mit Bestätigung: Sie brauchen die in „Fahrzeugdaten“ gespeicherte PIN des
-  Autos und eingeschaltete Befehle; sonst ist die Reihe ausgegraut) die Karten **„Laden“** (wie das Ladezentrum der Leapmotor-App: der Akkustand über einer gezeichneten Batterie, der Ladezustand, die Taste **„Ladekabel entriegeln“**, solange das Kabel steckt, beim Laden oder danach (im Widget „Auto“ wird „Finden“ so lange zu „Kabel“), und die letzten Ladevorgänge, die Qonecta+ gesehen hat, mit % und Ladesäule) und **„Verbrauch“** (Woche / Monat / Jahr: km, Energie, Verbrauch pro 100 km und die Aufteilung Fahren / Klima / Sonstiges, dieselben Werte wie in der Leapmotor-App, und die letzten Fahrten; „Alle Fahrten ›“ und „Alle Ladevorgänge ›“ führen zu „Fahrten“), und zwei aufklappbare Karten: **„Klima“**
+  Autos und eingeschaltete Befehle; sonst ist die Reihe ausgegraut) die Karten **„Laden“** (wie das Ladezentrum der Leapmotor-App: der Akkustand über einer gezeichneten Batterie, der Ladezustand (ohne Kabel die km seit dem letzten Laden, das Qonecta+ gesehen hat), die Taste **„Ladekabel entriegeln“**, solange das Kabel steckt, beim Laden oder danach (im Widget „Auto“ wird „Finden“ so lange zu „Kabel“), und die letzten Ladevorgänge, die Qonecta+ gesehen hat, mit % und Ladesäule) und **„Verbrauch“** (Woche / Monat / Jahr: km, Energie, Verbrauch pro 100 km und die Aufteilung Fahren / Klima / Sonstiges, dieselben Werte wie in der Leapmotor-App, und die letzten Fahrten; „Alle Fahrten ›“ und „Alle Ladevorgänge ›“ führen zu „Fahrten“), und zwei aufklappbare Karten: **„Klima“**
   (Innenraumtemperatur, das von hier eingeschaltete Klima und die Klima-Taste) und **„Zustand“** (die vier
   Reifendrücke, gelb bei zu wenig Druck oder Warnung; Türen und Kofferraum; Akkutemperatur; Kilometerstand). Die Cloud
   wird nur gelesen, solange der Reiter sichtbar ist.

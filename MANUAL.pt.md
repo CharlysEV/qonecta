@@ -458,6 +458,13 @@ admite.
       diga) e deixa os de 400–500 V de reserva: a lista marca-os a âmbar («470 V: o seu carro de 800 V carrega aqui a
       metade da potência») e o plano diz quantos há pelo caminho. Os Supercharger da Tesla em Espanha são de
       400–500 V.
+    - **Preço ad hoc (Alemanha):** aí cada carregador mostra quanto custa pagar no momento sem contrato («0,59 €/kWh
+      ad hoc», com o que se cobre à parte: «+0,24 €/min a partir do minuto 30», «+0,50 € por carregamento») e cada
+      paragem do plano, quanto custaria («≈ 24 € nesta paragem»). É o preço que cada operador tem de publicar por lei
+      (dados AFIR da Mobilithek, reunidos pelo Ladekönig), atualizado uma vez por dia e com as suas faixas horárias.
+      Em «Filtrar» › «Carregadores» › «Preço ad hoc máximo» define um limite (0,50, 0,60 ou 0,70 €/kWh): o plano não
+      para nos mais caros; os que não publicam o preço seguem a opção de incluir ou não os sem dados. Só se pedem as
+      zonas da rota ou da pesquisa na Alemanha (poucos KB cada uma).
     - **Carregamento em direto:** com a conta Leapmotor, ao ligar a ficha aparece por cima da rota um bloco com os kW, a
       % e o objetivo («54 % → 64 %»), a hora a que estará pronto e com quanto chega à próxima paragem ou ao destino; se
       carregar um pouco mais lhe poupa a próxima paragem, diz-lho («Até 85 % poupa a paragem em Lleida: +7 min aqui, −23
@@ -901,7 +908,7 @@ estendido»:
   cima a autonomia, a bateria e se está trancado; no meio **o C10 em 3D** (roda com o dedo; portas e mala abertas
   abrem no modelo); em baixo, a fila de ordens **Abrir · Fechar · Mala · Clima · Localizar** (as mesmas do widget
   «Carro», com confirmação: precisam do PIN do carro guardado em «Dados do carro» e das ordens ativadas; sem isso a
-  fila aparece apagada) os cartões **«Carregamento»** (como o centro de carregamento da app da Leapmotor: a % sobre uma bateria desenhada, o estado do carregamento, o botão **«Desbloquear o cabo de carregamento»** enquanto o cabo está ligado, a carregar ou já carregado (no widget «Carro», «Localizar» passa a «Cabo» entretanto), e os últimos carregamentos que o Qonecta+ viu, com a % e o carregador) e **«Consumo»** (Semana / Mês / Ano: km, energia, consumo aos 100 km e a repartição Condução / Climatização / Outros, os mesmos valores da app da Leapmotor, e as últimas viagens; «Todas as viagens ›» e «Todos os carregamentos ›» levam a Viagens), e dois cartões que se abrem: **«Clima»** (temperatura do habitáculo, o clima ligado daqui e o
+  fila aparece apagada) os cartões **«Carregamento»** (como o centro de carregamento da app da Leapmotor: a % sobre uma bateria desenhada, o estado do carregamento (sem cabo, os km desde o último carregamento que o Qonecta+ viu), o botão **«Desbloquear o cabo de carregamento»** enquanto o cabo está ligado, a carregar ou já carregado (no widget «Carro», «Localizar» passa a «Cabo» entretanto), e os últimos carregamentos que o Qonecta+ viu, com a % e o carregador) e **«Consumo»** (Semana / Mês / Ano: km, energia, consumo aos 100 km e a repartição Condução / Climatização / Outros, os mesmos valores da app da Leapmotor, e as últimas viagens; «Todas as viagens ›» e «Todos os carregamentos ›» levam a Viagens), e dois cartões que se abrem: **«Clima»** (temperatura do habitáculo, o clima ligado daqui e o
   botão do clima) e **«Estado»** (as quatro pressões, a âmbar a roda baixa ou com aviso; portas e mala; temperatura da
   bateria; conta-quilómetros). Só lê a nuvem enquanto o separador está à vista.
 - **C10 REEV (autonomia alargada):** o Qonecta+ reconhece-o sozinho (o carro envia o depósito) e passa a bateria a

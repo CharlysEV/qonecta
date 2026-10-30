@@ -676,6 +676,15 @@ final class Config {
         sp.edit().putInt("charger_volts", ChargerFilter.snapVolts(v)).apply();
     }
 
+    /** Tope de precio ad hoc del filtro de cargadores (céntimos/kWh, 0 = sin tope; solo Alemania: AdHocPrices). */
+    int chargerMaxAdHocCt() {
+        return ChargerFilter.snapAdHoc(sp.getInt("charger_max_adhoc_ct", 0));
+    }
+
+    void setChargerMaxAdHocCt(int ct) {
+        sp.edit().putInt("charger_max_adhoc_ct", ChargerFilter.snapAdHoc(ct)).apply();
+    }
+
     /** Con potencia mínima, incluir también los cargadores sin potencia confirmada en OpenStreetMap (la mayoría). */
     boolean chargerIncludeUnknown() {
         return sp.getBoolean("charger_include_unknown", true);

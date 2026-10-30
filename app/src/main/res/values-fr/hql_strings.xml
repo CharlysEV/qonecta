@@ -779,6 +779,15 @@
     <string name="hql_charger_nets_hide_others">Masquer les autres pays</string>
     <string name="hql_charger_summary_all">Toutes les bornes</string>
     <string name="hql_charger_summary_kw">≥ %1$d kW</string>
+    <string name="hql_adhoc_max">Prix ad hoc maximum (Allemagne)</string>
+    <string name="hql_adhoc_summary">≤ %1$s/kWh ad hoc</string>
+    <string name="hql_adhoc_price">%1$s ad hoc</string>
+    <string name="hql_adhoc_minute">+%1$s</string>
+    <string name="hql_adhoc_minute_from">+%1$s dès la minute %2$d</string>
+    <string name="hql_adhoc_session">+%1$s par session</string>
+    <string name="hql_adhoc_stop_cost">≈ %1$s pour cet arrêt</string>
+    <string name="hql_adhoc_note">Prix ad hoc (payer à la borne, sans abonnement), seulement en Allemagne : celui que publie chaque opérateur (données AFIR de la Mobilithek, réunies par Ladekönig), mis à jour une fois par jour. Avec un plafond, les bornes allemandes sans prix publié comptent comme celles sans données (l\'option ci-dessus).</string>
+    <string name="hql_adhoc_source">Prix ad hoc : données AFIR des opérateurs (Mobilithek, CC0 / CC BY 4.0), réunies par Ladekönig.</string>
     <string name="hql_charger_none_filtered">Aucune borne de l\'itinéraire ne correspond à ces filtres.</string>
     <string name="hql_charger_clear_filters">Effacer les filtres</string>
     <string name="hql_key_space">espace</string>
@@ -922,6 +931,7 @@
     <string name="hql_car_charge_records">Historique des recharges</string>
     <string name="hql_car_charge_all">Toutes les recharges ›</string>
     <string name="hql_car_unplugged">Non branchée</string>
+    <string name="hql_car_since_charge">%1$s km depuis la dernière recharge (%2$s)</string>
     <string name="hql_car_use_title">Consommation</string>
     <string name="hql_car_use_odo">Vous avez parcouru %1$s km avec votre %2$s</string>
     <string name="hql_car_use_week">Semaine</string>
@@ -1310,6 +1320,7 @@
     <string name="hql_ch_live_busy">Maintenant : toutes occupées</string>
     <string name="hql_ch_live_out">Maintenant : hors service</string>
     <string name="hql_about_bnetza">Bornes en Allemagne : Ladesäulenregister de la Bundesnetzagentur (CC BY 4.0)</string>
+    <string name="hql_about_adhoc">Prix ad hoc en Allemagne : données AFIR des opérateurs sur la Mobilithek (CC0 et CC BY 4.0 : EnBW mobility+, Eco-Movement, GLS Mobility…), réunies par Ladekönig · uekala (MIT)</string>
     <string name="hql_about_bfe">Bornes en Suisse : Office fédéral de l\'énergie (OFEN), ich-tanke-strom.ch (données ouvertes)</string>
     <string name="hql_trip_phone_used">Batterie du téléphone : −%1$d %%</string>
     <string name="hql_trip_phone_used_mah">Batterie du téléphone : −%1$d %% (%2$d mAh)</string>

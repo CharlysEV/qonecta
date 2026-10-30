@@ -459,6 +459,46 @@ final class DemoMode {
     }
 
     /**
+     * Vista previa «…-precios»: precios ad hoc inventados (como los de Alemania) en los cargadores de la ruta de la
+     * demostración, para ver el filtro con tope, los precios y lo que costaría cada parada.
+     */
+    static void previewAdHocPrices() {
+        RoutePlanner.Plan p = plan;
+        if (p == null) return;
+        for (RoutePlanner.Charger c : p.chargers) {
+            c.adHocArea = true;
+            switch (c.network) {
+                case "zunder":
+                    c.adHocKwh = 0.49;
+                    break;
+                case "iberdrola":
+                    c.adHocKwh = 0.55;
+                    c.adHocSession = 0.5;
+                    break;
+                case "ionity":
+                    c.adHocKwh = 0.69;
+                    break;
+                case "tesla":
+                    c.adHocKwh = 0.45;
+                    break;
+                case "endesa":
+                    c.adHocKwh = 0.79;
+                    c.adHocMin = 0.24;
+                    c.adHocMinFrom = 30;
+                    break;
+                default:
+                    // Repsol y el del centro comercial: sin precio publicado.
+                    break;
+            }
+        }
+    }
+
+    /** La última carga de la demostración: anteayer, 143 km antes de salir. */
+    static LastCharge.Mark lastCharge() {
+        return new LastCharge.Mark(CLOUD_ODO0 - 143, DemoDrive.BASE_MS - 2 * 86_400_000L);
+    }
+
+    /**
      * Datos del coche (inicio y final) en algunos viajes de la demostración, con un consumo real algo distinto del
      * estimado: así se ven la marca «real» y los totales reales.
      */

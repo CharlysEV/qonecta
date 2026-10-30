@@ -15,7 +15,8 @@ import java.util.Locale;
  *
  * Órdenes (una por petición, en minúsculas): estado · msg TEXTO · fps N|auto · kbps N|auto · cable N|auto · qp N|auto ·
  * cola N|auto · boost on|off|auto · termica normal|suave|apagada · noche on|off|auto · hud on|off · perfil ID · reconectar · auto ·
- * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra) · carga demo|off
+ * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra) · precios [LAT,LON]
+ * (los precios ad hoc de Alemania alrededor de un punto; sin nada, Berlín) · carga demo|off
  * (la notificación de una carga inventada, para ver el Live Update) · ffmpeg (si el audio por FFmpeg está listo) · ia [hola]
  * (el SDK de Anthropic con una clave falsa; «hola»: una pregunta de verdad con la clave guardada).
  */
@@ -130,6 +131,22 @@ final class LabControl {
                     done = "registro de Alemania pedido (se baja con Wi-Fi)";
                 }
                 break;
+            case "precios": {
+                // Precios ad hoc de Alemania sin ir allí: «precios 52.52,13.40» (sin nada, Berlín) pide las zonas de
+                // alrededor; la segunda vez dice cuántas estaciones tienen precio y la más barata en continua.
+                double lat = 52.52;
+                double lon = 13.40;
+                if (!a.isEmpty() && a.contains(",")) {
+                    try {
+                        lat = Double.parseDouble(a.substring(0, a.indexOf(',')).trim());
+                        lon = Double.parseDouble(a.substring(a.indexOf(',') + 1).trim());
+                    } catch (NumberFormatException e) {
+                        return "no: «precios LAT,LON»";
+                    }
+                }
+                AdHocPrices.want(ctx, AdHocPrices.tilesAround(lat, lon, 5));
+                return AdHocPrices.labStatus(lat, lon, 5);
+            }
             case "suiza": {
                 // Cargadores de Suiza sin ir a Suiza: baja los puntos (si hace falta) y el estado, y dice cuántos.
                 if (SwissChargers.sites(ctx) == null || "on".equals(a)) SwissChargers.refresh(ctx);
@@ -228,7 +245,7 @@ final class LabControl {
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, carga, ffmpeg, ia, boost, termica, noche, hud, perfil, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, precios, carga, ffmpeg, ia, boost, termica, noche, hud, perfil, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);

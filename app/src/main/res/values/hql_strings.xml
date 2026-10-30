@@ -778,6 +778,15 @@
     <string name="hql_charger_nets_hide_others">Hide other countries</string>
     <string name="hql_charger_summary_all">All chargers</string>
     <string name="hql_charger_summary_kw">≥ %1$d kW</string>
+    <string name="hql_adhoc_max">Maximum ad hoc price (Germany)</string>
+    <string name="hql_adhoc_summary">≤ %1$s/kWh ad hoc</string>
+    <string name="hql_adhoc_price">%1$s ad hoc</string>
+    <string name="hql_adhoc_minute">+%1$s</string>
+    <string name="hql_adhoc_minute_from">+%1$s from minute %2$d</string>
+    <string name="hql_adhoc_session">+%1$s per session</string>
+    <string name="hql_adhoc_stop_cost">≈ %1$s for this stop</string>
+    <string name="hql_adhoc_note">Ad hoc price (paying at the charger, without a contract), only in Germany: the one each operator publishes (AFIR data from the Mobilithek, gathered by Ladekönig), updated once a day. With a cap, German chargers without a published price count as those without data (the option above).</string>
+    <string name="hql_adhoc_source">Ad hoc prices: the operators\' AFIR data (Mobilithek, CC0 / CC BY 4.0), gathered by Ladekönig.</string>
     <string name="hql_charger_none_filtered">No chargers on the route match these filters.</string>
     <string name="hql_charger_clear_filters">Clear filters</string>
     <string name="hql_key_space">space</string>
@@ -921,6 +930,7 @@
     <string name="hql_car_charge_records">Charging records</string>
     <string name="hql_car_charge_all">All charges ›</string>
     <string name="hql_car_unplugged">Not plugged in</string>
+    <string name="hql_car_since_charge">%1$s km since the last charge (%2$s)</string>
     <string name="hql_car_use_title">Consumption</string>
     <string name="hql_car_use_odo">You have driven %1$s km with your %2$s</string>
     <string name="hql_car_use_week">Week</string>
@@ -1314,6 +1324,7 @@
     <string name="hql_ch_live_busy">Now: all occupied</string>
     <string name="hql_ch_live_out">Now: out of service</string>
     <string name="hql_about_bnetza">Chargers in Germany: Bundesnetzagentur Ladesäulenregister (CC BY 4.0)</string>
+    <string name="hql_about_adhoc">Ad hoc prices in Germany: the operators\' AFIR data on the Mobilithek (CC0 and CC BY 4.0: EnBW mobility+, Eco-Movement, GLS Mobility…), gathered by Ladekönig · uekala (MIT)</string>
     <string name="hql_about_bfe">Chargers in Switzerland: Swiss Federal Office of Energy (SFOE), ich-tanke-strom.ch (open data)</string>
     <string name="hql_trip_phone_used">Phone battery: −%1$d %%</string>
     <string name="hql_trip_phone_used_mah">Phone battery: −%1$d %% (%2$d mAh)</string>

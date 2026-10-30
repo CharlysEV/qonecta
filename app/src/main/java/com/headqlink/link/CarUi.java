@@ -1386,6 +1386,13 @@ final class CarUi {
             } else if (name.startsWith("car-")) {
                 // "car-N" o "car-N-detalle" (Viajes con un viaje abierto) o "car-N-buscar" (Ruta con el buscador).
                 String[] parts = name.split("-", 3);
+                // «…-precios»: con precios ad hoc inventados en los cargadores de la demostración y el móvil en
+                // Alemania (para ver el filtro y los precios; la demostración normal no los tiene).
+                if (parts.length > 2 && parts[2].endsWith("-precios")) {
+                    parts[2] = parts[2].substring(0, parts[2].length() - "-precios".length());
+                    DemoMode.previewAdHocPrices();
+                    RouteTab.previewCountry = "de";
+                }
                 CarHubScreen.selectTab(Integer.parseInt(parts[1]));
                 if (parts.length > 2 && parts[2].endsWith("detalle")) TripsTab.previewDetail = true;
                 if (parts.length > 2 && parts[2].equals("buscar")) RouteTab.previewQuery = "electrolinera";

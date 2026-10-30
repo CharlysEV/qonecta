@@ -289,6 +289,30 @@ final class ChargerFilter {
         return includeUnknown;
     }
 
+    /** Lo mismo con un tope de precio ad hoc (céntimos/kWh, 0 = sin tope; solo donde hay precios: Alemania). */
+    static boolean accepts(RoutePlanner.Charger c, int minKw, int volts, Set<String> networks, boolean includeUnknown, int maxAdHocCt) {
+        return accepts(c, minKw, volts, networks, includeUnknown) && adHocOk(c.adHocArea, c.adHocKwh, maxAdHocCt, includeUnknown);
+    }
+
+    /**
+     * Puro: ¿pasa el tope de precio ad hoc? Sin tope o fuera de donde hay precios (area), sí; sin precio conocido, solo si
+     * includeUnknown (como los que no dicen su potencia).
+     */
+    static boolean adHocOk(boolean area, double kwh, int maxCt, boolean includeUnknown) {
+        if (maxCt <= 0 || !area) return true;
+        if (Double.isNaN(kwh)) return includeUnknown;
+        return kwh * 100 <= maxCt + 1e-6;
+    }
+
+    /** Topes de precio ad hoc que se pueden elegir (céntimos/kWh; 0 = sin tope). */
+    static final int[] ADHOC_CHOICES = {0, 50, 60, 70};
+
+    /** Tope guardado, a una elección de ADHOC_CHOICES. */
+    static int snapAdHoc(int ct) {
+        for (int v : ADHOC_CHOICES) if (v == ct) return v;
+        return 0;
+    }
+
     /** Puro: ¿pasa el voltaje elegido? acOnly: solo alterna; maxVolts 0: no se sabe. */
     static boolean voltsOk(boolean acOnly, double maxVolts, int volts, boolean includeUnknown) {
         if (volts != VOLTS_800 && volts != VOLTS_400) return true;

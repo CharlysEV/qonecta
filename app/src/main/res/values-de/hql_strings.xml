@@ -778,6 +778,15 @@
     <string name="hql_charger_nets_hide_others">Andere Länder ausblenden</string>
     <string name="hql_charger_summary_all">Alle Ladestationen</string>
     <string name="hql_charger_summary_kw">≥ %1$d kW</string>
+    <string name="hql_adhoc_max">Maximaler Ad-hoc-Preis (Deutschland)</string>
+    <string name="hql_adhoc_summary">≤ %1$s/kWh ad hoc</string>
+    <string name="hql_adhoc_price">%1$s ad hoc</string>
+    <string name="hql_adhoc_minute">+%1$s</string>
+    <string name="hql_adhoc_minute_from">+%1$s ab Minute %2$d</string>
+    <string name="hql_adhoc_session">+%1$s pro Ladevorgang</string>
+    <string name="hql_adhoc_stop_cost">≈ %1$s für diesen Stopp</string>
+    <string name="hql_adhoc_note">Ad-hoc-Preis (an der Ladesäule zahlen, ohne Vertrag), nur in Deutschland: der Preis, den jeder Betreiber veröffentlicht (AFIR-Daten aus der Mobilithek, gesammelt von Ladekönig), einmal täglich aktualisiert. Mit einer Obergrenze zählen deutsche Ladesäulen ohne veröffentlichten Preis wie die ohne Angaben (Option oben).</string>
+    <string name="hql_adhoc_source">Ad-hoc-Preise: AFIR-Daten der Betreiber (Mobilithek, CC0 / CC BY 4.0), gesammelt von Ladekönig.</string>
     <string name="hql_charger_none_filtered">Keine Ladestation an der Route passt zu diesen Filtern.</string>
     <string name="hql_charger_clear_filters">Filter zurücksetzen</string>
     <string name="hql_key_space">Leertaste</string>
@@ -921,6 +930,7 @@
     <string name="hql_car_charge_records">Ladevorgänge</string>
     <string name="hql_car_charge_all">Alle Ladevorgänge ›</string>
     <string name="hql_car_unplugged">Nicht eingesteckt</string>
+    <string name="hql_car_since_charge">%1$s km seit dem letzten Laden (%2$s)</string>
     <string name="hql_car_use_title">Verbrauch</string>
     <string name="hql_car_use_odo">Du bist %1$s km mit deinem %2$s gefahren</string>
     <string name="hql_car_use_week">Woche</string>
@@ -1309,6 +1319,7 @@
     <string name="hql_ch_live_busy">Jetzt: alle belegt</string>
     <string name="hql_ch_live_out">Jetzt: außer Betrieb</string>
     <string name="hql_about_bnetza">Ladesäulen in Deutschland: Ladesäulenregister der Bundesnetzagentur (CC BY 4.0)</string>
+    <string name="hql_about_adhoc">Ad-hoc-Preise in Deutschland: AFIR-Daten der Betreiber in der Mobilithek (CC0 und CC BY 4.0: EnBW mobility+, Eco-Movement, GLS Mobility…), gesammelt von Ladekönig · uekala (MIT)</string>
     <string name="hql_about_bfe">Ladestationen in der Schweiz: Bundesamt für Energie (BFE), ich-tanke-strom.ch (Open Data)</string>
     <string name="hql_trip_phone_used">Handy-Akku: −%1$d %%</string>
     <string name="hql_trip_phone_used_mah">Handy-Akku: −%1$d %% (%2$d mAh)</string>

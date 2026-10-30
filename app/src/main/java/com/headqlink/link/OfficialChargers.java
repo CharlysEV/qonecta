@@ -22,9 +22,9 @@ final class OfficialChargers {
         SwissChargers.sites(ctx);
     }
 
-    /** Sube cuando cambia cualquiera (para rehacer la lista de cargadores de la ruta). */
+    /** Sube cuando cambia cualquiera, o los precios ad hoc de Alemania (para rehacer la lista de cargadores de la ruta). */
     static int version() {
-        return (DgtChargers.version * 31 + BnetzaChargers.version) * 31 + SwissChargers.version;
+        return ((DgtChargers.version * 31 + BnetzaChargers.version) * 31 + SwissChargers.version) * 31 + AdHocPrices.version();
     }
 
     /** Los puntos oficiales de una cuadrícula (ChargerCache.tileOf), o null si no hay ninguno. */

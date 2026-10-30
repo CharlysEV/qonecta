@@ -774,6 +774,11 @@ final class PhoneCar {
         battery.set(Double.isNaN(soc) ? -1 : soc, s.charging());
         boolean plugged = s.charging() || s.pluggedIn();
         String st = plugged ? stateLine(s, now) : Str.get(R.string.hql_car_unplugged);
+        if (!plugged) {
+            LastCharge.Mark m = LastCharge.get(act);
+            double km = LastCharge.kmSince(m, s.odometerKm);
+            if (!Double.isNaN(km)) st += "\n" + Str.get(R.string.hql_car_since_charge, CarStatusTab.odometer(km), day(m.atMs));
+        }
         ChargeSession live = s.charging() ? ChargeWatch.session() : null;
         if (live != null) {
             double target = ChargeWatch.barTarget(live);

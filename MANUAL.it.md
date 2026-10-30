@@ -449,6 +449,13 @@ supporta.
       lo dice) e tiene di riserva quelle a 400–500 V: l'elenco le segna in ambra («470 V: la tua auto a 800 V qui
       carica a metà potenza») e il piano dice quante ce ne sono lungo il percorso. I Supercharger Tesla in Spagna sono
       a 400–500 V.
+    - **Prezzo ad hoc (Germania):** lì ogni colonnina mostra quanto costa pagare sul momento senza abbonamento («0,59
+      €/kWh ad hoc», con quanto si paga a parte: «+0,24 €/min dal minuto 30», «+0,50 € a sessione») e ogni sosta del
+      piano quanto costerebbe («≈ 24 € per questa sosta»). È il prezzo che ogni operatore deve pubblicare per legge
+      (dati AFIR della Mobilithek, raccolti da Ladekönig), aggiornato una volta al giorno e con le sue fasce orarie.
+      In «Filtra» › «Colonnine» › «Prezzo ad hoc massimo» imposti un tetto (0,50, 0,60 o 0,70 €/kWh): il piano non si
+      ferma a quelle più care; quelle che non pubblicano il prezzo seguono l'opzione di includere o no quelle senza
+      dati. Si scaricano solo le zone del percorso o della ricerca in Germania (pochi KB ciascuna).
     - **Ricarica in diretta:** con l'account Leapmotor, quando colleghi la spina sopra il percorso compare un blocco con
       i kW, la % e l'obiettivo («54 % → 64 %»), l'ora in cui sarà pronta e con quanto arrivi alla prossima sosta o a
       destinazione; se ricaricando un po' di più eviti la prossima sosta, te lo dice («Fino al 85 % eviti la sosta a
@@ -903,7 +910,7 @@ e lo usa in «Auto esteso»:
   alto autonomia, batteria e se è chiusa a chiave; al centro **la C10 in 3D** (si gira con il dito; porte e bagagliaio
   aperti si aprono nel modello); sotto, la fila di comandi **Apri · Chiudi · Bagagliaio · Clima · Localizza** (gli
   stessi del widget «Auto», con conferma: servono il PIN dell'auto salvato in «Dati dell'auto» e i comandi attivati;
-  senza, la fila è spenta) le schede **«Ricarica»** (come il centro di ricarica dell'app Leapmotor: la % sopra una batteria disegnata, lo stato della ricarica, il pulsante **«Sblocca il cavo di ricarica»** finché il cavo è collegato, in ricarica o già carica (nel widget «Auto», «Trova» diventa «Cavo» nel frattempo), e le ultime ricariche viste da Qonecta+, con la % e la colonnina) e **«Consumi»** (Settimana / Mese / Anno: km, energia, consumo ogni 100 km e la ripartizione Guida / Clima / Altro, gli stessi valori dell'app Leapmotor, e gli ultimi viaggi; «Tutti i viaggi ›» e «Tutte le ricariche ›» portano a Viaggi), e due schede che si aprono: **«Clima»** (temperatura dell'abitacolo, il clima acceso da qui
+  senza, la fila è spenta) le schede **«Ricarica»** (come il centro di ricarica dell'app Leapmotor: la % sopra una batteria disegnata, lo stato della ricarica (da scollegata, i km dall'ultima ricarica vista da Qonecta+), il pulsante **«Sblocca il cavo di ricarica»** finché il cavo è collegato, in ricarica o già carica (nel widget «Auto», «Trova» diventa «Cavo» nel frattempo), e le ultime ricariche viste da Qonecta+, con la % e la colonnina) e **«Consumi»** (Settimana / Mese / Anno: km, energia, consumo ogni 100 km e la ripartizione Guida / Clima / Altro, gli stessi valori dell'app Leapmotor, e gli ultimi viaggi; «Tutti i viaggi ›» e «Tutte le ricariche ›» portano a Viaggi), e due schede che si aprono: **«Clima»** (temperatura dell'abitacolo, il clima acceso da qui
   e il pulsante del clima) e **«Stato»** (le quattro pressioni, in ambra la gomma bassa o con avviso; porte e
   bagagliaio; temperatura della batteria; contachilometri). Legge il cloud solo mentre la scheda è visibile.
 - **C10 REEV (range extender):** Qonecta+ la riconosce da solo (l'auto comunica il suo serbatoio) e porta la batteria a

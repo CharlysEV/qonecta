@@ -158,6 +158,16 @@ public final class Money {
         return currency(decimals, loc).format(amount);
     }
 
+    /** Un importe en euros, sea cual sea la moneda elegida (los precios ad hoc de Alemania): «0,59 €», «€0.59». */
+    static String formatEur(double amount) {
+        return currency(2, Str.locale(), EUR).format(amount);
+    }
+
+    /** Un precio por unidad en euros: «0,59 €/kWh». */
+    static String perEur(double price, String unit) {
+        return formatEur(price) + "/" + unit;
+    }
+
     /** Puro: precio por unidad («0,25 €/kWh», «€0.25/kWh», «€ 0,25/kWh»). */
     static String per(double price, String unit, Locale loc) {
         return format(price, 2, loc) + "/" + unit;
@@ -183,8 +193,11 @@ public final class Money {
     }
 
     private static NumberFormat currency(int decimals, Locale loc) {
+        return currency(decimals, loc, current);
+    }
+
+    private static NumberFormat currency(int decimals, Locale loc, Currency cur) {
         NumberFormat f = NumberFormat.getCurrencyInstance(loc == null ? Locale.getDefault() : loc);
-        Currency cur = current;
         f.setCurrency(cur);
         // Las monedas sin céntimos (corona islandesa), sin decimales.
         if (cur.getDefaultFractionDigits() == 0) decimals = 0;

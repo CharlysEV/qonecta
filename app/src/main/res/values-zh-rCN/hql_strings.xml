@@ -777,6 +777,15 @@
     <string name="hql_charger_nets_hide_others">隐藏其他国家</string>
     <string name="hql_charger_summary_all">所有充电桩</string>
     <string name="hql_charger_summary_kw">≥ %1$d kW</string>
+    <string name="hql_adhoc_max">最高临时充电价（德国）</string>
+    <string name="hql_adhoc_summary">≤ %1$s/kWh 临时价</string>
+    <string name="hql_adhoc_price">临时价 %1$s</string>
+    <string name="hql_adhoc_minute">+%1$s</string>
+    <string name="hql_adhoc_minute_from">第 %2$d 分钟起 +%1$s</string>
+    <string name="hql_adhoc_session">每次 +%1$s</string>
+    <string name="hql_adhoc_stop_cost">本站约 %1$s</string>
+    <string name="hql_adhoc_note">临时充电价（在充电桩直接付款，无需合约），仅限德国：各运营商公布的价格（Mobilithek 的 AFIR 数据，由 Ladekönig 汇总），每天更新一次。设置上限后，没有公布价格的德国充电桩按“无数据”处理（见上方选项）。</string>
+    <string name="hql_adhoc_source">临时充电价：运营商的 AFIR 数据（Mobilithek，CC0 / CC BY 4.0），由 Ladekönig 汇总。</string>
     <string name="hql_charger_none_filtered">路线上没有符合这些筛选条件的充电桩。</string>
     <string name="hql_charger_clear_filters">清除筛选</string>
     <string name="hql_key_space">空格</string>
@@ -920,6 +929,7 @@
     <string name="hql_car_charge_records">充电记录</string>
     <string name="hql_car_charge_all">全部充电 ›</string>
     <string name="hql_car_unplugged">未插枪</string>
+    <string name="hql_car_since_charge">距上次充电已行驶 %1$s 公里（%2$s）</string>
     <string name="hql_car_use_title">能耗</string>
     <string name="hql_car_use_odo">你的 %2$s 已行驶 %1$s 公里</string>
     <string name="hql_car_use_week">周</string>
@@ -1313,6 +1323,7 @@
     <string name="hql_ch_live_busy">当前：全部占用</string>
     <string name="hql_ch_live_out">当前：停止服务</string>
     <string name="hql_about_bnetza">德国充电桩：联邦网络局 Ladesäulenregister（CC BY 4.0）</string>
+    <string name="hql_about_adhoc">德国临时充电价：运营商在 Mobilithek 发布的 AFIR 数据（CC0 和 CC BY 4.0：EnBW mobility+、Eco-Movement、GLS Mobility…），由 Ladekönig · uekala 汇总（MIT）</string>
     <string name="hql_about_bfe">瑞士充电桩：瑞士联邦能源办公室（BFE），ich-tanke-strom.ch（开放数据）</string>
     <string name="hql_trip_phone_used">手机电量：−%1$d%%</string>
     <string name="hql_trip_phone_used_mah">手机电量：−%1$d%%（%2$d mAh）</string>

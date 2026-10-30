@@ -57,6 +57,8 @@ final class RouteTab implements CarScreen {
     private int chargerMinKw;
     /** Voltaje del filtro (ChargerFilter.VOLTS_*). */
     private int chargerVolts;
+    /** Tope de precio ad hoc (céntimos/kWh, 0 = sin tope; Alemania: AdHocPrices). */
+    private int chargerAdHoc;
     private java.util.Set<String> chargerNets = new java.util.LinkedHashSet<>();
     /** Con potencia mínima, también los cargadores sin potencia confirmada (Config.chargerIncludeUnknown). */
     private boolean chargerUnknown = true;
@@ -248,6 +250,7 @@ final class RouteTab implements CarScreen {
         Config cfg0 = new Config(ctx);
         chargerMinKw = cfg0.chargerMinKw();
         chargerVolts = cfg0.chargerVolts();
+        chargerAdHoc = cfg0.chargerMaxAdHocCt();
         chargerUnknown = cfg0.chargerIncludeUnknown();
         chargerNets = ChargerFilter.parseNetworks(cfg0.chargerNetworks());
         LinearLayout chCol = CarKit.col(ctx);
@@ -853,7 +856,8 @@ final class RouteTab implements CarScreen {
         updateLive();
         if (have) {
             updateChargePlan();
-            int key = ((System.identityHashCode(plan) * 31 + plan.progress / 10) * 31 + chargerMinKw * 7 + chargerVolts * 13 + chargerNets.hashCode()) * 31
+            int key = ((System.identityHashCode(plan) * 31 + plan.progress / 10) * 31 + chargerMinKw * 7 + chargerVolts * 13 + chargerAdHoc * 17
+                    + chargerNets.hashCode()) * 31
                     + System.identityHashCode(chargePlan) + plan.chargerVersion * 131;
             if (key != shownChargersFor) {
                 shownChargersFor = key;
@@ -1698,7 +1702,7 @@ final class RouteTab implements CarScreen {
 
     /** El cargador pasa el filtro elegido. */
     private boolean wanted(RoutePlanner.Charger c) {
-        return ChargerFilter.accepts(c, chargerMinKw, chargerVolts, chargerNets, chargerUnknown)
+        return ChargerFilter.accepts(c, chargerMinKw, chargerVolts, chargerNets, chargerUnknown, chargerAdHoc)
                 && (marks.isEmpty() || ChargerMarks.kindOf(marks, c) != ChargerMarks.BAN);
     }
 
@@ -1707,6 +1711,7 @@ final class RouteTab implements CarScreen {
         StringBuilder b = new StringBuilder();
         if (chargerMinKw > 0) b.append(Str.get(R.string.hql_charger_summary_kw, chargerMinKw));
         if (chargerVolts != ChargerFilter.VOLTS_ANY) b.append(b.length() > 0 ? " · " : "").append(voltsLabel(chargerVolts));
+        if (chargerAdHoc > 0) b.append(b.length() > 0 ? " · " : "").append(Str.get(R.string.hql_adhoc_summary, adHocLabel(chargerAdHoc)));
         if (!chargerNets.isEmpty()) {
             StringBuilder n = new StringBuilder();
             for (String k : chargerNets) {
@@ -1724,6 +1729,7 @@ final class RouteTab implements CarScreen {
         Config c = new Config(ctx);
         c.setChargerMinKw(chargerMinKw);
         c.setChargerVolts(chargerVolts);
+        c.setChargerMaxAdHocCt(chargerAdHoc);
         c.setChargerNetworks(ChargerFilter.formatNetworks(chargerNets));
         updateFilterSummary();
         shownChargersFor = -1;
@@ -1897,7 +1903,8 @@ final class RouteTab implements CarScreen {
                 body.addView(chargerRow(c, here, stopNo.get(c), ok), itemParams());
             }
             if (body.getChildCount() == 0) body.addView(hint(Str.get(R.string.hql_chargers_list_none)));
-            body.addView(hint(Str.get(pl.dgtCount > 0 ? R.string.hql_chargers_source_dgt : R.string.hql_chargers_source_osm)));
+            body.addView(hint(Str.get(pl.dgtCount > 0 ? R.string.hql_chargers_source_dgt : R.string.hql_chargers_source_osm)
+                    + adHocSource(pl.chargers)));
         }
         count.setText(Str.plural(R.plurals.hql_chargers_list_count, passing, total, passing));
         root.addView(panel, CarStyle.match());
@@ -2019,7 +2026,7 @@ final class RouteTab implements CarScreen {
             String src = OfficialChargers.sourceOf(ChargerCache.tileOf(pos[0], pos[1]));
             body.addView(hint(Str.get("dgt".equals(src) ? R.string.hql_chargers_source_dgt
                     : "de".equals(src) ? R.string.hql_chargers_source_de
-                    : "ch".equals(src) ? R.string.hql_chargers_source_ch : R.string.hql_chargers_source_osm)));
+                    : "ch".equals(src) ? R.string.hql_chargers_source_ch : R.string.hql_chargers_source_osm) + adHocSource(all)));
         };
         build[0].run();
         root.addView(panel, CarStyle.match());
@@ -2050,6 +2057,7 @@ final class RouteTab implements CarScreen {
             txt.addView(CarStyle.text(ctx, Str.get(R.string.hql_charger_low_volts, c.maxVolts), 20, CarKit.AMBER));
         }
         addLive(txt, c, 20);
+        addPrice(txt, c, 20);
         item.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         item.addView(markPill(c));
         TextView go = CarKit.pill(ctx, Str.get(R.string.hql_go), false);
@@ -2120,6 +2128,7 @@ final class RouteTab implements CarScreen {
             txt.addView(CarStyle.text(ctx, Str.get(R.string.hql_charger_low_volts, c.maxVolts), 20, CarKit.AMBER));
         }
         addLive(txt, c, 20);
+        addPrice(txt, c, 20);
         item.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         if (stop != null) {
             TextView tag = CarStyle.text(ctx, Str.get(R.string.hql_chargers_list_stop, stop), 21, CarKit.ACCENT);
@@ -2231,8 +2240,24 @@ final class RouteTab implements CarScreen {
             }), chipParams());
         }
         body.addView(vrow);
+        // Precio ad hoc máximo (30-10, LPMFF sayaz): solo hay precios en Alemania; se ofrece allí, con una ruta que pasa
+        // por Alemania o si ya hay un tope puesto.
+        RoutePlanner.Plan rp = plan;
+        String here = previewCountry != null ? previewCountry : Country.current(ctx);
+        if (chargerAdHoc > 0 || "de".equals(here) || (rp != null && rp.adHocTiles != null)) {
+            body.addView(section(Str.get(R.string.hql_adhoc_max)));
+            LinearLayout arow = CarKit.row(ctx);
+            for (int v : ChargerFilter.ADHOC_CHOICES) {
+                arow.addView(chip(v == 0 ? Str.get(R.string.hql_charger_any) : adHocLabel(v), chargerAdHoc == v, () -> {
+                    chargerAdHoc = v;
+                    filterChanged();
+                    rebuild.run();
+                }), chipParams());
+            }
+            body.addView(arow);
+        }
         // Casi ningún cargador de OpenStreetMap dice su potencia ni su voltaje: con un mínimo, ¿se cuentan esos también?
-        if (chargerMinKw > 0 || chargerVolts != ChargerFilter.VOLTS_ANY) {
+        if (chargerMinKw > 0 || chargerVolts != ChargerFilter.VOLTS_ANY || chargerAdHoc > 0) {
             Config ic = new Config(ctx);
             LinearLayout un = CarKit.row(ctx);
             un.addView(chip(Str.get(R.string.hql_charger_unknown_include), ic.chargerIncludeUnknown(), () -> {
@@ -2315,10 +2340,73 @@ final class RouteTab implements CarScreen {
         // De dónde salen los datos, al final (en medio empujaba las redes fuera de la pantalla); con un mínimo de potencia
         // o de voltaje, la nota que explica los que no dicen sus datos.
         boolean limits = chargerMinKw > 0 || chargerVolts != ChargerFilter.VOLTS_ANY;
-        TextView note = CarStyle.text(ctx, Str.get(limits ? R.string.hql_charger_unknown_note : R.string.hql_charger_filter_note), 21,
-                CarKit.FAINT);
+        String noteText = Str.get(limits ? R.string.hql_charger_unknown_note : R.string.hql_charger_filter_note);
+        if (chargerAdHoc > 0 || "de".equals(here) || (rp != null && rp.adHocTiles != null)) noteText += "\n\n" + Str.get(R.string.hql_adhoc_note);
+        TextView note = CarStyle.text(ctx, noteText, 21, CarKit.FAINT);
         note.setPadding(4, 26, 4, 0);
         body.addView(note);
+    }
+
+    /** Con algún precio ad hoc en la lista, de dónde salen (CC BY 4.0 pide citarlo): « Precios ad hoc: …»; si no, "". */
+    private static String adHocSource(java.util.List<RoutePlanner.Charger> list) {
+        for (RoutePlanner.Charger c : list) if (!Double.isNaN(c.adHocKwh)) return " " + Str.get(R.string.hql_adhoc_source);
+        return "";
+    }
+
+    /** «0,60 €» (un tope de precio ad hoc en céntimos, siempre en euros: son los de Alemania). */
+    private static String adHocLabel(int ct) {
+        return Money.formatEur(ct / 100.0);
+    }
+
+    /**
+     * El precio ad hoc de un cargador de Alemania (AdHocPrices), si se sabe: «0,59 €/kWh ad hoc · +0,10 €/min desde el
+     * min 45 · +0,50 € por carga»; en verde si pasa el tope elegido.
+     */
+    private void addPrice(LinearLayout txt, RoutePlanner.Charger c, int size) {
+        addPrice(txt, c, size, Double.NaN, Double.NaN);
+    }
+
+    /** Lo mismo en una parada del plan: con lo que costaría cargar ahí kwh en minutes («≈ 24 € esta parada»). */
+    private void addPrice(LinearLayout txt, RoutePlanner.Charger c, int size, double kwh, double minutes) {
+        if (Double.isNaN(c.adHocKwh)) return;
+        String text = adHocText(c);
+        double cost = stopCost(c, kwh, minutes);
+        if (!Double.isNaN(cost)) text += " · " + Str.get(R.string.hql_adhoc_stop_cost, Money.formatEur(cost));
+        boolean cheap = chargerAdHoc > 0 && ChargerFilter.adHocOk(true, c.adHocKwh, chargerAdHoc, false);
+        TextView t = CarStyle.text(ctx, text, size, cheap ? CarKit.GREEN : CarKit.DIM);
+        t.setMaxLines(2);
+        t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        txt.addView(t);
+    }
+
+    /** Lo que de la batería llega del cargador: el resto se pierde cargando (calor, conversión), ~5 % en continua. */
+    static final double CHARGE_LOSS = 1.05;
+
+    /**
+     * Puro: lo que costaría cargar kwh (en la batería) en minutes con el precio ad hoc del cargador: la energía (con lo
+     * que se pierde cargando), los minutos que pasen del adHocMinFrom y lo fijo por carga. NaN sin precio o sin kwh.
+     */
+    static double stopCost(RoutePlanner.Charger c, double kwh, double minutes) {
+        if (Double.isNaN(c.adHocKwh) || Double.isNaN(kwh) || kwh <= 0) return Double.NaN;
+        double cost = kwh * CHARGE_LOSS * c.adHocKwh;
+        if (!Double.isNaN(c.adHocMin) && c.adHocMin > 0 && !Double.isNaN(minutes)) {
+            cost += Math.max(0, minutes - c.adHocMinFrom) * c.adHocMin;
+        }
+        if (!Double.isNaN(c.adHocSession) && c.adHocSession > 0) cost += c.adHocSession;
+        return cost;
+    }
+
+    /** «0,59 €/kWh ad hoc», con lo que se cobra aparte (por minuto y por carga). */
+    static String adHocText(RoutePlanner.Charger c) {
+        StringBuilder b = new StringBuilder(Str.get(R.string.hql_adhoc_price, Money.perEur(c.adHocKwh, "kWh")));
+        if (!Double.isNaN(c.adHocMin) && c.adHocMin > 0) {
+            b.append(" · ").append(c.adHocMinFrom > 0 ? Str.get(R.string.hql_adhoc_minute_from, Money.perEur(c.adHocMin, "min"), c.adHocMinFrom)
+                    : Str.get(R.string.hql_adhoc_minute, Money.perEur(c.adHocMin, "min")));
+        }
+        if (!Double.isNaN(c.adHocSession) && c.adHocSession > 0) {
+            b.append(" · ").append(Str.get(R.string.hql_adhoc_session, Money.formatEur(c.adHocSession)));
+        }
+        return b.toString();
     }
 
     /** Pestaña «Plan de carga»: con cuánto llegar, hasta cuánto cargar, cargar en el destino, comer, voz y navegador. */
@@ -2648,6 +2736,7 @@ final class RouteTab implements CarScreen {
             txt.addView(name);
             txt.addView(line);
             addLive(txt, st.charger, 19);
+            addPrice(txt, st.charger, 19, Math.max(0, st.departPct - st.arrivePct) / 100.0 * cp.capacityKwh, st.minutes);
             // Parada larga: si hay dónde comer cerca (FoodNearby, pedido una vez).
             String food = ChargePlanner.longStop(st) ? foodText(st.charger) : "";
             if (!food.isEmpty()) {
@@ -2902,6 +2991,7 @@ final class RouteTab implements CarScreen {
             clearF.setOnClickListener(v -> {
                 chargerMinKw = 0;
                 chargerVolts = ChargerFilter.VOLTS_ANY;
+                chargerAdHoc = 0;
                 chargerNets.clear();
                 filterChanged();
             });

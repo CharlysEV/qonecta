@@ -52,6 +52,13 @@ final class RoutePlanner {
         int source = SOURCE_OSM;
         static final int SOURCE_OSM = 0;
         static final int SOURCE_DGT = 1;
+        /** Alemania (AdHocPrices): está donde hay precios ad hoc, y el de ahora (€/kWh con IVA; NaN si no se sabe). */
+        boolean adHocArea;
+        double adHocKwh = Double.NaN;
+        /** …y lo que se cobra aparte: €/min desde el minuto adHocMinFrom y lo fijo por carga (NaN: nada). */
+        double adHocMin = Double.NaN;
+        int adHocMinFrom;
+        double adHocSession = Double.NaN;
     }
 
     static final class Plan {
@@ -140,6 +147,8 @@ final class RoutePlanner {
         int dgtVersion = -1;
         /** La ruta pasa por Suiza: mientras dure, se pide el estado en directo de sus cargadores (SwissChargers). */
         volatile boolean swiss;
+        /** La ruta pasa por Alemania: las cuadrículas de precios ad hoc (AdHocPrices) que toca; null si no. */
+        volatile List<String> adHocTiles;
         /** Cuántos cargadores de la lista salen de la DGT. */
         volatile int dgtCount;
         /** Cuadrículas con datos de la DGT a las que aún les faltan los de OpenStreetMap (se piden en segundo plano). */
@@ -672,10 +681,13 @@ final class RoutePlanner {
         // Ruta por Suiza: el estado de sus cargadores (cada pocos minutos; si un sitio queda fuera de servicio, sube la
         // versión y la lista se rehace sin él).
         if (p != null && p.swiss) SwissChargers.statusIfDue(ctx);
+        // Ruta por Alemania: los precios ad hoc que falten o hayan caducado (barato si no falta nada).
+        if (p != null && !demo && p.adHocTiles != null) AdHocPrices.want(ctx, p.adHocTiles);
         if (p != null && !demo && !p.routeTiles.isEmpty() && p.dgtVersion != OfficialChargers.version()) {
             // Han llegado (o se han renovado) los puntos de la DGT: la lista de la ruta, con ellos.
             rebuildChargers(p);
-            L.i("ruta: cargadores con los datos de la DGT: " + p.chargers.size() + " junto a la ruta (" + p.dgtCount + " de la DGT)");
+            L.i("ruta: cargadores con los registros oficiales y los precios ad hoc al día: " + p.chargers.size() + " junto a la ruta ("
+                    + p.dgtCount + " oficiales, " + adHocCount(p.chargers) + " con precio ad hoc)");
         }
         if (p != null && !p.osmPending.isEmpty() && SystemClock.elapsedRealtime() - lastOsmExtraMs > OSM_EXTRA_RETRY_MS) {
             fetchOsmInBackground(p);
@@ -1995,7 +2007,7 @@ final class RoutePlanner {
             String nets = c.chargerNetworks();
             String marks = c.chargerMarks();
             boolean food = c.planPreferFood();
-            String settings = minKw + "/" + c.chargerVolts() + "V/" + nets + "/" + c.chargerIncludeUnknown() + "/" + c.planArrivePct() + "/" + c.planMaxPct() + "/" + Math.round(capKwh * 10)
+            String settings = minKw + "/" + c.chargerVolts() + "V/" + c.chargerMaxAdHocCt() + "ct/" + nets + "/" + c.chargerIncludeUnknown() + "/" + c.planArrivePct() + "/" + c.planMaxPct() + "/" + Math.round(capKwh * 10)
                     + (realSoc ? "/real" : "/indicado") + "/c" + pl.chargerVersion + "/curva" + c.learnedChargeCurve() + "/m" + marks.hashCode() + (food ? "/f" + FoodNearby.version : "")
                     + "/p" + pinsVersion;
             int prog = Math.min(pl.progress, pl.n - 1);
@@ -2209,7 +2221,8 @@ final class RoutePlanner {
         boolean any = previewAnyCharger && DemoMode.active();
         List<Charger> list = new ArrayList<>();
         for (Charger ch : pl.chargers) {
-            if (any || ChargerFilter.accepts(ch, c.chargerMinKw(), c.chargerVolts(), want, c.chargerIncludeUnknown())) list.add(ch);
+            if (any || ChargerFilter.accepts(ch, c.chargerMinKw(), c.chargerVolts(), want, c.chargerIncludeUnknown(),
+                    c.chargerMaxAdHocCt())) list.add(ch);
         }
         return ChargerMarks.withoutBanned(list, ChargerMarks.parse(c.chargerMarks()));
     }
@@ -2329,7 +2342,8 @@ final class RoutePlanner {
         double f = (demo ? DemoMode.planTrend() : trend.factor()) * p.mapsRatio;
         int ahead = 0;
         if (before != null) for (ChargePlanner.Stop st : before.stops) if (st.km > here + ChargePlanner.HERE_KM) ahead++;
-        String key = System.identityHashCode(p) + "/" + p.chargerVersion + "/" + c.chargerMinKw() + "/" + c.chargerVolts() + "V/" + c.chargerNetworks() + "/"
+        String key = System.identityHashCode(p) + "/" + p.chargerVersion + "/" + c.chargerMinKw() + "/" + c.chargerVolts() + "V/"
+                + c.chargerMaxAdHocCt() + "ct/" + c.chargerNetworks() + "/"
                 + c.chargerIncludeUnknown() + "/" + c.planArrivePct() + "/" + c.planMaxPct() + "/" + Math.round(f * 100) + "/" + prog + "/"
                 + ahead + "/" + c.chargerMarks().hashCode() + "/p" + pinsVersion;
         if (key.equals(sessionKey)) return;
@@ -3218,6 +3232,9 @@ final class RoutePlanner {
         if (!demo && BnetzaChargers.nearGermany(p.lat, p.lon)) {
             BnetzaChargers.sites(ctx);
             BnetzaChargers.want(ctx);
+            // Y los precios ad hoc de sus cargadores (pocos KB por zona, con cualquier red); llegan en otro hilo.
+            p.adHocTiles = AdHocPrices.tilesForCacheTiles(p.routeTiles);
+            AdHocPrices.want(ctx, p.adHocTiles);
         }
         // En Suiza, los de la Oficina Federal de Energía (~1,1 MB, con cualquier red; mientras, OpenStreetMap) y, mientras
         // dure la ruta, su estado en directo (step).
@@ -3358,6 +3375,10 @@ final class RoutePlanner {
             SwissChargers.refreshIfStale(ctx);
             SwissChargers.statusIfDue(ctx);
         }
+        // En Alemania, los precios ad hoc de la zona (llegan en otro hilo; la próxima vez ya están).
+        if (!demo && BnetzaChargers.nearGermany(new double[]{lat}, new double[]{lon})) {
+            AdHocPrices.want(ctx, AdHocPrices.tilesAround(lat, lon, radiusKm));
+        }
         long now = System.currentTimeMillis();
         List<Charger> official = new ArrayList<>();
         List<Charger> extra = new ArrayList<>();
@@ -3390,6 +3411,7 @@ final class RoutePlanner {
         }
         list.addAll(mergeSources(official, extra));
         java.util.Collections.sort(list, (a, b) -> Double.compare(a.kmAlong, b.kmAlong));
+        if (!demo) AdHocPrices.attach(list, now);
         return list;
     }
 
@@ -3411,6 +3433,12 @@ final class RoutePlanner {
         }, "hql-near");
         t.setPriority(Thread.MIN_PRIORITY);
         t.start();
+    }
+
+    private static int adHocCount(List<Charger> list) {
+        int n = 0;
+        for (Charger c : list) if (!Double.isNaN(c.adHocKwh)) n++;
+        return n;
     }
 
     /** Un cargador de OpenStreetMap a menos de esto de uno de la DGT de la misma red es el mismo (km). */
@@ -3489,6 +3517,7 @@ final class RoutePlanner {
         }
         list.addAll(mergeSources(official, extra));
         java.util.Collections.sort(list, (a, b) -> Double.compare(a.kmAlong, b.kmAlong));
+        if (!demo) AdHocPrices.attach(list, System.currentTimeMillis());
         p.chargers = list;
         p.dgtVersion = dgtVersion;
         p.dgtCount = official.size();

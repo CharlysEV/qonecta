@@ -450,6 +450,13 @@ admite.
       mitad. El plan para en los de 800 V (o de 150 kW o más, que casi siempre lo son aunque el registro no lo diga) y
       deja los de 400–500 V de reserva: la lista los marca en ámbar («470 V: tu coche de 800 V carga aquí a la mitad»)
       y el plan dice cuántos hay por el camino. Los Supercharger de Tesla en España son de 400–500 V.
+    - **Precio ad hoc (Alemania):** allí cada cargador lleva lo que cuesta pagar en el momento, sin contrato
+      («0,59 €/kWh ad hoc», con lo que se cobre aparte: «+0,24 €/min desde el min 30», «+0,50 € por carga»), y cada
+      parada del plan, lo que costaría («≈ 24 € esta parada»). Es el precio que publica cada operador por ley (datos
+      AFIR de la Mobilithek, reunidos por Ladekönig), al día una vez al día y con sus franjas horarias. En «Filtrar»
+      › «Cargadores» › «Precio ad hoc máximo» pones un tope (0,50, 0,60 o 0,70 €/kWh): el plan no para en los que
+      cuestan más; los que no publican su precio siguen la opción de incluir o no los que no dicen sus datos. Se
+      piden solo las zonas de la ruta o del buscador en Alemania (unos pocos KB cada una).
     - **Carga en directo:** con la cuenta de Leapmotor, al enchufar se ve encima de la ruta un bloque con los kW, el % y
       el objetivo («54 % → 64 %»), la hora a la que estará lista y con cuánto llegas a la siguiente parada o al destino;
       si cargando un poco más te ahorras la siguiente parada, lo dice («Hasta 85 % te ahorras la parada de Lleida: +7
@@ -893,7 +900,7 @@ en «Auto extendido»:
   la autonomía, la batería y si está cerrado con llave; en medio **el C10 en 3D** (se gira con el dedo; las puertas y
   el maletero abiertos se abren en el dibujo); debajo, la fila de órdenes **Abrir · Cerrar · Maletero · Clima ·
   Localizar** (las mismas del widget «Coche», con su confirmación: necesitan el PIN del coche guardado en «Datos del
-  coche» y las órdenes activadas; sin ellas la fila sale apagada) las tarjetas **«Carga»** (como el «Centro de carga» de Leapmotor: el % sobre una batería dibujada, el estado de la carga, el botón **«Desbloquear el cable de carga»** mientras el cable está puesto, cargando o ya cargado (en el widget «Coche», «Localizar» pasa a ser «Cable» mientras tanto), y las últimas cargas que vio Qonecta+, con el % y el cargador) y **«Consumo»** (Semana / Mes / Año: km, energía, consumo por 100 km y el reparto Conducción / Clima / Otros, las mismas cifras que la app de Leapmotor, y los últimos viajes; «Todos los viajes ›» y «Todas las cargas ›» llevan a Viajes), y dos tarjetas que se despliegan: **«Clima»**
+  coche» y las órdenes activadas; sin ellas la fila sale apagada) las tarjetas **«Carga»** (como el «Centro de carga» de Leapmotor: el % sobre una batería dibujada, el estado de la carga (sin enchufar, los km desde la última carga que vio Qonecta+), el botón **«Desbloquear el cable de carga»** mientras el cable está puesto, cargando o ya cargado (en el widget «Coche», «Localizar» pasa a ser «Cable» mientras tanto), y las últimas cargas que vio Qonecta+, con el % y el cargador) y **«Consumo»** (Semana / Mes / Año: km, energía, consumo por 100 km y el reparto Conducción / Clima / Otros, las mismas cifras que la app de Leapmotor, y los últimos viajes; «Todos los viajes ›» y «Todas las cargas ›» llevan a Viajes), y dos tarjetas que se despliegan: **«Clima»**
   (temperatura del habitáculo, el clima encendido desde aquí y el botón del clima) y **«Salud»** (las cuatro
   presiones, en ámbar la rueda baja o con aviso; puertas y maletero; temperatura de la batería; cuentakilómetros).
   Solo lee la nube mientras la pestaña está a la vista.

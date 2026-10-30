@@ -57,6 +57,11 @@ Maps, routes, search, weather and elevation (online services the app queries):
   Chargers in Germany: the Bundesnetzagentur's register of public charging points (Ladesäulenregister,
   https://www.bundesnetzagentur.de/ladeinfrastruktur), CC BY 4.0; downloaded by the app once a month, on Wi-Fi, only on
   phones that plan routes through Germany, and kept in a compact form (fast chargers only); not bundled.
+  Ad hoc charging prices in Germany: the AFIR data (DATEX II) that each operator publishes on the Mobilithek
+  (https://mobilithek.info), under CC0 or CC BY 4.0 (EnBW mobility+ AG & Co. KG, Eco-Movement B.V., GLS Mobility
+  GmbH, among others), as gathered into map tiles by Ladekönig (https://github.com/uekala/ladekoenig, MIT,
+  Copyright (c) 2026 uekala); the price logic follows its pricing.py. Tiles are fetched on demand, only for routes or
+  searches in Germany, and kept on the phone for a day; not bundled.
   Chargers in Switzerland: the charging stations and their live status published by the Swiss Federal Office of Energy
   (SFOE/BFE, ich-tanke-strom.ch, https://data.geo.admin.ch/ch.bfe.ladestellen-elektromobilitaet), open data
   (free use, source must be cited); downloaded by the app once a week and the status every few minutes, only while a

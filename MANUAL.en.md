@@ -436,6 +436,13 @@ version). That tells us whether the C10 supports it.
       stops at 800 V ones (or 150 kW and up, which almost always are, even if the registry does not say so) and keeps
       the 400–500 V ones in reserve: the list marks them in amber ("470 V: your 800 V car charges here at half power")
       and the plan says how many there are along the way. Tesla Superchargers in Spain are 400–500 V.
+    - **Ad hoc price (Germany):** there, each charger shows what paying on the spot without a contract costs ("€0.59/kWh
+      ad hoc", with any extra charges: "+€0.24/min from minute 30", "+€0.50 per session"), and each stop of the plan
+      shows what it would cost ("≈ €24 for this stop"). It is the price each operator must publish by law (AFIR data
+      from the Mobilithek, gathered by Ladekönig), updated once a day and with its time windows. In "Filter" ›
+      "Chargers" › "Maximum ad hoc price" you set a cap (0.50, 0.60 or 0.70 €/kWh): the plan does not stop at more
+      expensive ones; those that do not publish their price follow the option to include or not those without data.
+      Only the areas of the route or the search in Germany are fetched (a few KB each).
     - **Live charging:** with the Leapmotor account, when you plug in a block over the route shows the kW, the % and the
       target ("54 % → 64 %"), the time it will be ready and what you reach the next stop or the destination with; if
       charging a little more saves you the next stop, it says so ("Up to 85 % saves you the stop at Lleida: +7 min here,
@@ -875,7 +882,7 @@ extended":
   range, the battery and whether it is locked; in the middle **the C10 in 3D** (turn it with your finger; open doors
   and boot open in the drawing); below, the row of orders **Unlock · Lock · Boot · Climate · Locate** (the same as the
   "Car" widget, with their confirmation: they need the car's PIN saved in "Car data" and the orders enabled; without
-  them the row is dimmed) the cards **"Charging"** (like the charging centre of the Leapmotor app: the % over a drawn battery, the charging state, the **"Unlock the charging cable"** button while the cable is plugged in, charging or already charged (in the "Car" widget, "Find" becomes "Cable" meanwhile), and the latest charges Qonecta+ saw, with the % and the charger) and **"Consumption"** (Week / Month / Year: km, energy, consumption per 100 km and the Driving / A/C / Other split, the same figures as the Leapmotor app, and the latest trips; "All trips ›" and "All charges ›" open Trips), and two cards that unfold: **"Climate"** (cabin temperature, the climate turned on from here
+  them the row is dimmed) the cards **"Charging"** (like the charging centre of the Leapmotor app: the % over a drawn battery, the charging state (unplugged, the km since the last charge Qonecta+ saw), the **"Unlock the charging cable"** button while the cable is plugged in, charging or already charged (in the "Car" widget, "Find" becomes "Cable" meanwhile), and the latest charges Qonecta+ saw, with the % and the charger) and **"Consumption"** (Week / Month / Year: km, energy, consumption per 100 km and the Driving / A/C / Other split, the same figures as the Leapmotor app, and the latest trips; "All trips ›" and "All charges ›" open Trips), and two cards that unfold: **"Climate"** (cabin temperature, the climate turned on from here
   and the climate button) and **"Health"** (the four pressures, amber for a low tyre or a warning; doors and boot;
   battery temperature; odometer). It only reads the cloud while the tab is visible.
 - **C10 REEV (range extender):** Qonecta+ recognises it by itself (the car reports its tank) and switches the battery
