@@ -8,7 +8,8 @@ import java.util.TimeZone;
 /**
  * «Consumo» de la pestaña «Mi coche» (28-10, como la app de Leapmotor): km, energía y consumo de la semana (los últimos
  * 7 días), del mes en curso o del año en curso, y los viajes de ese tiempo.
- * - Semana y mes: los viajes del coche (historial de la nube, 35 días) si los hay; si no, los que grabó Qonecta+.
+ * - Semana y mes: los viajes del coche (historial de la nube, 35 días) hasta su último viaje conocido, y después los que
+ *   grabó Qonecta+ (rows). Sin historial, todos los de Qonecta+.
  * - Año: los meses guardados del informe del mes (MonthlyReport, hasta 24) de este año, con el de ahora. Si el primero
  *   no es enero, se dice desde cuándo (antes no había datos).
  * Puro: se prueba en el PC.
@@ -26,12 +27,15 @@ final class CarUsage {
         final long endMs;
         final double km;
         final double kwh;
+        /** Del historial del coche; si no, grabado por Qonecta+. */
+        final boolean fromCar;
 
-        Row(long startMs, long endMs, double km, double kwh) {
+        Row(long startMs, long endMs, double km, double kwh, boolean fromCar) {
             this.startMs = startMs;
             this.endMs = endMs;
             this.km = km;
             this.kwh = kwh;
+            this.fromCar = fromCar;
         }
     }
 
@@ -48,6 +52,8 @@ final class CarUsage {
         int trips;
         /** Todo según el coche (nube); si no, en parte o del todo de los viajes de Qonecta+. */
         boolean fromCar;
+        /** En parte del coche y en parte de Qonecta+: hasta cuándo es del coche (0: no es mixto). */
+        long carUntilMs;
         /** Del más reciente al más antiguo, como mucho MAX_ROWS. */
         final List<Row> rows = new ArrayList<>();
 
@@ -95,7 +101,14 @@ final class CarUsage {
         t.period = p;
         t.fromMs = from;
         List<Row> rows = rows(from, to, history, app);
-        t.fromCar = history != null && !history.isEmpty();
+        boolean anyApp = false;
+        boolean anyCar = false;
+        for (Row r : rows) {
+            if (r.fromCar) anyCar = true;
+            else anyApp = true;
+        }
+        t.fromCar = history != null && !history.isEmpty() && !anyApp;
+        if (anyApp && anyCar) t.carUntilMs = carUntilMs(history);
         double kwh = 0;
         boolean any = false;
         for (Row r : rows) {
@@ -111,19 +124,33 @@ final class CarUsage {
         return t;
     }
 
-    /** Los viajes entre from y to, del más reciente al más antiguo (los del coche si hay historial). */
+    /** Fin del último viaje que conoce el historial del coche, o 0 si no hay ninguno. */
+    static long carUntilMs(List<CloudHistory.Trip> history) {
+        long until = 0;
+        if (history != null) for (CloudHistory.Trip c : history) until = Math.max(until, c.endMs);
+        return until;
+    }
+
+    /**
+     * Los viajes entre from y to, del más reciente al más antiguo: los del coche hasta su último viaje conocido y, después,
+     * los que grabó Qonecta+. El historial de la nube puede quedarse parado (desde el 28-10 la nube lo rechaza) y sin esto
+     * los días siguientes no existirían. Un viaje de Qonecta+ que empieza antes de ese final es el mismo que ya cuenta el
+     * coche (o uno que la nube no subió): manda el coche.
+     */
     static List<Row> rows(long from, long to, List<CloudHistory.Trip> history, List<TripLog.Trip> app) {
         List<Row> out = new ArrayList<>();
-        if (history != null && !history.isEmpty()) {
+        long until = carUntilMs(history);
+        if (history != null) {
             for (CloudHistory.Trip c : history) {
                 if (c.startMs < from || c.startMs >= to) continue;
-                out.add(new Row(c.startMs, c.endMs, c.km, c.kwh));
+                out.add(new Row(c.startMs, c.endMs, c.km, c.kwh, true));
             }
-        } else if (app != null) {
+        }
+        if (app != null) {
             for (TripLog.Trip a : app) {
-                if (a.startMs < from || a.startMs >= to || !(a.km > 0)) continue;
+                if (a.startMs < from || a.startMs >= to || a.startMs <= until || !(a.km > 0)) continue;
                 double per100 = TripStats.bestKwhPer100(a);
-                out.add(new Row(a.startMs, a.endMs(), a.km, Double.isNaN(per100) ? Double.NaN : per100 * a.km / 100));
+                out.add(new Row(a.startMs, a.endMs(), a.km, Double.isNaN(per100) ? Double.NaN : per100 * a.km / 100, false));
             }
         }
         out.sort((x, y) -> Long.compare(y.startMs, x.startMs));

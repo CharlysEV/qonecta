@@ -516,9 +516,15 @@ final class TripsTab implements CarScreen {
         }
         CarKit.text(cv, Str.plural(R.plurals.hql_trips_total, trips.size(), trips.size(), km, Money.format(cost)), r.left, r.bottom, 21, CarKit.FAINT,
                 CarKit.MEDIUM, p, Paint.Align.LEFT);
-        // Lo que dice el coche de los últimos 30 días (su historial) o, sin él, los totales reales de la bajada del %.
-        CloudHistory.Match car = CloudHistory.totals(history, DemoMode.wallClockMs() - 30 * 86_400_000L);
-        if (car != null && !Double.isNaN(car.kwhPer100())) {
+        // Lo que dice el coche de los últimos 30 días (su historial) o, sin él, los totales reales de la bajada del %. Si hay
+        // viajes de Qonecta+ después del último que conoce el coche (su historial se ha parado), el total del coche se queda
+        // corto: entonces, los reales.
+        long since30 = DemoMode.wallClockMs() - 30 * 86_400_000L;
+        CloudHistory.Match car = CloudHistory.totals(history, since30);
+        long carUntil = CarUsage.carUntilMs(history);
+        boolean carBehind = false;
+        for (TripLog.Trip t : trips) if (t.startMs >= since30 && t.startMs > carUntil && t.km > 0) carBehind = true;
+        if (car != null && !carBehind && !Double.isNaN(car.kwhPer100())) {
             String ct = Double.isNaN(car.fuelL) || car.fuelL < 0.05
                     ? Str.plural(R.plurals.hql_cloud_trips_car_total, car.trips, car.trips, car.km, car.kwhPer100())
                     : Str.plural(R.plurals.hql_cloud_trips_car_total_fuel, car.trips, car.trips, car.km, car.kwhPer100(), car.litersPer100());

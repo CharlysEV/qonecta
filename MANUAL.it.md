@@ -925,8 +925,10 @@ e lo usa in «Auto esteso»:
   se la tua media è più bassa.
 - **«Efficienza»**: il consumo del viaggio è quello reale (quanto è scesa la batteria per la sua capacità, diviso i km
   del contachilometri) appena la batteria è scesa del 2 %; prima dice «consumo ancora troppo basso per misurarlo».
-  Accanto alla potenza stimata compare quella reale quando il dato è recente. La ripartizione dell'energia resta
-  stimata.
+  Accanto alla potenza stimata compare quella reale quando il dato è recente. Da quel momento il costo del viaggio esce
+  da quel consumo reale e «Dove va l'energia» si adatta a esso: le percentuali sono quelle del modello, tranne clima e
+  «altro» se l'auto li ha già caricati. L'auto non li carica in diretta: arrivano quando si ferma e fino ad allora restano
+  stimati. «Media viaggi» usa il dato migliore di ogni viaggio: quello dell'auto, quello reale o quello stimato.
 - **«Viaggi»**: il consumo di ogni viaggio è **quello misurato dall'auto stessa**, dal suo storico (segnato «AUTO»; lo
   stesso dell'app ufficiale Leapmotor) oppure, se manca, quello reale dal calo della % (segnato «REALE»); in «Record»,
   il totale degli ultimi 30 giorni secondo l'auto.

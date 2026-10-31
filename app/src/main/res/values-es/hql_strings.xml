@@ -627,7 +627,10 @@
     <string name="hql_recovered">Recuperado</string>
     <string name="hql_net_kwh">neto %1$.2f kWh</string>
     <string name="hql_estimated_model">Estimado con el modelo del C10</string>
+    <string name="hql_split_real">Ajustado al consumo real</string>
+    <string name="hql_split_car">Clima y otros, del coche</string>
     <string name="hql_cost_rate">a %1$s · %2$.2f kWh</string>
+    <string name="hql_cost_rate_real">a %1$s · %2$.2f kWh reales</string>
     <string name="hql_cost_petrol">En gasolina, ~%1$s</string>
     <string name="hql_co2_note">Frente a un gasolina de %1$.1f l/100 km (%2$.2f kg de CO₂ por litro, solo el escape).</string>
     <string name="hql_tip_slower">A 10 km/h menos ahorrarías ~%1$.0f %% de energía.</string>
@@ -898,6 +901,7 @@
     <string name="hql_ins_daily_legend">Barras: km de cada día · línea: consumo</string>
     <string name="hql_ins_from_car">según el coche</string>
     <string name="hql_ins_from_app">viajes con Qonecta+</string>
+    <string name="hql_ins_from_mixed">según el coche hasta el %1$s · después, viajes con Qonecta+</string>
     <string name="hql_ins_how">Cómo gastas</string>
     <string name="hql_ins_per_trip">Consumo de los últimos viajes (kWh/100 km)</string>
     <string name="hql_ins_by_length">Según lo largo del viaje</string>

@@ -458,6 +458,11 @@ final class DemoMode {
         return new TripLog.CloudMark(CLOUD_SOC0, CLOUD_ODO0, DemoDrive.BASE_MS);
     }
 
+    /** Reparto del trayecto de la demostración según el coche (inventado). */
+    static CloudUsage.Split cloudTripSplit() {
+        return new CloudUsage.Split(8.6, 0.9, 0.5);
+    }
+
     /**
      * Vista previa «…-precios»: precios ad hoc inventados (como los de Alemania) en los cargadores de la ruta de la
      * demostración, para ver el filtro con tope, los precios y lo que costaría cada parada.

@@ -85,6 +85,52 @@ final class LeapHttps implements LeapApi.Transport {
         }
     }
 
+    /** ¿Es un servidor de Leapmotor al que puede ir el protocolo nuevo? (https y *.leapmotor-international.de, sin más) */
+    static boolean v2Origin(String origin) {
+        return origin != null && origin.matches("https://[a-z0-9-]{1,63}\\.leapmotor-international\\.de");
+    }
+
+    /**
+     * Petición del protocolo nuevo (solo la prueba de laboratorio CloudV2Probe): GET o POST a un servidor de Leapmotor,
+     * con TLS mutuo y la misma clave fijada que el resto. Solo el login nuevo, la ruta del coche y el historial.
+     */
+    LeapApi.Response sendV2(LeapTls.Identity id, String method, String origin, String pathAndQuery, Map<String, String> headers,
+                            String body) throws IOException {
+        String path = pathAndQuery.split("\\?", 2)[0];
+        if (!v2Origin(origin) || !(path.equals(LeapApi.V2_PATH_LOGIN) || path.equals(LeapApi.V2_PATH_ROUTE)
+                || path.equals(LeapApi.PATH_TRIPS))) {
+            throw new IOException("ruta no permitida (prueba del protocolo nuevo)");
+        }
+        boolean post = "POST".equals(method);
+        HttpsURLConnection c = (HttpsURLConnection) new URL(origin + pathAndQuery).openConnection();
+        try {
+            c.setSSLSocketFactory(factory(id));
+            c.setConnectTimeout(CONNECT_MS);
+            c.setReadTimeout(READ_MS);
+            c.setInstanceFollowRedirects(false);
+            c.setUseCaches(false);
+            c.setRequestMethod(post ? "POST" : "GET");
+            for (Map.Entry<String, String> h : headers.entrySet()) c.setRequestProperty(h.getKey(), h.getValue());
+            if (post) {
+                c.setDoOutput(true);
+                byte[] b = body.getBytes(StandardCharsets.UTF_8);
+                c.setFixedLengthStreamingMode(b.length);
+                try (OutputStream o = c.getOutputStream()) {
+                    o.write(b);
+                }
+            }
+            int code = c.getResponseCode();
+            InputStream in = code >= 400 ? c.getErrorStream() : c.getInputStream();
+            return new LeapApi.Response(code, in == null ? "" : read(in));
+        } catch (IOException e) {
+            LeapTls.UnknownServerKeyException k = unknownKey(e);
+            if (k != null) throw new ServerKeyChangedException(k);
+            throw e;
+        } finally {
+            c.disconnect();
+        }
+    }
+
     /** La excepción de la clave desconocida, si es eso lo que hay debajo del fallo del handshake. */
     static LeapTls.UnknownServerKeyException unknownKey(Throwable t) {
         for (int i = 0; t != null && i < 8; i++, t = t.getCause()) {

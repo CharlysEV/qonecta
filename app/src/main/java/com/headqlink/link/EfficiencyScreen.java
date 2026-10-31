@@ -24,7 +24,9 @@ import java.util.Locale;
  *
  * Con la cuenta de Leapmotor (CarCloud), el consumo del VIAJE es el REAL (la bajada del % del coche por la capacidad
  * de la variante, entre los km de su cuentakilómetros) en cuanto la batería ha bajado un 2 % o más, y la potencia real
- * de la batería se enseña junto a la estimada si el dato es reciente. El reparto sigue siendo del modelo (estimado).
+ * de la batería se enseña junto a la estimada si el dato es reciente. Desde ese momento, el coste y el reparto salen de
+ * ese consumo real (LiveEnergy): el reparto sigue siendo el del modelo, salvo el clima y «otros» si el coche ya los ha
+ * subido. La media de los viajes usa el mejor dato de cada uno (el del coche, el real o el estimado).
  */
 final class EfficiencyScreen implements CarScreen {
     private static final long TICK_MS = 500;
@@ -32,11 +34,16 @@ final class EfficiencyScreen implements CarScreen {
     private static final int[] PART_NAMES = {R.string.hql_air, R.string.hql_rolling, R.string.hql_climbs, R.string.hql_acceleration,
             R.string.hql_hvac, R.string.hql_electronics};
 
+    private Context ctx;
     private CarSensors sensors;
     private boolean running;
     private Config cfg;
     private CarSensors.Snapshot s = new CarSensors.Snapshot();
     private final EnergyBreakdown trip = new EnergyBreakdown();
+    /** El reparto que se enseña: el del modelo (trip), ajustado a lo real si se puede. */
+    private final EnergyBreakdown shown = new EnergyBreakdown();
+    private LiveEnergy live = LiveEnergy.of(0, 0, CloudEnergy.NONE, Double.NaN);
+    private LiveEnergy.Fit fit = LiveEnergy.Fit.MODEL;
     private final float[] power = new float[CarSensors.POWER_SECS];
     private int powerN;
     private double avgAllTrips = Double.NaN;
@@ -61,9 +68,10 @@ final class EfficiencyScreen implements CarScreen {
     @Override
     public View create(Host h) {
         Context c = h.context();
+        ctx = c;
         sensors = CarSensors.start(c);
         cfg = new Config(c);
-        avgAllTrips = TripStats.avgKwhPer100(TripLog.recent(c, 60));
+        avgAllTrips = TripStats.avgKwhPer100(TripLog.recent(c, 60), CarCloud.history());
         powerCard = new CarKit.Card(c, Str.get(R.string.hql_power_now), this::paintPower);
         condCard = new CarKit.Card(c, Str.get(R.string.hql_conditions), this::paintConditions);
         useCard = new CarKit.Card(c, Str.get(R.string.hql_consumption), this::paintUse);
@@ -111,6 +119,8 @@ final class EfficiencyScreen implements CarScreen {
         powerN = sensors.powerHistory(power);
         cloud = CarCloud.car();
         realTrip = TripLog.liveReal(cloud);
+        live = LiveEnergy.of(s.tripKwh, s.tripKmEnergy, realTrip, TripLog.liveFuelUsedL(cloud));
+        fit = live.fit(trip, live.real ? CarCloud.tripSplit(ctx, TripLog.liveStartMs()) : null, shown);
         nowMs = DemoMode.wallClockMs();
         powerCard.invalidate();
         condCard.invalidate();
@@ -332,7 +342,7 @@ final class EfficiencyScreen implements CarScreen {
     }
 
     private void paintSplit(Canvas cv, RectF r, Paint p) {
-        double consumed = trip.consumed();
+        double consumed = shown.consumed();
         if (consumed < 0.05) {
             small.draw(cv, Str.get(R.string.hql_split_wait), r.left, r.top + 10, (int) r.width(), false);
             return;
@@ -343,10 +353,10 @@ final class EfficiencyScreen implements CarScreen {
         float total = r.width();
         float rad = bh / 2;
         int last = -1;
-        for (int i = 0; i < EnergyBreakdown.PARTS; i++) if (trip.share(i) * total >= 2) last = i;
+        for (int i = 0; i < EnergyBreakdown.PARTS; i++) if (shown.share(i) * total >= 2) last = i;
         boolean first = true;
         for (int i = 0; i < EnergyBreakdown.PARTS; i++) {
-            float w = (float) (trip.share(i) * total);
+            float w = (float) (shown.share(i) * total);
             if (w < 2) continue;
             float x1 = x + w - (i == last ? 0 : 3);
             p.setColor(PART_COLORS[i]);
@@ -370,8 +380,8 @@ final class EfficiencyScreen implements CarScreen {
             tmp.set(r.left, cy - 18, r.left + 18, cy);
             cv.drawRoundRect(tmp, 5, 5, p);
             CarKit.text(cv, Str.get(PART_NAMES[i]), r.left + 32, cy, 25, CarKit.TEXT, CarKit.REGULAR, p, Paint.Align.LEFT);
-            CarKit.text(cv, num(trip.part(i), 2) + " kWh", r.right - 92, cy, 23, CarKit.DIM, CarKit.REGULAR, p, Paint.Align.RIGHT);
-            CarKit.text(cv, num(trip.share(i) * 100, 0) + " %", r.right, cy, 25, CarKit.TEXT, CarKit.MEDIUM, p, Paint.Align.RIGHT);
+            CarKit.text(cv, num(shown.part(i), 2) + " kWh", r.right - 92, cy, 23, CarKit.DIM, CarKit.REGULAR, p, Paint.Align.RIGHT);
+            CarKit.text(cv, num(shown.share(i) * 100, 0) + " %", r.right, cy, 25, CarKit.TEXT, CarKit.MEDIUM, p, Paint.Align.RIGHT);
         }
         // Recuperado y neto.
         float ry = r.bottom - 40;
@@ -379,22 +389,31 @@ final class EfficiencyScreen implements CarScreen {
         cv.drawRect(r.left, ry - 44, r.right, ry - 42, p);
         CarIcons.leaf(cv, r.left + 10, ry - 9, 24, CarKit.GREEN, p);
         CarKit.text(cv, Str.get(R.string.hql_recovered), r.left + 32, ry, 25, CarKit.GREEN, CarKit.MEDIUM, p, Paint.Align.LEFT);
-        CarKit.text(cv, "−" + num(trip.recovered(), 2) + " kWh", r.right, ry, 25, CarKit.GREEN, CarKit.MEDIUM, p, Paint.Align.RIGHT);
-        CarKit.text(cv, Str.get(R.string.hql_estimated_model) + " · " + Str.get(R.string.hql_net_kwh, trip.net()), r.left, r.bottom, 21,
-                CarKit.FAINT, CarKit.MEDIUM, p, Paint.Align.LEFT);
+        CarKit.text(cv, "−" + num(shown.recovered(), 2) + " kWh", r.right, ry, 25, CarKit.GREEN, CarKit.MEDIUM, p, Paint.Align.RIGHT);
+        int note = fit == LiveEnergy.Fit.CAR ? R.string.hql_split_car : fit == LiveEnergy.Fit.REAL ? R.string.hql_split_real
+                : R.string.hql_estimated_model;
+        p.setTypeface(CarKit.MEDIUM);
+        p.setTextSize(21);
+        CarKit.text(cv, CarKit.ellipsize(Str.get(note) + " · " + Str.get(R.string.hql_net_kwh, shown.net()), r.width(), p), r.left, r.bottom, 21,
+                fit == LiveEnergy.Fit.MODEL ? CarKit.FAINT : CarKit.ACCENT, CarKit.MEDIUM, p, Paint.Align.LEFT);
     }
 
     // ------------------------------------------------------------------ coste, CO₂ y consejo
 
     private void paintCost(Canvas cv, RectF r, Paint p) {
         double price = cfg.electricityPrice();
-        double cost = Math.max(0, s.tripKwh) * price;
+        double cost = live.cost(price, cfg.fuelPrice());
         double km = Math.max(0, s.tripKmEnergy);
         // Lo mismo en el coche de combustión de Ajustes (gasolina o diésel, con su consumo y su precio).
         boolean diesel = cfg.compareDiesel();
         double petrol = km * cfg.fuelLitersPer100() / 100 * cfg.comparePrice();
         CarKit.number(cv, Money.parts(cost)[0], Money.parts(cost)[1], r.left, r.top + 64, 72, CarKit.TEXT, CarKit.REGULAR, p, Paint.Align.LEFT);
-        CarKit.text(cv, Str.get(R.string.hql_cost_rate, Money.per(price, "kWh"), Math.max(0, s.tripKwh)), r.left, r.top + 108, 23, CarKit.DIM, CarKit.REGULAR, p, Paint.Align.LEFT);
+        String rate = Str.get(live.real ? R.string.hql_cost_rate_real : R.string.hql_cost_rate, Money.per(price, "kWh"), live.batteryKwh);
+        if (live.fuelL >= 0.05) rate += String.format(Locale.getDefault(), " + %.1f L", live.fuelL);
+        p.setTypeface(CarKit.REGULAR);
+        p.setTextSize(23);
+        CarKit.text(cv, CarKit.ellipsize(rate, r.width(), p), r.left, r.top + 108, 23, live.real ? CarKit.ACCENT : CarKit.DIM, CarKit.REGULAR, p,
+                Paint.Align.LEFT);
         if (km > 0.2) {
             CarKit.text(cv, Str.get(diesel ? R.string.hql_cost_diesel : R.string.hql_cost_petrol, Money.format(petrol)), r.left,
                     r.bottom - 2, 25, CarKit.GREEN, CarKit.MEDIUM, p, Paint.Align.LEFT);
@@ -414,7 +433,7 @@ final class EfficiencyScreen implements CarScreen {
 
     private void paintTip(Canvas cv, RectF r, Paint p) {
         // Sin GPS al día, la velocidad es vieja: el consejo no la usa.
-        EcoTip tip = EcoTip.pick(s.gpsLive() ? s.speedKmh : 0, s.headwindKmh, s.tempC, trip);
+        EcoTip tip = EcoTip.pick(s.gpsLive() ? s.speedKmh : 0, s.headwindKmh, s.tempC, shown);
         String t;
         switch (tip.kind) {
             case EcoTip.SLOWER:

@@ -914,7 +914,10 @@ en «Auto extendido»:
   física y no se toca: si lo que queda sube, la previsión sube aunque tu media sea menor.
 - **«Eficiencia»**: el consumo del viaje es el real (lo que ha bajado la batería por su capacidad, entre los km del
   cuentakilómetros) en cuanto la batería ha bajado un 2 %; antes dice «aún poco consumo para medir». Junto a la
-  potencia estimada sale la real si el dato es reciente. El reparto de la energía sigue siendo estimado.
+  potencia estimada sale la real si el dato es reciente. Desde ese momento, el coste del viaje sale de ese consumo real
+  y «¿En qué se va la energía?» se ajusta a él: los porcentajes son los del modelo, salvo el clima y «otros» si el coche
+  ya los ha subido. El coche no los sube en directo: llegan cuando para, y mientras tanto siguen siendo estimados. «Media
+  viajes» usa el mejor dato de cada viaje: el del coche, el real o el estimado.
 - **«Viajes»**: el consumo de cada viaje es **el que dice el coche** en su historial (marcado «COCHE»; el mismo que la
   app oficial de Leapmotor) o, si no está, el real de la bajada del % (marcado «REAL»); en «Récords», el total de los
   últimos 30 días según el coche.

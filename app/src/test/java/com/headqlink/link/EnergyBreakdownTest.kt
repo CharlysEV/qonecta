@@ -1,6 +1,7 @@
 package com.headqlink.link
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -34,6 +35,42 @@ class EnergyBreakdownTest {
         var shares = 0.0
         for (i in 0 until EnergyBreakdown.PARTS) shares += b.share(i)
         assertEquals(1.0, shares, 1e-9)
+    }
+
+    @Test
+    fun fitToScalesEverythingAndKeepsTheShares() {
+        val (b, _) = run(listOf(doubleArrayOf(100.0, 0.0, 0.0, 10.0, 0.0, 600.0), doubleArrayOf(80.0, -4.0, 0.0, 10.0, 0.0, 120.0)))
+        val fitted = EnergyBreakdown()
+        assertTrue(fitted.fitTo(b, b.net() * 1.3))
+        assertEquals(b.net() * 1.3, fitted.net(), 1e-9)
+        assertEquals(b.recovered() * 1.3, fitted.recovered(), 1e-9)
+        for (i in 0 until EnergyBreakdown.PARTS) assertEquals(b.share(i), fitted.share(i), 1e-9)
+    }
+
+    @Test
+    fun fitToRefusesAnImplausibleFactor() {
+        val (b, _) = run(listOf(doubleArrayOf(100.0, 0.0, 0.0, 20.0, 0.0, 600.0)))
+        val fitted = EnergyBreakdown()
+        assertFalse(fitted.fitTo(b, b.net() * 3))
+        assertFalse(fitted.fitTo(b, b.net() * 0.2))
+        assertFalse(fitted.fitTo(b, Double.NaN))
+        assertEquals(b.net(), fitted.net(), 1e-9)
+        assertFalse(fitted.fitTo(EnergyBreakdown(), 5.0))
+    }
+
+    @Test
+    fun fitToWithCarSharesReplacesClimateAndOther() {
+        val (b, _) = run(listOf(doubleArrayOf(100.0, 0.0, 0.0, 5.0, 0.0, 600.0), doubleArrayOf(80.0, -4.0, 0.0, 5.0, 0.0, 120.0)))
+        val fitted = EnergyBreakdown()
+        val net = b.net() * 1.2
+        assertTrue(fitted.fitTo(b, net, 0.05, 0.03))
+        assertEquals(net, fitted.net(), 1e-9)
+        assertEquals(net * 0.05, fitted.part(EnergyBreakdown.CLIMATE), 1e-9)
+        assertEquals(net * 0.03, fitted.part(EnergyBreakdown.AUX), 1e-9)
+        assertEquals(
+            b.recovered() / b.part(EnergyBreakdown.AIR),
+            fitted.recovered() / fitted.part(EnergyBreakdown.AIR), 1e-9
+        )
     }
 
     @Test

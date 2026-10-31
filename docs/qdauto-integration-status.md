@@ -2748,3 +2748,21 @@ primeros: el lote 1 es higiene (30 MB/día menos de escrituras, menos despertare
 AA puede ir a 60 fps y 1080p mientras se codifica a 30 y 720p) y el suelo del keep-alive (10 fps con AA quieto).
 Lote 2 (Wi-Fi): bitrate a 720p (hoy el mismo que a 1080p), objetivo de IDR según el bitrate, subida más lenta tras
 congestiones repetidas y recomendar 5 GHz.
+
+## Eficiencia con datos reales (31-10)
+
+`LiveEnergy` lleva a la pestaña lo que ya daba la nube, con lo estimado como reserva:
+
+- **Coste:** el ritmo medido (`CloudEnergy`) por los km del viaje, y en un REEV la gasolina a su precio. Se usa el ritmo
+  y no los kWh medidos porque estos empiezan en la primera lectura de la nube y no siguen a «Reiniciar viaje».
+- **Reparto:** `EnergyBreakdown.fitTo` ajusta el modelo a esa energía; los porcentajes no cambian. Si el coche ya ha subido
+  parte del viaje (`CarCloud.tripSplit`, getLastweekEC cada 10 min con la pestaña a la vista), el clima y «otros» salen de
+  él. Un factor fuera de 0,4–2,5 deja el modelo. El consejo usa este reparto ajustado.
+- **Media viajes:** el mejor dato de cada viaje (`TripStats.avgKwhPer100(trips, history)`).
+
+**El reparto no va en directo.** El 30-10 se aparcó a las 20:23: la lectura de ese minuto no traía el último tramo, que
+apareció de golpe (+10 km, +4,7 kWh) antes de las 20:34. No hay ninguna lectura hecha en marcha: el log de
+`reparto del viaje según el coche` lo dirá en el próximo viaje largo.
+
+**Pendiente de la nube:** el historial de viajes (mileage/daily/detail/page) sigue dando -1 «信息校验失败» el 31-10, así que
+los viajes nuevos no traen el dato del coche y usan la bajada del %.

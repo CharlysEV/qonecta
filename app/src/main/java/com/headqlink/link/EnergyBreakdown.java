@@ -18,6 +18,11 @@ final class EnergyBreakdown {
     static final int CLIMATE = 4;
     static final int AUX = 5;
     static final int PARTS = 6;
+    /** Con menos energía en el modelo que esto no se ajusta a lo real: el factor no diría nada. */
+    private static final double MIN_FIT_KWH = 0.1;
+    /** Factor creíble entre lo real y el modelo: fuera de esto, uno de los dos datos está mal. */
+    static final double MIN_FIT = 0.4;
+    static final double MAX_FIT = 2.5;
 
     private final double[] kwh = new double[PARTS];
     private double recovered;
@@ -82,6 +87,38 @@ final class EnergyBreakdown {
         if (a == null || a.length != PARTS + 1) return;
         System.arraycopy(a, 0, kwh, 0, PARTS);
         recovered = a[PARTS];
+    }
+
+    /**
+     * Pasa a ser el reparto del modelo (o) ajustado a la energía neta real: todas las partes y lo recuperado por el mismo
+     * factor, así que los porcentajes no cambian. Con un factor increíble, se queda como el modelo y devuelve false.
+     */
+    boolean fitTo(EnergyBreakdown o, double netKwh) {
+        copyFrom(o);
+        double net = o.net();
+        if (!(net > MIN_FIT_KWH)) return false;
+        double f = netKwh / net;
+        if (!(f >= MIN_FIT && f <= MAX_FIT)) return false;
+        for (int i = 0; i < PARTS; i++) kwh[i] *= f;
+        recovered *= f;
+        return true;
+    }
+
+    /**
+     * Igual, con la parte del clima y de «otros» (0-1) según el coche: salen de la energía neta real, y el resto se reparte
+     * como dice el modelo entre aire, rodadura, subidas, aceleraciones y lo recuperado.
+     */
+    boolean fitTo(EnergyBreakdown o, double netKwh, double climateShare, double otherShare) {
+        copyFrom(o);
+        double drive = o.net() - o.kwh[CLIMATE] - o.kwh[AUX];
+        if (!(drive > MIN_FIT_KWH)) return false;
+        double f = netKwh * (1 - climateShare - otherShare) / drive;
+        if (!(f >= MIN_FIT && f <= MAX_FIT)) return false;
+        for (int i = 0; i < PARTS; i++) kwh[i] *= f;
+        kwh[CLIMATE] = netKwh * climateShare;
+        kwh[AUX] = netKwh * otherShare;
+        recovered *= f;
+        return true;
     }
 
     void copyFrom(EnergyBreakdown o) {

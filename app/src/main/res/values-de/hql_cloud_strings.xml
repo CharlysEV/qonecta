@@ -9,6 +9,7 @@
     <string name="hql_cloud_range">Reichweite</string>
     <string name="hql_cloud_real_ago">real · %1$s</string>
     <string name="hql_cloud_estimated">geschätzt</string>
+    <string name="hql_route_soc_stale">Cloud · %1$s · anpassen</string>
     <string name="hql_cloud_ago_s">vor %1$d s</string>
     <string name="hql_cloud_ago_min">vor %1$d min</string>
     <string name="hql_cloud_ago_h">vor %1$d h</string>

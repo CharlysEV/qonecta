@@ -915,7 +915,11 @@ final class PhoneCar {
         double price = new Config(act).electricityPrice();
         if (kwh > 0 && price > 0) extra += (extra.isEmpty() ? "" : " · ") + "≈ " + Money.format(kwh * price);
         boolean fromCar = carKm || carKwh || t.fromCar;
-        extra += (extra.isEmpty() ? "" : " · ") + Str.get(fromCar ? R.string.hql_ins_from_car : R.string.hql_ins_from_app);
+        // Los viajes, en parte del coche y en parte de Qonecta+ (historial de la nube parado): se dice hasta cuándo.
+        String source = !carKm && !carKwh && t.carUntilMs > 0
+                ? Str.get(R.string.hql_ins_from_mixed, new SimpleDateFormat("d MMM", Locale.getDefault()).format(new Date(t.carUntilMs)))
+                : Str.get(fromCar ? R.string.hql_ins_from_car : R.string.hql_ins_from_app);
+        extra += (extra.isEmpty() ? "" : " · ") + source;
         TextView ex = small(extra);
         ex.setPadding(0, dp(10), 0, 0);
         usageBody.addView(ex);

@@ -625,7 +625,10 @@
     <string name="hql_recovered">回收</string>
     <string name="hql_net_kwh">净耗 %1$.2f kWh</string>
     <string name="hql_estimated_model">按 C10 模型估算</string>
+    <string name="hql_split_real">按实际能耗校准</string>
+    <string name="hql_split_car">空调和其他来自车辆</string>
     <string name="hql_cost_rate">单价 %1$s · %2$.2f kWh</string>
+    <string name="hql_cost_rate_real">按 %1$s · 实际 %2$.2f kWh</string>
     <string name="hql_cost_petrol">燃油车需 ~%1$s</string>
     <string name="hql_co2_note">对比油耗 %1$.1f l/100 km 的燃油车（每升 %2$.2f kg CO₂，仅计尾气排放）。</string>
     <string name="hql_tip_slower">车速降低 10 km/h 可节省约 %1$.0f %% 的能量。</string>
@@ -896,6 +899,7 @@
     <string name="hql_ins_daily_legend">柱：每天的公里数 · 线：能耗</string>
     <string name="hql_ins_from_car">来自车辆</string>
     <string name="hql_ins_from_app">使用 Qonecta+ 的行程</string>
+    <string name="hql_ins_from_mixed">截至 %1$s 来自车辆 · 之后为使用 Qonecta+ 的行程</string>
     <string name="hql_ins_how">你的用电情况</string>
     <string name="hql_ins_per_trip">最近行程的能耗（kWh/100 km）</string>
     <string name="hql_ins_by_length">按行程长度</string>

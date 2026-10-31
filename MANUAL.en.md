@@ -896,7 +896,10 @@ extended":
   is lower.
 - **"Efficiency"**: the trip consumption is the real one (how much the battery dropped times its capacity, over the
   odometer km) once the battery has dropped 2 %; before that it says "too little used to measure yet". Next to the
-  estimated power, the real one shows when the data is recent. The energy breakdown is still estimated.
+  estimated power, the real one shows when the data is recent. From then on, the trip cost comes from that real
+  consumption and "Where the energy goes" is fitted to it: the percentages are the model's, except climate and
+  "other" once the car has uploaded them. The car doesn't upload those live: they arrive when it stops, and until then
+  they stay estimated. "Avg. trips" uses the best data of each trip: the car's, the real one or the estimate.
 - **"Trips"**: each trip's consumption is **the car's own** from its history (marked "CAR"; the same as the official
   Leapmotor app) or, if missing, the real one from the % drop (marked "REAL"); under "Records", the last 30 days' total
   according to the car.

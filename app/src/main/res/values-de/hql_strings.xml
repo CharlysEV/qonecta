@@ -626,7 +626,10 @@
     <string name="hql_recovered">Zurückgewonnen</string>
     <string name="hql_net_kwh">netto %1$.2f kWh</string>
     <string name="hql_estimated_model">Geschätzt mit dem C10-Modell</string>
+    <string name="hql_split_real">An echten Verbrauch angepasst</string>
+    <string name="hql_split_car">Klima und Sonstiges vom Auto</string>
     <string name="hql_cost_rate">zu %1$s · %2$.2f kWh</string>
+    <string name="hql_cost_rate_real">zu %1$s · %2$.2f kWh real</string>
     <string name="hql_cost_petrol">Mit einem Benziner ~%1$s</string>
     <string name="hql_co2_note">Gegenüber einem Benziner mit %1$.1f l/100 km (%2$.2f kg CO₂ pro Liter, nur Auspuff).</string>
     <string name="hql_tip_slower">10 km/h langsamer würde ~%1$.0f %% Energie sparen.</string>
@@ -897,6 +900,7 @@
     <string name="hql_ins_daily_legend">Balken: km pro Tag · Linie: Verbrauch</string>
     <string name="hql_ins_from_car">laut Auto</string>
     <string name="hql_ins_from_app">Fahrten mit Qonecta+</string>
+    <string name="hql_ins_from_mixed">laut Auto bis %1$s · danach Fahrten mit Qonecta+</string>
     <string name="hql_ins_how">Dein Verbrauch</string>
     <string name="hql_ins_per_trip">Verbrauch der letzten Fahrten (kWh/100 km)</string>
     <string name="hql_ins_by_length">Nach Fahrtlänge</string>

@@ -9,6 +9,7 @@
     <string name="hql_cloud_range">actieradius</string>
     <string name="hql_cloud_real_ago">echt · %1$s</string>
     <string name="hql_cloud_estimated">geschat</string>
+    <string name="hql_route_soc_stale">cloud · %1$s · pas aan</string>
     <string name="hql_cloud_ago_s">%1$d s geleden</string>
     <string name="hql_cloud_ago_min">%1$d min geleden</string>
     <string name="hql_cloud_ago_h">%1$d u geleden</string>

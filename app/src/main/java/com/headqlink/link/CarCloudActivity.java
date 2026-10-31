@@ -154,6 +154,7 @@ public class CarCloudActivity extends Activity {
         certImport.setOnClickListener(v -> pickCertificate());
         certRestart.setOnClickListener(v -> restartPick());
         login.setOnClickListener(v -> doLogin());
+        if (com.andrerinas.openheadunit.BuildConfig.LAB) addV2Probe();
         logout.setOnClickListener(v -> run(R.string.hql_cloud_test_failed, () -> CarCloudSession.logout(this), this::render));
         chooseCar.setOnClickListener(v -> chooseCar());
         profile.setOnCheckedChangeListener((g, id) -> {
@@ -630,6 +631,52 @@ public class CarCloudActivity extends Activity {
                 afterCarChosen();
             }
         });
+    }
+
+    /** Variante de pruebas: botón para probar el protocolo nuevo de la nube (CloudV2Probe) con la contraseña. */
+    private void addV2Probe() {
+        MaterialButton b = new MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        b.setText("Probar el protocolo nuevo (laboratorio)");
+        android.view.ViewGroup parent = (android.view.ViewGroup) sessionBox.getParent();
+        parent.addView(b, parent.indexOfChild(sessionBox) + 1);
+        b.setOnClickListener(v -> askV2Probe());
+    }
+
+    private void askV2Probe() {
+        EditText mail = M3.field(this);
+        mail.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        mail.setHint("Correo de Leapmotor");
+        try {
+            CarCloudStore.Saved s = store.session();
+            if (s != null && s.email != null) mail.setText(s.email);
+        } catch (IOException | GeneralSecurityException ignored) {
+            // Sin sesión legible: se escribe a mano.
+        }
+        EditText pass = M3.field(this);
+        pass.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        pass.setHint("Contraseña");
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        int pad = Math.round(24 * getResources().getDisplayMetrics().density);
+        box.setPadding(pad, pad / 3, pad, 0);
+        box.addView(M3.outlined(mail));
+        box.addView(M3.outlined(pass));
+        new MaterialAlertDialogBuilder(this)
+                .setTitle("Protocolo nuevo (laboratorio)")
+                .setMessage("Entra con el inicio de sesión de la app oficial 1.16.4 y lee una página del historial. No guarda nada. "
+                        + "Como cualquier inicio de sesión, puede cerrarte la sesión de la app de Leapmotor; si la de aquí deja "
+                        + "de valer, vuelve a entrar con «Entrar».")
+                .setView(box)
+                .setPositiveButton("Probar", (d, w) -> {
+                    String m = mail.getText() == null ? "" : mail.getText().toString().trim();
+                    String pw = pass.getText() == null ? "" : pass.getText().toString();
+                    pass.setText("");
+                    if (m.isEmpty() || pw.isEmpty()) return;
+                    final String[] res = new String[1];
+                    run(R.string.hql_cloud_test_failed, () -> res[0] = CloudV2Probe.run(this, m, pw), () -> showResult(res[0], false));
+                })
+                .setNegativeButton(R.string.hql_cancel, null)
+                .show();
     }
 
     private void chooseCar() {

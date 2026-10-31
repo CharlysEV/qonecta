@@ -57,6 +57,40 @@ class CarUsageTest {
         assertEquals(1, t.rows.size)
     }
 
+    private fun app(daysAgo: Double, km: Double, kwh: Double): TripLog.Trip = TripLog.Trip().also {
+        it.startMs = now - (daysAgo * day).toLong()
+        it.minutes = 30
+        it.km = km
+        it.kwh = kwh
+    }
+
+    @Test
+    fun aStalledCarHistoryIsCompletedWithTheAppTrips() {
+        // El historial del coche se paró hace 3 días: lo de después solo lo tiene Qonecta+.
+        val history = listOf(car(5.0, 40.0, 7.0), car(3.0, 20.0, 4.0))
+        // El de hace 3,001 días es el mismo viaje que ya cuenta el coche; los dos últimos son nuevos.
+        val trips = listOf(app(3.001, 20.0, 3.5), app(2.0, 30.0, 6.0), app(1.0, 10.0, 2.0))
+        val t = CarUsage.compute(CarUsage.Period.WEEK, now, tz, history, trips, emptyMap())
+        assertEquals(4, t.trips)
+        assertEquals(100.0, t.km, 1e-9)
+        assertEquals(7.0 + 4.0 + 6.0 + 2.0, t.kwh, 1e-9)
+        assertFalse(t.fromCar)
+        assertEquals(CarUsage.carUntilMs(history), t.carUntilMs)
+        assertFalse(t.rows[0].fromCar)
+        assertTrue(t.rows[t.rows.size - 1].fromCar)
+    }
+
+    @Test
+    fun appTripsBeforeTheLastCarTripDoNotCountTwice() {
+        val history = listOf(car(5.0, 40.0, 7.0), car(1.0, 20.0, 4.0))
+        val trips = listOf(app(5.001, 40.0, 6.0), app(1.001, 20.0, 3.0))
+        val t = CarUsage.compute(CarUsage.Period.WEEK, now, tz, history, trips, emptyMap())
+        assertEquals(2, t.trips)
+        assertTrue(t.fromCar)
+        assertEquals(0L, t.carUntilMs)
+        assertEquals(0L, CarUsage.carUntilMs(emptyList()))
+    }
+
     @Test
     fun yearAddsTheSavedMonthsAndSaysSinceWhen() {
         fun month(m: Int, km: Double, kwh: Double, car: Boolean) = MonthlyReport.Summary().apply {

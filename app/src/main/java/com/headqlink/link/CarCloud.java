@@ -98,6 +98,8 @@ final class CarCloud {
 
     /** Batería real en la Ruta: datos de hasta 6 h (más viejos, mejor el % indicado a mano). */
     static final long SOC_MAX_AGE_MS = 6 * 3600_000L;
+    /** Más viejo que esto y el coche desenchufado: el % puede no ser el de ahora (ha podido conducirse sin reportar). */
+    static final long SOC_STALE_MS = 30 * 60_000L;
     /** Potencia real en Eficiencia: solo si el dato es de hace 2 min o menos. */
     static final long POWER_MAX_AGE_MS = 120_000L;
 
@@ -609,6 +611,49 @@ final class CarCloud {
         }
     }
 
+    /** Cada cuánto se pregunta por el reparto del viaje en curso, con Eficiencia a la vista. */
+    static final long TRIP_SPLIT_MS = 10 * 60_000L;
+    private static CloudUsage.Split tripSplit;
+    private static long tripSplitFromMs;
+    private static long tripSplitAtMs;
+
+    /**
+     * Lo que ya ha subido el coche del reparto del viaje en curso (desde fromMs), o null. No lo sube en directo: el 30-10
+     * el último tramo apareció unos minutos después de aparcar, así que en un viaje largo llegan los tramos anteriores a
+     * cada parada. No bloquea: si toca, lee en otro hilo (una lectura del tope diario) y sale en la llamada siguiente.
+     */
+    static CloudUsage.Split tripSplit(Context ctx, long fromMs) {
+        if (DemoMode.active()) return DemoMode.cloudTripSplit();
+        long now = System.currentTimeMillis();
+        synchronized (CarCloud.class) {
+            if (fromMs != tripSplitFromMs) {
+                tripSplitFromMs = fromMs;
+                tripSplit = null;
+                tripSplitAtMs = 0;
+            }
+            if (fromMs <= 0 || now - tripSplitAtMs < TRIP_SPLIT_MS) return tripSplit;
+            tripSplitAtMs = now;
+            Context app = ctx.getApplicationContext();
+            new Thread(() -> readTripSplit(app, fromMs, now), "hql-trip-split").start();
+            return tripSplit;
+        }
+    }
+
+    private static void readTripSplit(Context app, long fromMs, long toMs) {
+        if (!takeDailyQuota()) return;
+        try {
+            CloudUsage.Split s = CarCloudSession.readSplit(app, fromMs, toMs);
+            synchronized (CarCloud.class) {
+                if (fromMs == tripSplitFromMs) tripSplit = s;
+            }
+            L.i("nube Leapmotor: reparto del viaje según el coche: " + (s == null ? "sin datos"
+                    : String.format(Locale.US, "%.1f kWh (conducción %.1f, clima %.1f, otros %.1f)", s.total(), s.driveKwh,
+                    s.acKwh, s.otherKwh)));
+        } catch (Exception e) {
+            L.w("nube Leapmotor: reparto del viaje no disponible (" + safeError(e) + ")");
+        }
+    }
+
     /** El error para el log: el tipo y el mensaje, sin URLs con datos (el de la API no lleva el cuerpo). */
     static String safeError(Throwable e) {
         return Http.safeError(e);
@@ -637,5 +682,14 @@ final class CarCloud {
     /** «real · hace 40 s» (la edad del dato del coche). */
     static String realLabel(Snapshot s, long nowMs) {
         return Str.get(R.string.hql_cloud_real_ago, ago(s.ageMs(nowMs)));
+    }
+
+    /**
+     * ¿El % de batería de la nube es creíble (menos de 6 h) pero viejo (más de SOC_STALE_MS) y el coche desenchufado? Entonces
+     * puede haberse conducido sin reportar (la nube repite el último %), y no se fía como «ahora». Pura: se prueba en el PC.
+     */
+    static boolean socStale(Snapshot s, long nowMs) {
+        if (s == null || !s.hasData() || Double.isNaN(s.soc(nowMs, SOC_MAX_AGE_MS))) return false;
+        return s.ageMs(nowMs) > SOC_STALE_MS && !s.status.charging() && !s.status.pluggedIn();
     }
 }

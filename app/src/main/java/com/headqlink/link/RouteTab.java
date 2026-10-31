@@ -104,6 +104,8 @@ final class RouteTab implements CarScreen {
     private double soc = Double.NaN;
     /** El % de ahora es el real del coche (nube de Leapmotor), no el indicado. */
     private boolean realSoc;
+    /** El % de la nube es creíble pero viejo y el coche desenchufado: se enseña, pero se deja ajustar y se avisa. */
+    private boolean socStale;
     /** Capacidad con la que se pasa de kWh a %: la de la variante con datos reales; si no, la del modelo. */
     private double capKwh = EnergyModel.usableKwh();
     private CarCloud.Snapshot cloud = CarCloud.Snapshot.of(CarCloud.State.NO_ACCOUNT);
@@ -806,10 +808,15 @@ final class RouteTab implements CarScreen {
         plan = planner.plan();
         // Batería: la real del coche si la hay (nube de Leapmotor); si no, la indicada con ±5.
         cloud = CarCloud.car();
-        double real = cloud.soc(DemoMode.wallClockMs(), CarCloud.SOC_MAX_AGE_MS);
-        realSoc = !Double.isNaN(real) && !RoutePlanner.testMode();
+        long clkNow = DemoMode.wallClockMs();
+        double real = cloud.soc(clkNow, CarCloud.SOC_MAX_AGE_MS);
+        boolean testSoc = RoutePlanner.testMode();
+        // Dato de la nube viejo (y desenchufado): no se fía como «ahora»; se deja ajustar a mano, partiendo de ese %.
+        socStale = !testSoc && CarCloud.socStale(cloud, clkNow);
+        realSoc = !Double.isNaN(real) && !testSoc && !socStale;
+        if (socStale && Double.isNaN(planner.socNow())) planner.setSoc(Math.round(real));
         soc = realSoc ? real : planner.socNow();
-        capKwh = realSoc || (RoutePlanner.testMode() && cloud.hasData()) ? cloud.capacityKwh : EnergyModel.usableKwh();
+        capKwh = realSoc || socStale || (testSoc && cloud.hasData()) ? cloud.capacityKwh : EnergyModel.usableKwh();
         socControls.setVisibility(realSoc ? View.GONE : View.VISIBLE);
         status = planner.status();
         CarSensors.Snapshot gps = planner.sensorSnapshot();
@@ -3741,11 +3748,13 @@ final class RouteTab implements CarScreen {
         // De dónde sale: el dato real del coche (con su edad) o la estimación desde el % indicado.
         if (!Double.isNaN(soc)) {
             String src = realSoc ? CarCloud.realLabel(cloud, DemoMode.wallClockMs())
+                    : socStale ? Str.get(R.string.hql_route_soc_stale, CarCloud.ago(cloud.ageMs(DemoMode.wallClockMs())))
                     : Str.get(RoutePlanner.testMode() ? R.string.hql_route_test_soc : R.string.hql_cloud_estimated);
+            int srcCol = realSoc ? CarKit.ACCENT : socStale ? CarKit.AMBER : CarKit.FAINT;
             p.setTypeface(CarKit.MEDIUM);
             p.setTextSize(19);
             CarKit.text(cv, CarKit.ellipsize(src, r.right - tx - lw - 12, p), tx + lw + 12, r.top + 18, 19,
-                    realSoc ? CarKit.ACCENT : CarKit.FAINT, CarKit.MEDIUM, p, Paint.Align.LEFT);
+                    srcCol, CarKit.MEDIUM, p, Paint.Align.LEFT);
         }
         float nw = CarKit.number(cv, Double.isNaN(soc) ? "—" : String.format(Locale.getDefault(), "%.0f", soc), "%", tx, r.top + 70, 50,
                 CarKit.TEXT, CarKit.REGULAR, p, Paint.Align.LEFT);

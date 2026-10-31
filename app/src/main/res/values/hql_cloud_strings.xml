@@ -9,6 +9,7 @@
     <string name="hql_cloud_range">range</string>
     <string name="hql_cloud_real_ago">real · %1$s</string>
     <string name="hql_cloud_estimated">estimated</string>
+    <string name="hql_route_soc_stale">cloud · %1$s · adjust it</string>
     <string name="hql_cloud_ago_s">%1$d s ago</string>
     <string name="hql_cloud_ago_min">%1$d min ago</string>
     <string name="hql_cloud_ago_h">%1$d h ago</string>

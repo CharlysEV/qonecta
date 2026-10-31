@@ -271,6 +271,19 @@ final class TripStats {
         return t;
     }
 
+    /** kWh/100 km de los viajes con el mejor dato de cada uno (el del coche, el real o el estimado), ponderado por km. */
+    static double avgKwhPer100(List<TripLog.Trip> trips, List<CloudHistory.Trip> history) {
+        double km = 0;
+        double kwh = 0;
+        for (TripLog.Trip t : trips) {
+            double v = comparableKwhPer100(t, history);
+            if (Double.isNaN(v)) continue;
+            km += t.km;
+            kwh += v * t.km / 100;
+        }
+        return km >= 0.5 ? kwh / km * 100 : Double.NaN;
+    }
+
     /** Índice del viaje más largo (km), o -1. */
     static int longest(List<TripLog.Trip> trips) {
         int best = -1;

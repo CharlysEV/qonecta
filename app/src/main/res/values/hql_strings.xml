@@ -626,7 +626,10 @@
     <string name="hql_recovered">Recovered</string>
     <string name="hql_net_kwh">net %1$.2f kWh</string>
     <string name="hql_estimated_model">Estimated with the C10 model</string>
+    <string name="hql_split_real">Fitted to real consumption</string>
+    <string name="hql_split_car">Climate and other from the car</string>
     <string name="hql_cost_rate">at %1$s · %2$.2f kWh</string>
+    <string name="hql_cost_rate_real">at %1$s · %2$.2f real kWh</string>
     <string name="hql_cost_petrol">In a petrol car, ~%1$s</string>
     <string name="hql_co2_note">Versus a petrol car at %1$.1f l/100 km (%2$.2f kg of CO₂ per litre, tailpipe only).</string>
     <string name="hql_tip_slower">10 km/h slower would save ~%1$.0f %% energy.</string>
@@ -897,6 +900,7 @@
     <string name="hql_ins_daily_legend">Bars: km each day · line: consumption</string>
     <string name="hql_ins_from_car">from the car</string>
     <string name="hql_ins_from_app">trips with Qonecta+</string>
+    <string name="hql_ins_from_mixed">from the car until %1$s · after that, trips with Qonecta+</string>
     <string name="hql_ins_how">How you use energy</string>
     <string name="hql_ins_per_trip">Consumption of the latest trips (kWh/100 km)</string>
     <string name="hql_ins_by_length">By trip length</string>

@@ -298,6 +298,40 @@ final class LeapCrypto {
         return Base64.encodeToString(c.doFinal(pin.getBytes(StandardCharsets.UTF_8)), Base64.NO_WRAP);
     }
 
+    // ------------------------------------------------------------------ protocolo nuevo (app oficial V1.16.4-1)
+
+    /** Versión, tipo de móvil e idioma del protocolo nuevo (los de la app oficial V1.16.4-1, como Leapmotor Mate). */
+    static final String APP_VERSION_V2 = "V1.16.4-1";
+    static final String DEVICE_TYPE_V2 = "android";
+    static final String LANGUAGE_V2 = "en-US";
+
+    /**
+     * Clave de firma del protocolo nuevo: la firma del token (JWT, base64url) XOR signParam.r2 XOR signParam.r3 (base64),
+     * hasta el más corto de los tres (derive_v2_key de leapmotor-mate). null si falta algo o no se puede decodificar.
+     */
+    static byte[] signKeyV2(String token, String r2, String r3) {
+        if (token == null || r2 == null || r3 == null || r2.isEmpty() || r3.isEmpty()) return null;
+        String[] parts = token.split("\\.");
+        if (parts.length != 3 || parts[2].isEmpty()) return null;
+        try {
+            byte[] a = Base64.decode(parts[2], Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
+            byte[] b = Base64.decode(r2, Base64.DEFAULT);
+            byte[] c = Base64.decode(r3, Base64.DEFAULT);
+            int n = Math.min(a.length, Math.min(b.length, c.length));
+            if (n == 0) return null;
+            byte[] k = new byte[n];
+            for (int i = 0; i < n; i++) k[i] = (byte) (a[i] ^ b[i] ^ c[i]);
+            return k;
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /** «sign» del login nuevo: SHA-256 en mayúsculas de los valores ordenados por nombre (cabeceras y cuerpo). */
+    static String loginSignV2(Map<String, String> fields) {
+        return hex(digest("SHA-256", signInput(fields).getBytes(StandardCharsets.UTF_8))).toUpperCase(java.util.Locale.ROOT);
+    }
+
     static String hex(byte[] b) {
         char[] out = new char[b.length * 2];
         for (int i = 0; i < b.length; i++) {

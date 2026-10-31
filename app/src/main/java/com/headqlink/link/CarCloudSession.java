@@ -272,6 +272,23 @@ final class CarCloudSession {
         }
     }
 
+    /** El reparto de la energía de una ventana según el coche, sin los km: una sola lectura. */
+    static synchronized CloudUsage.Split readSplit(Context ctx, long fromMs, long toMs)
+            throws IOException, GeneralSecurityException {
+        CarCloudStore st = new CarCloudStore(ctx);
+        ensure(st);
+        if (saved.vin.isEmpty()) throw new NotConfiguredException("sin coche elegido");
+        int v0 = api.sessionVersion();
+        try {
+            return CloudUsage.parseSplit(api.energySplit(saved.vin, fromMs / 1000, toMs / 1000));
+        } catch (LeapApi.SessionExpiredException e) {
+            api = null;
+            throw e;
+        } finally {
+            if (api != null && api.sessionVersion() != v0) persist(st);
+        }
+    }
+
     /**
      * «Consumo» de una ventana según el coche (28-10): los km y el reparto de la energía (conducción, clima, otros). Si
      * una de las dos lecturas falla, la otra vale sola; si fallan las dos, el error.

@@ -276,4 +276,35 @@ class CarCloudTest {
         assertEquals("x***", CarCloudStore.maskEmail("xyz"))
         assertEquals("", CarCloudStore.maskEmail(null))
     }
+
+    private fun socSnap(socPct: Int, ageMs: Long, charging: Boolean, plugged: Boolean): CarCloud.Snapshot {
+        val now = System.currentTimeMillis()
+        val sig = JSONObject()
+        sig.put("1204", socPct)
+        sig.put("1149", if (charging) 1 else 0)
+        sig.put("47", if (plugged || charging) 1 else 0)
+        sig.put("1197", 0)
+        sig.put("3736", 0)
+        val data = JSONObject()
+        data.put("collectTime", now - ageMs)
+        data.put("signal", sig)
+        return CarCloud.Snapshot(CarCloud.State.OK, LeapStatus.parse(data), now, 100, 67.0, "C10", 0, false)
+    }
+
+    @Test
+    fun socStaleOnlyWhenOldAndUnplugged() {
+        val now = System.currentTimeMillis()
+        // Fresco: no es viejo.
+        assertFalse(CarCloud.socStale(socSnap(100, 5 * 60_000L, false, false), now))
+        // Viejo y desenchufado: sí (pudo conducirse sin reportar).
+        assertTrue(CarCloud.socStale(socSnap(100, 99 * 60_000L, false, false), now))
+        // Viejo pero enchufado: no (parado cargando, el % vale).
+        assertFalse(CarCloud.socStale(socSnap(100, 99 * 60_000L, false, true), now))
+        // Viejo pero cargando: no.
+        assertFalse(CarCloud.socStale(socSnap(90, 99 * 60_000L, true, true), now))
+        // Más de 6 h: la nube ya no se cree el %, así que no es «stale», es «sin dato».
+        assertFalse(CarCloud.socStale(socSnap(100, 7 * 3600_000L, false, false), now))
+        // Sin datos: no.
+        assertFalse(CarCloud.socStale(CarCloud.Snapshot.of(CarCloud.State.NO_ACCOUNT), now))
+    }
 }

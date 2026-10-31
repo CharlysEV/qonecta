@@ -329,31 +329,19 @@ final class PhoneInsights {
         double[] dayKm = new double[30];
         double[] dayKwh = new double[30];
         long today = TripStats.startOfDay(now, tz);
-        boolean fromCar = !d.history.isEmpty();
-        if (fromCar) {
-            for (CloudHistory.Trip t : d.history) {
-                if (t.startMs < from) continue;
-                n++;
-                km += t.km;
-                if (!Double.isNaN(t.kwh)) kwh += t.kwh;
-                int idx = 29 - (int) ((today - TripStats.startOfDay(t.startMs, tz)) / 86_400_000L);
-                if (idx >= 0 && idx < 30) {
-                    dayKm[idx] += t.km;
-                    if (!Double.isNaN(t.kwh)) dayKwh[idx] += t.kwh;
-                }
-            }
-        } else {
-            for (TripLog.Trip t : d.trips) {
-                if (t.startMs < from) continue;
-                n++;
-                km += t.km;
-                double k = TripStats.bestKwhPer100(t) * t.km / 100;
-                if (!Double.isNaN(k)) kwh += k;
-                int idx = 29 - (int) ((today - TripStats.startOfDay(t.startMs, tz)) / 86_400_000L);
-                if (idx >= 0 && idx < 30) {
-                    dayKm[idx] += t.km;
-                    if (!Double.isNaN(k)) dayKwh[idx] += k;
-                }
+        // Los del coche hasta su último viaje conocido y, si su historial se ha parado, los de Qonecta+ después.
+        boolean anyCar = false;
+        boolean anyApp = false;
+        for (CarUsage.Row t : CarUsage.rows(from, now + 1, d.history, d.trips)) {
+            n++;
+            km += t.km;
+            if (!Double.isNaN(t.kwh)) kwh += t.kwh;
+            if (t.fromCar) anyCar = true;
+            else anyApp = true;
+            int idx = 29 - (int) ((today - TripStats.startOfDay(t.startMs, tz)) / 86_400_000L);
+            if (idx >= 0 && idx < 30) {
+                dayKm[idx] += t.km;
+                if (!Double.isNaN(t.kwh)) dayKwh[idx] += t.kwh;
             }
         }
         if (n == 0) {
@@ -383,8 +371,11 @@ final class PhoneInsights {
         LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(140));
         blp.topMargin = dp(14);
         c.addView(bars, blp);
-        TextView legend = small(Str.get(R.string.hql_ins_daily_legend) + " · " + Str.get(fromCar ? R.string.hql_ins_from_car
-                : R.string.hql_ins_from_app));
+        String source = anyCar && anyApp
+                ? Str.get(R.string.hql_ins_from_mixed, new SimpleDateFormat("d MMM", Locale.getDefault())
+                .format(new Date(CarUsage.carUntilMs(d.history))))
+                : Str.get(anyCar ? R.string.hql_ins_from_car : R.string.hql_ins_from_app);
+        TextView legend = small(Str.get(R.string.hql_ins_daily_legend) + " · " + source);
         legend.setPadding(0, dp(6), 0, 0);
         c.addView(legend);
         addCard(c);

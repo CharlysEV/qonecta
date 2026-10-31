@@ -921,7 +921,10 @@ estendido»:
   e não se mexe: se o que falta sobe, a previsão sobe mesmo que a sua média seja menor.
 - **«Eficiência»**: o consumo da viagem é o real (o que a bateria desceu vezes a sua capacidade, entre os km do
   conta-quilómetros) assim que a bateria desce 2 %; antes diz «ainda pouco consumo para medir». Junto à potência
-  estimada aparece a real se o dado for recente. A repartição da energia continua estimada.
+  estimada aparece a real se o dado for recente. A partir daí, o custo da viagem sai desse consumo real e «Para onde vai a
+  energia» ajusta-se a ele: as percentagens são as do modelo, exceto o clima e «outros» se o carro já os tiver enviado.
+  O carro não os envia em direto: chegam quando para e, até lá, continuam estimados. «Média viagens» usa o melhor dado de
+  cada viagem: o do carro, o real ou o estimado.
 - **«Viagens»**: o consumo de cada viagem é **o que diz o carro** no histórico dele (marcado «CARRO»; o mesmo da app
   oficial da Leapmotor) ou, se não houver, o real da descida da % (marcado «REAL»); em «Recordes», o total dos últimos
   30 dias segundo o carro.

@@ -66,11 +66,16 @@ final class TripLog {
 
         /** Litros de gasolina gastados según el depósito (REEV), o NaN. */
         double fuelUsedL() {
-            if (Double.isNaN(fuelStartL) || Double.isNaN(fuelEndL)) return Double.NaN;
-            double d = fuelStartL - fuelEndL;
-            // Más de 0,3 L de subida es que se repostó por el camino: no es un consumo.
-            return d < -0.3 ? Double.NaN : Math.max(0, d);
+            return fuelUsed(fuelStartL, fuelEndL);
         }
+    }
+
+    /** Litros gastados entre dos lecturas del depósito, o NaN. */
+    static double fuelUsed(double startL, double endL) {
+        if (Double.isNaN(startL) || Double.isNaN(endL)) return Double.NaN;
+        double d = startL - endL;
+        // Más de 0,3 L de subida es que se repostó por el camino: no es un consumo.
+        return d < -0.3 ? Double.NaN : Math.max(0, d);
     }
 
     /** % de batería y cuentakilómetros del coche en un momento (de la nube). */
@@ -289,6 +294,13 @@ final class TripLog {
         TripLog t = instance;
         boolean charged = t != null && !DemoMode.active() && t.cloudCharged;
         return CloudEnergy.between(st.soc, st.odo, now.status.socBest(), now.status.odometerKm, now.capacityKwh, charged);
+    }
+
+    /** Litros de gasolina del viaje en curso hasta la lectura now (REEV), o NaN. */
+    static double liveFuelUsedL(CarCloud.Snapshot now) {
+        CloudMark st = cloudStart();
+        if (st == null || now == null || !now.hasData()) return Double.NaN;
+        return fuelUsed(st.fuelL, now.status.fuelLiters);
     }
 
     /** Un viaje que nunca se alejó más de esto de la salida… */

@@ -626,7 +626,10 @@
     <string name="hql_recovered">Teruggewonnen</string>
     <string name="hql_net_kwh">netto %1$.2f kWh</string>
     <string name="hql_estimated_model">Geschat met het C10-model</string>
+    <string name="hql_split_real">Aangepast aan echt verbruik</string>
+    <string name="hql_split_car">Klimaat en overig van de auto</string>
     <string name="hql_cost_rate">à %1$s · %2$.2f kWh</string>
+    <string name="hql_cost_rate_real">tegen %1$s · %2$.2f kWh echt</string>
     <string name="hql_cost_petrol">Met een benzineauto ~%1$s</string>
     <string name="hql_co2_note">Vergeleken met een benzineauto die %1$.1f l/100 km verbruikt (%2$.2f kg CO₂ per liter, alleen uitlaat).</string>
     <string name="hql_tip_slower">10 km/h langzamer bespaart ~%1$.0f %% energie.</string>
@@ -897,6 +900,7 @@
     <string name="hql_ins_daily_legend">Balken: km per dag · lijn: verbruik</string>
     <string name="hql_ins_from_car">volgens de auto</string>
     <string name="hql_ins_from_app">ritten met Qonecta+</string>
+    <string name="hql_ins_from_mixed">volgens de auto tot %1$s · daarna ritten met Qonecta+</string>
     <string name="hql_ins_how">Hoe je verbruikt</string>
     <string name="hql_ins_per_trip">Verbruik van de laatste ritten (kWh/100 km)</string>
     <string name="hql_ins_by_length">Naar ritlengte</string>

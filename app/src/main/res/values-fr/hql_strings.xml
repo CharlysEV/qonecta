@@ -627,7 +627,10 @@
     <string name="hql_recovered">Récupéré</string>
     <string name="hql_net_kwh">net %1$.2f kWh</string>
     <string name="hql_estimated_model">Estimé avec le modèle de la C10</string>
+    <string name="hql_split_real">Ajusté à la conso réelle</string>
+    <string name="hql_split_car">Clim et autres, de la voiture</string>
     <string name="hql_cost_rate">à %1$s · %2$.2f kWh</string>
+    <string name="hql_cost_rate_real">à %1$s · %2$.2f kWh réels</string>
     <string name="hql_cost_petrol">En voiture essence, ~%1$s</string>
     <string name="hql_co2_note">Par rapport à une voiture essence à %1$.1f l/100 km (%2$.2f kg de CO₂ par litre, à l\'échappement uniquement).</string>
     <string name="hql_tip_slower">Rouler 10 km/h moins vite économiserait ~%1$.0f %% d\'énergie.</string>
@@ -898,6 +901,7 @@
     <string name="hql_ins_daily_legend">Barres : km de chaque jour · ligne : consommation</string>
     <string name="hql_ins_from_car">selon la voiture</string>
     <string name="hql_ins_from_app">trajets avec Qonecta+</string>
+    <string name="hql_ins_from_mixed">selon la voiture jusqu’au %1$s · ensuite, trajets avec Qonecta+</string>
     <string name="hql_ins_how">Votre consommation</string>
     <string name="hql_ins_per_trip">Consommation des derniers trajets (kWh/100 km)</string>
     <string name="hql_ins_by_length">Selon la longueur du trajet</string>

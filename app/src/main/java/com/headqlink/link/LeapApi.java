@@ -39,6 +39,10 @@ import java.util.Random;
 final class LeapApi {
     static final String HOST = "appgateway.leapmotor-international.de";
     static final String BASE_URL = "https://" + HOST;
+    /** Protocolo nuevo (solo la prueba de laboratorio CloudV2Probe): servidor global, login y ruta del coche. */
+    static final String V2_GLOBAL_ORIGIN = "https://app-gw-global-master.leapmotor-international.de";
+    static final String V2_PATH_LOGIN = "/base/base-user/account/v1/login";
+    static final String V2_PATH_ROUTE = "/app/app-global-service/v1/vehicle/getCarRoute";
 
     static final String PATH_LOGIN = "/carownerservice/oversea/acct/v1/login";
     static final String PATH_REFRESH = "/carownerservice/oversea/acct/v1/token/refresh";

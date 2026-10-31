@@ -146,4 +146,28 @@ class LeapCryptoTest {
         val id = LeapCrypto.newDeviceId(java.security.SecureRandom())
         assertTrue(id.matches(Regex("[0-9a-f]{32}")))
     }
+
+    @Test
+    fun signKeyV2XorsTheTokenSignatureWithR2AndR3() {
+        // Firma del JWT (base64url sin relleno) = 01 02 03 04; r2 = 10 20 30 40; r3 = ff 00 ff (más corto: manda).
+        val sig = android.util.Base64.encodeToString(byteArrayOf(1, 2, 3, 4), android.util.Base64.URL_SAFE or android.util.Base64.NO_PADDING or android.util.Base64.NO_WRAP)
+        val r2 = android.util.Base64.encodeToString(byteArrayOf(0x10, 0x20, 0x30, 0x40), android.util.Base64.NO_WRAP)
+        val r3 = android.util.Base64.encodeToString(byteArrayOf(0xff.toByte(), 0, 0xff.toByte()), android.util.Base64.NO_WRAP)
+        val key = LeapCrypto.signKeyV2("aGVhZA.Ym9keQ.$sig", r2, r3)!!
+        assertEquals(3, key.size)
+        assertEquals((1 xor 0x10 xor 0xff).toByte(), key[0])
+        assertEquals((2 xor 0x20 xor 0).toByte(), key[1])
+        assertEquals((3 xor 0x30 xor 0xff).toByte(), key[2])
+        assertEquals(null, LeapCrypto.signKeyV2("sin.puntos", r2, r3))
+        assertEquals(null, LeapCrypto.signKeyV2("a.b.$sig", "", r3))
+    }
+
+    @Test
+    fun loginSignV2IsUppercaseSha256OfTheSortedValues() {
+        val f = linkedMapOf("version" to "V1.16.4-1", "identifier" to "x", "nonce" to "123")
+        // Ordenados por nombre: identifier, nonce, version.
+        val expected = java.security.MessageDigest.getInstance("SHA-256").digest("x123V1.16.4-1".toByteArray())
+            .joinToString("") { "%02X".format(it) }
+        assertEquals(expected, LeapCrypto.loginSignV2(f))
+    }
 }

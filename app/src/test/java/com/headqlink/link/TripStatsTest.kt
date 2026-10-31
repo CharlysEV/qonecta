@@ -130,6 +130,26 @@ class TripStatsTest {
     }
 
     @Test
+    fun averageUsesTheBestDataOfEachTrip() {
+        val now = DemoDrive.BASE_MS
+        val car = trip(now, 77.0, 9.0, 60)
+        val real = trip(now + 7_200_000, 50.0, 5.0, 40).also {
+            it.socStart = 80.0
+            it.socEnd = 70.0
+            it.odoStart = 1000.0
+            it.odoEnd = 1050.0
+            it.capKwh = 67.0
+        }
+        val estimated = trip(now + 14_400_000, 100.0, 20.0, 60)
+        val tooShort = trip(now + 21_600_000, 0.2, 5.0, 1)
+        val h = listOf(CloudHistory.Trip(car.startMs + 60_000, car.endMs() - 60_000, 77.0, 15.0, Double.NaN, 120.0))
+        assertEquals((15.0 + 6.7 + 20.0) / 227.0 * 100, TripStats.avgKwhPer100(listOf(car, real, estimated, tooShort), h), 1e-9)
+        // Sin historial, el del coche pasa a ser el estimado; sin viajes con datos, no hay media.
+        assertEquals((9.0 + 6.7 + 20.0) / 227.0 * 100, TripStats.avgKwhPer100(listOf(car, real, estimated), emptyList()), 1e-9)
+        assertTrue(TripStats.avgKwhPer100(listOf(tooShort), h).isNaN())
+    }
+
+    @Test
     fun reevInFuelModeIsNotASuperEfficientTrip() {
         // El viaje de un C10 REEV del 24-10 en modo combustible: 68,7 km, 0,07 kWh de la batería y 4,1 L de gasolina.
         val t = trip(DemoDrive.BASE_MS, 68.7, 12.0, 52)

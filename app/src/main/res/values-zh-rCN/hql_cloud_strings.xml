@@ -9,6 +9,7 @@
     <string name="hql_cloud_range">续航</string>
     <string name="hql_cloud_real_ago">实测 · %1$s</string>
     <string name="hql_cloud_estimated">估算</string>
+    <string name="hql_route_soc_stale">云端 · %1$s · 请调整</string>
     <string name="hql_cloud_ago_s">%1$d 秒前</string>
     <string name="hql_cloud_ago_min">%1$d 分钟前</string>
     <string name="hql_cloud_ago_h">%1$d 小时前</string>

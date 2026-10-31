@@ -996,8 +996,11 @@ Kilometerstand) und nutzt ihn in „Auto erweitert“:
   unverändert: Geht es auf dem Rest der Strecke bergauf, steigt die Prognose, auch wenn dein Durchschnitt niedriger ist.
 - **„Effizienz“**: Der Verbrauch der Fahrt ist der echte (was der Akku verloren hat, mal seine Kapazität, geteilt durch
   die km laut Kilometerzähler), sobald der Akku um 2 % gesunken ist; vorher steht dort „noch zu wenig verbraucht zum
-  Messen“. Neben der geschätzten Leistung erscheint die echte, wenn die Daten aktuell sind. Die Aufteilung der Energie
-  bleibt geschätzt.
+  Messen“. Neben der geschätzten Leistung erscheint die echte, wenn die Daten aktuell sind. Ab dann kommen die Kosten der
+  Fahrt aus diesem echten Verbrauch, und „Wohin die Energie geht“ wird daran angepasst: Die Prozente stammen vom Modell,
+  außer Klima und „Sonstiges“, sobald das Fahrzeug sie hochgeladen hat. Das geschieht nicht live: Sie kommen, wenn es
+  anhält, und bleiben bis dahin geschätzt. „Ø Fahrten“ nutzt für jede Fahrt die besten Daten: die des Fahrzeugs, die
+  echten oder die geschätzten.
 - **„Fahrten“**: Der Verbrauch jeder Fahrt ist **der, den das Fahrzeug** in seinem Verlauf angibt (markiert mit
   „FAHRZEUG“; derselbe wie in der offiziellen Leapmotor-App) oder, falls er fehlt, der echte aus dem Rückgang des
   %-Werts (markiert mit „REAL“); unter „Rekorde“ die Summe der letzten 30 Tage laut Fahrzeug.

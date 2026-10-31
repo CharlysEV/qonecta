@@ -9,6 +9,7 @@
     <string name="hql_cloud_range">autonomie</string>
     <string name="hql_cloud_real_ago">réel · %1$s</string>
     <string name="hql_cloud_estimated">estimé</string>
+    <string name="hql_route_soc_stale">cloud · %1$s · ajuste-la</string>
     <string name="hql_cloud_ago_s">il y a %1$d s</string>
     <string name="hql_cloud_ago_min">il y a %1$d min</string>
     <string name="hql_cloud_ago_h">il y a %1$d h</string>
