@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- headqlink: juegos de consola a pantalla completa (NesScreen): el botón y el aviso para salir. -->
+<resources>
+    <string name="hql_game_full">Tela cheia</string>
+    <string name="hql_game_full_exit">Toque no canto para sair da tela cheia</string>
+    <string name="hql_game_full_exit_pad">ou SELECT + START no controle</string>
+</resources>

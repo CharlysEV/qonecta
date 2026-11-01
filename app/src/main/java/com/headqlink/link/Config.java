@@ -1063,6 +1063,16 @@ final class Config {
     }
 
     /**
+     * Juegos de consola a pantalla completa (sin panel ni botones de los lados): se recuerda para que el siguiente juego
+     * se abra igual. De serie, no.
+     */
+    static final String GAME_FULLSCREEN = "game_fullscreen";
+
+    boolean gameFullscreen() {
+        return sp.getBoolean(GAME_FULLSCREEN, false);
+    }
+
+    /**
      * Tamaño de la interfaz del modo extendido en la pantalla del coche (UiScale): 0 = automático (como en el C10; en
      * pantallas más pequeñas, como la del T03, se reduce para que quepa), o el porcentaje elegido (50-100).
      */

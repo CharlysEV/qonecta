@@ -21,6 +21,13 @@ interface CarScreen {
 
         /** Pantalla grande (vídeo, TV): el panel se reduce a una barra de iconos. */
         void setFullscreen(boolean on);
+
+        /**
+         * Pantalla completa de verdad (un juego): sin panel ni barra de iconos, nuestra pantalla ocupa toda la del coche.
+         * Solo con una pantalla nuestra delante; al abrir otra se quita sola.
+         */
+        default void setImmersive(boolean on) {
+        }
     }
 
     View create(Host host);

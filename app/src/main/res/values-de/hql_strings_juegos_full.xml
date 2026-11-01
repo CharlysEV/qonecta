@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- headqlink: juegos de consola a pantalla completa (NesScreen): el botón y el aviso para salir. -->
+<resources>
+    <string name="hql_game_full">Vollbild</string>
+    <string name="hql_game_full_exit">Tippe auf die Ecke, um das Vollbild zu verlassen</string>
+    <string name="hql_game_full_exit_pad">oder SELECT + START am Controller</string>
+</resources>

@@ -20,6 +20,11 @@ final class RetroPad {
     private int hatX, hatY;
     /** halfNES lee su propio mando: si lo hay, se le pasan los botones de la NES. */
     private final PuppetController puppet;
+    /**
+     * Select y Start a la vez (el atajo del mando para salir de la pantalla completa, NesScreen): se avisa al cerrarse la
+     * combinación, en el hilo de quien pulsa. Los dos botones llegan también al juego, como siempre.
+     */
+    private volatile Runnable onSelectStart;
 
     RetroPad() {
         this(null);
@@ -33,11 +38,24 @@ final class RetroPad {
         return 1 << b.ordinal();
     }
 
+    void setOnSelectStart(Runnable r) {
+        onSelectStart = r;
+    }
+
     synchronized void press(Btn b) {
+        int before = bits;
         bits |= mask(b);
         sticky |= mask(b);
         PuppetController.Button n = nes(b);
         if (puppet != null && n != null) puppet.pressButton(n);
+        Runnable r = onSelectStart;
+        if (r != null && selectStart(before, bits)) r.run();
+    }
+
+    /** Puro: ¿con esta pulsación quedan Select y Start pulsados a la vez (y antes no lo estaban los dos)? */
+    static boolean selectStart(int before, int now) {
+        int both = mask(Btn.SELECT) | mask(Btn.START);
+        return (now & both) == both && (before & both) != both;
     }
 
     synchronized void release(Btn b) {

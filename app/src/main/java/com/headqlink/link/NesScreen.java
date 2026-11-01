@@ -2,6 +2,7 @@ package com.headqlink.link;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -16,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -53,6 +55,30 @@ final class NesScreen {
     private boolean touchPad = true;
     /** Indicador «Mando 1 · Mando 2» y avisos de los mandos de la partida en marcha. */
     private NesInput.PadsListener padsListener;
+    /**
+     * Pantalla completa (foro, 01-11: «¿Vollbild?»): sin el panel de la interfaz ni los botones de los lados, la imagen a lo
+     * más grande que quepa sin deformar, centrada sobre negro. Se sale tocando la esquina de arriba a la izquierda o con
+     * Select + Start del mando; se recuerda para el siguiente juego (Config.gameFullscreen).
+     */
+    private boolean full;
+    /** Las piezas de la pantalla del juego en marcha que cambian con la pantalla completa. */
+    private View sideLeft;
+    private View sideRight;
+    private View padOverlay;
+    private View exitCorner;
+    private View exitMark;
+    private TextView fullHint;
+    /** Lado de la esquina de arriba a la izquierda que saca de la pantalla completa (px del lienzo). */
+    static final int EXIT_CORNER = 150;
+    /** Lo que dura el aviso «Toca la esquina para salir» al entrar. */
+    static final long FULL_HINT_MS = 3000;
+    /** Opacidad del icono de la esquina pasado el aviso (se ve, sin molestar) y de los botones táctiles encima del juego. */
+    private static final float EXIT_MARK_DIM = 0.35f;
+    private static final float FULL_PAD_ALPHA = 0.6f;
+    private final Runnable fullHintEnd = () -> {
+        if (fullHint != null) fullHint.setVisibility(View.GONE);
+        if (exitMark != null) exitMark.setAlpha(EXIT_MARK_DIM);
+    };
     /** Consola de cada .zip ya mirado (por documento), para no abrirlo cada vez que se lista la carpeta. */
     private static final Map<String, String> zipKind = new ConcurrentHashMap<>();
 
@@ -511,12 +537,20 @@ final class NesScreen {
         autoState = new File(states, base + ".auto.state");
         boolean resume = engine.supportsStates() && autoState.isFile();
         if (engine.supportsStates()) engine.setAutoState(autoState.getAbsolutePath());
+        // Select + Start a la vez (en el mando o en los botones táctiles): fuera de la pantalla completa.
+        Runnable leaveFull = () -> host.post(() -> {
+            if (full) setFull(false, true);
+        });
+        engine.pad().setOnSelectStart(leaveFull);
+        if (engine.pad2() != null) engine.pad2().setOnSelectStart(leaveFull);
         NesInput.newGame(engine.pad(), engine.pad2(), console);
         NesInput.watch(c);
         CarUi.gameDrawing(true);
         host.setContent(game(GameConsole.title(e.name), resume));
         playing = this;
         engine.start();
+        // Como el último juego: si se jugaba a pantalla completa, este también.
+        if (cfg.gameFullscreen()) setFull(true, false);
         // El mando Bluetooth: las teclas llegan por la accesibilidad; la cruceta y el stick (ejes) solo con una pantalla de
         // HeadQLink delante en el móvil. En el coche virtual ya lo está (CarSimActivity los pasa); con el coche de verdad,
         // la pantalla del mando (y una notificación para volver a ella).
@@ -556,6 +590,21 @@ final class NesScreen {
         pads.setPadding(6, 8, 0, 0);
         pads.setVisibility(pads.getText().length() > 0 ? View.VISIBLE : View.GONE);
         left.addView(pads, new LinearLayout.LayoutParams(260, ViewGroup.LayoutParams.WRAP_CONTENT));
+        // «Pantalla completa», debajo del título: a la derecha ya van cuatro botones y uno más pisaría Start en el T03.
+        TextView fullBtn = CarStyle.pill(c, Str.get(R.string.hql_game_full));
+        android.graphics.drawable.Drawable fullIcon = c.getDrawable(R.drawable.hql_ic_fullscreen);
+        if (fullIcon != null) {
+            fullIcon = fullIcon.mutate();
+            fullIcon.setTint(CarStyle.TEXT);
+            int is = CarStyle.textPx(30);
+            fullIcon.setBounds(0, 0, is, is);
+            fullBtn.setCompoundDrawables(fullIcon, null, null, null);
+            fullBtn.setCompoundDrawablePadding(10);
+        }
+        fullBtn.setOnClickListener(v -> setFull(true, true));
+        LinearLayout.LayoutParams flp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        flp.topMargin = 14;
+        left.addView(fullBtn, flp);
         stage.addView(left, place(Gravity.TOP | Gravity.LEFT, 24, 18, 0, 0, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         LinearLayout right = new LinearLayout(c);
@@ -591,6 +640,8 @@ final class NesScreen {
             pads.setText(l);
             pads.setVisibility(l.isEmpty() ? View.GONE : View.VISIBLE);
             if (notice != null) say.say(notice);
+            // Un mando que llega o se va: a pantalla completa, los botones táctiles solo sin mando.
+            if (full) showPad();
         });
         NesInput.addListener(padsListener);
         if (engine.supportsStates()) {
@@ -620,15 +671,49 @@ final class NesScreen {
         }
         if (resume) stage.addView(resumeCard(c, say), place(Gravity.CENTER, 0, 0, 0, 0, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        // Pantalla completa: la esquina de arriba a la izquierda saca de ella. Encima de todo, con un icono tenue (al
+        // entrar, claro y con su aviso al lado). Cuenta si el dedo empieza y acaba en ella (exitTap).
+        FrameLayout corner = new FrameLayout(c);
+        ImageView mark = new ImageView(c);
+        mark.setImageResource(R.drawable.hql_ic_fullscreen_exit);
+        mark.setImageTintList(ColorStateList.valueOf(0xFFFFFFFF));
+        mark.setBackground(CarStyle.round(0x99202124, 32));
+        mark.setPadding(12, 12, 12, 12);
+        corner.addView(mark, place(Gravity.TOP | Gravity.LEFT, 20, 16, 0, 0, 64, 64));
+        float[] down = new float[2];
+        corner.setOnTouchListener((v, ev) -> {
+            if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                down[0] = ev.getX();
+                down[1] = ev.getY();
+            } else if (ev.getActionMasked() == MotionEvent.ACTION_UP && full
+                    && exitTap(down[0], down[1], ev.getX(), ev.getY(), EXIT_CORNER)) {
+                setFull(false, true);
+            }
+            return true;
+        });
+        corner.setVisibility(View.GONE);
+        stage.addView(corner, place(Gravity.TOP | Gravity.LEFT, 0, 0, 0, 0, EXIT_CORNER, EXIT_CORNER));
+        TextView hint = CarStyle.text(c, "", 24, CarStyle.TEXT);
+        hint.setPadding(26, 12, 26, 12);
+        hint.setBackground(CarStyle.round(0xB3202124, 28));
+        hint.setVisibility(View.GONE);
+        stage.addView(hint, place(Gravity.TOP | Gravity.LEFT, 20 + 64 + 14, 16, 0, 0, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        sideLeft = left;
+        sideRight = right;
+        padOverlay = overlay;
+        exitCorner = corner;
+        exitMark = mark;
+        fullHint = hint;
+
         pad.setOnClickListener(v -> {
             touchPad = !touchPad;
-            overlay.setVisibility(touchPad ? View.VISIBLE : View.GONE);
+            showPad();
             pad.setBackground(touchPad ? CarStyle.accent(28) : CarStyle.round(CarStyle.PILL_BG, 28));
             pad.setTextColor(touchPad ? CarStyle.ON_ACCENT : CarStyle.TEXT);
         });
         pad.setBackground(touchPad ? CarStyle.accent(28) : CarStyle.round(CarStyle.PILL_BG, 28));
         pad.setTextColor(touchPad ? CarStyle.ON_ACCENT : CarStyle.TEXT);
-        overlay.setVisibility(touchPad ? View.VISIBLE : View.GONE);
+        showPad();
         engine.setListener(new GameCore.Listener() {
             @Override
             public void onFrame(Bitmap frame) {
@@ -638,10 +723,73 @@ final class NesScreen {
 
             @Override
             public void onMessage(String text) {
-                host.post(() -> host.setContent(CarStyle.message(c, Str.get(R.string.hql_nes_error, text))));
+                // Sin la pantalla completa: con el aviso de error delante, el panel tiene que estar para salir de aquí.
+                host.post(() -> {
+                    setFull(false, false);
+                    host.setContent(CarStyle.message(c, Str.get(R.string.hql_nes_error, text)));
+                });
             }
         });
         return stage;
+    }
+
+    /**
+     * Entra o sale de la pantalla completa: sin el panel (CarUi), sin los botones de los lados, la imagen a lo más grande
+     * (NesView.full) y la esquina para salir, con su aviso unos segundos al entrar. remember: lo pide quien juega (el
+     * botón, la esquina o Select + Start) y vale para el siguiente juego; sin él (el juego empieza o se acaba), no se toca.
+     */
+    private void setFull(boolean on, boolean remember) {
+        if (remember) cfg.putBool(Config.GAME_FULLSCREEN, on);
+        NesView v = view;
+        if (v == null || on == full) return;
+        full = on;
+        host.setImmersive(on);
+        v.full = on;
+        v.invalidate();
+        if (sideLeft != null) sideLeft.setVisibility(on ? View.GONE : View.VISIBLE);
+        if (sideRight != null) sideRight.setVisibility(on ? View.GONE : View.VISIBLE);
+        showPad();
+        if (exitCorner != null) exitCorner.setVisibility(on ? View.VISIBLE : View.GONE);
+        TextView hint = fullHint;
+        if (hint != null) {
+            hint.removeCallbacks(fullHintEnd);
+            if (on) {
+                // Con mando, también su atajo.
+                hint.setText(Str.get(R.string.hql_game_full_exit) + (TouchService.gamepadConnected()
+                        ? "\n" + Str.get(R.string.hql_game_full_exit_pad) : ""));
+                hint.setVisibility(View.VISIBLE);
+                if (exitMark != null) exitMark.setAlpha(1f);
+                hint.postDelayed(fullHintEnd, FULL_HINT_MS);
+            } else {
+                hint.setVisibility(View.GONE);
+            }
+        }
+        L.i(console.title + ": pantalla completa " + (on ? "sí" : "no") + (remember ? "" : " (sin cambiar la preferencia)"));
+    }
+
+    /**
+     * Los botones táctiles, si están puestos («Botones táctiles»). A pantalla completa, translúcidos encima del juego y solo
+     * sin un mando conectado: con mando sobran.
+     */
+    private void showPad() {
+        View o = padOverlay;
+        if (o == null) return;
+        boolean show = touchPad && !(full && TouchService.gamepadConnected());
+        o.setVisibility(show ? View.VISIBLE : View.GONE);
+        o.setAlpha(full ? FULL_PAD_ALPHA : 1f);
+    }
+
+    /**
+     * Puro: ¿sale de la pantalla completa un toque que empieza en (downX, downY) y acaba en (upX, upY), en px de la pantalla
+     * del juego? Sí si empieza y acaba en la esquina de arriba a la izquierda, de lado side: un dedo que llega a ella o sale
+     * de ella deslizando no cuenta.
+     */
+    static boolean exitTap(float downX, float downY, float upX, float upY, int side) {
+        return inCorner(downX, downY, side) && inCorner(upX, upY, side);
+    }
+
+    private static boolean inCorner(float x, float y, int side) {
+        return x >= 0 && y >= 0 && x < side && y < side;
     }
 
     /** El aviso corto de la pantalla del juego. */
@@ -691,7 +839,14 @@ final class NesScreen {
      * izquierda y Start a la derecha, a media altura. Varios dedos a la vez.
      */
     private View touchOverlay(Context c) {
-        FrameLayout f = new FrameLayout(c);
+        // A pantalla completa va translúcida (showPad): así cada botón se pinta ya con esa opacidad, sin una capa aparte del
+        // tamaño de la pantalla en cada fotograma.
+        FrameLayout f = new FrameLayout(c) {
+            @Override
+            public boolean hasOverlappingRendering() {
+                return false;
+            }
+        };
         // La Mega Drive ocupa 1280 de ancho a ×4: en el C10 quedan 272 a cada lado, así que sus botones son más pequeños.
         boolean md = console == GameConsole.MD;
         boolean snes = console == GameConsole.SNES || console == GameConsole.PSX;
@@ -792,6 +947,8 @@ final class NesScreen {
 
     void stopEngine() {
         if (playing == this) playing = null;
+        // Fuera del juego vuelve el panel; la preferencia se queda para el siguiente juego.
+        setFull(false, false);
         CarUi.gameDrawing(false);
         NesInput.removeListener(padsListener);
         padsListener = null;
@@ -878,15 +1035,36 @@ final class NesScreen {
          */
         boolean tv43;
 
+        /** Pantalla completa (NesScreen.setFull): toda la del coche, y si el aumento entero se queda corto, se estira (fit). */
+        boolean full;
+
         /** Puro: ancho y alto de la imagen 4:3 más grande que cabe en w x h. */
         static int[] fit43(int w, int h) {
-            int dh = h;
-            int dw = Math.round(h * 4f / 3f);
-            if (dw > w) {
-                dw = w;
-                dh = Math.round(w * 3f / 4f);
-            }
-            return new int[]{dw, dh};
+            return fit(4, 3, w, h);
+        }
+
+        /**
+         * Puro: ancho y alto de la imagen más grande con la proporción fw:fh que cabe en w x h (se centra y lo demás queda en
+         * negro). Manda el lado que antes se acaba: el alto en una pantalla ancha como la del coche. {0, 0} sin tamaño.
+         */
+        static int[] fit(int fw, int fh, int w, int h) {
+            if (fw <= 0 || fh <= 0 || w <= 0 || h <= 0) return new int[]{0, 0};
+            if ((long) w * fh >= (long) h * fw) return new int[]{(int) Math.round((double) h * fw / fh), h};
+            return new int[]{w, (int) Math.round((double) w * fh / fw)};
+        }
+
+        /** A pantalla completa, el aumento entero se queda si llega a esta parte del ancho más grande que cabe (fit). */
+        static final float FULL_SHARP = 0.9f;
+
+        /**
+         * Puro: a pantalla completa, ¿se dibuja un fotograma lógico de lw x lh en w x h con el aumento entero de siempre
+         * (scale y crop)? Sí si llega casi a lo más grande que cabe (FULL_SHARP): en el C10, ×4, que ya es todo el alto, y con
+         * píxeles exactos se ve nítido y el codificador lo comprime mucho mejor. Si se queda corto (en una pantalla más alta,
+         * más estrecha o en la del T03), no: se estira a lo más grande sin deformar (fit), suavizado.
+         */
+        static boolean fullSharp(int lw, int lh, int w, int h) {
+            int k = scale(w, h, lw, lh);
+            return lw * k >= FULL_SHARP * fit(lw, lh, w, h)[0];
         }
 
         @Override
@@ -910,6 +1088,18 @@ final class NesScreen {
             // Tamaño lógico: 512 de ancho (alta resolución de la SNES) es 256; 448 o más líneas (entrelazado), la mitad.
             int lw = logicalW(fw);
             int lh = logicalH(fh);
+            if (full && !fullSharp(lw, lh, w, h)) {
+                // A pantalla completa, sin llegar con el aumento entero: lo más grande que cabe sin deformar, suavizado.
+                int[] d = fit(lw, lh, w, h);
+                int left = (w - d[0]) / 2;
+                int top = (h - d[1]) / 2;
+                src.set(0, 0, fw, fh);
+                dst.set(left, top, left + d[0], top + d[1]);
+                p.setFilterBitmap(true);
+                cv.drawBitmap(b, src, dst, p);
+                p.setFilterBitmap(false);
+                return;
+            }
             int k = scale(w, h, lw, lh);
             int c = crop(k, h, lh);
             int sc = c * fh / lh;

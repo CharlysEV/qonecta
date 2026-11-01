@@ -103,6 +103,11 @@ final class CarUi {
     private static final int COMPACT_W = 96;
     private boolean compact;
     /**
+     * Juego a pantalla completa (Juegos › consola › «Pantalla completa»): ni panel ni barra de iconos, y nuestra pantalla
+     * ocupa todo el ancho. Solo con una pantalla nuestra (no con AA ni con la pantalla partida); al abrir otra se quita.
+     */
+    private boolean immersive;
+    /**
      * Panel minimizado (con AA en pantalla): queda la barra de iconos. No una pestaña en el borde: el
      * coche puede quedarse los toques de su borde izquierdo para su propio gesto. Se despliega con «»», tocando el icono de AA o deslizando hacia la derecha.
      */
@@ -660,8 +665,12 @@ final class CarUi {
         return aaShown && !splitActive() && !compact;
     }
 
-    /** Lo que ocupa el panel al lado de AA o de nuestra pantalla: con el panel encima de AA, solo la barra. */
+    /**
+     * Lo que ocupa el panel al lado de AA o de nuestra pantalla: con el panel encima de AA, solo la barra; con un juego a
+     * pantalla completa, nada.
+     */
     private int sideW() {
+        if (immersive) return 0;
         return panelOverAa() ? COMPACT_W : layoutPanelW();
     }
 
@@ -672,6 +681,8 @@ final class CarUi {
         boolean rail = sp || rail();
         panel.getLayoutParams().width = pw;
         panel.requestLayout();
+        // Juego a pantalla completa: sin panel (ni barra de iconos); el resto se coloca igual, para cuando vuelva.
+        panel.setVisibility(immersive ? View.GONE : View.VISIBLE);
         for (LinearLayout b : labelledButtons()) {
             b.getChildAt(1).setVisibility(rail ? View.GONE : View.VISIBLE);
             b.setGravity(rail ? Gravity.CENTER : Gravity.CENTER_VERTICAL);
@@ -1011,6 +1022,23 @@ final class CarUi {
         aaForGame();
     }
 
+    /**
+     * Juego a pantalla completa (NesScreen): el panel desaparece del todo, también la barra de iconos, y nuestra pantalla
+     * ocupa toda la del coche. Solo con una pantalla nuestra delante y sin partir; al salir, el panel vuelve como estaba
+     * (desplegado o en barra) y se recoge solo como siempre.
+     */
+    private void applyImmersive(boolean on) {
+        boolean want = on && !aaShown && !splitActive();
+        if (want == immersive || panel == null) return;
+        stopPanelSlide();
+        immersive = want;
+        swipeX = -1;
+        applyLayout();
+        L.i("CarUi: juego a pantalla completa " + (immersive ? "sí (sin panel)" : "no"));
+        // El panel que vuelve desplegado se recoge solo, como al abrir una pantalla (no si la interfaz se está cerrando).
+        if (!immersive && current == this) scheduleHide();
+    }
+
     /** ¿Ocupa nuestra interfaz la zona de contenido (y por tanto recibe sus toques)? */
     boolean ownScreenActive() {
         return !aaShown;
@@ -1247,9 +1275,10 @@ final class CarUi {
             if (pres == null) return;
             long now = SystemClock.uptimeMillis();
             int a;
-            // Panel minimizado: deslizar hacia la derecha desde la barra lo despliega.
+            // Panel minimizado: deslizar hacia la derecha desde la barra lo despliega (con un juego a pantalla completa no
+            // hay barra: ese borde es del juego).
             boolean atEdge = panelRight ? x > width - COMPACT_W : x < COMPACT_W;
-            if (action == 1) swipeX = hidden && atEdge ? x : -1;
+            if (action == 1) swipeX = hidden && !immersive && atEdge ? x : -1;
             if (action == 3 && swipeX >= 0 && (panelRight ? swipeX - x : x - swipeX) > 70) {
                 swipeX = -1;
                 setHidden(false);
@@ -1721,7 +1750,8 @@ final class CarUi {
      */
     private void renderAlert() {
         if (alertCard != null) {
-            boolean show = alertPending && !alertSeen && !rail();
+            // Con un juego a pantalla completa no hay panel: el aviso espera (sin darse por visto) a que vuelva.
+            boolean show = alertPending && !alertSeen && !rail() && !immersive;
             if (show) placeAlert();
             if (show != (alertCard.getVisibility() == View.VISIBLE)) {
                 L.i("CarUi: aviso del plan " + (show ? "a la vista" : "fuera"));
@@ -2799,6 +2829,11 @@ final class CarUi {
             compact = false;
             L.i("CarUi: pantalla grande no");
         }
+        // Antes de cerrar la pantalla de antes: el juego, al pararse, ya no tiene que devolver el panel (se coloca abajo).
+        if (immersive) {
+            immersive = false;
+            L.i("CarUi: juego a pantalla completa no (otra pantalla)");
+        }
         if (!"aa".equals(name) && hidden && panel != null) {
             hidden = false;
             L.i("CarUi: panel desplegado");
@@ -2925,6 +2960,11 @@ final class CarUi {
         @Override
         public void setFullscreen(boolean on) {
             setCompact(on);
+        }
+
+        @Override
+        public void setImmersive(boolean on) {
+            applyImmersive(on);
         }
     };
 

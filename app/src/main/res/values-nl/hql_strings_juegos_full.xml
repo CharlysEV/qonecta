@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- headqlink: juegos de consola a pantalla completa (NesScreen): el botón y el aviso para salir. -->
+<resources>
+    <string name="hql_game_full">Volledig scherm</string>
+    <string name="hql_game_full_exit">Tik op de hoek om volledig scherm te verlaten</string>
+    <string name="hql_game_full_exit_pad">of SELECT + START op de gamepad</string>
+</resources>

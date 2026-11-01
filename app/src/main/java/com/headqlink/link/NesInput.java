@@ -192,11 +192,14 @@ final class NesInput {
     private static final InputManager.InputDeviceListener devices = new InputManager.InputDeviceListener() {
         @Override
         public void onInputDeviceAdded(int deviceId) {
+            // Llega un mando (o se despierta): la pantalla completa quita los botones táctiles (NesScreen).
+            notifyPads(null);
         }
 
         @Override
         public void onInputDeviceRemoved(int deviceId) {
-            deviceRemoved(deviceId);
+            // Uno sin jugador también cuenta: sin mando, la pantalla completa vuelve a enseñar los botones táctiles.
+            if (!deviceRemoved(deviceId)) notifyPads(null);
         }
 
         @Override
@@ -227,14 +230,18 @@ final class NesInput {
         }
     }
 
-    /** Un dispositivo se ha desconectado: si era el mando de un jugador, se sueltan sus botones y guarda el puesto. */
-    static void deviceRemoved(int deviceId) {
+    /**
+     * Un dispositivo se ha desconectado: si era el mando de un jugador, se sueltan sus botones y guarda el puesto. true si
+     * lo era (y ya se ha avisado).
+     */
+    static boolean deviceRemoved(int deviceId) {
         int s = slots.removed(deviceId);
-        if (s == PadSlots.NONE) return;
+        if (s == PadSlots.NONE) return false;
         RetroPad p = s == 0 ? pad : pad2;
         if (p != null) p.releaseAll();
         L.i("Juegos: mando " + (s + 1) + " desconectado (guarda su puesto si vuelve)");
         notifyPads(Str.get(R.string.hql_games_pad_lost, s + 1));
+        return true;
     }
 
     // ------------------------------------------------------------------ indicador «Mando 1 · Mando 2»
