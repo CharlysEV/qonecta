@@ -36,6 +36,8 @@ import java.util.List;
  * - En marcha (más de 10 km/h): solo la línea de ahora y la siguiente, grandes y sin desplazarse, para no distraer.
  * Arriba, la portada, el título y anterior / pausa / siguiente. Se enciende en Ajustes › Botones del panel lateral y
  * va también junto a AA con la pantalla partida (con el aviso del ocio). El registro no lleva títulos.
+ * De las sesiones de Qonecta+ solo sigue la de la radio (RadioSession): si la emisora dice la canción, su letra sin
+ * sincronizar (no se sabe cuándo empezó a sonar).
  */
 final class KaraokeScreen implements CarScreen {
     static final long TICK_MS = 200;
@@ -67,6 +69,8 @@ final class KaraokeScreen implements CarScreen {
     private MediaSessionManager msm;
     private MediaSessionManager.OnActiveSessionsChangedListener sessions;
     private MediaController ctrl;
+    /** Lo que suena es la radio de Qonecta+: la letra, sin sincronizar (no se sabe cuándo empezó la canción). */
+    private boolean radio;
     private String trackKey = "";
     private int fetchSeq;
     private CarSensors sensors;
@@ -233,7 +237,10 @@ final class KaraokeScreen implements CarScreen {
             return;
         }
         MediaController best = null;
+        String own = host.context().getPackageName();
         for (MediaController m : list) {
+            // De Qonecta+, solo la radio: las otras (la de Android Auto en el coche, la TV) no son canciones.
+            if (own.equals(m.getPackageName()) && !RadioSession.isToken(m.getSessionToken())) continue;
             if (playing(m.getPlaybackState())) {
                 best = m;
                 break;
@@ -260,6 +267,7 @@ final class KaraokeScreen implements CarScreen {
         renderPlay();
         if (md == null) {
             trackKey = "";
+            radio = false;
             title.setText(Str.get(R.string.hql_karaoke));
             artist.setText("");
             setCover(null);
@@ -270,28 +278,36 @@ final class KaraokeScreen implements CarScreen {
         String t = text(md, MediaMetadata.METADATA_KEY_TITLE);
         String a = Lyrics.stripBadge(text(md, MediaMetadata.METADATA_KEY_ARTIST));
         if (a.isEmpty()) a = Lyrics.stripBadge(text(md, MediaMetadata.METADATA_KEY_ALBUM_ARTIST));
+        // La radio de Qonecta+: el título es lo que emite la emisora («Artista - Canción») y el artista, la emisora.
+        String station = text(md, PlaybackMetadata.KEY_STATION);
+        radio = !station.isEmpty();
+        if (radio) {
+            String[] song = RadioSession.song(t, station);
+            a = song == null ? "" : song[0];
+            t = song == null ? "" : song[1];
+        }
         // Sin artista y con «Artista - Título» (radios), se separa.
         if (a.isEmpty() && t.contains(" - ")) {
             a = t.substring(0, t.indexOf(" - ")).trim();
             t = t.substring(t.indexOf(" - ") + 3).trim();
         }
-        String album = text(md, MediaMetadata.METADATA_KEY_ALBUM);
+        String album = radio ? "" : text(md, MediaMetadata.METADATA_KEY_ALBUM);
         long dur = md.getLong(MediaMetadata.METADATA_KEY_DURATION);
         Bitmap art = md.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART);
         if (art == null) art = md.getBitmap(MediaMetadata.METADATA_KEY_ART);
         if (art == null) art = md.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON);
-        String key = a + "|" + t + "|" + Math.round(dur / 1000.0);
+        String key = station + "|" + a + "|" + t + "|" + Math.round(dur / 1000.0);
         if (key.equals(trackKey)) {
             if (art != null) setCover(art);
             return;
         }
         trackKey = key;
-        title.setText(t.isEmpty() ? Str.get(R.string.hql_karaoke) : t);
-        artist.setText(a);
+        title.setText(t.isEmpty() ? (radio ? station : Str.get(R.string.hql_karaoke)) : t);
+        artist.setText(radio && !t.isEmpty() ? (a.isEmpty() ? station : a + " · " + station) : a);
         setCover(art);
         if (t.isEmpty()) {
             lyrics = null;
-            message(Str.get(R.string.hql_karaoke_nothing));
+            message(Str.get(radio ? R.string.hql_radio_aa_no_song : R.string.hql_karaoke_nothing));
             return;
         }
         load(a, t, album, dur);
@@ -354,16 +370,34 @@ final class KaraokeScreen implements CarScreen {
     }
 
     private void show(Lyrics.Result r) {
-        lyrics = r;
-        if (!r.synced.isEmpty()) {
+        // La radio: sin sincronizar (la canción empezó en la emisora antes de que se supiera).
+        lyrics = radio ? unsynced(r) : r;
+        if (!lyrics.synced.isEmpty()) {
             buildSynced();
-        } else if (r.instrumental) {
+        } else if (lyrics.instrumental) {
             message(Str.get(R.string.hql_karaoke_instrumental));
-        } else if (!r.plain.isEmpty()) {
-            buildPlain(r.plain);
+        } else if (!lyrics.plain.isEmpty()) {
+            buildPlain(lyrics.plain);
         } else {
             message(Str.get(R.string.hql_karaoke_not_found));
         }
+    }
+
+    /** Puro: la letra solo como texto (la sincronizada, sin sus tiempos, si no hay otro). */
+    static Lyrics.Result unsynced(Lyrics.Result r) {
+        Lyrics.Result out = new Lyrics.Result();
+        out.instrumental = r.instrumental;
+        if (!r.plain.isEmpty()) {
+            out.plain = r.plain;
+            return out;
+        }
+        StringBuilder b = new StringBuilder();
+        for (Lyrics.Line l : r.synced) {
+            if (b.length() > 0) b.append('\n');
+            b.append(l.text);
+        }
+        out.plain = b.toString().trim();
+        return out;
     }
 
     /** Solo el texto (sin tiempos): entera y a mano. */

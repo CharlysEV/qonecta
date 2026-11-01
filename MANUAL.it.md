@@ -848,6 +848,21 @@ Se la radio o «La mia musica» era in riproduzione quando è finita la connessi
 esempio), riparte da sola alla connessione successiva; un brano, da dove era. Se l'avevi fermata, no. Si disattiva in
 Impostazioni › «Schermo dell'auto» › «Riprendi la radio alla connessione».
 
+### La radio in Android Auto
+
+Mentre suona la radio (o «La mia musica») di Qonecta+, **Android Auto la mostra come ciò che sta suonando**: il brano,
+se la stazione lo indica, o il nome della stazione, con il suo logo. Lo stesso compare nella notifica del telefono e,
+via Bluetooth, nel quadro strumenti dell'auto (il logo solo se l'auto mostra le copertine via Bluetooth). Tra le app
+musicali di Android Auto compare **Qonecta+**, con le tue stazioni **Preferiti** (quelle con ★) e **Recenti**: toccane
+una e parte. Qonecta+ **non avvia mai la radio da sola** alla connessione: suona ciò che scegli, e ciò che suonava
+allo spegnimento solo con «Riprendi la radio alla connessione».
+
+> [!NOTE]
+> Perché Qonecta+ compaia in Android Auto, attiva una volta **«Origini sconosciute»** nelle impostazioni sviluppatore
+> di Android Auto («Apri AA» › ⋮ › Impostazioni sviluppatore), se non l'hai già fatto: è l'unico modo in cui Android
+> Auto mostra le app installate fuori da Google Play. Senza, la radio suona lo stesso, ma Android Auto continua a
+> mostrare l'ultima app musicale (per esempio Spotify).
+
 ### «Segnalibri web» («Auto esteso»)
 
 Le scorciatoie della schermata «Web» dell'auto (di default YouTube, Google, Wikipedia e Twitch). Aggiungi i tuoi con

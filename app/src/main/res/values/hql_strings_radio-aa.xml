@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Qonecta+: la radio en Android Auto (sus carpetas) y el karaoke con la radio. Aparte de hql_strings.xml. -->
+<resources>
+    <string name="hql_radio_aa_favorites">Favorites</string>
+    <string name="hql_radio_aa_recent">Recent</string>
+    <string name="hql_radio_aa_no_song">This station doesn\'t say which song is playing.</string>
+</resources>

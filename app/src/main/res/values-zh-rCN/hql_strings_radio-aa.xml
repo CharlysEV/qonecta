@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_radio_aa_favorites">收藏</string>
+    <string name="hql_radio_aa_recent">最近播放</string>
+    <string name="hql_radio_aa_no_song">这个电台没有提供正在播放的歌曲。</string>
+</resources>

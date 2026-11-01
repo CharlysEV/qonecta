@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_radio_aa_favorites">Preferiti</string>
+    <string name="hql_radio_aa_recent">Recenti</string>
+    <string name="hql_radio_aa_no_song">Questa stazione non dice quale brano sta suonando.</string>
+</resources>

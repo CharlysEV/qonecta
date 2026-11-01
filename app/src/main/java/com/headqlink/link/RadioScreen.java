@@ -123,7 +123,7 @@ final class RadioScreen implements CarScreen {
         prev.setOnClickListener(v -> RadioPlayer.step(c, -1));
         next.setOnClickListener(v -> RadioPlayer.step(c, 1));
         npToggle.setOnClickListener(v -> RadioPlayer.toggle());
-        stop.setOnClickListener(v -> RadioPlayer.stop());
+        stop.setOnClickListener(v -> RadioPlayer.stopByUser());
         FrameLayout wrap = new FrameLayout(c);
         wrap.setPadding(24, 18, 24, 0);
         wrap.addView(card);
@@ -511,6 +511,7 @@ final class RadioScreen implements CarScreen {
                     if (st.local) return true; // las canciones no van a favoritos de la radio
                     boolean in = Favorites.toggle(favs, Favorites.item(st.name, st.url, st.logo, st.group, null));
                     Favorites.save(new Config(c), Favorites.RADIO, favs);
+                    RadioBrowserService.changed(RadioLibrary.FAVS);
                     L.i("radio: " + (in ? "favorita añadida" : "favorita quitada") + " (" + favs.length() + ")");
                     if (currentSource < 0) load(-1);
                     else if (adapter != null) adapter.notifyDataSetChanged();

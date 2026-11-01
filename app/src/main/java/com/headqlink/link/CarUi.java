@@ -467,6 +467,11 @@ final class CarUi {
         });
     }
 
+    /** La interfaz propia está en marcha (la radio puesta desde Android Auto la para ella al cerrarse, no él). */
+    static boolean running() {
+        return current != null;
+    }
+
     /** Fotogramas por segundo de la sesión (los del vídeo al coche: 30 o 60 según la fluidez); 30 si no hay sesión. */
     static int frameRate() {
         CarUi ui = current;
@@ -2703,7 +2708,7 @@ final class CarUi {
         radioLogo.setOnClickListener(v -> open("radio"));
         m.addView(radioLogo, new LinearLayout.LayoutParams(0, CarStyle.touch(56), 1f));
         m.addView(miniButton(c, R.drawable.hql_ic_next, () -> RadioPlayer.step(ctx, 1)));
-        m.addView(miniButton(c, R.drawable.hql_ic_stop, RadioPlayer::stop));
+        m.addView(miniButton(c, R.drawable.hql_ic_stop, RadioPlayer::stopByUser));
         // 72: los botones de 56 y el relleno de 8 arriba y abajo (con la interfaz reducida, los botones más grandes).
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, CarStyle.touch(56) + 16);
         lp.bottomMargin = 6;

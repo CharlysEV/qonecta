@@ -19,8 +19,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Radio por internet y tu música del móvil (MusicLibrary): un único reproductor que sigue sonando al salir de la
  * pantalla Radio (como la música de AA) y se para al cerrar la interfaz propia. Pide el foco de audio, así que pausa la
- * música de AA y se pausa si AA (o una llamada) lo toma. Una canción, al acabar, da paso a la siguiente. Solo hilo
- * principal.
+ * música de AA y se pausa si AA (o una llamada) lo toma. Una canción, al acabar, da paso a la siguiente. Lo que suena sale
+ * en Android Auto, en el coche por Bluetooth y en la notificación del móvil (RadioSession), y desde ahí se controla.
+ * Solo hilo principal.
  */
 final class RadioPlayer {
     static final class Station {
@@ -44,6 +45,9 @@ final class RadioPlayer {
     static String nowTitle = "";
     static String error = "";
     private static final List<Runnable> listeners = new CopyOnWriteArrayList<>();
+    /** Lo último que se paró a mano en este viaje (stopByUser): un «▶» de los controles lo vuelve a poner. */
+    private static List<Station> lastList;
+    private static int lastIndex = -1;
 
     private RadioPlayer() {
     }
@@ -57,6 +61,7 @@ final class RadioPlayer {
     }
 
     private static void changed() {
+        RadioSession.notice(current(), isPlaying());
         for (Runnable r : listeners) r.run();
     }
 
@@ -104,6 +109,7 @@ final class RadioPlayer {
                     error = Str.get(R.string.hql_cannot_play, e.getErrorCodeName());
                     Station st = current();
                     L.w("radio: " + (st != null ? st.name : "?") + ": " + e);
+                    if (metadata != null) metadata.setError(error);
                     changed();
                 }
 
@@ -123,14 +129,18 @@ final class RadioPlayer {
                     changed();
                 }
             });
-            metadata = new PlaybackMetadata(app, player, "Radio", RadioPlayer::resume,
-                    RadioPlayer::stop, () -> step(app, -1), () -> step(app, 1));
+            // La sesión de la radio (la de Android Auto y el coche): sus órdenes van a playFromControls y compañía.
+            metadata = new PlaybackMetadata(app, player, RadioSession.playerUp(app));
         }
         // Con la pantalla del móvil apagada sigue sonando: CPU (y, la radio, la Wi-Fi) despiertos mientras suena.
         player.setWakeMode(s.local ? C.WAKE_MODE_LOCAL : C.WAKE_MODE_NETWORK);
         nowTitle = s.local ? s.group : "";
         error = "";
+        // Ya suena algo: lo parado antes no vuelve con «▶».
+        lastList = null;
+        metadata.setError("");
         publishMetadata();
+        RadioLibrary.addRecent(app, s);
         player.setMediaItem(new MediaItem.Builder().setUri(s.url)
                 .setMediaMetadata(new MediaMetadata.Builder().setStation(s.name).build()).build());
         player.prepare();
@@ -172,10 +182,16 @@ final class RadioPlayer {
         player.play();
     }
 
+    /**
+     * A los controles (Android Auto, Bluetooth, notificación): una emisora, la canción que emite y debajo la emisora (sin
+     * canción, la emisora y «Radio»), en directo; una canción del móvil, su título, el artista, el álbum y la duración.
+     */
     private static void publishMetadata() {
-        Station station = current();
-        if (metadata != null && station != null) metadata.setChannel(station.name,
-                nowTitle.isEmpty() ? Str.get(station.local ? R.string.hql_music_mine : R.string.hql_radio) : nowTitle, station.logo);
+        Station s = current();
+        if (metadata == null || s == null) return;
+        String[] t = RadioSession.texts(s.local, s.name, nowTitle, Str.get(R.string.hql_radio), Str.get(R.string.hql_music_mine));
+        if (s.local) metadata.setNowPlaying(t[0], t[1], s.album, s.logo, "", s.durMs, false);
+        else metadata.setNowPlaying(t[0], t[1], s.name, s.logo, s.name, 0, true);
     }
 
     static void step(Context ctx, int delta) {
@@ -184,7 +200,22 @@ final class RadioPlayer {
         start(ctx.getApplicationContext());
     }
 
+    /** Para del todo y olvida (fin de la interfaz propia o de Android Auto): después, un «▶» ya no la vuelve a poner. */
     static void stop() {
+        lastList = null;
+        halt();
+    }
+
+    /** ⏹ del usuario (pantalla Radio, panel, Android Auto, coche): para, y un «▶» la vuelve a poner en este viaje. */
+    static void stopByUser() {
+        if (current() != null) {
+            lastList = new ArrayList<>(list);
+            lastIndex = index;
+        }
+        halt();
+    }
+
+    private static void halt() {
         if (player != null) {
             metadata.close();
             metadata = null;
@@ -196,7 +227,48 @@ final class RadioPlayer {
         index = -1;
         nowTitle = "";
         error = "";
+        // Parada (con lo parado a mano, si lo hay) o liberada si Android Auto no la tiene.
+        RadioSession.playerDown();
         changed();
+    }
+
+    /** Lo parado a mano en este viaje que un «▶» vuelve a poner, o null. */
+    static Station lastStopped() {
+        return lastList != null && lastIndex >= 0 && lastIndex < lastList.size() ? lastList.get(lastIndex) : null;
+    }
+
+    // ---------------------------------------------------------------- órdenes de Android Auto, el coche y la notificación
+
+    /**
+     * «▶»: con emisora, sigue (si ya suena, nada); sin ella, vuelve lo que se paró a mano en este viaje; si tampoco hay,
+     * nada. Android Auto (o el coche) lo manda a veces solo al conectar: la radio no arranca sola.
+     */
+    static void playFromControls(Context ctx) {
+        if (current() != null) {
+            if (player != null && player.getPlayWhenReady() && player.getPlaybackState() != Player.STATE_IDLE
+                    && player.getPlaybackState() != Player.STATE_ENDED) return;
+            resume();
+            changed();
+            return;
+        }
+        if (lastStopped() != null) {
+            L.i("radio: ▶ desde los controles: vuelve la emisora parada");
+            play(ctx, lastList, lastIndex);
+            return;
+        }
+        L.i("radio: ▶ desde los controles sin emisora elegida (Android Auto o el coche al conectar): no arranca sola");
+    }
+
+    static void pauseFromControls() {
+        if (player == null) return;
+        player.pause();
+        changed();
+    }
+
+    /** ⏮ ⏭: la anterior o la siguiente de la lista; sin nada puesto, nada (no arranca sola). */
+    static void skipFromControls(Context ctx, int delta) {
+        if (current() == null) return;
+        step(ctx, delta);
     }
 
     // ---------------------------------------------------------------- seguir en la próxima sesión

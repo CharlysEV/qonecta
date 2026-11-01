@@ -795,5 +795,24 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/hql_touch_service" />
         </service>
+
+        <!--
+            Qonecta+: la radio como fuente multimedia de Android Auto (RadioBrowserService). Lo que suena (emisora, canción
+            y logo) sale en la pantalla de Android Auto, y en su lista de apps de música, «Qonecta+» con las favoritas y las
+            recientes. Instalada fuera de Google Play, Android Auto solo la enseña con «Fuentes desconocidas» activado en
+            sus ajustes de desarrollador. Conectarse no pone nada a sonar (RadioSession).
+        -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+
+        <service
+            android:name="com.headqlink.link.RadioBrowserService"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
     </application>
 </manifest>

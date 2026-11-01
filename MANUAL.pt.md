@@ -847,6 +847,21 @@ Se a rádio ou «A minha música» estava a tocar quando a ligação ao carro te
 continua sozinha na ligação seguinte; uma música, onde ia. Se a tinha parado, não. Desliga-se em Definições › «Ecrã
 do carro» › «Continuar a rádio ao ligar».
 
+### A rádio no Android Auto
+
+Enquanto toca a rádio (ou «A minha música») do Qonecta+, **o Android Auto mostra-a como o que está a tocar**: a
+música, se a estação a indicar, ou o nome da estação, com o seu logótipo. O mesmo aparece na notificação do telemóvel
+e, por Bluetooth, no painel de instrumentos do carro (o logótipo, só se o carro mostrar capas por Bluetooth). Entre as
+aplicações de música do Android Auto aparece o **Qonecta+**, com as suas estações **Favoritos** (as de ★) e
+**Recentes**: toque numa e começa a tocar. O Qonecta+ **nunca liga a rádio sozinho** ao ligar-se ao carro: toca o que
+escolher, e o que tocava ao desligar o carro só com «Continuar a rádio ao ligar».
+
+> [!NOTE]
+> Para o Qonecta+ aparecer no Android Auto, ative uma vez **«Fontes desconhecidas»** nas definições de programador do
+> Android Auto («Abrir AA» › ⋮ › definições de programador), se ainda não o fez: é a única forma de o Android Auto
+> mostrar aplicações instaladas fora do Google Play. Sem isso a rádio toca na mesma, mas o Android Auto continua a
+> mostrar a última aplicação de música (por exemplo, o Spotify).
+
 ### «Marcadores web» («Auto estendido»)
 
 Os atalhos do ecrã «Web» do carro (de origem, YouTube, Google, Wikipedia e Twitch). Adicione os seus com nome e

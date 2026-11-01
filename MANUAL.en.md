@@ -821,6 +821,21 @@ If the radio or "My music" was playing when the connection with the car ended (w
 it carries on by itself when you connect again; a song, from where it was. Not if you had stopped it. Turn it off in
 Settings › "Car screen" › "Resume the radio when connecting".
 
+### The radio in Android Auto
+
+While Qonecta+'s radio (or "My music") is playing, **Android Auto shows it as what's playing**: the song, if the
+station sends it, or the station's name, with its logo. The same shows in the phone's notification and, over
+Bluetooth, on the car's instrument cluster (the logo only if the car shows cover art over Bluetooth). Among Android
+Auto's music apps, **Qonecta+** appears with your **Favorites** (the ★ ones) and **Recent** stations: tap one and it
+plays. Qonecta+ **never starts the radio by itself** when connecting: what you choose plays, and what was playing when
+you switched the car off only if "Resume the radio when connecting" is on.
+
+> [!NOTE]
+> For Qonecta+ to show up in Android Auto, turn on **"Unknown sources"** once in Android Auto's developer settings
+> ("Open AA" › ⋮ › Developer settings), if you haven't already: it's the only way Android Auto shows apps installed
+> outside Google Play. Without it the radio still plays, but Android Auto keeps showing the last music app (Spotify,
+> for example).
+
 ### "Web bookmarks" ("Auto extended")
 
 The shortcuts on the car's "Web" screen (YouTube, Google, Wikipedia and Twitch by default). Add your own with a

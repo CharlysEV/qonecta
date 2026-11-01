@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Qonecta+: Android Auto ve la radio como app de música (RadioBrowserService). -->
+<automotiveApp>
+    <uses name="media" />
+</automotiveApp>
