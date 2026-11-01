@@ -197,13 +197,29 @@ final class VideoPlayer {
      * Un reproductor con FFmpeg de reserva para el audio (vídeos e IPTV): primero los decodificadores del móvil y, si no
      * saben (AC-3, E-AC-3/DD+, DTS, TrueHD en muchos), FFmpeg. Antes, esos vídeos se veían sin sonido.
      */
-    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
     static ExoPlayer newPlayer(Context c) {
+        return newPlayer(c, null, null);
+    }
+
+    /**
+     * Igual; con authHost y authorization (una lista de TV con HTTP Basic, M3uSource), lo que se pida a ese servidor (el
+     * vídeo, sus trozos HLS) lleva también la cabecera; a otros servidores, no.
+     */
+    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+    static ExoPlayer newPlayer(Context c, String authHost, String authorization) {
         Context app = c.getApplicationContext();
         logFfmpeg();
         androidx.media3.exoplayer.DefaultRenderersFactory r = new androidx.media3.exoplayer.DefaultRenderersFactory(app)
                 .setExtensionRendererMode(androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON);
-        return new ExoPlayer.Builder(app, r).build();
+        ExoPlayer.Builder b = new ExoPlayer.Builder(app, r);
+        if (authHost != null && !authHost.isEmpty() && authorization != null) {
+            java.util.Map<String, String> auth = java.util.Collections.singletonMap("Authorization", authorization);
+            androidx.media3.datasource.DataSource.Factory up = new androidx.media3.datasource.DefaultDataSource.Factory(app);
+            androidx.media3.datasource.ResolvingDataSource.Factory withAuth = new androidx.media3.datasource.ResolvingDataSource.Factory(
+                    up, spec -> authHost.equalsIgnoreCase(spec.uri.getHost()) ? spec.withAdditionalHeaders(auth) : spec);
+            b.setMediaSourceFactory(new androidx.media3.exoplayer.source.DefaultMediaSourceFactory(withAuth));
+        }
+        return b.build();
     }
 
     private static boolean ffmpegLogged;

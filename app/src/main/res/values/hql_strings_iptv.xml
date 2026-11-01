@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- headqlink: TV and radio lists (M3U): web pages instead of lists, known pages converted, optional user name and password. Kept apart from hql_strings.xml. -->
+<resources>
+    <string name="hql_list_web_page">This is a web page, not an M3U list. Use the direct link to the list (it ends in .m3u or .m3u8).</string>
+    <string name="hql_list_not_m3u">This is not an M3U list (it has no #EXTM3U or #EXTINF lines). Use the direct link to the list (it ends in .m3u or .m3u8).</string>
+    <string name="hql_list_converted">List converted: %1$s</string>
+    <string name="hql_list_needs_login">The server asks for a user name and password: add the list again on the phone with them.</string>
+    <string name="hql_list_login_rejected">The server did not accept the user name or password: check them and add the list again on the phone.</string>
+    <string name="hql_list_user_hint">User name (optional)</string>
+    <string name="hql_list_pass_hint">Password (optional)</string>
+    <string name="hql_list_login_help">User name and password only if your provider gives you them (Xtream Codes server or protected list). They are stored encrypted on this phone and are not included in the settings backup.</string>
+    <string name="hql_list_with_login">with user name</string>
+    <string name="hql_list_login_save_failed">Could not save the user name and password on this phone.</string>
+    <string name="hql_list_not_added">The list was not added.</string>
+</resources>

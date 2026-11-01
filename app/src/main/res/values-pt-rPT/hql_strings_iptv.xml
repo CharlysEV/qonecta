@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_list_web_page">Isto é uma página web, não uma lista M3U. Use a ligação direta para a lista (termina em .m3u ou .m3u8).</string>
+    <string name="hql_list_not_m3u">Isto não é uma lista M3U (não tem linhas #EXTM3U nem #EXTINF). Use a ligação direta para a lista (termina em .m3u ou .m3u8).</string>
+    <string name="hql_list_converted">Lista convertida: %1$s</string>
+    <string name="hql_list_needs_login">O servidor pede nome de utilizador e palavra-passe: volte a adicionar a lista no telemóvel com eles.</string>
+    <string name="hql_list_login_rejected">O servidor não aceitou o nome de utilizador ou a palavra-passe: verifique-os e volte a adicionar a lista no telemóvel.</string>
+    <string name="hql_list_user_hint">Nome de utilizador (opcional)</string>
+    <string name="hql_list_pass_hint">Palavra-passe (opcional)</string>
+    <string name="hql_list_login_help">Nome de utilizador e palavra-passe só se o seu fornecedor os der (servidor Xtream Codes ou lista protegida). São guardados cifrados neste telemóvel e não entram na cópia das definições.</string>
+    <string name="hql_list_with_login">com utilizador</string>
+    <string name="hql_list_login_save_failed">Não foi possível guardar o nome de utilizador e a palavra-passe neste telemóvel.</string>
+    <string name="hql_list_not_added">A lista não foi adicionada.</string>
+</resources>

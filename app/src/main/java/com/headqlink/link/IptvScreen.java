@@ -4,7 +4,6 @@ import com.andrerinas.openheadunit.R;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.net.Uri;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +25,6 @@ import com.bumptech.glide.Glide;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -58,6 +53,12 @@ final class IptvScreen implements CarScreen {
         final List<String> urls = new ArrayList<>();
         /** Su id en la guía de programación (tvg-id en la M3U, epg_id en la JSON); null si no lo trae. */
         String epg;
+        /**
+         * El usuario de su lista y su id (M3uSource.Logins): en una lista Xtream va dentro de la URL de cada canal, y en
+         * favoritos se guarda sin él (M3uSource.hideLogin). Vacíos si la lista no pide.
+         */
+        M3uSource.Login login = M3uSource.Login.NONE;
+        String loginId = "";
     }
 
     /** Delante de una fuente que no es un vídeo directo (YouTube, Twitch, la web de la cadena). */
@@ -88,6 +89,11 @@ final class IptvScreen implements CarScreen {
     private int loadSeq;
     /** Guía de programación de la lista que se ve (llega después que los canales); null si no hay. */
     private Epg epg;
+    /** «Lista convertida: …» encima de los canales, si al cargarla se cambió su URL (página conocida); null si no. */
+    private String convertedNotice;
+    /** HTTP Basic de la lista que se ve: su servidor y la cabecera, que llevan también sus canales de ese servidor. */
+    private String basicHost;
+    private String basicHeader;
     private final java.text.DateFormat timeFmt = java.text.DateFormat.getTimeInstance(java.text.DateFormat.SHORT);
     private static final long EPG_TICK_MS = 60_000;
 
@@ -104,14 +110,22 @@ final class IptvScreen implements CarScreen {
         return load(c, cfg.m3uSelected(Config.IPTV));
     }
 
-    /** Lee la lista i (en segundo plano) y la pone; devuelve la vista de «cargando». */
+    /**
+     * Lee la lista i (en segundo plano) y la pone; devuelve la vista de «cargando». Una página web o algo que no es una
+     * lista (foro #299), un mensaje claro en vez de canales basura; una página conocida, su lista de verdad (M3uSource),
+     * que se queda guardada.
+     */
     private View load(Context c, int i) {
         sel = i;
         int seq = ++loadSeq;
         String src = lists[i][1];
+        String loginId = Config.m3uLoginId(lists[i]);
         all.clear();
         shown.clear();
         epg = null;
+        convertedNotice = null;
+        basicHost = null;
+        basicHeader = null;
         FrameLayout loading = new FrameLayout(c);
         loading.addView(CarStyle.message(c, Str.get(R.string.hql_tv_loading)), CarStyle.match());
         View first = withLists(c, loading);
@@ -120,21 +134,41 @@ final class IptvScreen implements CarScreen {
             List<Channel> list;
             String error = null;
             String[] epgUrl = new String[1];
+            M3uSource.Loaded got = null;
             try {
-                list = read(open(c, src), epgUrl);
+                got = M3uSource.load(c, src, loginId);
+                list = readText(got.text, epgUrl);
+                for (Channel ch : list) {
+                    ch.login = got.login;
+                    ch.loginId = loginId;
+                }
             } catch (Exception e) {
                 list = new ArrayList<>();
-                error = e.getMessage();
-                L.w("IPTV: no se pudo leer la lista: " + e);
+                M3uSource.ListError le = M3uSource.ListError.of(e, got != null ? got.login : null);
+                error = le.text(R.string.hql_tv_read_failed);
+                L.w("IPTV: no se pudo leer la lista: " + le);
             }
             List<Channel> fl = list;
             String fe = error;
+            M3uSource.Loaded fg = got;
             h.post(() -> {
                 if (destroyed || seq != loadSeq) return;
                 if (fl.isEmpty()) {
-                    host.setContent(withLists(c, CarStyle.message(c, fe != null ? Str.get(R.string.hql_tv_read_failed, fe) : Str.get(R.string.hql_tv_empty))));
+                    host.setContent(withLists(c, CarStyle.message(c, fe != null ? fe : Str.get(R.string.hql_tv_empty))));
                     return;
                 }
+                if (fg.converted != null) {
+                    // Página conocida (o país sin lista): se guarda la buena, que también se ve ya en el móvil, y se avisa.
+                    Config cfg = new Config(c);
+                    cfg.replaceM3uSource(Config.IPTV, src, fg.converted);
+                    lists = cfg.m3uLists(Config.IPTV);
+                    convertedNotice = Str.get(R.string.hql_list_converted, fg.converted);
+                    L.i("IPTV: la lista " + (i + 1) + " era una página conocida: cambiada por su lista");
+                }
+                basicHost = fg.authHost;
+                basicHeader = fg.authHeader;
+                // Favoritos de antes de esta lista con el usuario dentro de la URL: ya sin él.
+                if (M3uSource.hideInFavorites(favs, fg.login, loginId) > 0) Favorites.save(new Config(c), Favorites.TV, favs);
                 all.addAll(fl);
                 listView = withLists(c, buildList(c));
                 host.setContent(listView);
@@ -205,6 +239,13 @@ final class IptvScreen implements CarScreen {
     private View buildList(Context c) {
         LinearLayout col = new LinearLayout(c);
         col.setOrientation(LinearLayout.VERTICAL);
+        if (convertedNotice != null) {
+            TextView notice = CarStyle.text(c, convertedNotice, 20, CarStyle.TEXT_DIM);
+            notice.setSingleLine(true);
+            notice.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
+            notice.setPadding(24, 8, 24, 4);
+            col.addView(notice);
+        }
 
         Set<String> groups = new LinkedHashSet<>();
         for (Channel ch : all) if (ch.group != null && !ch.group.isEmpty()) groups.add(ch.group);
@@ -271,7 +312,7 @@ final class IptvScreen implements CarScreen {
                 Channel ch = shown.get(pos);
                 LinearLayout item = (LinearLayout) vh.itemView;
                 ImageView logo = (ImageView) item.getChildAt(0);
-                boolean fav = Favorites.contains(favs, ch.url);
+                boolean fav = isFavorite(ch);
                 LinearLayout texts = (LinearLayout) item.getChildAt(1);
                 TextView name = (TextView) texts.getChildAt(0);
                 TextView now = (TextView) texts.getChildAt(1);
@@ -328,6 +369,8 @@ final class IptvScreen implements CarScreen {
         currentGroup = group;
         shown.clear();
         if (FAV_GROUP.equals(group)) {
+            M3uSource.Logins logins = null;
+            java.util.Map<String, M3uSource.Login> known = new java.util.HashMap<>();
             for (int i = 0; i < favs.length(); i++) {
                 JSONObject o = favs.optJSONObject(i);
                 if (o == null) continue;
@@ -335,7 +378,15 @@ final class IptvScreen implements CarScreen {
                 ch.name = o.optString("name");
                 ch.logo = o.optString("logo");
                 ch.group = o.optString("group");
-                ch.urls.addAll(Favorites.urls(o));
+                // De una lista con usuario: guardado sin él (marcas); aquí, con el de su lista.
+                ch.loginId = o.optString("login", "");
+                if (!ch.loginId.isEmpty()) {
+                    if (logins == null) logins = new M3uSource.Logins(host.context());
+                    M3uSource.Login l = known.get(ch.loginId);
+                    if (l == null) known.put(ch.loginId, l = logins.get(ch.loginId));
+                    ch.login = l;
+                }
+                for (String u : Favorites.urls(o)) ch.urls.add(ch.loginId.isEmpty() ? u : M3uSource.showLogin(u, ch.login));
                 ch.url = ch.urls.get(0);
                 ch.epg = o.optString("epg", null);
                 shown.add(ch);
@@ -346,15 +397,33 @@ final class IptvScreen implements CarScreen {
         if (adapter != null) adapter.notifyDataSetChanged();
     }
 
+    /** En favoritos: guardado sin el usuario de su lista (o, de antes, con él). */
+    private boolean isFavorite(Channel ch) {
+        return Favorites.contains(favs, M3uSource.hideLogin(ch.url, ch.login)) || Favorites.contains(favs, ch.url);
+    }
+
     @SuppressWarnings("NotifyDataSetChanged")
     private void toggleFavorite(Context c, Channel ch) {
-        JSONObject item = Favorites.item(ch.name, ch.url, ch.logo, ch.group, ch.urls);
+        // Con usuario (Xtream: va en la URL de cada canal), se guarda sin él y con el id de su lista.
+        List<String> urls = new ArrayList<>();
+        for (String u : ch.urls) urls.add(M3uSource.hideLogin(u, ch.login));
+        String key = M3uSource.hideLogin(ch.url, ch.login);
+        JSONObject item = Favorites.item(ch.name, key, ch.logo, ch.group, urls);
         try {
             if (ch.epg != null) item.put("epg", ch.epg);
+            if (!ch.loginId.isEmpty() && !ch.login.isEmpty()) item.put("login", ch.loginId);
         } catch (org.json.JSONException ignored) {
             // No pasa con cadenas.
         }
-        boolean in = Favorites.toggle(favs, item);
+        boolean in;
+        int old = key.equals(ch.url) ? -1 : Favorites.indexOf(favs, ch.url);
+        if (old >= 0) {
+            // Uno de antes, con el usuario dentro: quitarlo.
+            favs.remove(old);
+            in = false;
+        } else {
+            in = Favorites.toggle(favs, item);
+        }
         Favorites.save(new Config(c), Favorites.TV, favs);
         L.i("TV: " + (in ? "favorito añadido" : "favorito quitado") + " (" + favs.length() + ")");
         if (FAV_GROUP.equals(currentGroup)) filter(currentGroup);
@@ -377,8 +446,9 @@ final class IptvScreen implements CarScreen {
         }
         FrameLayout f = new FrameLayout(c);
         f.setBackgroundColor(Color.BLACK);
-        // Con FFmpeg de reserva para el audio: hay canales con AC-3 o E-AC-3 que el móvil no sabe decodificar.
-        player = VideoPlayer.newPlayer(c);
+        // Con FFmpeg de reserva para el audio: hay canales con AC-3 o E-AC-3 que el móvil no sabe decodificar. Con una
+        // lista con HTTP Basic, sus vídeos de ese mismo servidor llevan también el usuario.
+        player = VideoPlayer.newPlayer(c, basicHost, basicHeader);
         // A pantalla completa, el vídeo al coche va al ritmo del canal (25 o 50 fps en Europa).
         VideoPlayer.followMovie(player);
         player.setAudioAttributes(new androidx.media3.common.AudioAttributes.Builder()
@@ -613,18 +683,9 @@ final class IptvScreen implements CarScreen {
         }
     }
 
+    /** La lista src sin usuario (archivo del móvil o URL), entera (M3uSource.download: redirecciones, como mucho 24 MB). */
     static InputStream open(Context c, String src) throws Exception {
-        if (src.startsWith("content://") || src.startsWith("file://")) {
-            InputStream in = c.getContentResolver().openInputStream(Uri.parse(src));
-            if (in == null) throw new IllegalStateException("archivo no disponible");
-            return in;
-        }
-        HttpURLConnection con = (HttpURLConnection) new URL(src).openConnection();
-        con.setConnectTimeout(15_000);
-        con.setReadTimeout(30_000);
-        con.setInstanceFollowRedirects(true);
-        if (con.getResponseCode() >= 400) throw new IllegalStateException("HTTP " + con.getResponseCode());
-        return con.getInputStream();
+        return new java.io.ByteArrayInputStream(M3uSource.download(c, src, M3uSource.Login.NONE, M3uSource.MAX_BYTES).body);
     }
 
     /** La lista leída: M3U, o la JSON de TDTChannels (empieza por «{»), con los canales repetidos juntos (merge). */
@@ -632,16 +693,24 @@ final class IptvScreen implements CarScreen {
         return read(in, null);
     }
 
-    /** Igual, y en epgUrl[0] (si no es null) la URL de su guía de programación, si la trae. */
+    /**
+     * Igual, y en epgUrl[0] (si no es null) la URL de su guía de programación, si la trae. Lo bajado, comprobado
+     * (M3uSource.text: gzip, BOM…): una página web o algo que no es una lista lanza M3uSource.ListError.
+     */
     static List<Channel> read(InputStream in, String[] epgUrl) throws Exception {
         byte[] b;
         try (InputStream i = in) {
             b = Http.readAll(i);
         }
-        String t = new String(b, StandardCharsets.UTF_8).trim();
+        return readText(M3uSource.text(b, null, M3uSource.Login.NONE), epgUrl);
+    }
+
+    /** Puro: los canales de una lista ya comprobada (M3uSource.text), como read. */
+    static List<Channel> readText(String text, String[] epgUrl) throws Exception {
+        String t = text.trim();
         if (t.startsWith("\uFEFF")) t = t.substring(1).trim();
         boolean json = t.startsWith("{");
-        List<Channel> out = json ? parseTdtJson(t) : parse(new java.io.ByteArrayInputStream(b));
+        List<Channel> out = json ? parseTdtJson(t) : parse(t);
         if (epgUrl != null) epgUrl[0] = json ? jsonEpgUrl(t) : m3uEpgUrl(t);
         return merge(out);
     }
@@ -751,16 +820,25 @@ final class IptvScreen implements CarScreen {
         return new ArrayList<>(by.values());
     }
 
-    /** M3U extendido: #EXTINF:-1 tvg-logo="…" group-title="…",Nombre y en la línea siguiente la URL. */
+    /** M3U extendido de un flujo (gzip, BOM o Latin-1: M3uSource.decode), como parse(String). */
     static List<Channel> parse(InputStream in) throws Exception {
+        try (InputStream i = in) {
+            return parse(M3uSource.decode(Http.readAll(i)));
+        }
+    }
+
+    /** M3U extendido: #EXTINF:-1 tvg-logo="…" group-title="…",Nombre y en la línea siguiente la URL. */
+    static List<Channel> parse(String text) throws java.io.IOException {
         List<Channel> out = new ArrayList<>();
-        try (BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+        try (BufferedReader r = new BufferedReader(new java.io.StringReader(text))) {
             Channel pending = null;
             String line;
             while ((line = r.readLine()) != null && out.size() < 20_000) {
                 line = line.trim();
+                // Un BOM que quedara delante de #EXTM3U: si no, esa línea salía como un canal.
+                if (line.startsWith("\uFEFF")) line = line.substring(1).trim();
                 if (line.isEmpty()) continue;
-                if (line.startsWith("#EXTINF")) {
+                if (line.regionMatches(true, 0, "#EXTINF", 0, 7)) {
                     pending = new Channel();
                     int comma = line.lastIndexOf(',');
                     pending.name = comma >= 0 ? line.substring(comma + 1).trim() : Str.get(R.string.hql_channel);

@@ -441,7 +441,8 @@ final class Config {
     }
 
     /**
-     * Listas M3U de TV (IPTV) y de radio (RADIO): varias, cada una {nombre, URL http(s) o content:// de un archivo}, y la
+     * Listas M3U de TV (IPTV) y de radio (RADIO): varias, cada una {nombre, URL http(s) o content:// de un archivo, id de
+     * su usuario (M3uSource.Logins: el usuario y la contraseña van cifrados aparte; "" si la lista no pide)}, y la
      * elegida, que es la que se ve en el coche. La lista única de antes («iptv_source», «radio_source») entra como la primera.
      */
     static final String IPTV = "iptv";
@@ -452,7 +453,44 @@ final class Config {
     }
 
     void setM3uLists(String kind, String[][] lists) {
-        sp.edit().putString(kind + "_lists", webShortcutsJson(lists)).remove(kind + "_source").apply();
+        sp.edit().putString(kind + "_lists", m3uListsJson(lists)).remove(kind + "_source").apply();
+    }
+
+    /** Puro: las listas → JSON ([["Nombre","url"] o, con usuario, ["Nombre","url","id"], …]). */
+    static String m3uListsJson(String[][] lists) {
+        org.json.JSONArray a = new org.json.JSONArray();
+        for (String[] e : lists) {
+            org.json.JSONArray x = new org.json.JSONArray().put(e[0]).put(e[1]);
+            String id = m3uLoginId(e);
+            if (!id.isEmpty()) x.put(id);
+            a.put(x);
+        }
+        return a.toString();
+    }
+
+    /** El id del usuario de una lista (M3uSource.Logins), o "" si no tiene. */
+    static String m3uLoginId(String[] list) {
+        return list != null && list.length > 2 && list[2] != null ? list[2] : "";
+    }
+
+    /** Cambia la URL de una lista (una página conocida, por su lista de verdad); el nombre, si era el de la URL, también. */
+    void replaceM3uSource(String kind, String oldSrc, String newSrc) {
+        setM3uLists(kind, withM3uSource(m3uLists(kind), oldSrc, newSrc));
+    }
+
+    /** Puro: las listas con oldSrc cambiada por newSrc (y su nombre, si era el automático: m3uName); el usuario, igual. */
+    static String[][] withM3uSource(String[][] lists, String oldSrc, String newSrc) {
+        String[][] out = new String[lists.length][];
+        for (int i = 0; i < lists.length; i++) {
+            String[] e = lists[i];
+            if (!e[1].equals(oldSrc)) {
+                out[i] = e;
+                continue;
+            }
+            String name = e[0].equals(m3uName(oldSrc)) ? m3uName(newSrc) : e[0];
+            out[i] = new String[]{name, newSrc, m3uLoginId(e)};
+        }
+        return out;
     }
 
     int m3uSelected(String kind) {
@@ -480,14 +518,14 @@ final class Config {
     }
 
     /**
-     * Puro: el JSON guardado ([["Nombre","url"],…]) → listas; sin guardar, la lista única de antes si la había; roto,
-     * ninguna. Sin URL, fuera; sin nombre, el de la URL o el archivo (m3uName).
+     * Puro: el JSON guardado ([["Nombre","url"(,"id del usuario")],…]) → listas {nombre, URL, id o ""}; sin guardar, la
+     * lista única de antes si la había; roto, ninguna. Sin URL, fuera; sin nombre, el de la URL o el archivo (m3uName).
      */
     static String[][] m3uListsFrom(String json, String legacy) {
         java.util.List<String[]> out = new java.util.ArrayList<>();
         if (json == null) {
             String src = legacy == null ? "" : legacy.trim();
-            if (!src.isEmpty()) out.add(new String[]{m3uName(src), src});
+            if (!src.isEmpty()) out.add(new String[]{m3uName(src), src, ""});
             return out.toArray(new String[0][]);
         }
         try {
@@ -498,7 +536,7 @@ final class Config {
                 String name = e.optString(0).trim();
                 String src = e.optString(1).trim();
                 if (src.isEmpty()) continue;
-                out.add(new String[]{name.isEmpty() ? m3uName(src) : name, src});
+                out.add(new String[]{name.isEmpty() ? m3uName(src) : name, src, e.optString(2, "").trim()});
             }
         } catch (org.json.JSONException ignored) {
             // Roto: ninguna (se vuelven a añadir).
@@ -506,11 +544,12 @@ final class Config {
         return out.toArray(new String[0][]);
     }
 
-    /** Puro: nombre por defecto de una lista: el servidor de la URL, o el nombre del archivo sin «.m3u». */
+    /** Puro: nombre por defecto de una lista: el servidor de la URL (sin «usuario:clave@»), o el archivo sin «.m3u». */
     static String m3uName(String src) {
         String s = src.trim();
         if (s.startsWith("http://") || s.startsWith("https://")) {
-            return s.replaceFirst("^https?://(www\\.)?", "").replaceFirst("[/?#:].*$", "");
+            return s.replaceFirst("^https?://", "").replaceFirst("^[^/?#@]*@", "").replaceFirst("^www\\.", "")
+                    .replaceFirst("[/?#:].*$", "");
         }
         String last = s.substring(s.lastIndexOf('/') + 1);
         try {

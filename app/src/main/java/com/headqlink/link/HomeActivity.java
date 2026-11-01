@@ -1018,12 +1018,17 @@ public class HomeActivity extends Activity implements LinkState.Listener {
                 .show();
     }
 
+    /** Las filas del editor de listas abierto (showList), para volver a pintarlas al acabar la comprobación; null si no. */
+    private Runnable listRender;
+
     /**
-     * Listas M3U para la TV o la radio del coche: varias (una URL o un archivo del móvil cada una); la marcada es la que se
-     * ve en el coche, donde también se puede cambiar. Cada cambio se guarda al momento.
+     * Listas M3U para la TV o la radio del coche: varias (una URL o un archivo del móvil cada una, con usuario y contraseña
+     * opcionales, foro #290); la marcada es la que se ve en el coche, donde también se puede cambiar. Cada cambio se
+     * guarda al momento.
      */
     private void showList(boolean radio) {
         String kind = radio ? Config.RADIO : Config.IPTV;
+        tidyLists(kind);
         LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
         int pad = Math.round(24 * getResources().getDisplayMetrics().density);
@@ -1042,8 +1047,25 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         url.setHint(Str.get(R.string.hql_list_url_hint));
         url.setSingleLine(true);
         url.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+        // Usuario y contraseña, opcionales: un servidor Xtream Codes o una lista protegida (HTTP Basic). Van cifrados.
+        EditText user = M3.field(this);
+        user.setHint(Str.get(R.string.hql_list_user_hint));
+        user.setSingleLine(true);
+        user.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        EditText pass = M3.field(this);
+        pass.setHint(Str.get(R.string.hql_list_pass_hint));
+        pass.setSingleLine(true);
+        pass.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
         box.addView(M3.outlined(name));
         box.addView(M3.outlined(url));
+        box.addView(M3.outlined(user));
+        box.addView(M3.outlined(pass));
+        TextView loginHelp = new TextView(this);
+        loginHelp.setText(Str.get(R.string.hql_list_login_help));
+        loginHelp.setTextColor(getColor(R.color.hql_text_dim));
+        loginHelp.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12);
+        loginHelp.setPadding(0, pad / 4, 0, pad / 4);
+        box.addView(loginHelp);
         android.widget.Button add = M3.button(this, "", true);
         add.setText(Str.get(R.string.hql_list_add));
         box.addView(add);
@@ -1052,6 +1074,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
             rows.removeAllViews();
             String[][] lists = cfg.m3uLists(kind);
             int sel = cfg.m3uSelected(kind);
+            java.util.Set<String> withLogin = new M3uSource.Logins(this).ids();
             for (int i = 0; i < lists.length; i++) {
                 int idx = i;
                 boolean on = i == sel;
@@ -1059,7 +1082,9 @@ public class HomeActivity extends Activity implements LinkState.Listener {
                 r.setOrientation(LinearLayout.HORIZONTAL);
                 r.setGravity(android.view.Gravity.CENTER_VERTICAL);
                 TextView t = new TextView(this);
-                String where = lists[i][1].startsWith("http") ? lists[i][1] : Str.get(R.string.hql_list_now_file);
+                // La URL sin credenciales a la vista (M3uSource.mask), y si la lista lleva usuario.
+                String where = lists[i][1].startsWith("http") ? M3uSource.mask(lists[i][1]) : Str.get(R.string.hql_list_now_file);
+                if (withLogin.contains(Config.m3uLoginId(lists[i]))) where += " · " + Str.get(R.string.hql_list_with_login);
                 t.setText((on ? "✓  " : "") + lists[i][0] + "\n" + where);
                 t.setTextColor(getColor(on ? R.color.hql_accent : R.color.hql_text));
                 t.setTypeface(null, on ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
@@ -1077,11 +1102,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
                 b.setIconTint(android.content.res.ColorStateList.valueOf(getColor(R.color.hql_text_dim)));
                 b.setContentDescription(Str.get(R.string.hql_remove));
                 b.setOnClickListener(v -> {
-                    java.util.List<String[]> l = new java.util.ArrayList<>(java.util.Arrays.asList(cfg.m3uLists(kind)));
-                    int s = cfg.m3uSelected(kind);
-                    l.remove(idx);
-                    cfg.setM3uLists(kind, l.toArray(new String[0][]));
-                    cfg.setM3uSelected(kind, idx < s ? s - 1 : idx == s ? 0 : s);
+                    removeListAt(kind, idx);
                     render[0].run();
                 });
                 r.addView(b);
@@ -1092,11 +1113,14 @@ public class HomeActivity extends Activity implements LinkState.Listener {
             String u = url.getText().toString().trim();
             if (u.isEmpty()) return;
             if (!u.contains("://")) u = "https://" + u;
-            addList(kind, name.getText().toString().trim(), u);
+            addList(kind, name.getText().toString().trim(), u, user.getText().toString(), pass.getText().toString());
             name.setText("");
             url.setText("");
+            user.setText("");
+            pass.setText("");
             render[0].run();
         });
+        listRender = render[0];
         render[0].run();
         android.widget.ScrollView sv = new android.widget.ScrollView(this);
         sv.addView(box);
@@ -1110,30 +1134,162 @@ public class HomeActivity extends Activity implements LinkState.Listener {
                 })
                 // Cerrar (o salir) con una URL pegada sin «Añadir lista»: se añade igual, en vez de perderla sin avisar.
                 .setOnDismissListener(d -> {
+                    if (listRender == render[0]) listRender = null;
                     String u = url.getText().toString().trim();
                     if (u.isEmpty()) return;
                     if (!u.contains("://")) u = "https://" + u;
-                    addList(kind, name.getText().toString().trim(), u);
+                    addList(kind, name.getText().toString().trim(), u, user.getText().toString(), pass.getText().toString());
                     L.i("listas de " + kind + ": añadida al cerrar sin «Añadir lista»");
                     android.widget.Toast.makeText(this, Str.get(R.string.hql_list_added), android.widget.Toast.LENGTH_SHORT).show();
                 })
                 .show();
     }
 
-    /** Añade una lista y la deja elegida (si ya estaba, solo la elige). */
-    private void addList(String kind, String name, String src) {
+    /**
+     * Al abrir el editor, lo guardado de antes, en orden: una página conocida (el GitHub de iptv-org o la web de iprd,
+     * foro #299), por su lista de verdad, con un aviso; un usuario pegado dentro de la URL (get.php?username=…), fuera de
+     * ella y cifrado (M3uSource.Logins).
+     */
+    private void tidyLists(String kind) {
+        String cc = M3uSource.phoneCountry(this);
         String[][] cur = cfg.m3uLists(kind);
+        boolean changed = false;
         for (int i = 0; i < cur.length; i++) {
-            if (cur[i][1].equals(src)) {
-                cfg.setM3uSelected(kind, i);
-                return;
+            String[] e = cur[i];
+            String src = e[1];
+            String id = Config.m3uLoginId(e);
+            M3uSource.Split split = M3uSource.splitLogin(src);
+            if (!split.login.isEmpty() && id.isEmpty()) {
+                try {
+                    String nid = M3uSource.Logins.newId();
+                    new M3uSource.Logins(this).put(nid, split.login);
+                    src = split.url;
+                    id = nid;
+                    L.i("listas de " + kind + ": el usuario de la lista " + (i + 1) + " sale de la URL (cifrado)");
+                } catch (Exception ex) {
+                    L.w("listas de " + kind + ": no se pudo guardar el usuario (" + ex.getClass().getSimpleName() + ")");
+                }
+            }
+            String conv = M3uSource.convert(src, cc);
+            if (!conv.equals(src)) {
+                L.i("listas de " + kind + ": la lista " + (i + 1) + " era una página conocida: cambiada por su lista");
+                android.widget.Toast.makeText(this, Str.get(R.string.hql_list_converted, conv), android.widget.Toast.LENGTH_LONG).show();
+            }
+            if (conv.equals(e[1]) && id.equals(Config.m3uLoginId(e))) continue;
+            cur[i] = new String[]{e[0].equals(Config.m3uName(e[1])) ? Config.m3uName(conv) : e[0], conv, id};
+            changed = true;
+        }
+        if (changed) cfg.setM3uLists(kind, cur);
+    }
+
+    /**
+     * Añade una lista y la deja elegida (si ya estaba, solo la elige; con usuario, se lo pone o le cambia la contraseña;
+     * con otro usuario es otra cuenta, otra lista). Una página conocida se cambia por su lista de verdad, con un aviso. El
+     * usuario y la contraseña (los escritos o, si no, los que vengan dentro de la URL pegada) van cifrados aparte
+     * (M3uSource.Logins). Luego se comprueba en segundo plano que es una lista (probeList).
+     */
+    private void addList(String kind, String name, String src, String user, String pass) {
+        M3uSource.Split split = M3uSource.splitLogin(src);
+        M3uSource.Login login = new M3uSource.Login(user.trim().isEmpty() ? split.login.user : user,
+                pass.isEmpty() ? split.login.pass : pass);
+        String cc = M3uSource.phoneCountry(this);
+        String url = M3uSource.convert(split.url, cc);
+        if (!url.equals(split.url)) {
+            L.i("listas de " + kind + ": página conocida cambiada por su lista");
+            android.widget.Toast.makeText(this, Str.get(R.string.hql_list_converted, url), android.widget.Toast.LENGTH_LONG).show();
+        }
+        M3uSource.Logins logins = new M3uSource.Logins(this);
+        String[][] cur = cfg.m3uLists(kind);
+        int at = -1;
+        for (int i = 0; i < cur.length && at < 0; i++) {
+            if (!M3uSource.convert(cur[i][1], cc).equals(url)) continue;
+            M3uSource.Login old = logins.get(Config.m3uLoginId(cur[i]));
+            if (login.isEmpty() || old.isEmpty() || old.user.equals(login.user)) at = i;
+        }
+        String id = at >= 0 ? Config.m3uLoginId(cur[at]) : "";
+        if (!login.isEmpty()) {
+            String nid = id.isEmpty() ? M3uSource.Logins.newId() : id;
+            try {
+                logins.put(nid, login);
+                id = nid;
+            } catch (Exception e) {
+                L.w("listas de " + kind + ": no se pudo guardar el usuario (" + e.getClass().getSimpleName() + ")");
+                android.widget.Toast.makeText(this, Str.get(R.string.hql_list_login_save_failed), android.widget.Toast.LENGTH_LONG).show();
             }
         }
         java.util.List<String[]> l = new java.util.ArrayList<>(java.util.Arrays.asList(cur));
-        l.add(new String[]{name.isEmpty() ? Config.m3uName(src) : name, src});
+        boolean added = at < 0;
+        if (added) {
+            l.add(new String[]{name.isEmpty() ? Config.m3uName(url) : name, url, id});
+            at = l.size() - 1;
+        } else {
+            String[] e = cur[at];
+            l.set(at, new String[]{e[0].equals(Config.m3uName(e[1])) ? Config.m3uName(url) : e[0], url, id});
+        }
         cfg.setM3uLists(kind, l.toArray(new String[0][]));
-        cfg.setM3uSelected(kind, l.size() - 1);
-        L.i("listas de " + kind + ": " + l.size());
+        cfg.setM3uSelected(kind, at);
+        L.i("listas de " + kind + ": " + l.size() + (login.isEmpty() ? "" : " (con usuario)"));
+        if (added || !login.isEmpty()) probeList(kind, url, id);
+    }
+
+    /**
+     * Comprueba en segundo plano que la lista recién añadida lo es (M3uSource.probe, con su principio): si es una página
+     * web u otra cosa, se quita y se explica; si el servidor pide usuario (o no acepta el puesto) o da otro error, se
+     * dice. Sin red, nada: ya se verá en el coche.
+     */
+    private void probeList(String kind, String src, String loginId) {
+        android.content.Context app = getApplicationContext();
+        new Thread(() -> {
+            M3uSource.ListError err;
+            try {
+                M3uSource.probe(app, src, loginId);
+                return;
+            } catch (M3uSource.ListError e) {
+                err = e;
+            }
+            if (err.kind == M3uSource.ListError.FAILED) return;
+            boolean remove = err.kind == M3uSource.ListError.WEB_PAGE || err.kind == M3uSource.ListError.NOT_LIST;
+            L.i("listas de " + kind + ": la nueva no vale (" + err + ")" + (remove ? "; quitada" : ""));
+            M3uSource.ListError fe = err;
+            runOnUiThread(() -> {
+                if (remove) removeList(kind, src, loginId);
+                Runnable r = listRender;
+                if (r != null) r.run();
+                if (isFinishing() || isDestroyed()) return;
+                String msg = fe.text(R.string.hql_tv_read_failed) + (remove ? "\n\n" + Str.get(R.string.hql_list_not_added) : "");
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle(Config.RADIO.equals(kind) ? Str.get(R.string.hql_radio_list) : Str.get(R.string.hql_tv_list))
+                        .setMessage(msg)
+                        .setPositiveButton(Str.get(R.string.hql_close), null)
+                        .show();
+            });
+        }, "m3u-probe").start();
+    }
+
+    /** Quita la lista con esa URL y ese usuario (la que no ha pasado la comprobación). */
+    private void removeList(String kind, String src, String loginId) {
+        String[][] cur = cfg.m3uLists(kind);
+        for (int i = 0; i < cur.length; i++) {
+            if (cur[i][1].equals(src) && Config.m3uLoginId(cur[i]).equals(loginId)) {
+                removeListAt(kind, i);
+                return;
+            }
+        }
+    }
+
+    /** Quita la lista idx y su usuario guardado; la elegida sigue siéndolo si era otra. */
+    private void removeListAt(String kind, int idx) {
+        String[][] cur = cfg.m3uLists(kind);
+        if (idx < 0 || idx >= cur.length) return;
+        java.util.List<String[]> l = new java.util.ArrayList<>(java.util.Arrays.asList(cur));
+        int s = cfg.m3uSelected(kind);
+        String[] gone = l.remove(idx);
+        cfg.setM3uLists(kind, l.toArray(new String[0][]));
+        cfg.setM3uSelected(kind, idx < s ? s - 1 : idx == s ? 0 : s);
+        String id = Config.m3uLoginId(gone);
+        // Otra lista con el mismo usuario (no debería): entonces se queda.
+        for (String[] e : l) if (Config.m3uLoginId(e).equals(id)) return;
+        new M3uSource.Logins(this).remove(id);
     }
 
     /** Nombre visible de un archivo elegido (sin «.m3u»), o vacío. */
@@ -1189,7 +1345,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         }
         if ((req == REQ_IPTV_FILE || req == REQ_RADIO_FILE) && !uris.isEmpty()) {
             boolean radio = req == REQ_RADIO_FILE;
-            addList(radio ? Config.RADIO : Config.IPTV, fileName(uris.get(0)), uris.get(0).toString());
+            addList(radio ? Config.RADIO : Config.IPTV, fileName(uris.get(0)), uris.get(0).toString(), "", "");
             showList(radio);
         }
     }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_list_web_page">这是一个网页，不是 M3U 列表。请使用列表的直接链接（以 .m3u 或 .m3u8 结尾）。</string>
+    <string name="hql_list_not_m3u">这不是 M3U 列表（没有 #EXTM3U 或 #EXTINF 行）。请使用列表的直接链接（以 .m3u 或 .m3u8 结尾）。</string>
+    <string name="hql_list_converted">列表已转换：%1$s</string>
+    <string name="hql_list_needs_login">服务器要求用户名和密码：请在手机上用它们重新添加该列表。</string>
+    <string name="hql_list_login_rejected">服务器未接受用户名或密码：请检查后在手机上重新添加该列表。</string>
+    <string name="hql_list_user_hint">用户名（可选）</string>
+    <string name="hql_list_pass_hint">密码（可选）</string>
+    <string name="hql_list_login_help">仅当你的服务商提供时才填写用户名和密码（Xtream Codes 服务器或受保护的列表）。它们加密保存在这台手机上，不会包含在设置备份中。</string>
+    <string name="hql_list_with_login">带用户名</string>
+    <string name="hql_list_login_save_failed">无法在这台手机上保存用户名和密码。</string>
+    <string name="hql_list_not_added">未添加该列表。</string>
+</resources>

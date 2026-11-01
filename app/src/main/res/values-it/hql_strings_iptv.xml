@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_list_web_page">Questa è una pagina web, non una lista M3U. Usa il link diretto alla lista (finisce con .m3u o .m3u8).</string>
+    <string name="hql_list_not_m3u">Questa non è una lista M3U (non ha righe #EXTM3U né #EXTINF). Usa il link diretto alla lista (finisce con .m3u o .m3u8).</string>
+    <string name="hql_list_converted">Lista convertita: %1$s</string>
+    <string name="hql_list_needs_login">Il server chiede nome utente e password: aggiungi di nuovo la lista sul telefono con questi dati.</string>
+    <string name="hql_list_login_rejected">Il server non ha accettato il nome utente o la password: controllali e aggiungi di nuovo la lista sul telefono.</string>
+    <string name="hql_list_user_hint">Nome utente (facoltativo)</string>
+    <string name="hql_list_pass_hint">Password (facoltativa)</string>
+    <string name="hql_list_login_help">Nome utente e password solo se te li dà il tuo fornitore (server Xtream Codes o lista protetta). Vengono salvati cifrati su questo telefono e non sono inclusi nella copia delle impostazioni.</string>
+    <string name="hql_list_with_login">con utente</string>
+    <string name="hql_list_login_save_failed">Impossibile salvare nome utente e password su questo telefono.</string>
+    <string name="hql_list_not_added">La lista non è stata aggiunta.</string>
+</resources>

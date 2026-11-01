@@ -8,7 +8,9 @@ import java.util.regex.Pattern;
  * logs. Como con las MAC (HotspotRadio.maskMac), se deja el final, que basta para distinguir:
  * - el CarUUID y el ProjectID del coche (en el JSON de CAR_INFO y en «carUuid=…»): «…5678»;
  * - las direcciones IPv4 (la del coche y la del móvil en la zona Wi-Fi o en Wi-Fi Direct, las de los datos móviles):
- *   los dos últimos números, «*.*.53.80», para seguir viendo qué es del coche y qué del móvil en la misma red.
+ *   los dos últimos números, «*.*.53.80», para seguir viendo qué es del coche y qué del móvil en la misma red;
+ * - en las URLs, el usuario y la contraseña de las listas de TV y radio (M3uSource.redactUrls): «usuario:clave@»,
+ *   username=…&password=…, la ruta /live/usuario/clave/ de Xtream y los de las listas usadas, por ***.
  * Se aplica al escribir cada línea (L, el log qd, el diario del coche, la captura de logcat y la tabla de sesiones).
  */
 final class Redact {
@@ -31,7 +33,7 @@ final class Redact {
         if (hasDottedDigits(out)) {
             out = replace(IPV4, out, m -> ip(m.group(1), m.group(2), m.group(3), m.group(4)));
         }
-        return out;
+        return M3uSource.redactUrls(out);
     }
 
     /** «ABCD12345678» → «…5678». */

@@ -201,6 +201,7 @@ final class RadioScreen implements CarScreen {
             return;
         }
         String src = source >= 1 ? lists[source - 1][1] : "";
+        String loginId = source >= 1 ? Config.m3uLoginId(lists[source - 1]) : "";
         if (source >= 1) new Config(c).setM3uSelected(Config.RADIO, source - 1);
         String cc = source == 0 ? country(c) : "";
         showMessage(source == 0 ? Str.get(R.string.hql_radio_loading_popular) : Str.get(R.string.hql_radio_loading_list));
@@ -208,22 +209,49 @@ final class RadioScreen implements CarScreen {
         new Thread(() -> {
             List<RadioPlayer.Station> list = new ArrayList<>();
             String error = null;
+            String converted = null;
             try {
-                list = source == 0 ? popular(cc) : fromM3u(c, src);
+                if (source == 0) {
+                    list = popular(cc);
+                } else {
+                    // La lista del usuario, comprobada (M3uSource): una página web, un mensaje claro y no emisoras basura.
+                    M3uSource.Loaded got = M3uSource.load(c, src, loginId);
+                    list = fromM3u(got.text);
+                    converted = got.converted;
+                }
             } catch (Exception e) {
-                error = e.getMessage();
-                L.w("radio: no se pudo cargar la lista: " + e);
+                if (source == 0) {
+                    error = Str.get(R.string.hql_load_failed, e.getMessage());
+                    L.w("radio: no se pudo cargar la lista: " + e);
+                } else {
+                    M3uSource.ListError le = M3uSource.ListError.of(e, null);
+                    error = le.text(R.string.hql_load_failed);
+                    L.w("radio: no se pudo cargar la lista: " + le);
+                }
             }
             List<RadioPlayer.Station> fl = list;
             String fe = error;
+            String fc = converted;
             host.post(() -> {
                 if (destroyed || seq != loadSeq) return;
                 if (fl.isEmpty()) {
-                    showMessage(fe != null ? Str.get(R.string.hql_load_failed, fe) : Str.get(R.string.hql_radio_none));
+                    showMessage(fe != null ? fe : Str.get(R.string.hql_radio_none));
                 } else {
                     shown.clear();
                     shown.addAll(fl);
                     showGrid(c);
+                    if (fc != null) {
+                        // Página conocida (iprd): se guarda su lista de verdad, que también se ve ya en el móvil, y se avisa.
+                        Config cfg = new Config(c);
+                        cfg.replaceM3uSource(Config.RADIO, src, fc);
+                        lists = cfg.m3uLists(Config.RADIO);
+                        L.i("radio: la lista " + source + " era una página conocida: cambiada por su lista");
+                        TextView notice = CarStyle.text(c, Str.get(R.string.hql_list_converted, fc), 20, CarStyle.TEXT_DIM);
+                        notice.setSingleLine(true);
+                        notice.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
+                        notice.setPadding(24, 6, 24, 2);
+                        wrapWithBar(c, notice);
+                    }
                 }
                 // Populares: arriba, de qué país son y «Cambiar país» (también sin emisoras, para poder cambiarlo).
                 if (source == 0) addCountryBar(c, cc);
@@ -443,9 +471,11 @@ final class RadioScreen implements CarScreen {
         throw last != null ? last : new IllegalStateException("sin directorio");
     }
 
-    private static List<RadioPlayer.Station> fromM3u(Context c, String src) throws Exception {
+    /** Las emisoras de una lista M3U ya comprobada (M3uSource.load); la JSON de TDTChannels es de TV, aquí no vale. */
+    private static List<RadioPlayer.Station> fromM3u(String text) throws Exception {
+        if (text.trim().startsWith("{")) throw M3uSource.ListError.of(M3uSource.ListError.NOT_LIST);
         List<RadioPlayer.Station> out = new ArrayList<>();
-        for (IptvScreen.Channel ch : IptvScreen.parse(IptvScreen.open(c, src))) {
+        for (IptvScreen.Channel ch : IptvScreen.parse(text)) {
             RadioPlayer.Station s = new RadioPlayer.Station();
             s.name = ch.name;
             s.url = ch.url;

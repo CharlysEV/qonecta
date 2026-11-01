@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_list_web_page">Dit is een webpagina, geen M3U-lijst. Gebruik de directe link naar de lijst (eindigt op .m3u of .m3u8).</string>
+    <string name="hql_list_not_m3u">Dit is geen M3U-lijst (geen regels #EXTM3U of #EXTINF). Gebruik de directe link naar de lijst (eindigt op .m3u of .m3u8).</string>
+    <string name="hql_list_converted">Lijst omgezet: %1$s</string>
+    <string name="hql_list_needs_login">De server vraagt om een gebruikersnaam en wachtwoord: voeg de lijst op de telefoon opnieuw toe met beide.</string>
+    <string name="hql_list_login_rejected">De server heeft de gebruikersnaam of het wachtwoord niet geaccepteerd: controleer ze en voeg de lijst op de telefoon opnieuw toe.</string>
+    <string name="hql_list_user_hint">Gebruikersnaam (optioneel)</string>
+    <string name="hql_list_pass_hint">Wachtwoord (optioneel)</string>
+    <string name="hql_list_login_help">Gebruikersnaam en wachtwoord alleen als je provider ze je geeft (Xtream Codes-server of beveiligde lijst). Ze worden versleuteld op deze telefoon bewaard en zitten niet in de back-up van de instellingen.</string>
+    <string name="hql_list_with_login">met gebruikersnaam</string>
+    <string name="hql_list_login_save_failed">Kon de gebruikersnaam en het wachtwoord niet op deze telefoon opslaan.</string>
+    <string name="hql_list_not_added">De lijst is niet toegevoegd.</string>
+</resources>
