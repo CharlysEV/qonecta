@@ -653,13 +653,20 @@ final class PhoneCar {
 
     // ------------------------------------------------------------------ carga y consumo (como la app de Leapmotor)
 
-    /** Lee en otro hilo lo de «Carga» y «Consumo»: el historial de la nube, los viajes, los meses y las cargas. */
+    /**
+     * Lee en otro hilo lo de «Carga» y «Consumo»: el historial de la nube, los viajes, los meses y las cargas. Lo del
+     * móvil se pinta en cuanto está (con lo de la nube que ya hubiera guardado, CarCloud.usageCached); después, con la
+     * cuenta, se pide a la nube lo del periodo que se ve y, si llega algo nuevo, se repinta solo «Consumo», como en
+     * fetchWindow (1-11: antes todo esperaba a la nube, y con la nube lenta, hasta ~35 s, la tarjeta se quedaba vacía).
+     */
     private void load() {
         if (loading) return;
         loading = true;
         loadedAt = System.currentTimeMillis();
+        boolean account = PhoneInsights.hasAccount(act);
+        CarUsage.Period p = period;
         // El periodo que se ve se pide aquí: que el repintado no lo pida otra vez a la vez.
-        if (PhoneInsights.hasAccount(act)) windowTriedAt.put(period, loadedAt);
+        if (account) windowTriedAt.put(p, loadedAt);
         Activity a = act;
         new Thread(() -> {
             List<CloudHistory.Trip> h = new ArrayList<>(CarCloud.history());
@@ -680,18 +687,11 @@ final class PhoneCar {
             } catch (RuntimeException e) {
                 c = new ArrayList<>();
             }
-            // Con la cuenta de Leapmotor, lo del coche para el periodo que se ve (km y reparto).
-            boolean account = PhoneInsights.hasAccount(a);
-            CarUsage.Period p = period;
-            if (account) {
-                long now = System.currentTimeMillis();
-                CarCloud.usage(a, CarUsage.key(p), CarUsage.fromMs(p, now, TimeZone.getDefault()), now);
-            }
             List<CloudHistory.Trip> fh = h;
             Map<String, MonthlyReport.Summary> fm = m;
             List<ChargeSession> fc = c;
+            // Lo del móvil, ya: no espera a la nube.
             main.post(() -> {
-                loading = false;
                 history = fh;
                 appTrips = t;
                 months = fm;
@@ -699,6 +699,20 @@ final class PhoneCar {
                 if (!visible) return;
                 paintRecords();
                 paintUsage();
+            });
+            // Con la cuenta de Leapmotor, lo del coche para el periodo que se ve (km y reparto). Si no trae nada nuevo (lo
+            // guardado aún vale, falla, tope diario), CarCloud.usage devuelve lo mismo que había: nada que repintar.
+            boolean news = false;
+            if (account) {
+                String key = CarUsage.key(p);
+                CloudUsage.Window had = CarCloud.usageCached(key);
+                long now = System.currentTimeMillis();
+                news = CarCloud.usage(a, key, CarUsage.fromMs(p, now, TimeZone.getDefault()), now) != had;
+            }
+            boolean repaint = news;
+            main.post(() -> {
+                loading = false;
+                if (repaint && visible && period == p) paintUsage();
             });
         }, "hql-phone-car").start();
     }
