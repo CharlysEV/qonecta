@@ -206,6 +206,7 @@ public final class RadioSession {
         main = new Handler(Looper.getMainLooper());
         owner = false;
         sounding = false;
+        announcePending = false;
         labNoSource = false;
         labLinkApart = false;
         setSource(true);
@@ -296,9 +297,41 @@ public final class RadioSession {
         }
     }
 
+    /** Tras volver a anunciar la sesión (audible), cuánto tarda en reactivarse. */
+    static final long REANNOUNCE_MS = 300;
+    /** La radio acaba de tomar la música y aún no ha sonado de verdad: se vuelve a anunciar al sonar, una vez. */
+    private static boolean announcePending;
+
+    /**
+     * La radio suena de verdad, o no (RadioPlayer.changed: reproducir y lista, ya hay audio). Android Auto elige qué app
+     * enseñar cuando cambia el sonido, y en ese momento la emisora aún carga y la app de antes (Spotify) sigue sonando: se
+     * quedaba con ella (probado en el móvil el 2-11). Ya con audio y la otra en pausa, la sesión se vuelve a anunciar
+     * (inactiva y activa) para que Android Auto mire otra vez. Solo la primera vez tras tomar la música: al reanudar o
+     * cuando la emisora se recarga (a menudo con datos móviles), Android Auto ya enseña la radio.
+     */
+    static void audible(boolean now) {
+        boolean pending = announcePending;
+        if (now) announcePending = false;
+        if (!reannounce(pending, now, owner, link != null) || session == null) return;
+        L.i("radio: ya suena; se vuelve a anunciar a Android Auto");
+        session.setActive(false);
+        handler().postDelayed(() -> {
+            if (owner && session != null) session.setActive(true);
+        }, REANNOUNCE_MS);
+    }
+
+    /**
+     * Puro: volver a anunciar la sesión: la radio, que acaba de tomar la música (pending), suena de verdad, la sigue
+     * teniendo y Android Auto está.
+     */
+    static boolean reannounce(boolean pending, boolean now, boolean owner, boolean androidAuto) {
+        return pending && now && owner && androidAuto;
+    }
+
     private static void setOwner(boolean on) {
         if (owner == on) return;
         owner = on;
+        announcePending = on;
         L.i(on ? "radio: tiene la música; Android Auto ve su sesión y la del enlace se aparta"
                 : "radio: suelta la música; vuelve la sesión del enlace con Android Auto");
         if (session != null) session.setActive(on);

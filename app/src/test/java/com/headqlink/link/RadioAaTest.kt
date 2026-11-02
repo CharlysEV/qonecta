@@ -615,6 +615,19 @@ class RadioAaTest {
         error("Missing media session field $name")
     }
 
+    @Test
+    fun theSessionIsAnnouncedAgainOnlyWhenTheRadioStartsSoundingWithAndroidAuto() {
+        // Acaba de tomar la música y suena de verdad, con Android Auto: se vuelve a anunciar.
+        assertTrue(RadioSession.reannounce(true, true, true, true))
+        // Ya se anunció (reanudar tras ⏸, la emisora se recarga): no se repite.
+        assertFalse(RadioSession.reannounce(false, true, true, true))
+        // Aún carga: todavía no.
+        assertFalse(RadioSession.reannounce(true, false, true, true))
+        // Sin la música (la tiene otra cosa) o sin Android Auto: nada.
+        assertFalse(RadioSession.reannounce(true, true, false, true))
+        assertFalse(RadioSession.reannounce(true, true, true, false))
+    }
+
     @Suppress("UNCHECKED_CAST")
     private fun target(metadata: PlaybackMetadata): CustomTarget<Bitmap> =
         PlaybackMetadata::class.java.getDeclaredField("image").apply { isAccessible = true }.get(metadata) as CustomTarget<Bitmap>
