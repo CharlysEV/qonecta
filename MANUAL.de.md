@@ -386,9 +386,10 @@ Fahrten ist das die empfohlene Verbindung für „Auto erweitert“.
   pausiert); steckst du es wieder ein, geht es sofort weiter.
 - **Hängt sich der USB-Anschluss des Fahrzeugs während der Fahrt auf** (er liest nichts mehr und erholt sich nicht),
   läuft Qonecta+ von selbst bis zum Ende der Fahrt über **Wi-Fi Direct** weiter, mit dem Hinweis „Kabel ausgefallen:
-  weiter über Wi-Fi Direct“ im Fahrzeug und auf dem Handy; bei der nächsten Fahrt wird wieder das Kabel genutzt, und um
-  früher zurückzukehren, wähle „USB-Kabel“ im Widget oder mit „Ändern“. Nur mit verbundenem Bluetooth des Fahrzeugs;
-  abschalten unter ⚙ › Einstellungen › „Verbindung“ › „Zu Wi-Fi Direct wechseln, wenn das Kabel ausfällt“.
+  weiter über Wi-Fi Direct“ auf dem Handy und im Fahrzeug (auf seinem Bildschirm mit „Auto erweitert“, per Sprache mit
+  „Auto“); bei der nächsten Fahrt wird wieder das Kabel genutzt, und um früher zurückzukehren, wähle „USB-Kabel“ im
+  Widget oder mit „Ändern“. Nur mit verbundenem Bluetooth des Fahrzeugs; abschalten unter ⚙ › Einstellungen ›
+  „Verbindung“ › „Zu Wi-Fi Direct wechseln, wenn das Kabel ausfällt“.
 
 **Wenn es nicht funktioniert**, exportiere das Log ([Abschnitt 8](#8-log-exportieren-und-hilfe-holen)) direkt nach dem
 Einstecken des Kabels und schick es uns, mit der Uhrzeit. Wir suchen die Zeilen **`HQL/USB`**: was Android über das

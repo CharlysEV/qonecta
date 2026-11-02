@@ -370,10 +370,10 @@ sin un solo corte**, y además el móvil carga. Tras muchos viajes, es la conexi
 - Quitar el cable es como si el coche se fuera (vídeo vivo 30 s y luego Android Auto en pausa); al volver a enchufarlo
   se reanuda al instante.
 - **Si el puerto USB del coche se cuelga a mitad de viaje** (deja de leer y no se recupera), Qonecta+ sigue sola por
-  **Wi-Fi Direct** hasta el final del viaje, con el aviso «El cable se ha caído: sigo por Wi-Fi Direct» en el coche y en
-  el móvil; el viaje siguiente vuelve al cable, y para volver antes elige «Cable USB» en el widget o con «Cambiar». Solo
-  con el Bluetooth del coche conectado; se quita en ⚙ › Ajustes › «Conexión» › «Pasar a Wi-Fi Direct si el cable se
-  cae».
+  **Wi-Fi Direct** hasta el final del viaje, con el aviso «El cable se ha caído: sigo por Wi-Fi Direct» en el móvil y en
+  el coche (en su pantalla con «Auto extendido», por voz con «Auto»); el viaje siguiente vuelve al cable, y para volver
+  antes elige «Cable USB» en el widget o con «Cambiar». Solo con el Bluetooth del coche conectado; se quita en ⚙ ›
+  Ajustes › «Conexión» › «Pasar a Wi-Fi Direct si el cable se cae».
 
 **Si no funciona**, exporta el log ([sección 8](#8-exportar-el-log-para-pedir-ayuda)) justo después de enchufar el
 cable y envíanoslo, con la hora. Buscamos las líneas **`HQL/USB`**: qué dice Android del cable (`USB_STATE`), si el

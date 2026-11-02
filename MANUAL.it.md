@@ -371,9 +371,9 @@ solo alcuni modelli), e dopo molti viaggi è la connessione consigliata per «Au
   riprende all'istante.
 - **Se la porta USB dell'auto si blocca durante il viaggio** (smette di leggere e non si riprende), Qonecta+ continua da
   solo in **Wi-Fi Direct** fino alla fine del viaggio, con l'avviso «Il cavo si è bloccato: continuo in Wi-Fi Direct»
-  in auto e sul telefono; il viaggio successivo torna al cavo, e per tornarci prima scegli «Cavo USB» nel widget o con
-  «Cambia». Solo con il Bluetooth dell'auto collegato; si disattiva in ⚙ › Impostazioni › «Connessione» › «Passa a
-  Wi-Fi Direct se il cavo si blocca».
+  sul telefono e in auto (sul suo schermo con «Auto esteso», a voce con «Auto»); il viaggio successivo torna al cavo, e
+  per tornarci prima scegli «Cavo USB» nel widget o con «Cambia». Solo con il Bluetooth dell'auto collegato; si
+  disattiva in ⚙ › Impostazioni › «Connessione» › «Passa a Wi-Fi Direct se il cavo si blocca».
 
 **Se non funziona**, esporta il log ([sezione 8](#8-esportare-il-log-per-chiedere-aiuto)) subito dopo aver collegato il
 cavo e inviacelo, con l'ora. Cerchiamo le righe **`HQL/USB`**: cosa dice Android del cavo (`USB_STATE`), se l'auto ha

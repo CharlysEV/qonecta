@@ -382,9 +382,10 @@ alguns modelos), e depois de muitas viagens é a ligação recomendada para «Au
 - Retirar o cabo é como se o carro se fosse embora (vídeo ativo 30 s e depois o Android Auto em pausa); ao voltar a
   ligá-lo, retoma de imediato.
 - **Se a porta USB do carro bloquear a meio da viagem** (deixa de ler e não recupera), o Qonecta+ continua sozinho por
-  **Wi-Fi Direct** até ao fim da viagem, com o aviso «O cabo falhou: continuo por Wi-Fi Direct» no carro e no
-  telemóvel; a viagem seguinte volta ao cabo, e para voltar antes escolha «Cabo USB» no widget ou em «Alterar». Só com o
-  Bluetooth do carro ligado; desativa-se em ⚙ › Definições › «Ligação» › «Passar para Wi-Fi Direct se o cabo falhar».
+  **Wi-Fi Direct** até ao fim da viagem, com o aviso «O cabo falhou: continuo por Wi-Fi Direct» no telemóvel e no carro
+  (no ecrã dele com «Auto estendido», por voz com «Auto»); a viagem seguinte volta ao cabo, e para voltar antes escolha
+  «Cabo USB» no widget ou em «Alterar». Só com o Bluetooth do carro ligado; desativa-se em ⚙ › Definições › «Ligação» ›
+  «Passar para Wi-Fi Direct se o cabo falhar».
 
 **Se não funcionar**, exporte o registo ([secção 8](#8-exportar-o-registo-para-pedir-ajuda)) logo a seguir a ligar o
 cabo e envie-no-lo, com a hora. Procuramos as linhas **`HQL/USB`**: o que diz o Android do cabo (`USB_STATE`), se o

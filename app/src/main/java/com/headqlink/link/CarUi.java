@@ -2280,12 +2280,13 @@ final class CarUi {
         videoInfoText(videoInfoLine(videoW, fps, tempC));
     }
 
-    /** El cartel con ese texto (cualquier hilo); sin interfaz propia en marcha, nada. */
-    static void videoInfoText(String text) {
+    /** El cartel con ese texto (cualquier hilo); sin interfaz propia en marcha, nada (false). */
+    static boolean videoInfoText(String text) {
         CarUi u = current;
-        if (u == null || text == null) return;
+        if (u == null || text == null) return false;
         L.i("CarUi: cartel de la imagen: " + text);
         u.main.post(() -> u.showVideoInfoNow(text));
+        return true;
     }
 
     /** Lo que dice el cartel y hasta cuándo (reloj uptimeMillis): para volver a enseñarlo si se rehace la interfaz. */

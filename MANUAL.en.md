@@ -363,10 +363,10 @@ models do), and after many trips it's the recommended connection for "Auto exten
 - Unplugging the cable is like the car going away (video kept alive for 30 s, then Android Auto paused); plugging it
   back in resumes instantly.
 - **If the car's USB port hangs mid-trip** (it stops reading and doesn't recover), Qonecta+ carries on by itself over
-  **Wi-Fi Direct** until the end of the trip, with the notice "The cable dropped: carrying on over Wi-Fi Direct" in the
-  car and on the phone; the next trip uses the cable again, and to go back sooner choose "USB cable" in the widget or
-  with "Change". Only with the car's Bluetooth connected; turn it off in ⚙ › Settings › "Connection" › "Switch to Wi-Fi
-  Direct if the cable drops".
+  **Wi-Fi Direct** until the end of the trip, with the notice "The cable dropped: carrying on over Wi-Fi Direct" on the
+  phone and in the car (on its screen with "Auto extended", spoken with "Auto"); the next trip uses the cable again, and
+  to go back sooner choose "USB cable" in the widget or with "Change". Only with the car's Bluetooth connected; turn it
+  off in ⚙ › Settings › "Connection" › "Switch to Wi-Fi Direct if the cable drops".
 
 **If it doesn't work**, export the log ([section 8](#8-exporting-the-log-to-ask-for-help)) right after plugging in the
 cable and send it to us, with the time. We're looking for the **`HQL/USB`** lines: what Android says about the cable

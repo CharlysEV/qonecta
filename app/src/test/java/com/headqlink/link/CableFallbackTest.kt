@@ -190,8 +190,10 @@ class CableFallbackTest {
         val f = CableFallback()
         assertTrue(hungAndTwoMute(f, on).toWifi())
         // «Cable USB» elegido a mano (widget o «Cambiar»): vuelve el cable...
-        assertTrue(f.onManualChoice(40_000))
+        assertTrue(f.holdsUsb())
+        assertTrue(f.onManualChoice(40_000, true))
         assertFalse(f.active())
+        assertFalse(f.holdsUsb())
         assertEquals(Config.LINK_USB, f.linkFor(Config.LINK_USB))
         // ... y aunque se vuelva a colgar, en este viaje ya no se cambia solo.
         f.onSessionEnd(100_000, end(5, true, 50_000, "WATCHDOG", 9_000), on)
@@ -199,17 +201,61 @@ class CableFallbackTest {
         val d = f.onSessionEnd(140_000, end(7, false, 12_000, "WATCHDOG"), on)
         assertFalse(d.toWifi())
         assertTrue(d.toString(), d.reasons().last().contains("se eligió a mano"))
-        // Elegir otra Wi-Fi con el cable atascado también cuenta como elección a mano.
+        // Elegir otra Wi-Fi con el cable atascado también cuenta como elección a mano (y el accesorio, retenido).
         assertTrue(f.cableHung(140_000))
-        assertTrue(f.onManualChoice(141_000))
+        assertTrue(f.onManualChoice(141_000, false))
+        assertTrue(f.holdsUsb())
+    }
+
+    @Test
+    fun choosingTheCableByHandAlwaysReleasesTheAccessory() {
+        // El paso hecho: el accesorio, retenido.
+        val f = CableFallback()
+        assertTrue(hungAndTwoMute(f, on).toWifi())
+        assertTrue(f.holdsUsb())
+        // Wi-Fi Direct elegido a mano: manda lo elegido y sigue retenido (el paso ya no está hecho ni hay atasco abierto).
+        assertTrue(f.onManualChoice(40_000, false))
+        assertTrue(f.holdsUsb())
+        assertFalse(f.active())
+        assertFalse(f.cableHung(40_000))
+        // Luego «Cable USB» a mano: ya no es una elección «con el cable caído» (false), pero el accesorio se suelta igual.
+        assertFalse(f.onManualChoice(60_000, true))
+        assertFalse(f.holdsUsb())
+        assertEquals(Config.LINK_USB, f.linkFor(Config.LINK_USB))
+        // Con el cable atascado (sin paso hecho): una Wi-Fi a mano lo retiene...
+        val g = CableFallback()
+        hungAfterAnHour(g)
+        assertTrue(g.onManualChoice(1_000, false))
+        assertTrue(g.holdsUsb())
+        // ... otra Wi-Fi después no lo suelta (el cable sigue colgado) y el cable a mano, sí.
+        assertFalse(g.onManualChoice(5_000, false))
+        assertTrue(g.holdsUsb())
+        assertFalse(g.onManualChoice(9_000, true))
+        assertFalse(g.holdsUsb())
+        // El viaje siguiente empieza sin retener.
+        val h = CableFallback()
+        assertTrue(hungAndTwoMute(h, on).toWifi())
+        h.startTrip()
+        assertFalse(h.holdsUsb())
     }
 
     @Test
     fun aManualChoiceWithTheCableFineChangesNothing() {
-        // Sin atasco ni paso hecho, una elección a mano no bloquea la red de seguridad del viaje.
+        // Sin atasco ni paso hecho, una elección a mano no bloquea la red de seguridad del viaje ni retiene el cable.
         val f = CableFallback()
-        assertFalse(f.onManualChoice(0))
+        assertFalse(f.onManualChoice(0, false))
+        assertFalse(f.holdsUsb())
+        assertFalse(f.onManualChoice(0, true))
         assertTrue(hungAndTwoMute(f, on).toWifi())
+    }
+
+    @Test
+    fun theCarNoticeIsSpokenOutsideAutoExtended() {
+        // «Auto extendido» lo enseña en su pantalla; en «Auto» (toda la pantalla es de Android Auto), por voz.
+        assertFalse(CableFallback.carNoticeByVoice(Config.MODE_AA_EXT))
+        assertTrue(CableFallback.carNoticeByVoice(Config.MODE_AA))
+        assertTrue(CableFallback.carNoticeByVoice(Config.MODE_APP))
+        assertTrue(CableFallback.carNoticeByVoice(null))
     }
 
     @Test
@@ -294,7 +340,7 @@ class CableFallbackTest {
         // Tras elegir a mano, tampoco.
         val h = CableFallback()
         hungAfterAnHour(h)
-        assertTrue(h.onManualChoice(1_000))
+        assertTrue(h.onManualChoice(1_000, false))
         assertFalse(h.handlesHang(1_000, on))
     }
 

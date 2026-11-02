@@ -142,6 +142,8 @@ final class CableFallback {
     private boolean active;
     /** Conexión elegida a mano con el cable caído: ya no se cambia solo en este viaje. */
     private boolean manual;
+    /** El accesorio del cable retenido (no se abre): desde el paso a Wi-Fi Direct o una Wi-Fi elegida a mano con el cable caído. */
+    private boolean holdUsb;
 
     /** Arranque del servicio (viaje nuevo): de cero, y el enlace vuelve a ser la conexión elegida. */
     void startTrip() {
@@ -152,11 +154,20 @@ final class CableFallback {
         timerAt = -1;
         active = false;
         manual = false;
+        holdUsb = false;
     }
 
     /** Se sigue por Wi-Fi Direct en lugar del cable (hasta el final del viaje o una elección a mano). */
     boolean active() {
         return active;
+    }
+
+    /**
+     * El accesorio del coche no se abre (UsbLink retenido): el cable se cayó en este viaje y se sigue por una Wi-Fi. Hasta
+     * el viaje siguiente o hasta elegir «Cable USB» a mano.
+     */
+    boolean holdsUsb() {
+        return holdUsb;
     }
 
     /** Hay un atasco del cable abierto (el puerto o el QDLink del coche colgados) y aún sin decidir. */
@@ -271,15 +282,28 @@ final class CableFallback {
     }
 
     /**
-     * Conexión elegida a mano (widget o «Cambiar») con el paso a Wi-Fi Direct hecho o con el cable atascado: manda lo
-     * elegido y ya no se cambia solo hasta el viaje siguiente. true si era el caso (si no, no cambia nada).
+     * Conexión elegida a mano (widget o «Cambiar»). Con el paso a Wi-Fi Direct hecho o con el cable atascado: manda lo
+     * elegido y ya no se cambia solo hasta el viaje siguiente (true; si no, false). El accesorio ({@link #holdsUsb}): con
+     * «Cable USB» se suelta siempre, también cuando lo retuvo otra elección a mano de antes en este viaje (entonces el paso
+     * ya no está hecho ni hay atasco abierto, y esto da false); con una Wi-Fi y el cable caído o atascado, se retiene.
      */
-    boolean onManualChoice(long now) {
+    boolean onManualChoice(long now, boolean toUsb) {
+        if (toUsb) holdUsb = false;
         if (!active && !cableHung(now)) return false;
         manual = true;
         active = false;
         close();
+        if (!toUsb) holdUsb = true;
         return true;
+    }
+
+    /**
+     * Puro: el aviso «el cable se ha caído» en el coche va por voz (el audio del móvil sale por el Bluetooth del coche, que
+     * sigue conectado) salvo en «Auto extendido», que lo enseña en su pantalla (CarUi) con la primera sesión por Wi-Fi
+     * Direct. En «Auto» la pantalla es toda de Android Auto: no hay dónde ponerlo.
+     */
+    static boolean carNoticeByVoice(String mode) {
+        return !Config.MODE_AA_EXT.equals(mode);
     }
 
     private void open(long now, End e, Decision d) {
@@ -321,6 +345,7 @@ final class CableFallback {
             return;
         }
         active = true;
+        holdUsb = true;
         close();
         d.toWifi = true;
         d.why(why + " y el Bluetooth del coche sigue conectado: el cable se ha caído, sigo por Wi-Fi Direct hasta el final"
