@@ -850,11 +850,11 @@ do carro» › «Continuar a rádio ao ligar».
 ### A rádio no Android Auto
 
 Enquanto toca a rádio (ou «A minha música») do Qonecta+, **o Android Auto mostra-a como o que está a tocar**: a
-música, se a estação a indicar, ou o nome da estação, com o seu logótipo. O mesmo aparece na notificação do telemóvel
-e, por Bluetooth, no painel de instrumentos do carro (o logótipo, só se o carro mostrar capas por Bluetooth). Enquanto
-toca, o **Qonecta+** aparece também entre as aplicações de música do Android Auto, com as suas estações **Favoritos**
-(as de ★) e **Recentes**: toque numa e passa para ela. Com a rádio parada não aparece, para que o Android Auto não
-salte para o Qonecta+ enquanto toca o Spotify ou outra aplicação: a rádio liga-se no carro, em Rádio. O Qonecta+
+música, se a estação a indicar, ou o nome da estação, com o seu logótipo. Os seus botões, e os do volante ou dos
+auscultadores, comandam então a rádio (⏯, estação anterior e seguinte) até pôr outra música (o Spotify, a TV ou outra
+aplicação). O mesmo aparece na notificação do telemóvel e, por Bluetooth, no painel de instrumentos do carro (o
+logótipo, só se o carro mostrar capas por Bluetooth). Entre as aplicações de música do Android Auto aparece o
+**Qonecta+**, com as suas estações **Favoritos** (as de ★) e **Recentes**: toque numa e começa a tocar. O Qonecta+
 **nunca liga a rádio sozinho** ao ligar-se ao carro: toca o que escolher, e o que tocava ao desligar o carro só com
 «Continuar a rádio ao ligar».
 

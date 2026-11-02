@@ -64,9 +64,9 @@ final class RadioPlayer {
 
     private static void changed() {
         RadioSession.notice(current(), isPlaying());
-        // Fuente de música de Android Auto solo mientras suena (RadioSession).
+        // Si la radio tiene la música de Qonecta+ (la que ve Android Auto y manejan sus mandos): RadioSession.
         RadioSession.radio(player != null && RadioSession.sounds(true, player.getPlayWhenReady(), player.getPlaybackState()),
-                player != null, displaced);
+                player != null, displaced, lastStopped() != null);
         for (Runnable r : listeners) r.run();
     }
 

@@ -368,8 +368,15 @@ internal class QdSessionBridge(
         // Las del coche por QDLink (PHONE_KEYS y `Music/…`), a Android Auto como sus teclas. Los mandos del volante del
         // C10 van por Bluetooth (AVRCP → MediaSession de HeadQLink → AA); estas, por si otro coche o versión las manda.
         val code = carKeyToAndroid(key)
-        val sent = code != 0 && AaPassthroughSource.carKey(ctx, code)
-        L.i("tecla del coche: $key" + if (code == 0) " (sin equivalente en Android Auto)" else if (sent) " → Android Auto" else " (Android Auto no conectado)")
+        // Si la radio de Qonecta+ tiene la música, sus teclas son para ella, como las del volante (RadioSession).
+        val radio = code != 0 && RadioSession.linkKey(code, null)
+        val sent = !radio && code != 0 && AaPassthroughSource.carKey(ctx, code)
+        L.i("tecla del coche: $key" + when {
+            code == 0 -> " (sin equivalente en Android Auto)"
+            radio -> " → radio"
+            sent -> " → Android Auto"
+            else -> " (Android Auto no conectado)"
+        })
     }
 
     override fun onPhoneKey(code: Int, message: ControlMessage) {

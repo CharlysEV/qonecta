@@ -49,8 +49,8 @@ class App : Application(), Application.ActivityLifecycleCallbacks {
         // Antes iba aquí y la app se caía en cada reinicio (Android la arranca bloqueado para el arranque automático):
         // «SharedPreferences in credential encrypted storage are not available until after user is unlocked».
         com.headqlink.link.Str.init(this)
-        // headqlink: sin radio sonando, Qonecta+ no es fuente de música de Android Auto (si el proceso anterior se cerró
-        // con la radio sonando, seguiría habilitada). No lee ajustes.
+        // headqlink: Qonecta+ fuente de música de Android Auto, como dice el manifiesto (por si una prueba la quitó en el
+        // proceso anterior), y la radio sin la música. No lee ajustes.
         com.headqlink.link.RadioSession.sourceAtStart(this)
         instance = this
         registerActivityLifecycleCallbacks(this)

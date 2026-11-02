@@ -18,8 +18,10 @@ import java.util.Locale;
  * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra) · precios [LAT,LON]
  * (los precios ad hoc de Alemania alrededor de un punto; sin nada, Berlín) · carga demo|off
  * (la notificación de una carga inventada, para ver el Live Update) · ffmpeg (si el audio por FFmpeg está listo) · ia [hola]
- * (el SDK de Anthropic con una clave falsa; «hola»: una pregunta de verdad con la clave guardada) · radioaa siempre|sonando
- * (la radio como fuente de Android Auto siempre, como antes del arreglo, o solo mientras suena).
+ * (el SDK de Anthropic con una clave falsa; «hola»: una pregunta de verdad con la clave guardada) · radioaa
+ * [fuente si|no · enlace normal|apartado] (la radio en Android Auto: Qonecta+ app de música de Android Auto o no, desde su
+ * próxima sesión; la sesión del enlace con Android Auto apartada solo mientras la radio tiene la música o siempre; sin
+ * nada, cómo está).
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
@@ -231,16 +233,26 @@ final class LabControl {
             case "carga":
                 done = ChargeWatch.labNotify(ctx, !a.equals("off"));
                 break;
-            case "radioaa":
-                // La radio como fuente de Android Auto: «siempre», como antes del arreglo (para ver si Android Auto salta a
-                // Qonecta+ con Spotify o la TV sonando y la radio parada); «sonando», la de serie (solo mientras suena).
-                if (!"siempre".equals(a) && !"sonando".equals(a)) {
-                    return "no: radioaa siempre|sonando (ahora: " + (RadioSession.labAlways() ? "siempre" : "sonando") + ")";
+            case "radioaa": {
+                // La radio en Android Auto, para probar en el coche virtual sin compilar: «fuente no» quita Qonecta+ de las
+                // apps de música de Android Auto (como en 0.3.13; Android Auto lo ve en su próxima sesión, y al reiniciar la
+                // app vuelve a «sí»); «enlace apartado» deja inactiva siempre la sesión del enlace con Android Auto, por si
+                // Android Auto salta a Qonecta+ con Spotify sonando (de serie, «normal»: solo mientras la radio tiene la música).
+                String[] w = a.trim().split("\\s+");
+                String v = w.length > 1 ? w[1] : "";
+                if ("fuente".equals(w[0]) && ("si".equals(v) || "sí".equals(v) || "no".equals(v))) {
+                    RadioSession.labSource(!"no".equals(v));
+                    done = "no".equals(v) ? "Qonecta+ deja de ser app de música de Android Auto (desde su próxima sesión)"
+                            : "Qonecta+ app de música de Android Auto (desde su próxima sesión)";
+                } else if ("enlace".equals(w[0]) && ("normal".equals(v) || "apartado".equals(v))) {
+                    RadioSession.labLinkApart("apartado".equals(v));
+                    done = "apartado".equals(v) ? "sesión del enlace con Android Auto apartada siempre"
+                            : "sesión del enlace con Android Auto apartada solo mientras la radio tiene la música";
+                } else {
+                    return "radioaa fuente si|no · enlace normal|apartado (ahora: " + RadioSession.labStatus() + ")";
                 }
-                RadioSession.labAlways("siempre".equals(a));
-                done = "siempre".equals(a) ? "Qonecta+ fuente de Android Auto siempre (la de antes del arreglo)"
-                        : "Qonecta+ fuente de Android Auto solo mientras suena la radio";
                 break;
+            }
             case "reconectar":
                 done = "reconecto (unos segundos sin imagen)";
                 reconnect(ctx);
@@ -256,7 +268,7 @@ final class LabControl {
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, precios, carga, ffmpeg, ia, boost, termica, noche, hud, perfil, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, precios, carga, ffmpeg, ia, radioaa, boost, termica, noche, hud, perfil, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);

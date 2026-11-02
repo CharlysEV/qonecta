@@ -15,12 +15,12 @@ import java.util.List;
 /**
  * La radio como fuente multimedia de Android Auto (res/xml/automotive_app_desc.xml): Android Auto se conecta aquí,
  * enseña lo que suena con la sesión de RadioSession (emisora, canción y logo) y, en su lista de apps de música,
- * «Qonecta+» con las favoritas y las recientes (RadioLibrary). Solo está habilitado mientras suena la radio
- * (RadioSession, «fuente de Android Auto»): con la radio parada, Android Auto no ve a Qonecta+ como app de música y no
- * salta a ella por las otras sesiones de la app. Instalada fuera de Google Play, Android Auto solo la enseña con
- * «Fuentes desconocidas» activado en sus ajustes de desarrollador. Conectarse no pone nada a sonar: solo elegir una
- * emisora o «▶» (RadioSession). Sin la interfaz propia en marcha (modo «Auto»), lo que se puso desde Android Auto se para
- * cuando se va.
+ * «Qonecta+» con las favoritas y las recientes (RadioLibrary). Siempre habilitado: Android Auto lee sus fuentes de música
+ * al empezar su sesión. Para que no salte a Qonecta+ por las otras sesiones de la app, la de la radio solo está activa
+ * mientras la radio tiene la música (RadioSession, «la música de Qonecta+»). Instalada fuera de Google Play, Android Auto
+ * solo la enseña con «Fuentes desconocidas» activado en sus ajustes de desarrollador. Conectarse no pone nada a sonar:
+ * solo elegir una emisora o «▶» (RadioSession). Sin la interfaz propia en marcha (modo «Auto»), lo que se puso desde
+ * Android Auto se para cuando se va.
  *
  * Solo entran Android Auto, el sistema y el Bluetooth (RadioLibrary.trusted): el servicio está exportado y las listas
  * dicen qué emisoras escuchas.

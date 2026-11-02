@@ -183,11 +183,13 @@ final class PlaybackMetadata implements AutoCloseable {
                         playing ? 1f : 0f);
         if (state == PlaybackStateCompat.STATE_ERROR) b.setErrorMessage(PlaybackStateCompat.ERROR_CODE_UNKNOWN_ERROR, error);
         session.setPlaybackState(b.build());
-        // Una fuente pausada no debe competir con Spotify o con la sesión de Android Auto.
+        // La de la radio la activa RadioSession (mientras la radio tiene la música, también en pausa).
+        if (!ownsSession) return;
+        // La TV: activa solo mientras suena (en pausa no compite con Spotify ni con la sesión de Android Auto), y la
+        // radio, si no suena, suelta la música: Android Auto no la enseña mientras suena la TV.
         boolean active = playing && playback != Player.STATE_IDLE && playback != Player.STATE_ENDED;
         session.setActive(active);
-        // La TV suena con su sesión: Android Auto no debe saltar por ella a la radio parada (RadioSession).
-        if (active && ownsSession) RadioSession.otherSounds();
+        if (active) RadioSession.otherSounds();
     }
 
     /**
@@ -238,9 +240,9 @@ final class PlaybackMetadata implements AutoCloseable {
         closed = true;
         ++generation;
         player.removeListener(listener);
-        session.setActive(false);
-        // La de la radio sigue viva (Android Auto puede tenerla): su estado parado lo pone RadioSession.
+        // La de la radio sigue viva (Android Auto puede tenerla): su estado parado, y si sigue activa, los pone RadioSession.
         if (ownsSession) {
+            session.setActive(false);
             session.setMetadata(null);
             session.release();
         }

@@ -177,6 +177,37 @@ class AapService : Service() {
         }
     }
 
+    /**
+     * headqlink: si esta sesión quiere estar activa (desde onCreate y al conectar; al desconectar, no). Mientras la radio
+     * de Qonecta+ tiene la música se aparta (RadioSession.linkActive): Android Auto ve solo la de la radio y no esta
+     * («Android Auto · Conectado»), y las teclas que lleguen aquí van a la radio (RadioSession.linkKey).
+     */
+    private var mediaSessionWanted = false
+
+    private val radioLink = object : com.headqlink.link.RadioSession.Link {
+        override fun linkChanged() = applyMediaSessionActive()
+
+        override fun keyToAndroidAuto(keyCode: Int): Boolean {
+            if (!commManager.isConnected) return false
+            commManager.sendKey(keyCode, true, null, "radio")
+            commManager.sendKey(keyCode, false, null, "radio")
+            return true
+        }
+    }
+
+    private fun applyMediaSessionActive() {
+        val active = com.headqlink.link.RadioSession.linkActive(mediaSessionWanted)
+        safeMediaSessionCall { if (it.isActive != active) it.isActive = active }
+    }
+
+    /** headqlink: dentro de una orden a esta sesión, quién la manda (el paquete), o null. */
+    private fun mediaSessionCaller(): String? =
+        try { mediaSession?.currentControllerInfo?.packageName } catch (_: Exception) { null }
+
+    /** headqlink: la tecla es para la radio de Qonecta+ (tiene la música, o la manda el propio Android Auto). */
+    private fun keyForRadio(keyCode: Int): Boolean =
+        com.headqlink.link.RadioSession.linkKey(keyCode, mediaSessionCaller())
+
     private var lastAaMediaMetadata: MediaPlayback.MediaMetaData? = null
     private var lastAaPlaybackPositionMs: Long = 0L
     private var lastAaPlaybackIsPlaying: Boolean? = null
@@ -1073,7 +1104,10 @@ class AapService : Service() {
         if (mediaSession == null) {
             setupMediaSession()
         }
-        safeMediaSessionCall { it.isActive = true }
+        // headqlink: activa, salvo mientras la radio de Qonecta+ tiene la música (RadioSession).
+        com.headqlink.link.RadioSession.link(radioLink)
+        mediaSessionWanted = true
+        applyMediaSessionActive()
         updateMediaSessionState(false) // Set initial PlaybackState so system knows our actions
 
         commManager.onAaMediaMetadata = { meta -> onAaMediaMetadataFromPhone(meta) }
@@ -1329,14 +1363,17 @@ class AapService : Service() {
         carKeysManager.onSessionStarted(this)
 
         // Reactivate the existing MediaSession (created in onCreate, kept alive across disconnects)
-        safeMediaSessionCall { it.isActive = true }
+        // headqlink: salvo mientras la radio de Qonecta+ tiene la música; si no suena, la suelta al conectar.
+        mediaSessionWanted = true
+        applyMediaSessionActive()
+        com.headqlink.link.RadioSession.aaSessionChanged()
         updateMediaSessionState(true)
         applyPlaceholderMediaMetadata()
 
         // Link audio focus state changes to our MediaSession state
         commManager.onAudioFocusStateChanged = { isPlaying ->
             updateMediaSessionState(isPlaying)
-            // headqlink: Android Auto toma el sonido (su música): la radio de Qonecta+, si no suena, deja de ser su fuente.
+            // headqlink: Android Auto toma el sonido (su música): la radio de Qonecta+, si no suena, suelta la música.
             com.headqlink.link.RadioSession.aaSounds(isPlaying)
         }
 
@@ -1490,6 +1527,7 @@ class AapService : Service() {
                         // Physical double triggers are handled by CommManager.sendKey deduplication.
                         if (keyEvent.action == android.view.KeyEvent.ACTION_DOWN && keyEvent.repeatCount == 0) {
                             AppLog.i("MediaButtonEvent: Processing key ${keyEvent.keyCode}")
+                            if (keyForRadio(keyEvent.keyCode)) return true
                             // Send a complete click sequence (press + release) immediately
                             commManager.sendKey(keyEvent.keyCode, true, keyEvent.downTime, "mediasession")
                             commManager.sendKey(keyEvent.keyCode, false, keyEvent.downTime, "mediasession")
@@ -1507,30 +1545,35 @@ class AapService : Service() {
 
                 override fun onPause() {
                     AppLog.i("MediaSession: Processing transport control action = KEYCODE_MEDIA_PAUSE")
+                    if (keyForRadio(android.view.KeyEvent.KEYCODE_MEDIA_PAUSE)) return
                     commManager.sendKey(android.view.KeyEvent.KEYCODE_MEDIA_PAUSE, true, null, "transport-control")
                     commManager.sendKey(android.view.KeyEvent.KEYCODE_MEDIA_PAUSE, false, null, "transport-control")
                 }
 
                 override fun onPlay() {
                     AppLog.i("MediaSession: Processing transport control action = KEYCODE_MEDIA_PLAY")
+                    if (keyForRadio(android.view.KeyEvent.KEYCODE_MEDIA_PLAY)) return
                     commManager.sendKey(android.view.KeyEvent.KEYCODE_MEDIA_PLAY, true, null, "transport-control")
                     commManager.sendKey(android.view.KeyEvent.KEYCODE_MEDIA_PLAY, false, null, "transport-control")
                 }
 
                 override fun onSkipToNext() {
                     AppLog.i("MediaSession: Processing transport control action = KEYCODE_MEDIA_NEXT")
+                    if (keyForRadio(android.view.KeyEvent.KEYCODE_MEDIA_NEXT)) return
                     commManager.sendKey(android.view.KeyEvent.KEYCODE_MEDIA_NEXT, true, null, "transport-control")
                     commManager.sendKey(android.view.KeyEvent.KEYCODE_MEDIA_NEXT, false, null, "transport-control")
                 }
 
                 override fun onSkipToPrevious() {
                     AppLog.i("MediaSession: Processing transport control action = KEYCODE_MEDIA_PREVIOUS")
+                    if (keyForRadio(android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS)) return
                     commManager.sendKey(android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS, true, null, "transport-control")
                     commManager.sendKey(android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS, false, null, "transport-control")
                 }
 
                 override fun onStop() {
                     AppLog.i("MediaSession: Processing transport control action = KEYCODE_MEDIA_STOP")
+                    if (keyForRadio(android.view.KeyEvent.KEYCODE_MEDIA_STOP)) return
                     commManager.sendKey(android.view.KeyEvent.KEYCODE_MEDIA_STOP, true, null, "transport-control")
                     commManager.sendKey(android.view.KeyEvent.KEYCODE_MEDIA_STOP, false, null, "transport-control")
                 }
@@ -1590,7 +1633,10 @@ class AapService : Service() {
         // Only deactivate it — do NOT release it. A released session can no longer
         // receive media button events, which means the keymap stops working until
         // the next connection. OpenHU keeps its session alive the entire service lifetime.
-        safeMediaSessionCall { it.isActive = false }
+        // headqlink: y la radio de Qonecta+, si no suena, suelta la música.
+        mediaSessionWanted = false
+        applyMediaSessionActive()
+        com.headqlink.link.RadioSession.aaSessionChanged()
         updateMediaSessionState(false)
         serviceScope.launch(Dispatchers.IO) {
             val rearmedAfterWiredSession = rearmWirelessAfterWiredSession()
@@ -2685,6 +2731,7 @@ class AapService : Service() {
         stopForeground(true)
         wifiLauncherManager.stop(WifiLauncherStopSequence.LAST)
         stopDummyVpn(DummyVpnPolicy.Reason.SERVICE_DESTROYED)
+        com.headqlink.link.RadioSession.unlink(radioLink)
         try {
             mediaSession?.let {
                 it.isActive = false

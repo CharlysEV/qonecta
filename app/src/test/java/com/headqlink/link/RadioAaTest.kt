@@ -3,6 +3,7 @@ package com.headqlink.link
 import android.app.NotificationManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Binder
@@ -13,6 +14,7 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.view.KeyEvent
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaSessionManager
 import androidx.media3.common.Player
@@ -42,7 +44,8 @@ import org.robolectric.shadows.ShadowProcess
 
 /**
  * La radio en Android Auto (foro #297) y su logo en los controles (#286): qué se publica (canción y emisora), los
- * estados, el árbol de favoritos y recientes, y que un «▶» sin emisora no la pone a sonar.
+ * estados, el árbol de favoritos y recientes, que un «▶» sin emisora no la pone a sonar, y cuándo tiene la radio la música
+ * de Qonecta+ (su sesión activa, la del enlace con Android Auto apartada y las teclas para ella).
  */
 @RunWith(RobolectricTestRunner::class)
 @ConscryptMode(ConscryptMode.Mode.OFF)
@@ -69,6 +72,7 @@ class RadioAaTest {
     fun release() {
         RadioPlayer.stop()
         RadioSession.browserDown()
+        RadioSession.link(null)
     }
 
     @Test
@@ -208,7 +212,8 @@ class RadioAaTest {
             // En directo: sin posición (la del flujo no es la de la canción).
             assertEquals(PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, st.position)
             assertTrue(st.actions and PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID != 0L)
-            assertTrue(session.isActive)
+            // La sesión compartida no la activa PlaybackMetadata: lo decide RadioSession (si la radio tiene la música).
+            assertFalse(session.isActive)
             // La emisora no suena: Android Auto enseña por qué.
             state = Player.STATE_IDLE
             metadata.setError("No se puede reproducir")
@@ -238,9 +243,16 @@ class RadioAaTest {
         orders.onPlay()
         orders.onSkipToNext()
         orders.onPlayFromMediaId("fav:ffff", null)
+        // Ni sus teclas (▶ o ⏯ que el propio Android Auto manda a la sesión del enlace, o las del volante).
+        assertTrue(RadioSession.linkKey(KeyEvent.KEYCODE_MEDIA_PLAY, RadioSession.ANDROID_AUTO))
+        assertTrue(RadioSession.linkKey(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, RadioSession.ANDROID_AUTO))
+        assertFalse(RadioSession.linkKey(KeyEvent.KEYCODE_MEDIA_PLAY, null))
         assertNull(RadioPlayer.current())
         assertFalse(RadioPlayer.isPlaying())
         assertEquals(PlaybackStateCompat.STATE_NONE, publishedState(session).state)
+        // Android Auto conectado a la radio no la hace activa: sin la música, no la ve entre las sesiones que suenan.
+        assertFalse(session.isActive)
+        assertFalse(RadioSession.owner())
     }
 
     @Test
@@ -327,76 +339,190 @@ class RadioAaTest {
     }
 
     @Test
-    fun qonectaIsAnAndroidAutoSourceOnlyWhileTheRadioSounds() {
+    fun qonectaIsAlwaysAnAndroidAutoSource() {
         val pm = app.packageManager
         val cn = ComponentName(app, RadioBrowserService::class.java)
-        val looper = shadowOf(Looper.getMainLooper())
-        fun on() = pm.getComponentEnabledSetting(cn) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-        // De serie, deshabilitado: sin radio, Android Auto no ve a Qonecta+ como app de música.
-        assertFalse(pm.getServiceInfo(cn, PackageManager.MATCH_DISABLED_COMPONENTS).enabled)
-        assertFalse(on())
-        // Suena: fuente ya. Parada: fuera enseguida.
-        RadioSession.radio(true, true, false)
-        assertTrue(on())
+        // Habilitado de serie: Android Auto lee sus fuentes al empezar su sesión, y uno habilitado a mitad no lo ve.
+        assertTrue(pm.getServiceInfo(cn, PackageManager.MATCH_DISABLED_COMPONENTS).enabled)
+        assertEquals(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, pm.getComponentEnabledSetting(cn))
+        // Que suene o se pare la radio no lo toca.
+        RadioSession.radio(true, true, false, false)
         RadioPlayer.stop()
-        looper.idleFor(Duration.ofMillis(RadioSession.OFF_SOON_MS - 500))
-        assertTrue(on())
-        looper.idleFor(Duration.ofMillis(600))
-        assertFalse(on())
-        // En pausa: un rato, para que ⏯ la vuelva a poner; los avisos de la radio en pausa no lo alargan.
-        RadioSession.radio(true, true, false)
-        RadioSession.radio(false, true, false)
-        looper.idleFor(Duration.ofSeconds(30))
-        RadioSession.radio(false, true, false)
-        assertTrue(on())
-        looper.idleFor(Duration.ofSeconds(31))
-        assertFalse(on())
-        // Vuelve a sonar dentro del rato: sigue de fuente.
-        RadioSession.radio(true, true, false)
-        RadioSession.radio(false, true, false)
-        looper.idleFor(Duration.ofSeconds(10))
-        RadioSession.radio(true, true, false)
-        looper.idleFor(Duration.ofMinutes(2))
-        assertTrue(on())
-        // Otra app se queda el sonido: fuera enseguida.
-        RadioSession.radio(false, true, true)
-        looper.idleFor(Duration.ofMillis(RadioSession.OFF_SOON_MS + 100))
-        assertFalse(on())
-        // En pausa y suena la música de Android Auto (Spotify) o la TV: fuera enseguida.
-        RadioSession.radio(true, true, false)
-        RadioSession.radio(false, true, false)
-        RadioSession.aaSounds(true)
-        looper.idleFor(Duration.ofMillis(RadioSession.OFF_SOON_MS + 100))
-        assertFalse(on())
-        RadioSession.radio(true, true, false)
-        RadioSession.radio(false, true, false)
-        RadioSession.otherSounds()
-        looper.idleFor(Duration.ofMillis(RadioSession.OFF_SOON_MS + 100))
-        assertFalse(on())
-        // Mientras suena, ni Android Auto ni la TV la quitan.
-        RadioSession.radio(true, true, false)
-        RadioSession.aaSounds(true)
-        RadioSession.otherSounds()
-        looper.idleFor(Duration.ofMinutes(2))
-        assertTrue(on())
-        // La variante de pruebas «radioaa siempre»: fuente también parada.
-        RadioSession.labAlways(true)
-        RadioSession.radio(false, false, false)
-        looper.idleFor(Duration.ofMinutes(2))
-        assertTrue(on())
-        RadioSession.labAlways(false)
-        looper.idleFor(Duration.ofMillis(RadioSession.OFF_SOON_MS + 100))
-        assertFalse(on())
-        // Lo que se cuenta como sonar y cuánto sigue de fuente.
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofMinutes(2))
+        assertEquals(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, pm.getComponentEnabledSetting(cn))
+        // Pruebas: «radioaa fuente no» lo quita (como en 0.3.13) y al arrancar la app vuelve.
+        RadioSession.labSource(false)
+        assertEquals(PackageManager.COMPONENT_ENABLED_STATE_DISABLED, pm.getComponentEnabledSetting(cn))
+        assertTrue(RadioSession.labStatus().startsWith("fuente no"))
+        RadioSession.sourceAtStart(app)
+        assertEquals(PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, pm.getComponentEnabledSetting(cn))
+        // Lo que se cuenta como sonar.
         assertTrue(RadioSession.sounds(true, true, Player.STATE_READY))
         assertTrue(RadioSession.sounds(true, true, Player.STATE_BUFFERING))
         assertFalse(RadioSession.sounds(true, false, Player.STATE_READY))
         assertFalse(RadioSession.sounds(true, true, Player.STATE_IDLE))
         assertFalse(RadioSession.sounds(true, true, Player.STATE_ENDED))
         assertFalse(RadioSession.sounds(false, true, Player.STATE_READY))
-        assertEquals(RadioSession.OFF_SOON_MS, RadioSession.offDelayMs(false, false))
-        assertEquals(RadioSession.OFF_SOON_MS, RadioSession.offDelayMs(true, true))
-        assertEquals(RadioSession.OFF_PAUSED_MS, RadioSession.offDelayMs(true, false))
+    }
+
+    @Test
+    fun theRadioHasTheMusicFromPlayingUntilSomethingElseSounds() {
+        val looper = shadowOf(Looper.getMainLooper())
+        val link = FakeLink()
+        RadioSession.link(link)
+        // Android Auto conectado a la radio, sin que suene: su sesión, inactiva; la del enlace, como siempre.
+        val session = RadioSession.get(app).also { RadioSession.browserUp(app) }
+        assertFalse(session.isActive)
+        assertTrue(RadioSession.linkActive(true))
+        assertFalse(RadioSession.linkActive(false))
+        // Suena: la tiene; su sesión, activa, y la del enlace se aparta.
+        RadioSession.radio(true, true, false, false)
+        assertTrue(RadioSession.owner())
+        assertTrue(session.isActive)
+        assertFalse(RadioSession.linkActive(true))
+        assertEquals(1, link.changes)
+        // En pausa o fallando: la sigue teniendo (Android Auto la enseña en pausa y ▶ la vuelve a poner).
+        RadioSession.radio(false, true, false, false)
+        assertTrue(session.isActive)
+        // Mientras suena, ni la música de Android Auto (su foco: la radio no se lo quita) ni la TV se la quitan.
+        RadioSession.radio(true, true, false, false)
+        RadioSession.aaSounds(true)
+        RadioSession.otherSounds()
+        looper.idle()
+        assertTrue(RadioSession.owner())
+        // En pausa y Android Auto pone su música (Spotify): la suelta; la del enlace vuelve.
+        RadioSession.radio(false, true, false, false)
+        RadioSession.aaSounds(true)
+        looper.idle()
+        assertFalse(RadioSession.owner())
+        assertFalse(session.isActive)
+        assertTrue(RadioSession.linkActive(true))
+        assertEquals(2, link.changes)
+        // Otra app se queda el sonido (la radio, callada): la suelta enseguida.
+        RadioSession.radio(true, true, false, false)
+        RadioSession.radio(false, true, true, false)
+        assertFalse(RadioSession.owner())
+        // Parada a mano (⏹): la sigue teniendo, parada (▶ la vuelve a poner en este viaje); parada del todo, no.
+        RadioSession.radio(true, true, false, false)
+        RadioSession.radio(false, false, false, true)
+        assertTrue(RadioSession.owner())
+        assertTrue(session.isActive)
+        RadioSession.radio(false, false, false, false)
+        assertFalse(RadioSession.owner())
+        // Android Auto empieza o acaba una sesión con la radio en pausa: la suelta; sonando, no.
+        RadioSession.radio(true, true, false, false)
+        RadioSession.aaSessionChanged()
+        looper.idle()
+        assertTrue(RadioSession.owner())
+        RadioSession.radio(false, true, false, false)
+        RadioSession.aaSessionChanged()
+        looper.idle()
+        assertFalse(RadioSession.owner())
+        // Sin Android Auto, una radio que tiene la música no suelta su sesión; al soltarla, sí.
+        RadioSession.radio(true, true, false, false)
+        RadioSession.browserDown()
+        assertTrue(RadioSession.isToken(session.sessionToken.token))
+        RadioSession.radio(false, false, false, false)
+        assertFalse(RadioSession.isToken(session.sessionToken.token))
+        // Pruebas: «radioaa enlace apartado», la del enlace inactiva siempre.
+        RadioSession.labLinkApart(true)
+        assertFalse(RadioSession.linkActive(true))
+        RadioSession.labLinkApart(false)
+        assertTrue(RadioSession.linkActive(true))
+        // Puro.
+        assertTrue(RadioSession.owns(false, true, true, false, false))
+        assertTrue(RadioSession.owns(true, false, true, false, false))
+        assertFalse(RadioSession.owns(false, false, true, false, false))
+        assertFalse(RadioSession.owns(true, false, true, true, false))
+        assertTrue(RadioSession.owns(true, false, false, false, true))
+        assertFalse(RadioSession.owns(true, false, false, false, false))
+        assertTrue(RadioSession.linkActive(true, false, false))
+        assertFalse(RadioSession.linkActive(true, true, false))
+        assertFalse(RadioSession.linkActive(true, false, true))
+        assertFalse(RadioSession.linkActive(false, false, false))
+    }
+
+    @Test
+    fun theTvTakesTheMusicFromThePausedRadioAndHasItsOwnSession() {
+        RadioSession.get(app)
+        RadioSession.radio(true, true, false, false)
+        RadioSession.radio(false, true, false, false)
+        assertTrue(RadioSession.owner())
+        val player = mock<Player> {
+            on { playWhenReady } doReturn true
+            on { playbackState } doReturn Player.STATE_READY
+        }
+        val tv = PlaybackMetadata(app, player, "TV", {}, {}, null, null)
+        try {
+            val own = PlaybackMetadata::class.java.getDeclaredField("session").apply { isAccessible = true }.get(tv) as MediaSessionCompat
+            // La TV suena con su sesión (activa: los controles del móvil y el coche por Bluetooth) y la radio suelta la
+            // música: Android Auto no la enseña mientras suena la TV.
+            assertTrue(own.isActive)
+            assertFalse(RadioSession.owner())
+            assertFalse(RadioSession.get(app).isActive)
+        } finally {
+            tv.close()
+        }
+    }
+
+    @Test
+    fun keysGoToTheRadioOnlyWhileItHasTheMusic() {
+        val link = FakeLink()
+        RadioSession.link(link)
+        val session = RadioSession.get(app)
+        val orders = sessionField(session, "mCallback") as MediaSessionCompat.Callback
+        fun press(code: Int) = Intent(Intent.ACTION_MEDIA_BUTTON).putExtra(Intent.EXTRA_KEY_EVENT, KeyEvent(KeyEvent.ACTION_DOWN, code))
+        // Sin la música en la radio: las del volante o los auriculares, a Android Auto como siempre, también si Android
+        // las manda a la sesión de la radio.
+        assertFalse(RadioSession.linkKey(KeyEvent.KEYCODE_MEDIA_NEXT, null))
+        assertTrue(orders.onMediaButtonEvent(press(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)))
+        assertEquals(listOf(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE), link.keys)
+        // Con la música en la radio: a la radio (sin emisora, ⏭ no pone nada), y la sesión de la radio se las queda.
+        RadioSession.radio(true, true, false, false)
+        assertTrue(RadioSession.linkKey(KeyEvent.KEYCODE_MEDIA_NEXT, null))
+        assertFalse(orders.onMediaButtonEvent(press(KeyEvent.KEYCODE_MEDIA_NEXT)))
+        assertEquals(1, link.keys.size)
+        assertNull(RadioPlayer.current())
+        // Las que no son de la radio (el asistente), a Android Auto; las que manda el propio Android Auto, nunca de vuelta.
+        assertFalse(RadioSession.linkKey(KeyEvent.KEYCODE_VOICE_ASSIST, null))
+        RadioSession.radio(false, false, false, false)
+        assertTrue(RadioSession.linkKey(KeyEvent.KEYCODE_VOICE_ASSIST, RadioSession.ANDROID_AUTO))
+        // Android Auto sin conectar: la radio se queda la tecla (sin emisora, nada).
+        link.connected = false
+        assertFalse(orders.onMediaButtonEvent(press(KeyEvent.KEYCODE_MEDIA_PLAY)))
+        assertNull(RadioPlayer.current())
+        // Puro.
+        assertEquals(RadioSession.KEY_PLAY, RadioSession.keyOrder(KeyEvent.KEYCODE_MEDIA_PLAY, true))
+        assertEquals(RadioSession.KEY_PAUSE, RadioSession.keyOrder(KeyEvent.KEYCODE_MEDIA_PAUSE, false))
+        assertEquals(RadioSession.KEY_PAUSE, RadioSession.keyOrder(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, true))
+        assertEquals(RadioSession.KEY_PLAY, RadioSession.keyOrder(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, false))
+        assertEquals(RadioSession.KEY_PLAY, RadioSession.keyOrder(KeyEvent.KEYCODE_HEADSETHOOK, false))
+        assertEquals(RadioSession.KEY_NEXT, RadioSession.keyOrder(KeyEvent.KEYCODE_MEDIA_NEXT, false))
+        assertEquals(RadioSession.KEY_PREVIOUS, RadioSession.keyOrder(KeyEvent.KEYCODE_MEDIA_PREVIOUS, false))
+        assertEquals(RadioSession.KEY_STOP, RadioSession.keyOrder(KeyEvent.KEYCODE_MEDIA_STOP, false))
+        assertEquals(RadioSession.KEY_NONE, RadioSession.keyOrder(KeyEvent.KEYCODE_VOICE_ASSIST, false))
+        assertEquals(RadioSession.ROUTE_AA, RadioSession.keyRoute(false, false, RadioSession.KEY_PLAY))
+        assertEquals(RadioSession.ROUTE_RADIO, RadioSession.keyRoute(true, false, RadioSession.KEY_PLAY))
+        assertEquals(RadioSession.ROUTE_AA, RadioSession.keyRoute(true, false, RadioSession.KEY_NONE))
+        assertEquals(RadioSession.ROUTE_RADIO, RadioSession.keyRoute(false, true, RadioSession.KEY_NEXT))
+        assertEquals(RadioSession.ROUTE_DROP, RadioSession.keyRoute(true, true, RadioSession.KEY_NONE))
+    }
+
+    /** La sesión del enlace con Android Auto, de mentira: cuenta los cambios y apunta las teclas que le llegan. */
+    private class FakeLink : RadioSession.Link {
+        var changes = 0
+        var connected = true
+        val keys = mutableListOf<Int>()
+
+        override fun linkChanged() {
+            changes++
+        }
+
+        override fun keyToAndroidAuto(keyCode: Int): Boolean {
+            if (!connected) return false
+            keys.add(keyCode)
+            return true
+        }
     }
 
     @Test

@@ -851,11 +851,11 @@ Impostazioni › «Schermo dell'auto» › «Riprendi la radio alla connessione�
 ### La radio in Android Auto
 
 Mentre suona la radio (o «La mia musica») di Qonecta+, **Android Auto la mostra come ciò che sta suonando**: il brano,
-se la stazione lo indica, o il nome della stazione, con il suo logo. Lo stesso compare nella notifica del telefono e,
-via Bluetooth, nel quadro strumenti dell'auto (il logo solo se l'auto mostra le copertine via Bluetooth). Mentre suona,
-**Qonecta+** compare anche tra le app musicali di Android Auto, con le tue stazioni **Preferiti** (quelle con ★) e
-**Recenti**: toccane una e passi a quella. Con la radio spenta non compare, così Android Auto non salta a Qonecta+
-mentre suona Spotify o un'altra app: la radio si avvia in auto, da Radio. Qonecta+ **non avvia mai la radio da sola**
+se la stazione lo indica, o il nome della stazione, con il suo logo. I suoi tasti, e quelli del volante o delle
+cuffie, comandano allora la radio (⏯, stazione precedente e successiva) finché non metti altra musica (Spotify, la TV o
+un'altra app). Lo stesso compare nella notifica del telefono e, via Bluetooth, nel quadro strumenti dell'auto (il logo
+solo se l'auto mostra le copertine via Bluetooth). Tra le app musicali di Android Auto compare **Qonecta+**, con le tue
+stazioni **Preferiti** (quelle con ★) e **Recenti**: toccane una e parte. Qonecta+ **non avvia mai la radio da sola**
 alla connessione: suona ciò che scegli, e ciò che suonava allo spegnimento solo con «Riprendi la radio alla
 connessione».
 
