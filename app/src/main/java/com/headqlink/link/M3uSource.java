@@ -862,10 +862,28 @@ final class M3uSource {
         return out;
     }
 
-    /** Puro: al revés que hideLogin (las marcas, con el usuario y la contraseña de la lista). */
+    /**
+     * Puro: al revés que hideLogin (las marcas, con el usuario y la contraseña de la lista). Si falta (su lista ya no
+     * tiene usuario: quitada, copia de ajustes en otro móvil, clave del Keystore perdida), la marca se queda: mejor un
+     * error al abrirlo que una URL que parece buena (http://h/live///1.ts).
+     */
     static String showLogin(String url, Login login) {
         if (url == null || login == null) return url;
-        return url.replace(USER_MARK, login.user).replace(PASS_MARK, login.pass);
+        String out = url;
+        if (!login.user.isEmpty()) out = out.replace(USER_MARK, login.user);
+        if (!login.pass.isEmpty()) out = out.replace(PASS_MARK, login.pass);
+        return out;
+    }
+
+    /**
+     * Puro: dónde está en los favoritos (favs) el canal de URL url de una lista con usuario login, o -1. savedKey: en la
+     * pestaña ★, su URL tal como está guardada (con marcas aunque su usuario ya no exista, para poder quitarlo); si no,
+     * null y se busca sin el usuario (hideLogin) o, de antes, con él dentro.
+     */
+    static int favoriteIndex(JSONArray favs, String savedKey, String url, Login login) {
+        if (savedKey != null) return Favorites.indexOf(favs, savedKey);
+        int i = Favorites.indexOf(favs, hideLogin(url, login));
+        return i >= 0 ? i : Favorites.indexOf(favs, url);
     }
 
     /**

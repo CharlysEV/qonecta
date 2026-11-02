@@ -307,6 +307,31 @@ class M3uSourceTest {
         assertEquals(0, M3uSource.hideInFavorites(favs, login, "id9"))
     }
 
+    @Test
+    fun favoriteWhoseLoginIsGoneCanStillBeRemoved() {
+        val login = M3uSource.Login("usr9", "clave9")
+        val url = "http://tv.example.com:8080/live/usr9/clave9/1.ts"
+        val hidden = M3uSource.hideLogin(url, login)
+        val favs = JSONArray().put(Favorites.item("Otro", "https://b.example/1.m3u8", "", "", null))
+            .put(Favorites.item("Canal", hidden, "", "", null).put("login", "idX"))
+        // Su usuario ya no está (lista quitada, copia de ajustes en otro móvil): las marcas se quedan, no salen "".
+        val shown = M3uSource.showLogin(hidden, M3uSource.Login.NONE)
+        assertEquals(hidden, shown)
+        assertEquals("http://h/usr9/{p}/1", M3uSource.showLogin("http://h/{u}/{p}/1", M3uSource.Login("usr9", "")))
+        // En la pestaña ★, por su clave guardada: sale con estrella y se quita (sin añadir un duplicado roto).
+        val i = M3uSource.favoriteIndex(favs, hidden, shown, M3uSource.Login.NONE)
+        assertEquals(1, i)
+        favs.remove(i)
+        assertEquals(1, favs.length())
+        assertEquals(-1, M3uSource.favoriteIndex(favs, hidden, shown, M3uSource.Login.NONE))
+        // Desde su lista (con usuario): por la URL sin él; uno de antes, con él dentro; una lista sin usuario, tal cual.
+        favs.put(Favorites.item("Canal", hidden, "", "", null).put("login", "idX"))
+        assertEquals(1, M3uSource.favoriteIndex(favs, null, url, login))
+        assertEquals(-1, M3uSource.favoriteIndex(favs, null, "http://tv.example.com:8080/live/usr9/clave9/2.ts", login))
+        assertEquals(0, M3uSource.favoriteIndex(JSONArray().put(Favorites.item("Canal", url, "", "", null)), null, url, login))
+        assertEquals(0, M3uSource.favoriteIndex(favs, null, "https://b.example/1.m3u8", M3uSource.Login.NONE))
+    }
+
     /** Un servidor HTTP mínimo en el bucle local: ruta y cabecera Authorization → (código, cabeceras, cuerpo). */
     private class TinyHttp(addr: InetAddress, private val route: (String, String) -> Triple<Int, Map<String, String>, ByteArray>) :
         AutoCloseable {

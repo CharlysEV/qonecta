@@ -59,6 +59,11 @@ final class IptvScreen implements CarScreen {
          */
         M3uSource.Login login = M3uSource.Login.NONE;
         String loginId = "";
+        /**
+         * En la pestaña ★: su URL tal como está guardada en favoritos (con marcas si es de una lista con usuario), su
+         * clave para marcarlo y quitarlo aunque su usuario ya no exista; null en las demás.
+         */
+        String favKey;
     }
 
     /** Delante de una fuente que no es un vídeo directo (YouTube, Twitch, la web de la cadena). */
@@ -388,6 +393,7 @@ final class IptvScreen implements CarScreen {
                 }
                 for (String u : Favorites.urls(o)) ch.urls.add(ch.loginId.isEmpty() ? u : M3uSource.showLogin(u, ch.login));
                 ch.url = ch.urls.get(0);
+                ch.favKey = o.optString("url");
                 ch.epg = o.optString("epg", null);
                 shown.add(ch);
             }
@@ -397,9 +403,9 @@ final class IptvScreen implements CarScreen {
         if (adapter != null) adapter.notifyDataSetChanged();
     }
 
-    /** En favoritos: guardado sin el usuario de su lista (o, de antes, con él). */
+    /** En favoritos: guardado sin el usuario de su lista (o, de antes, con él); en la pestaña ★, por su clave guardada. */
     private boolean isFavorite(Channel ch) {
-        return Favorites.contains(favs, M3uSource.hideLogin(ch.url, ch.login)) || Favorites.contains(favs, ch.url);
+        return M3uSource.favoriteIndex(favs, ch.favKey, ch.url, ch.login) >= 0;
     }
 
     @SuppressWarnings("NotifyDataSetChanged")
@@ -416,10 +422,10 @@ final class IptvScreen implements CarScreen {
             // No pasa con cadenas.
         }
         boolean in;
-        int old = key.equals(ch.url) ? -1 : Favorites.indexOf(favs, ch.url);
-        if (old >= 0) {
-            // Uno de antes, con el usuario dentro: quitarlo.
-            favs.remove(old);
+        // Ya dentro (también uno de antes con el usuario en la URL, o en ★ uno cuya lista ya no tiene usuario): quitarlo.
+        int saved = M3uSource.favoriteIndex(favs, ch.favKey, ch.url, ch.login);
+        if (saved >= 0) {
+            favs.remove(saved);
             in = false;
         } else {
             in = Favorites.toggle(favs, item);
