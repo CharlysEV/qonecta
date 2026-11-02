@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_cable_wifi_switch">Passa a Wi-Fi Direct se il cavo si blocca</string>
+    <string name="hql_cable_wifi_switch_sum">Se la porta USB dell\'auto si blocca durante il viaggio, Qonecta+ continua in Wi-Fi Direct fino alla fine del viaggio. La connessione scelta non cambia: il viaggio successivo torna al cavo.</string>
+    <string name="hql_cable_wifi_title">Il cavo si è bloccato: continuo in Wi-Fi Direct</string>
+    <string name="hql_cable_wifi_text">La porta USB dell\'auto si è bloccata. Qonecta+ continua in Wi-Fi Direct fino alla fine del viaggio e al viaggio successivo torna al cavo. Per tornare subito al cavo, scegli «Cavo USB» nel widget o in «Cambia».</string>
+</resources>

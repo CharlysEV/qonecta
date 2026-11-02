@@ -39,6 +39,11 @@ public final class LinkState {
      * Direct elegidas): al quitar el cable se vuelve a ella, así que no es un cambio pendiente.
      */
     static volatile boolean usbOverride;
+    /**
+     * El cable se cayó a mitad de viaje y el enlace sigue por Wi-Fi Direct hasta el final del viaje (CableFallback): la
+     * conexión elegida sigue siendo el cable. Elegir el cable a mano («Cambiar» o el widget) vuelve a él ya.
+     */
+    static volatile boolean cableFallback;
     /** El motor no pudo abrir el UDP 18463: otra app (QDLink abierto) lo tiene. Lo enseña la comprobación de requisitos. */
     static volatile boolean udpBusy;
     /**
@@ -78,8 +83,16 @@ public final class LinkState {
             activeLinkMode = "";
             activeEngine = "";
             usbOverride = false;
+            cableFallback = false;
             udpBusy = false;
         }
+        changed();
+    }
+
+    /** Empieza o termina el paso a Wi-Fi Direct por el cable caído (LinkService). */
+    static void setCableFallback(boolean on) {
+        if (cableFallback == on) return;
+        cableFallback = on;
         changed();
     }
 

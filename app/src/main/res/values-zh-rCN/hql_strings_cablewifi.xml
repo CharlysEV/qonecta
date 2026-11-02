@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_cable_wifi_switch">数据线断开时改用 Wi-Fi Direct</string>
+    <string name="hql_cable_wifi_switch_sum">如果行程中车辆的 USB 接口卡死，Qonecta+ 会改用 Wi-Fi Direct 直到本次行程结束。所选的连接方式不变：下次行程会重新使用数据线。</string>
+    <string name="hql_cable_wifi_title">数据线已断开：改用 Wi-Fi Direct 继续</string>
+    <string name="hql_cable_wifi_text">车辆的 USB 接口已卡死。Qonecta+ 会用 Wi-Fi Direct 继续到本次行程结束，下次行程再用数据线。如需立即改回数据线，请在小组件或“更改”中选择“USB 数据线”。</string>
+</resources>

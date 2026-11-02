@@ -165,6 +165,11 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
         switchRow(Str.get(R.string.hql_usb_auto_switch),
                 () -> Str.get(cfg.usbAutoConnect() ? R.string.hql_aj_usb_auto_sum : R.string.hql_aj_usb_auto_off_sum),
                 cfg::usbAutoConnect, on -> AutoConnect.setUsb(this, cfg, on));
+        switchRow(Str.get(R.string.hql_cable_wifi_switch), () -> Str.get(R.string.hql_cable_wifi_switch_sum),
+                cfg::cableWifiFallback, on -> {
+                    cfg.putBool(Config.CABLE_WIFI_FALLBACK, on);
+                    L.i("«Pasar a Wi-Fi Direct si el cable se cae»: " + (on ? "sí" : "no"));
+                });
         row(Str.get(R.string.hql_car_wait_title), () -> carWaitLabel(cfg.carWaitMin())).setOnClickListener(v -> pickCarWait());
         View server = row(Str.get(R.string.hql_aa_server_start_title),
                 () -> Str.get(cfg.aaServerManual() ? R.string.hql_aa_server_start_manual : R.string.hql_aa_server_start_auto));

@@ -25,7 +25,8 @@ import java.net.InetAddress;
  * Cable USB (experimental, UsbLink): con la conexión «Cable USB» o en cuanto se enchufa un accesorio del coche
  * (Neusoft / QDriveLink: UsbAccessoryActivity → ACTION_USB_ATTACHED), el cable tiene prioridad: se para el Wi-Fi
  * (descubrimiento, intento y sesión) y la sesión va por el accesorio, con el mismo Android Auto y el mismo ciclo de
- * vida. Al quitar el cable, «coche perdido» y, si la conexión elegida era otra, vuelve el Wi-Fi.
+ * vida. Al quitar el cable, «coche perdido» y, si la conexión elegida era otra, vuelve el Wi-Fi. Si el puerto USB del
+ * coche se cuelga a mitad de viaje, Wi-Fi Direct hasta el final del viaje (CableFallback), sin cambiar la elegida.
  */
 public class LinkService extends Service implements UdpDiscovery.Listener, SspSession.Listener {
     static final String ACTION_STOP = "com.headqlink.link.STOP";
@@ -107,6 +108,24 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
      */
     private final LinkLifecycle life = new LinkLifecycle();
     private final Runnable lifeTimer = this::onLifeTimer;
+    /**
+     * Paso solo a Wi-Fi Direct si el puerto USB del coche se cuelga a mitad de viaje (puro: decide; aquí se ejecuta). Solo
+     * en el hilo principal; su temporizador es cableFallbackTimer.
+     */
+    private final CableFallback cableFallback = new CableFallback();
+    private final Runnable cableFallbackTimer = this::onCableFallbackTimer;
+    /**
+     * El cable se cayó en este viaje y se sigue por Wi-Fi: el accesorio del coche no se vuelve a abrir (UsbLink retenido)
+     * hasta el viaje siguiente o hasta elegir el cable a mano.
+     */
+    private boolean usbHeld;
+    /** Ya en Wi-Fi Direct por el cable caído: el aviso en la pantalla del coche sale con la primera sesión. */
+    private boolean cableNoticePending;
+    /**
+     * El aviso del coche, justo después del cartel de la imagen (VideoHub lo pone a los 4 s del vídeo): lo sustituye y se ve
+     * sus 8 s (CarUi.VIDEO_INFO_MS).
+     */
+    private static final long CABLE_NOTICE_DELAY_MS = 4_500;
     /** Motor original: último anuncio del coche pasado al ciclo de vida (onCarBroadcast, con su candado). */
     private long lastHeardPostMs;
     /** Android Auto ya cerrado o aparcado para el guardián (shutdownAll): onDestroy no lo repite. */
@@ -255,6 +274,66 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         main.removeCallbacks(lifeTimer);
         long dl = life.deadlineMs();
         if (dl >= 0 && !stopping) main.postDelayed(lifeTimer, Math.max(0, dl - now()));
+    }
+
+    // ---------------------------------------------------------------- cable caído: Wi-Fi Direct (CableFallback)
+
+    /** Hilo principal: motivos al log, el temporizador y, si toca, el paso a Wi-Fi Direct. */
+    private void applyCableFallback(CableFallback.Decision d) {
+        if (stopping) return;
+        for (String r : d.reasons()) L.i("cable → Wi-Fi Direct: " + r);
+        main.removeCallbacks(cableFallbackTimer);
+        long at = cableFallback.timerAtMs();
+        if (at >= 0) main.postDelayed(cableFallbackTimer, Math.max(0, at - now()));
+        if (d.toWifi()) fallBackToWifiDirect();
+        // Con un atasco abierto que acabará en Wi-Fi Direct, sin el aviso «la app del coche se ha colgado» (UsbDiagnosis).
+        long t = now();
+        UsbDiagnosis.hangHandled = cableFallback.cableHung(t) && cableFallback.handlesHang(t, cableEnv());
+    }
+
+    private void onCableFallbackTimer() {
+        if (stopping) return;
+        applyCableFallback(cableFallback.timer(now(), cableEnv()));
+    }
+
+    /** Lo que mira el paso a Wi-Fi Direct al decidir: el ajuste, la conexión elegida y el Bluetooth del coche. */
+    private CableFallback.Env cableEnv() {
+        return new CableFallback.Env(cfg.cableWifiFallback(), usbActive && Config.LINK_USB.equals(wifiLinkMode),
+                CarBluetooth.audioNow(this));
+    }
+
+    /**
+     * El cable se ha caído a mitad de viaje (CableFallback): Wi-Fi Direct hasta el final del viaje, sin tocar la conexión
+     * elegida (el viaje siguiente vuelve al cable). Por el mismo camino que el cambio a mano del widget (switchLink): el
+     * vídeo y Android Auto siguen vivos esperando al coche, y el accesorio ya no se abre (UsbLink retenido). Aviso en el
+     * móvil ya, y en la pantalla del coche con la primera sesión por Wi-Fi Direct.
+     */
+    private void fallBackToWifiDirect() {
+        if (stopping || usb == null || !usbActive) return;
+        String title = Str.get(R.string.hql_cable_wifi_title);
+        L.w("cable caído: paso a Wi-Fi Direct hasta el final del viaje (la conexión elegida sigue siendo el cable USB; para"
+                + " volver ya, elige «Cable USB» en el widget o en «Cambiar»)");
+        holdUsb("el cable se ha caído: sigo por Wi-Fi Direct");
+        usb.deactivate("el cable se ha caído: sigo por Wi-Fi Direct");
+        startWifi();
+        LinkState.setCableFallback(true);
+        afterSwitch(false);
+        cableNoticePending = true;
+        UsbBusyNotice.showDiagnosis(this, title, Str.get(R.string.hql_cable_wifi_text));
+        setStatus(title);
+    }
+
+    /** El accesorio del coche no se abre (cable caído en este viaje) hasta {@link #releaseUsb}. */
+    private void holdUsb(String why) {
+        if (usbHeld || usb == null) return;
+        usbHeld = true;
+        usb.hold(why);
+    }
+
+    private void releaseUsb(String why) {
+        if (!usbHeld || usb == null) return;
+        usbHeld = false;
+        usb.release(why);
     }
 
     /** Arranque anticipado del servidor de AA (Bluetooth del coche o coche anunciado, móvil desbloqueado). */
@@ -478,6 +557,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
             // La resolución del viaje sale de cómo le fue a este móvil en los anteriores (ThermalResolution).
             ThermalResolution.reset(this);
             UsbDiagnosis.reset();
+            // Viaje nuevo: si el cable se cayó en el anterior, vuelve a ser el enlace (la conexión elegida no cambió).
+            cableFallback.startTrip();
             ThermalGuard.resetTripPeak();
             PhoneCall.watch(this);
             QdTrace.verbose = cfg.diagTrace();
@@ -547,9 +628,12 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         }
     }
 
-    /** Wi-Fi (zona Wi-Fi o Wi-Fi Direct) con el motor configurado al arrancar; también al volver de un cable quitado. */
+    /**
+     * Wi-Fi (zona Wi-Fi o Wi-Fi Direct) con el motor configurado al arrancar; también al volver de un cable quitado. Con
+     * el cable caído a mitad de viaje (CableFallback), Wi-Fi Direct en lugar del cable elegido.
+     */
     private void startWifi() {
-        String linkMode = wifiLinkMode;
+        String linkMode = cableFallback.linkFor(wifiLinkMode);
         String engine = wifiEngine;
         usbActive = false;
         acquireWifiLocks();
@@ -641,9 +725,23 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
      */
     private void switchLink(String target, String from) {
         if (stopping || usb == null) return;
-        String was = wifiLinkMode;
+        // Con el cable caído (CableFallback), el enlace va por Wi-Fi Direct aunque la conexión elegida siga siendo el cable.
+        String was = cableFallback.linkFor(wifiLinkMode);
         boolean toUsb = Config.LINK_USB.equals(target);
+        if (cableFallback.onManualChoice(now())) {
+            // El cable se cayó en este viaje (o está atascado): manda lo elegido a mano, y ya no se cambia solo hasta el viaje
+            // siguiente. El cable se vuelve a abrir; con una Wi-Fi, el accesorio sigue sin abrirse (sigue colgado).
+            L.i("cable → Wi-Fi Direct: " + Ui.linkTitle(target) + " elegido a mano (" + from + "): manda lo elegido; ya no"
+                    + " cambio solo de conexión en este viaje");
+            main.removeCallbacks(cableFallbackTimer);
+            LinkState.setCableFallback(false);
+            cableNoticePending = false;
+            UsbDiagnosis.hangHandled = false;
+            if (toUsb) releaseUsb("cable USB elegido a mano");
+            else holdUsb("cable atascado y " + Ui.linkTitle(target) + " elegido a mano");
+        }
         if (target.equals(was) && usbActive == toUsb) {
+            wifiLinkMode = target;
             L.i("conexión: " + Ui.linkTitle(target) + " (" + from + "): ya es la del enlace");
             return;
         }
@@ -662,7 +760,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
             return;
         }
         if (usbActive) {
-            if (usb.isBusy()) {
+            // Con el cable atascado y una Wi-Fi elegida a mano (retenido), la sesión muda del cable no tiene prioridad.
+            if (usb.isBusy() && !usbHeld) {
                 L.i("conexión: " + Ui.linkTitle(target) + " (" + from + "); el cable USB del coche está en uso y tiene"
                         + " prioridad: vuelvo a " + Ui.linkTitle(target) + " al quitarlo");
                 LinkState.setActiveTransport(Config.LINK_USB, Config.ENGINE_QDAUTO, true);
@@ -701,6 +800,12 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
     /** Hilo principal: accesorio del coche (actividad del accesorio o sondeo) con el servicio en marcha. */
     private void onUsbCar(android.hardware.usb.UsbAccessory acc, String why) {
         if (stopping || usb == null) return;
+        if (usbHeld) {
+            // El cable se cayó en este viaje (CableFallback): sigue la Wi-Fi hasta el viaje siguiente o hasta elegir el cable.
+            L.i("cable USB: " + why + ": no lo abro (el cable se cayó en este viaje; para volver a él, elige «Cable USB» en el"
+                    + " widget o en «Cambiar»)");
+            return;
+        }
         if (!usbActive) {
             L.i("cable USB: " + why + ": tiene prioridad sobre el Wi-Fi");
             startUsb(why);
@@ -718,9 +823,24 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         }
 
         @Override
+        public void onCarSeen(String name) {
+            // Se abrió el accesorio: ha vuelto (para el paso a Wi-Fi Direct, ya no cuentan los 10 s sin él).
+            applyCableFallback(cableFallback.onAccessoryBack(now()));
+            super.onCarSeen(name);
+        }
+
+        @Override
+        public void onUsbSessionEnd(CableFallback.End end) {
+            if (stopping || !usbActive) return;
+            applyCableFallback(cableFallback.onSessionEnd(now(), end, cableEnv()));
+        }
+
+        @Override
         public void onUsbGone(String why) {
             if (stopping || !usbActive) return;
             if (Config.LINK_USB.equals(wifiLinkMode)) {
+                // Tras un atasco, si el accesorio no vuelve en 10 s: Wi-Fi Direct (CableFallback).
+                applyCableFallback(cableFallback.onAccessoryGone(now()));
                 L.i("cable USB fuera (" + why + "): espero a que se vuelva a enchufar");
                 // Quitar el cable suele ser bajarse del coche: la espera, más corta (LinkLifecycle.UNPLUGGED_WAIT_MS).
                 apply(life.cableGone(now()));
@@ -1184,6 +1304,7 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         main.removeCallbacks(relatchTick);
         life.close();
         main.removeCallbacks(lifeTimer);
+        main.removeCallbacks(cableFallbackTimer);
         // Cerrado sin pasar por shutdownAll (p. ej. sin poder pasar a primer plano) con AA en pausa: que no quede
         // aparcado y con su servidor encendido sin nadie que lo cierre.
         if (!aaClosed && AaPark.parked && !AaGuardService.active) closeAa(false);
@@ -1253,6 +1374,13 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         NesScreen.carPresent(true);
         // El Bluetooth del coche, por su dirección (para reconocerlo aunque se llame de otra forma).
         CarBluetooth.learn(this);
+        if (cableNoticePending && !usbActive) {
+            // Primera sesión por Wi-Fi Direct tras caerse el cable: el aviso en la pantalla del coche, ahora que se ve.
+            cableNoticePending = false;
+            main.postDelayed(() -> {
+                if (!stopping) CarUi.videoInfoText(Str.get(R.string.hql_cable_wifi_title));
+            }, CABLE_NOTICE_DELAY_MS);
+        }
         return life.carConnected(now(), env());
     }
 

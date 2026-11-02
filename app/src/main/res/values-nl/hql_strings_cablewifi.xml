@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_cable_wifi_switch">Overschakelen op Wi-Fi Direct als de kabel uitvalt</string>
+    <string name="hql_cable_wifi_switch_sum">Als de USB-poort van de auto halverwege de rit vastloopt, gaat Qonecta+ tot het einde van de rit verder via Wi-Fi Direct. De gekozen verbinding verandert niet: de volgende rit gebruikt weer de kabel.</string>
+    <string name="hql_cable_wifi_title">De kabel is uitgevallen: ik ga verder via Wi-Fi Direct</string>
+    <string name="hql_cable_wifi_text">De USB-poort van de auto is vastgelopen. Qonecta+ gaat tot het einde van de rit verder via Wi-Fi Direct en gebruikt bij de volgende rit weer de kabel. Wil je nu terug naar de kabel, kies dan „USB-kabel” in de widget of bij „Wijzigen”.</string>
+</resources>

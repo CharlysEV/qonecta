@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_cable_wifi_switch">Pasar a Wi-Fi Direct si el cable se cae</string>
+    <string name="hql_cable_wifi_switch_sum">Si el puerto USB del coche se cuelga a mitad de viaje, Qonecta+ sigue por Wi-Fi Direct hasta el final del viaje. La conexión elegida no cambia: el viaje siguiente vuelve al cable.</string>
+    <string name="hql_cable_wifi_title">El cable se ha caído: sigo por Wi-Fi Direct</string>
+    <string name="hql_cable_wifi_text">El puerto USB del coche se ha quedado colgado. Qonecta+ sigue por Wi-Fi Direct hasta el final del viaje y en el siguiente vuelve al cable. Para volver ya al cable, elige «Cable USB» en el widget o en «Cambiar».</string>
+</resources>

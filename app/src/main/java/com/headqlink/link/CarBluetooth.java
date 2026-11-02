@@ -84,6 +84,40 @@ final class CarBluetooth {
         return false;
     }
 
+    /**
+     * ¿Sigue conectado el Bluetooth del coche? Por los perfiles de audio del móvil (A2DP o manos libres conectados: en el
+     * coche, los suyos), para el paso a Wi-Fi Direct con el cable caído (CableFallback). Sin el permiso «Dispositivos
+     * cercanos» (Android 12+), por las salidas de audio Bluetooth (AudioManager no lo pide); UNKNOWN si Android no contesta.
+     */
+    @SuppressWarnings("MissingPermission")
+    static CableFallback.Bt audioNow(Context ctx) {
+        Context app = ctx.getApplicationContext();
+        if (android.os.Build.VERSION.SDK_INT < 31
+                || app.checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+            try {
+                BluetoothManager bm = app.getSystemService(BluetoothManager.class);
+                BluetoothAdapter adapter = bm == null ? null : bm.getAdapter();
+                if (adapter != null) {
+                    boolean on = adapter.isEnabled();
+                    return CableFallback.btFrom(on, on ? adapter.getProfileConnectionState(BluetoothProfile.A2DP) : 0,
+                            on ? adapter.getProfileConnectionState(BluetoothProfile.HEADSET) : 0);
+                }
+            } catch (RuntimeException e) {
+                // Sigue por las salidas de audio.
+            }
+        }
+        try {
+            android.media.AudioManager am = app.getSystemService(android.media.AudioManager.class);
+            if (am == null) return CableFallback.Bt.UNKNOWN;
+            android.media.AudioDeviceInfo[] outs = am.getDevices(android.media.AudioManager.GET_DEVICES_OUTPUTS);
+            int[] types = new int[outs.length];
+            for (int i = 0; i < outs.length; i++) types[i] = outs[i].getType();
+            return CableFallback.btFromAudio(types);
+        } catch (RuntimeException e) {
+            return CableFallback.Bt.UNKNOWN;
+        }
+    }
+
     /** Con la sesión del coche en marcha: pregunta a Android qué hay conectado por A2DP y apunta el del coche. */
     static void learn(Context ctx) {
         Context app = ctx.getApplicationContext();

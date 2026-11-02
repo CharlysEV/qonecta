@@ -37,6 +37,8 @@ public class SetupActivity extends Activity {
     private boolean resumed;
     /** Ya se avisó de que la conexión nueva se aplica al volver a conectar. */
     private boolean warnedPending;
+    /** El usuario tocó una conexión en esta pantalla (no solo la dejó como estaba). */
+    private boolean linkPicked;
     private boolean responsibilityAccepted;
     /** Primera instalación: el coche elegido (perfil de batería de CarCloudStore), o null si aún no. */
     private String carProfile;
@@ -196,6 +198,7 @@ public class SetupActivity extends Activity {
 
     /** Con el servicio en marcha, otra conexión se aplica al volver a conectar: se dice una vez. */
     private void warnIfPending() {
+        if (backToCable()) return;
         if (warnedPending || !LinkState.running || LinkState.activeLinkMode.isEmpty()
                 || LinkState.activeLinkMode.equals(linkMode)) {
             return;
@@ -203,6 +206,23 @@ public class SetupActivity extends Activity {
         warnedPending = true;
         L.i("conexión: " + linkMode + " (se aplica al volver a conectar; ahora " + LinkState.activeLinkMode + ")");
         android.widget.Toast.makeText(this, Str.get(R.string.hql_applies_on_reconnect), android.widget.Toast.LENGTH_LONG).show();
+    }
+
+    /**
+     * El cable se cayó en este viaje y se sigue por Wi-Fi Direct (CableFallback): tocar aquí «Cable USB» vuelve ya al
+     * cable, como en el widget (LinkService.ACTION_SET_LINK). true si se pidió.
+     */
+    private boolean backToCable() {
+        if (!linkPicked || !LinkState.running || !LinkState.cableFallback || !Config.LINK_USB.equals(linkMode)) return false;
+        linkPicked = false;
+        L.i("conexión: cable USB elegido a mano en «Cambiar» con el cable caído: vuelvo ya al cable");
+        try {
+            startService(new Intent(this, LinkService.class).setAction(LinkService.ACTION_SET_LINK)
+                    .putExtra(LinkService.EXTRA_FROM, "Cambiar"));
+        } catch (RuntimeException e) {
+            L.w("conexión: no se pudo volver al cable: " + e);
+        }
+        return true;
     }
 
     // ---------------------------------------------------------------- paso 2: modo
@@ -287,6 +307,7 @@ public class SetupActivity extends Activity {
             opt.setSelected(lm.equals(linkMode));
             opt.setOnClickListener(v -> {
                 linkMode = lm;
+                linkPicked = true;
                 for (int i = 0; i < list.getChildCount(); i++) list.getChildAt(i).setSelected(list.getChildAt(i) == v);
             });
             list.addView(opt);

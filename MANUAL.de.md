@@ -384,6 +384,11 @@ Fahrten ist das die empfohlene Verbindung für „Auto erweitert“.
   nutzen, wähle mit „Ändern“ die Verbindung „USB-Kabel“.
 - Das Kabel abzuziehen ist, als würde das Fahrzeug wegfahren (30 s lang bleibt das Video aktiv, dann wird Android Auto
   pausiert); steckst du es wieder ein, geht es sofort weiter.
+- **Hängt sich der USB-Anschluss des Fahrzeugs während der Fahrt auf** (er liest nichts mehr und erholt sich nicht),
+  läuft Qonecta+ von selbst bis zum Ende der Fahrt über **Wi-Fi Direct** weiter, mit dem Hinweis „Kabel ausgefallen:
+  weiter über Wi-Fi Direct“ im Fahrzeug und auf dem Handy; bei der nächsten Fahrt wird wieder das Kabel genutzt, und um
+  früher zurückzukehren, wähle „USB-Kabel“ im Widget oder mit „Ändern“. Nur mit verbundenem Bluetooth des Fahrzeugs;
+  abschalten unter ⚙ › Einstellungen › „Verbindung“ › „Zu Wi-Fi Direct wechseln, wenn das Kabel ausfällt“.
 
 **Wenn es nicht funktioniert**, exportiere das Log ([Abschnitt 8](#8-log-exportieren-und-hilfe-holen)) direkt nach dem
 Einstecken des Kabels und schick es uns, mit der Uhrzeit. Wir suchen die Zeilen **`HQL/USB`**: was Android über das
@@ -1198,7 +1203,7 @@ Fang immer mit dem Menü ⚙ › „Voraussetzungen prüfen“ an: Jede rote Zei
 
 | Symptom | Wahrscheinliche Ursache | Was tun |
 |---|---|---|
-| Per Kabel friert das Fahrzeugdisplay ein, und „Trennen“ und „Verbinden“ helfen nicht | Die Spiegelungsapp im Fahrzeug (QDLink) hängt bei eingestecktem Kabel: Sie antwortet nicht mehr und liest nicht einmal, was ankommt. Das liegt am Fahrzeug, nicht am Handy. | Zieh das Kabel ab, steck es wieder ein und öffne QDLink auf dem Fahrzeugdisplay; Qonecta+ verbindet sich selbst neu. Es sagt dir das per Sprache und mit einer Meldung auf dem Handy („Die App im Auto hängt“). |
+| Per Kabel friert das Fahrzeugdisplay ein, und „Trennen“ und „Verbinden“ helfen nicht | Die Spiegelungsapp im Fahrzeug (QDLink) hängt bei eingestecktem Kabel: Sie antwortet nicht mehr und liest nicht einmal, was ankommt. Das liegt am Fahrzeug, nicht am Handy. | Zieh das Kabel ab, steck es wieder ein und öffne QDLink auf dem Fahrzeugdisplay; Qonecta+ verbindet sich selbst neu. Es sagt dir das per Sprache und mit einer Meldung auf dem Handy („Die App im Auto hängt“). Gab es auf dieser Fahrt schon ein Bild und ist das Bluetooth des Fahrzeugs noch verbunden, ist das nicht nötig: Qonecta+ läuft von selbst über Wi-Fi Direct weiter („Zu Wi-Fi Direct wechseln, wenn das Kabel ausfällt“, standardmäßig an). |
 | Das Fahrzeug erscheint nicht (dauerhaft „Suche…“) | Das Fahrzeug ist nicht im Hotspot des Handys, der Hotspot hat sich von selbst ausgeschaltet, oder die Spiegelungsapp ist im Fahrzeug nicht offen. Mit Wi-Fi Direct: Hotspot an oder WLAN aus. | Sieh dir die Zeile „Netzwerk“ an: Dort muss „Hotspot an (…)“ stehen. Verbinde das Fahrzeug mit dem Hotspot (Einstellungen › Wi-Fi im Fahrzeug) und öffne die Spiegelungsapp. Schalte das automatische Ausschalten des Hotspots ab. Meldet sich das Fahrzeug 5 Minuten lang nicht, hört Qonecta+ auf: Tippe noch einmal auf „Verbinden“. |
 | „Port 18463 ist belegt (ist QDLink offen?)“ oder „Port 18463 · Belegt“ in „Voraussetzungen prüfen“ | Die App QDLink (oder eine andere) ist auf dem Handy offen und belegt den Port. | „Beenden erzwingen“ für QDLink. Qonecta+ versucht es alle 5 s erneut, und der Hinweis verschwindet von selbst. |
 | Schwarzes Bild im Fahrzeug, oder die Zeile „Auto“ zeigt einen Fehler | Android Auto ist nicht gestartet: Das Handy war gesperrt („Startet nicht: entsperre das Handy“), oder der Entwicklermodus oder die Bedienungshilfe fehlt. | Entsperre das Handy (bei der Meldung „Entsperre das Handy, um Android Auto zu starten“ startet es beim Entsperren von selbst). Klappt es weiterhin nicht, sieh unter „Voraussetzungen prüfen“ nach und tippe auf „Trennen“ und dann auf „Verbinden“. Um herauszufinden, woran es liegt, schalte unter „Diagnose“ den „Test ohne Android Auto (Testbild)“ ein: Siehst du das Testbild, funktioniert die Verbindung, und das Problem liegt bei Android Auto (schalte den Test danach wieder aus). Hilft nichts davon, probier unter „Protokoll-Engine“ die Option „Älterer Motor (übernommen)“. |

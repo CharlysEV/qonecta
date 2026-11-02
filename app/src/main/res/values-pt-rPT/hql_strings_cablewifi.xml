@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_cable_wifi_switch">Passar para Wi-Fi Direct se o cabo falhar</string>
+    <string name="hql_cable_wifi_switch_sum">Se a porta USB do carro bloquear a meio da viagem, o Qonecta+ continua por Wi-Fi Direct até ao fim da viagem. A ligação escolhida não muda: a viagem seguinte volta ao cabo.</string>
+    <string name="hql_cable_wifi_title">O cabo falhou: continuo por Wi-Fi Direct</string>
+    <string name="hql_cable_wifi_text">A porta USB do carro bloqueou. O Qonecta+ continua por Wi-Fi Direct até ao fim da viagem e na seguinte volta ao cabo. Para voltar já ao cabo, escolha «Cabo USB» no widget ou em «Alterar».</string>
+</resources>

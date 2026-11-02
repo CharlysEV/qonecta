@@ -369,6 +369,11 @@ solo alcuni modelli), e dopo molti viaggi è la connessione consigliata per «Au
   «Cambia».
 - Scollegare il cavo è come se l'auto se ne andasse (video attivo per 30 s, poi Android Auto in pausa); ricollegandolo
   riprende all'istante.
+- **Se la porta USB dell'auto si blocca durante il viaggio** (smette di leggere e non si riprende), Qonecta+ continua da
+  solo in **Wi-Fi Direct** fino alla fine del viaggio, con l'avviso «Il cavo si è bloccato: continuo in Wi-Fi Direct»
+  in auto e sul telefono; il viaggio successivo torna al cavo, e per tornarci prima scegli «Cavo USB» nel widget o con
+  «Cambia». Solo con il Bluetooth dell'auto collegato; si disattiva in ⚙ › Impostazioni › «Connessione» › «Passa a
+  Wi-Fi Direct se il cavo si blocca».
 
 **Se non funziona**, esporta il log ([sezione 8](#8-esportare-il-log-per-chiedere-aiuto)) subito dopo aver collegato il
 cavo e inviacelo, con l'ora. Cerchiamo le righe **`HQL/USB`**: cosa dice Android del cavo (`USB_STATE`), se l'auto ha
@@ -1084,7 +1089,7 @@ Comincia sempre dal menu ⚙ › «Verifica requisiti»: ogni riga rossa ha il s
 
 | Sintomo | Causa probabile | Cosa fare |
 |---|---|---|
-| Via cavo, lo schermo dell'auto si blocca e «Disconnetti» e «Connetti» non risolvono | L'app di mirroring dell'auto (QDLink) si è bloccata con il cavo collegato: smette di rispondere e non legge nemmeno ciò che riceve. È l'auto, non il telefono. | Scollega il cavo, ricollegalo e apri QDLink sullo schermo dell'auto; Qonecta+ si riconnette da solo. Te lo dice a voce e con un avviso sul telefono («L'app dell'auto si è bloccata»). |
+| Via cavo, lo schermo dell'auto si blocca e «Disconnetti» e «Connetti» non risolvono | L'app di mirroring dell'auto (QDLink) si è bloccata con il cavo collegato: smette di rispondere e non legge nemmeno ciò che riceve. È l'auto, non il telefono. | Scollega il cavo, ricollegalo e apri QDLink sullo schermo dell'auto; Qonecta+ si riconnette da solo. Te lo dice a voce e con un avviso sul telefono («L'app dell'auto si è bloccata»). Se nel viaggio c'era già l'immagine e il Bluetooth dell'auto è ancora collegato, non serve: Qonecta+ continua da solo in Wi-Fi Direct («Passa a Wi-Fi Direct se il cavo si blocca», attivo di serie). |
 | L'auto non viene trovata («Ricerca…» tutto il tempo) | L'auto non è collegata all'hotspot del telefono, l'hotspot si è spento da solo, o l'app di mirroring non è aperta in auto. Con Wi-Fi Direct: l'hotspot è acceso o il Wi-Fi è spento. | Guarda la riga «Rete»: dovrebbe dire «Hotspot attivo (…)». Collega l'auto all'hotspot (Impostazioni › Wi-Fi dell'auto) e apri l'app di mirroring. Disattiva lo spegnimento automatico dell'hotspot. Dopo 5 minuti senza che l'auto si annunci, Qonecta+ si ferma: tocca di nuovo «Connetti». |
 | «La porta 18463 è occupata (QDLink è aperta?)», o «Porta 18463 · Occupata» nella «Verifica requisiti» | L'app QDLink (o un'altra) è aperta sul telefono e tiene occupata la porta. | «Forza interruzione» di QDLink. Qonecta+ riprova ogni 5 s e l'avviso sparisce da solo. |
 | Schermo nero in auto, o un errore nella riga «Auto» | Android Auto non si è avviato: il telefono era bloccato («Non si avvia: sblocca il telefono»), o mancano la modalità sviluppatore o l'accessibilità. | Sblocca il telefono (con la notifica «Sblocca il telefono per avviare Android Auto», si avvia da solo quando sblocchi). Se non va ancora, controlla la «Verifica requisiti» e tocca «Disconnetti» e «Connetti». Per capire cosa non va, attiva Diagnostica › «Test senza Android Auto (immagine di prova)»: se vedi l'immagine di prova, la connessione va bene e il problema è Android Auto (disattivalo dopo). Se niente funziona, prova il motore «headqlink originale». |

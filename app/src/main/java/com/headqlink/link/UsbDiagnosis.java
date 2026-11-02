@@ -98,15 +98,29 @@ final class UsbDiagnosis {
 
     private static final UsbDiagnosis CURRENT = new UsbDiagnosis();
 
+    /**
+     * El paso solo a Wi-Fi Direct (CableFallback) se ocupa del cuelgue en curso: CAR_HUNG sin aviso ni voz (pedía desenchufar
+     * el cable justo antes de pasar solo a Wi-Fi Direct). Lo pone LinkService, en el hilo principal.
+     */
+    static volatile boolean hangHandled;
+
     /** Al arrancar el servicio: avisos otra vez disponibles. */
     static synchronized void reset() {
         CURRENT.shown.clear();
         CURRENT.earlyCuts = 0;
         CURRENT.pendingCutMs = Long.MIN_VALUE / 2;
+        hangHandled = false;
     }
 
     static synchronized void sessionEnd(Context c, boolean gone, boolean gotCarInfo, long livedMs, int failures, boolean carSilent) {
-        notice(c, CURRENT.onSessionEnd(System.currentTimeMillis(), gone, gotCarInfo, livedMs, failures, carSilent));
+        Kind k = CURRENT.onSessionEnd(System.currentTimeMillis(), gone, gotCarInfo, livedMs, failures, carSilent);
+        if (k == Kind.CAR_HUNG && hangHandled) {
+            // Que pueda salir después si al final no se pasa a Wi-Fi Direct (el Bluetooth del coche se fue, por ejemplo).
+            CURRENT.shown.remove(Kind.CAR_HUNG);
+            L.i("USB: diagnóstico CAR_HUNG sin aviso: si se confirma, sigo por Wi-Fi Direct (cable → Wi-Fi Direct)");
+            return;
+        }
+        notice(c, k);
     }
 
     static synchronized void powerLost(Context c) {

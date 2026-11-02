@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_cable_wifi_switch">Mudar para Wi-Fi Direct se o cabo cair</string>
+    <string name="hql_cable_wifi_switch_sum">Se a porta USB do carro travar no meio da viagem, o Qonecta+ continua por Wi-Fi Direct até o fim da viagem. A conexão escolhida não muda: a próxima viagem volta ao cabo.</string>
+    <string name="hql_cable_wifi_title">O cabo caiu: sigo por Wi-Fi Direct</string>
+    <string name="hql_cable_wifi_text">A porta USB do carro travou. O Qonecta+ continua por Wi-Fi Direct até o fim da viagem e na próxima volta ao cabo. Para voltar ao cabo agora, escolha “Cabo USB” no widget ou em “Alterar”.</string>
+</resources>

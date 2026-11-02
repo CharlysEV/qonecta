@@ -362,6 +362,11 @@ models do), and after many trips it's the recommended connection for "Auto exten
   "Change".
 - Unplugging the cable is like the car going away (video kept alive for 30 s, then Android Auto paused); plugging it
   back in resumes instantly.
+- **If the car's USB port hangs mid-trip** (it stops reading and doesn't recover), Qonecta+ carries on by itself over
+  **Wi-Fi Direct** until the end of the trip, with the notice "The cable dropped: carrying on over Wi-Fi Direct" in the
+  car and on the phone; the next trip uses the cable again, and to go back sooner choose "USB cable" in the widget or
+  with "Change". Only with the car's Bluetooth connected; turn it off in ⚙ › Settings › "Connection" › "Switch to Wi-Fi
+  Direct if the cable drops".
 
 **If it doesn't work**, export the log ([section 8](#8-exporting-the-log-to-ask-for-help)) right after plugging in the
 cable and send it to us, with the time. We're looking for the **`HQL/USB`** lines: what Android says about the cable
@@ -1054,7 +1059,7 @@ Always start with the ⚙ menu › "Requirements check": every red row has its o
 
 | Symptom | Likely cause | What to do |
 |---|---|---|
-| On the cable, the car's screen freezes and "Disconnect" and "Connect" don't fix it | The car's mirroring app (QDLink) has frozen with the cable plugged in: it stops answering and doesn't even read what it gets. It's the car, not the phone. | Unplug the cable, plug it back in and open QDLink on the car's screen; Qonecta+ reconnects by itself. It tells you by voice and with a notice on the phone ("The car's app has frozen"). |
+| On the cable, the car's screen freezes and "Disconnect" and "Connect" don't fix it | The car's mirroring app (QDLink) has frozen with the cable plugged in: it stops answering and doesn't even read what it gets. It's the car, not the phone. | Unplug the cable, plug it back in and open QDLink on the car's screen; Qonecta+ reconnects by itself. It tells you by voice and with a notice on the phone ("The car's app has frozen"). If there was already a picture on this trip and the car's Bluetooth is still connected, there's no need: Qonecta+ carries on by itself over Wi-Fi Direct ("Switch to Wi-Fi Direct if the cable drops", on by default). |
 | The car isn't found ("Searching…" all the time) | The car isn't on the phone's hotspot, the hotspot switched itself off, or the mirroring app isn't open in the car. With Wi-Fi Direct: the hotspot is on or Wi-Fi is off. | Check the "Network" row: it should say "Hotspot on (…)". Join the car to the hotspot (car Settings › Wi-Fi) and open the mirroring app. Turn off the hotspot's auto-off. After 5 minutes without the car announcing itself Qonecta+ stops: tap "Connect" again. |
 | "Port 18463 is busy (is QDLink open?)", or "Port 18463 · Busy" in the "Requirements check" | The QDLink app (or another one) is open on the phone and holds the port. | "Force stop" QDLink. Qonecta+ retries every 5 s and the warning clears by itself. |
 | Black screen in the car, or an error in the "Auto" row | Android Auto didn't start: the phone was locked ("Doesn't start: unlock the phone"), or developer mode or accessibility is missing. | Unlock the phone (with the "Unlock the phone to start Android Auto" notification, it starts by itself when you unlock). If it still fails, check the "Requirements check" and tap "Disconnect" and "Connect". To find out what's failing, turn on Diagnostics › "Test without Android Auto (pattern)": if you see the test image, the connection is fine and the problem is Android Auto (turn it off afterwards). If nothing works, try the "Original headqlink" engine. |

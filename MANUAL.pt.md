@@ -381,6 +381,10 @@ alguns modelos), e depois de muitas viagens é a ligação recomendada para «Au
   «Alterar».
 - Retirar o cabo é como se o carro se fosse embora (vídeo ativo 30 s e depois o Android Auto em pausa); ao voltar a
   ligá-lo, retoma de imediato.
+- **Se a porta USB do carro bloquear a meio da viagem** (deixa de ler e não recupera), o Qonecta+ continua sozinho por
+  **Wi-Fi Direct** até ao fim da viagem, com o aviso «O cabo falhou: continuo por Wi-Fi Direct» no carro e no
+  telemóvel; a viagem seguinte volta ao cabo, e para voltar antes escolha «Cabo USB» no widget ou em «Alterar». Só com o
+  Bluetooth do carro ligado; desativa-se em ⚙ › Definições › «Ligação» › «Passar para Wi-Fi Direct se o cabo falhar».
 
 **Se não funcionar**, exporte o registo ([secção 8](#8-exportar-o-registo-para-pedir-ajuda)) logo a seguir a ligar o
 cabo e envie-no-lo, com a hora. Procuramos as linhas **`HQL/USB`**: o que diz o Android do cabo (`USB_STATE`), se o
@@ -1080,7 +1084,7 @@ Comece sempre pelo menu ⚙ › «Verificação»: cada linha a vermelho tem o s
 
 | Sintoma | Causa provável | O que fazer |
 |---|---|---|
-| Por cabo, o ecrã do carro fica congelado e «Desligar» e «Ligar» não resolvem | A app de espelho do carro (QDLink) bloqueou com o cabo ligado: deixa de responder e nem lê o que lhe chega. É o carro, não o telemóvel. | Desligue o cabo, volte a ligá-lo e abra o QDLink no ecrã do carro; o Qonecta+ volta a ligar sozinho. Avisa por voz e com uma notificação no telemóvel («A app do carro bloqueou»). |
+| Por cabo, o ecrã do carro fica congelado e «Desligar» e «Ligar» não resolvem | A app de espelho do carro (QDLink) bloqueou com o cabo ligado: deixa de responder e nem lê o que lhe chega. É o carro, não o telemóvel. | Desligue o cabo, volte a ligá-lo e abra o QDLink no ecrã do carro; o Qonecta+ volta a ligar sozinho. Avisa por voz e com uma notificação no telemóvel («A app do carro bloqueou»). Se já houve imagem na viagem e o Bluetooth do carro continua ligado, não é preciso: o Qonecta+ continua sozinho por Wi-Fi Direct («Passar para Wi-Fi Direct se o cabo falhar», ativo de origem). |
 | O carro não aparece («A procurar…» o tempo todo) | O carro não está no hotspot do telemóvel, o hotspot desligou-se sozinho, ou a aplicação de espelhamento não está aberta no carro. Com Wi-Fi Direct: o hotspot ativo ou o Wi-Fi desligado. | Veja a linha «Rede»: deve dizer «Hotspot ativo (…)». Ligue o carro ao hotspot (Definições › Wi-Fi do carro) e abra a aplicação de espelhamento. Desative o desligar automático do hotspot. Ao fim de 5 minutos sem anúncios do carro o Qonecta+ para: toque em «Ligar» outra vez. |
 | «A porta 18463 está ocupada (o QDLink está aberto?)», ou «Porta 18463 · Ocupada» na «Verificação» | O QDLink (ou outra aplicação) está aberto no telemóvel e ocupa a porta. | «Forçar paragem» do QDLink. O Qonecta+ tenta de novo a cada 5 s e o aviso desaparece sozinho. |
 | Ecrã preto no carro, ou a linha «Auto» com um erro | O Android Auto não arrancou: o telemóvel estava bloqueado («Não arranca: desbloqueie o telemóvel»), falta o modo de programador ou a acessibilidade. | Desbloqueie o telemóvel (com o aviso «Desbloqueie o telemóvel para iniciar o Android Auto», arranca sozinho ao desbloquear). Se continuar, veja a «Verificação» e toque em «Desligar» e «Ligar». Para saber o que falha, ative Diagnóstico › «Teste sem Android Auto (padrão)»: se vir a imagem de teste, a ligação está bem e o problema é o Android Auto (desative-o depois). Se nada resultar, experimente o motor «headqlink original». |

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- headqlink: switching to Wi-Fi Direct when the car's USB port hangs mid-trip (CableFallback). Kept apart from hql_strings.xml. -->
+<resources>
+    <string name="hql_cable_wifi_switch">Switch to Wi-Fi Direct if the cable drops</string>
+    <string name="hql_cable_wifi_switch_sum">If the car\'s USB port hangs mid-trip, Qonecta+ carries on over Wi-Fi Direct until the end of the trip. Your chosen connection doesn\'t change: the next trip uses the cable again.</string>
+    <string name="hql_cable_wifi_title">The cable dropped: carrying on over Wi-Fi Direct</string>
+    <string name="hql_cable_wifi_text">The car\'s USB port has hung. Qonecta+ carries on over Wi-Fi Direct until the end of the trip and uses the cable again on the next one. To go back to the cable now, choose “USB cable” in the widget or under “Change”.</string>
+</resources>

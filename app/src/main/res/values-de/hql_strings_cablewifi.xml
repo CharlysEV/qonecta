@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_cable_wifi_switch">Zu Wi-Fi Direct wechseln, wenn das Kabel ausfällt</string>
+    <string name="hql_cable_wifi_switch_sum">Hängt sich der USB-Anschluss des Autos während der Fahrt auf, läuft Qonecta+ bis zum Ende der Fahrt über Wi-Fi Direct weiter. Die gewählte Verbindung ändert sich nicht: Bei der nächsten Fahrt wird wieder das Kabel genutzt.</string>
+    <string name="hql_cable_wifi_title">Kabel ausgefallen: weiter über Wi-Fi Direct</string>
+    <string name="hql_cable_wifi_text">Der USB-Anschluss des Autos hat sich aufgehängt. Qonecta+ läuft bis zum Ende der Fahrt über Wi-Fi Direct weiter und nutzt bei der nächsten Fahrt wieder das Kabel. Um sofort zum Kabel zurückzukehren, wähle „USB-Kabel“ im Widget oder unter „Ändern“.</string>
+</resources>

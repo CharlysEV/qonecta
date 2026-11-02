@@ -103,6 +103,11 @@ internal class QdSessionBridge(
     /** Detector de cortes de radio (qdauto §7.3), evaluado cada 100 ms en el monitor de red; por el cable, «CABLE». */
     private val stalls = StallDetector(sid, ::wallText, freezeMs = 250, cable = host.isUsb)
 
+    /** Corte en curso al cerrarse la sesión (por el cable, «el coche no lee»), en ms; 0 si no había. Para CableFallback. */
+    @Volatile
+    var stallAtCloseMs = 0L
+        private set
+
     @Volatile
     private var lastRxKind: String? = null
     private var lastCarHeartbeatNanos = 0L
@@ -403,7 +408,11 @@ internal class QdSessionBridge(
                 Thread.currentThread().interrupt()
             }
         }
-        stalls.onClose(monoMs(), reason.toString())?.let { emitStall(it) }
+        stalls.onClose(monoMs(), reason.toString())?.let {
+            // Un móvil congelado (GC, CPU) no es el coche que no lee.
+            if (it.kind != StallDetector.Kind.MOVIL_CONGELADO) stallAtCloseMs = it.durationMs
+            emitStall(it)
+        }
         port.close()
         logStats(force = true)
         maybeLogReconnect()

@@ -2850,7 +2850,8 @@ final class CarUi {
         saveScreen();
         // Fuera de la TV o los vídeos a pantalla completa, AA vuelve a tener su vídeo.
         aaForGame();
-        if (!name.equals(before) && cableHintFor(name) && onWifi()) showCableHint(name);
+        // Con el cable caído en este viaje (CableFallback), no se sugiere el cable.
+        if (!name.equals(before) && cableHintFor(name) && onWifi() && !LinkState.cableFallback) showCableHint(name);
     }
 
     private static Supplier<CarScreen> factory(String name) {

@@ -386,6 +386,16 @@ final class Config {
         return sp.getBoolean(USB_AUTO, true);
     }
 
+    /**
+     * Si el puerto USB del coche se cuelga a mitad de viaje, seguir por Wi-Fi Direct hasta el final del viaje
+     * (CableFallback); encendido de serie. No cambia la conexión elegida: el viaje siguiente vuelve al cable.
+     */
+    static final String CABLE_WIFI_FALLBACK = "cable_wifi_fallback";
+
+    boolean cableWifiFallback() {
+        return sp.getBoolean(CABLE_WIFI_FALLBACK, true);
+    }
+
     /** Texto que debe contener el nombre Bluetooth del coche (sin distinguir mayúsculas). */
     String btAutoName() {
         return sp.getString(BT_AUTO_NAME, "Leapmotor_BT");

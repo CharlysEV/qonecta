@@ -44,7 +44,9 @@ import java.util.concurrent.TimeUnit
  *   ([UsbReopenPolicy]: 1, 2, 5, 10, 30, 60 s; solo la reinicia una sesión con `CAR_INFO`). Al quitar el cable
  *   (`USB_ACCESSORY_DETACHED`), perder la alimentación (`ACTION_POWER_DISCONNECTED`, como QDLink) o ver ENODEV/EIO en el
  *   descriptor (accesorio desaparecido: no se reabre hasta que vuelva) cierra la sesión: LinkService pasa a «coche
- *   perdido» y, al volver a enchufarlo, se reanuda al instante.
+ *   perdido» y, al volver a enchufarlo, se reanuda al instante;
+ * - **retenido** ([hold]): el puerto del coche se colgó a mitad de viaje y se sigue por Wi-Fi Direct (CableFallback); en
+ *   espera, el accesorio no se abre ni pasa por delante hasta elegir el cable a mano ([release]) o el viaje siguiente.
  *
  * Hilos: los receptores en el principal; abrir y esperar, en `hql-usb`; los eventos de la sesión, en los suyos.
  */
@@ -66,6 +68,9 @@ internal class UsbLink(
 
         /** Activo: el cable se quitó o el coche dejó de alimentar el puerto. */
         fun onUsbGone(why: String)
+
+        /** Activo: terminó una sesión por cable (para pasar a Wi-Fi Direct si el puerto del coche se cuelga: CableFallback). */
+        fun onUsbSessionEnd(end: CableFallback.End)
     }
 
     override val linkMode: String get() = Config.LINK_USB
@@ -137,6 +142,17 @@ internal class UsbLink(
     private var standbyAskedFor: String? = null
     private var registered = false
 
+    /**
+     * Retenido ([hold]): el cable se cayó a mitad de viaje y se sigue por Wi-Fi (CableFallback). En espera no se avisa del
+     * accesorio ni se pide permiso para él, así que el cable no vuelve a pasar por delante del Wi-Fi hasta [release] (cable
+     * elegido a mano) o el viaje siguiente (otro UsbLink).
+     */
+    @Volatile
+    private var held = false
+
+    /** Solo `hql-usb`: ya se dijo en el log que el accesorio está retenido (una línea, no una por USB_STATE). */
+    private var heldLogged = false
+
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context, i: Intent) {
             when (i.action) {
@@ -194,6 +210,21 @@ internal class UsbLink(
         UsbProbe.step("enlace por cable en espera ($why)")
         submit { retry?.cancel(false) }
         session?.closeLocal("cable USB en espera: $why")
+    }
+
+    /** El cable se cayó y el viaje sigue por Wi-Fi (CableFallback): en espera, el accesorio del coche se deja sin abrir. */
+    fun hold(why: String) {
+        if (held) return
+        held = true
+        submit { heldLogged = false }
+        UsbProbe.step("accesorio del coche retenido ($why): en espera no lo abro ni pido permiso hasta elegir el cable a mano o el próximo viaje")
+    }
+
+    /** El cable, elegido a mano: el accesorio se puede volver a abrir. */
+    fun release(why: String) {
+        if (!held) return
+        held = false
+        UsbProbe.step("accesorio del coche liberado ($why)")
     }
 
     /** El sistema lanzó la actividad del accesorio (cable conectado): abrirlo ya, con el permiso que trae. */
@@ -342,6 +373,13 @@ internal class UsbLink(
         val list = accessoryList(if (expectAccessory) OPEN_TRIES else 1)
         val car = pick(list)
         if (!active) {
+            if (held) {
+                if (car != null && !heldLogged) {
+                    heldLogged = true
+                    UsbProbe.log("accesorio del coche presente (${UsbProbe.shortName(car)}), pero retenido: sigo por Wi-Fi (el cable se cayó en este viaje)")
+                }
+                return@submit
+            }
             if (car != null && !reopen.mayOpen()) {
                 // Sigue en la lista tras un ENODEV/EIO (lista vieja mientras se quita el cable): no se le da prioridad.
                 logGoneOnce("en espera")
@@ -542,11 +580,15 @@ internal class UsbLink(
         val lived = stats?.uptimeMs ?: (SystemClock.elapsedRealtime() - openedAtMs)
         val carMessages = stats?.messagesReceived ?: 0L
         val carInfo = bridge?.gotCarInfo == true
+        val stallMs = bridge?.stallAtCloseMs ?: 0L
         val reasonText = describe(reason)
         submit {
             val d = reopen.onSessionEnd(carMessages, carInfo, lived, reasonText)
-            UsbDiagnosis.sessionEnd(ctx, UsbReopenPolicy.isAccessoryGone(reasonText), carInfo, lived, reopen.failures,
-                reason.kind == CloseReason.Kind.WATCHDOG)
+            val gone = UsbReopenPolicy.isAccessoryGone(reasonText)
+            UsbDiagnosis.sessionEnd(ctx, gone, carInfo, lived, reopen.failures, reason.kind == CloseReason.Kind.WATCHDOG)
+            // Para el paso a Wi-Fi Direct (CableFallback), antes del «accesorio desaparecido» que pueda venir detrás.
+            val end = CableFallback.End(s.id, carInfo, lived, reason.kind.name, stallMs, gone)
+            main.post { if (!stopping && active) callbacks.onUsbSessionEnd(end) }
             network(LinkState.Level.BUSY, Str.get(R.string.hql_usb_net_waiting))
             if (!d.reopen) {
                 retry?.cancel(false)

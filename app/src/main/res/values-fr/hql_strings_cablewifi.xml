@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hql_cable_wifi_switch">Passer en Wi-Fi Direct si le câble lâche</string>
+    <string name="hql_cable_wifi_switch_sum">Si le port USB de la voiture se bloque en cours de trajet, Qonecta+ continue en Wi-Fi Direct jusqu\'à la fin du trajet. La connexion choisie ne change pas : le trajet suivant revient au câble.</string>
+    <string name="hql_cable_wifi_title">Le câble a lâché : je continue en Wi-Fi Direct</string>
+    <string name="hql_cable_wifi_text">Le port USB de la voiture s\'est bloqué. Qonecta+ continue en Wi-Fi Direct jusqu\'à la fin du trajet et revient au câble au trajet suivant. Pour revenir au câble tout de suite, choisissez « Câble USB » dans le widget ou dans « Modifier ».</string>
+</resources>
