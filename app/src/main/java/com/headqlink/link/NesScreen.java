@@ -58,7 +58,8 @@ final class NesScreen {
     /**
      * Pantalla completa (foro, 01-11: «¿Vollbild?»): sin el panel de la interfaz ni los botones de los lados, la imagen a lo
      * más grande que quepa sin deformar, centrada sobre negro. Se sale tocando la esquina de arriba a la izquierda o con
-     * Select + Start del mando; se recuerda para el siguiente juego (Config.gameFullscreen).
+     * Select + Start del mando (solo en ese juego: los siguientes se abren igual hasta quitarla en la lista de la consola,
+     * Config.gameFullscreen).
      */
     private boolean full;
     /** Las piezas de la pantalla del juego en marcha que cambian con la pantalla completa. */
@@ -75,6 +76,8 @@ final class NesScreen {
     /** Opacidad del icono de la esquina pasado el aviso (se ve, sin molestar) y de los botones táctiles encima del juego. */
     private static final float EXIT_MARK_DIM = 0.35f;
     private static final float FULL_PAD_ALPHA = 0.6f;
+    /** Texto del aviso «Toca la esquina para salir»: claro de día y de noche, sobre su fondo oscuro encima del juego. */
+    static final int FULL_HINT_TEXT = 0xFFE8EAED;
     private final Runnable fullHintEnd = () -> {
         if (fullHint != null) fullHint.setVisibility(View.GONE);
         if (exitMark != null) exitMark.setAlpha(EXIT_MARK_DIM);
@@ -142,6 +145,7 @@ final class NesScreen {
         title.setPadding(16, 0, 24, 0);
         title.setSingleLine(true);
         header.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        header.addView(fullToggle(c));
         col.addView(header);
         if (tree.isEmpty()) {
             col.addView(CarStyle.message(c, Str.get(R.string.hql_nes_no_folder)));
@@ -183,6 +187,41 @@ final class NesScreen {
         sv.addView(list);
         col.addView(sv, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
         return col;
+    }
+
+    /**
+     * «Abrir a pantalla completa», arriba a la derecha de la lista: encendida (acento, como «Botones táctiles»), los juegos
+     * se abren a pantalla completa (Config.gameFullscreen). La enciende también el botón «Pantalla completa» de un juego;
+     * salir de ella en el juego no la apaga (es el camino para volver aquí y elegir otro), así que se apaga aquí.
+     */
+    private TextView fullToggle(Context c) {
+        TextView t = CarStyle.pill(c, Str.get(R.string.hql_game_full_open));
+        Runnable paint = () -> {
+            boolean on = cfg.gameFullscreen();
+            t.setBackground(on ? CarStyle.accent(28) : CarStyle.round(CarStyle.PILL_BG, 28));
+            t.setTextColor(on ? CarStyle.ON_ACCENT : CarStyle.TEXT);
+            fullIcon(c, t, on ? CarStyle.ON_ACCENT : CarStyle.TEXT);
+        };
+        paint.run();
+        t.setOnClickListener(v -> {
+            boolean on = !cfg.gameFullscreen();
+            cfg.putBool(Config.GAME_FULLSCREEN, on);
+            L.i(console.title + ": abrir los juegos a pantalla completa " + (on ? "sí" : "no"));
+            paint.run();
+        });
+        return t;
+    }
+
+    /** El icono de pantalla completa a la izquierda del texto de una píldora, del color de su texto. */
+    private static void fullIcon(Context c, TextView pill, int color) {
+        android.graphics.drawable.Drawable icon = c.getDrawable(R.drawable.hql_ic_fullscreen);
+        if (icon == null) return;
+        icon = icon.mutate();
+        icon.setTint(color);
+        int is = CarStyle.textPx(30);
+        icon.setBounds(0, 0, is, is);
+        pill.setCompoundDrawables(icon, null, null, null);
+        pill.setCompoundDrawablePadding(10);
     }
 
     /** Subcarpetas y juegos de esta consola de una carpeta del árbol elegido (null si el permiso se perdió). */
@@ -537,9 +576,10 @@ final class NesScreen {
         autoState = new File(states, base + ".auto.state");
         boolean resume = engine.supportsStates() && autoState.isFile();
         if (engine.supportsStates()) engine.setAutoState(autoState.getAbsolutePath());
-        // Select + Start a la vez (en el mando o en los botones táctiles): fuera de la pantalla completa.
+        // Select + Start a la vez (en el mando o en los botones táctiles): fuera de la pantalla completa, solo en este juego
+        // (es la forma de volver a la consola para elegir otro, que se abrirá igual a pantalla completa).
         Runnable leaveFull = () -> host.post(() -> {
-            if (full) setFull(false, true);
+            if (full) setFull(false, false);
         });
         engine.pad().setOnSelectStart(leaveFull);
         if (engine.pad2() != null) engine.pad2().setOnSelectStart(leaveFull);
@@ -592,15 +632,7 @@ final class NesScreen {
         left.addView(pads, new LinearLayout.LayoutParams(260, ViewGroup.LayoutParams.WRAP_CONTENT));
         // «Pantalla completa», debajo del título: a la derecha ya van cuatro botones y uno más pisaría Start en el T03.
         TextView fullBtn = CarStyle.pill(c, Str.get(R.string.hql_game_full));
-        android.graphics.drawable.Drawable fullIcon = c.getDrawable(R.drawable.hql_ic_fullscreen);
-        if (fullIcon != null) {
-            fullIcon = fullIcon.mutate();
-            fullIcon.setTint(CarStyle.TEXT);
-            int is = CarStyle.textPx(30);
-            fullIcon.setBounds(0, 0, is, is);
-            fullBtn.setCompoundDrawables(fullIcon, null, null, null);
-            fullBtn.setCompoundDrawablePadding(10);
-        }
+        fullIcon(c, fullBtn, CarStyle.TEXT);
         fullBtn.setOnClickListener(v -> setFull(true, true));
         LinearLayout.LayoutParams flp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         flp.topMargin = 14;
@@ -687,13 +719,15 @@ final class NesScreen {
                 down[1] = ev.getY();
             } else if (ev.getActionMasked() == MotionEvent.ACTION_UP && full
                     && exitTap(down[0], down[1], ev.getX(), ev.getY(), EXIT_CORNER)) {
-                setFull(false, true);
+                setFull(false, false);
             }
             return true;
         });
         corner.setVisibility(View.GONE);
         stage.addView(corner, place(Gravity.TOP | Gravity.LEFT, 0, 0, 0, 0, EXIT_CORNER, EXIT_CORNER));
-        TextView hint = CarStyle.text(c, "", 24, CarStyle.TEXT);
+        // Texto claro fijo, como el icono de la esquina: va sobre un fondo oscuro encima del juego, y CarStyle.TEXT es
+        // oscuro de día (un juego abierto de día lo dejaba ilegible).
+        TextView hint = CarStyle.text(c, "", 24, FULL_HINT_TEXT);
         hint.setPadding(26, 12, 26, 12);
         hint.setBackground(CarStyle.round(0xB3202124, 28));
         hint.setVisibility(View.GONE);
@@ -735,8 +769,10 @@ final class NesScreen {
 
     /**
      * Entra o sale de la pantalla completa: sin el panel (CarUi), sin los botones de los lados, la imagen a lo más grande
-     * (NesView.full) y la esquina para salir, con su aviso unos segundos al entrar. remember: lo pide quien juega (el
-     * botón, la esquina o Select + Start) y vale para el siguiente juego; sin él (el juego empieza o se acaba), no se toca.
+     * (NesView.full) y la esquina para salir, con su aviso unos segundos al entrar. remember: el botón «Pantalla completa»
+     * la deja puesta para los siguientes juegos. Salir (la esquina o Select + Start), o que el juego empiece o se acabe, no
+     * la toca: salir es también el camino para volver a la consola y elegir otro. Se quita en la lista de la consola
+     * («Abrir a pantalla completa», fullToggle).
      */
     private void setFull(boolean on, boolean remember) {
         if (remember) cfg.putBool(Config.GAME_FULLSCREEN, on);

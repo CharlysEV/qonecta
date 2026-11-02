@@ -304,6 +304,10 @@ final class CarUi {
         listener.onPanelColor(panelColor);
         String name = screenName == null ? "aa" : screenName;
         boolean wasHidden = hidden;
+        // Un juego a pantalla completa se cierra con la interfaz vieja: el panel vuelve en la nueva y, con él, el aviso
+        // del plan que esperaba (al final). Así el juego, al pararse, no recoloca la interfaz que se tira.
+        boolean fromImmersive = immersive;
+        immersive = false;
         if (screen != null) screen.destroy();
         screen = null;
         if (splash != null) splash.stop();
@@ -340,6 +344,7 @@ final class CarUi {
         } finally {
             replaying = false;
         }
+        if (fromImmersive) alertAfterImmersive();
     }
 
     private final BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
@@ -1033,10 +1038,27 @@ final class CarUi {
         stopPanelSlide();
         immersive = want;
         swipeX = -1;
+        // El aviso del plan que no se ha visto ni cuenta como visto ni caduca mientras no hay panel (alertAfterImmersive).
+        if (immersive && alertPending && !alertSeen) {
+            main.removeCallbacks(alertSeenTask);
+            main.removeCallbacks(alertExpire);
+        }
         applyLayout();
         L.i("CarUi: juego a pantalla completa " + (immersive ? "sí (sin panel)" : "no"));
-        // El panel que vuelve desplegado se recoge solo, como al abrir una pantalla (no si la interfaz se está cerrando).
-        if (!immersive && current == this) scheduleHide();
+        // El panel que vuelve desplegado se recoge solo, como al abrir una pantalla (no si la interfaz se está cerrando),
+        // salvo que traiga el aviso que esperaba: ese se queda a la vista como uno recién llegado.
+        if (!immersive && current == this && !alertAfterImmersive()) scheduleHide();
+    }
+
+    /**
+     * Vuelve el panel tras un juego a pantalla completa: el aviso del plan que llegó (o estaba) sin verse se enseña ahora,
+     * como recién llegado (panel desplegado y sus ALERT_SHOW_MS a la vista). false si no había ninguno.
+     */
+    private boolean alertAfterImmersive() {
+        if (!alertPending || alertSeen || alertShown == null) return false;
+        L.i("CarUi: aviso del plan que esperaba a la pantalla completa");
+        showAlert((String) alertShown[0], (String) alertShown[1], (Integer) alertShown[2]);
+        return true;
     }
 
     /** ¿Ocupa nuestra interfaz la zona de contenido (y por tanto recibe sus toques)? */
@@ -1231,6 +1253,9 @@ final class CarUi {
                 nightRegistered = false;
             }
             saveScreen();
+            // Como en open(): el juego a pantalla completa, al pararse, ya no devuelve el panel. Si no, applyLayout (con
+            // el panel en barra) volvía a programar railTick cada 30 s y la interfaz vieja quedaba viva para siempre.
+            immersive = false;
             if (screen != null) screen.destroy();
             screen = null;
             RadioPlayer.removeListener(radioChanged);
@@ -1721,9 +1746,12 @@ final class CarUi {
         if (!replaying) {
             alertSeen = false;
             main.removeCallbacks(alertExpire);
-            main.postDelayed(alertExpire, ALERT_KEEP_MS);
             main.removeCallbacks(alertSeenTask);
-            main.postDelayed(alertSeenTask, ALERT_SHOW_MS);
+            // Con un juego a pantalla completa no se ve: las cuentas empiezan cuando vuelva el panel (alertAfterImmersive).
+            if (!immersive) {
+                main.postDelayed(alertExpire, ALERT_KEEP_MS);
+                main.postDelayed(alertSeenTask, ALERT_SHOW_MS);
+            }
         }
         if (hidden && !replaying) setHidden(false);
         renderAlert();
@@ -1755,8 +1783,9 @@ final class CarUi {
             if (show) placeAlert();
             if (show != (alertCard.getVisibility() == View.VISIBLE)) {
                 L.i("CarUi: aviso del plan " + (show ? "a la vista" : "fuera"));
-                // Visto: al recogerse el panel ya no vuelve (antes salía otra vez con cada pantalla abierta).
-                if (!show && alertPending) alertSeen = true;
+                // Visto: al recogerse el panel ya no vuelve (antes salía otra vez con cada pantalla abierta). Tapado por la
+                // pantalla completa, no: sale otra vez al volver el panel.
+                if (!show && alertPending && !immersive) alertSeen = true;
             }
             alertCard.setVisibility(show ? View.VISIBLE : View.GONE);
         }
@@ -2809,6 +2838,13 @@ final class CarUi {
                 L.i("CarUi: pantalla partida: Android Auto en su mitad, junto a " + name);
             }
         }
+        // Antes de cerrar la pantalla de antes: el juego, al pararse, ya no tiene que devolver el panel (se coloca abajo); el
+        // aviso del plan que esperaba a que volviera sale con la pantalla nueva (alertAfterImmersive, al final).
+        boolean fromImmersive = immersive;
+        if (immersive) {
+            immersive = false;
+            L.i("CarUi: juego a pantalla completa no (otra pantalla)");
+        }
         if (themePending && pres != null) {
             // El cambio de día o noche que esperaba: la interfaz entera con los colores de ahora, ya en la pantalla nueva.
             themePending = false;
@@ -2816,6 +2852,7 @@ final class CarUi {
             screen = null;
             screenName = name;
             rebuild();
+            if (fromImmersive) alertAfterImmersive();
             return;
         }
         // WhitelistAppOn: Android Auto y la sección Coche son interfaces de conducción; el resto, ocio.
@@ -2828,11 +2865,6 @@ final class CarUi {
         if (compact && panel != null) {
             compact = false;
             L.i("CarUi: pantalla grande no");
-        }
-        // Antes de cerrar la pantalla de antes: el juego, al pararse, ya no tiene que devolver el panel (se coloca abajo).
-        if (immersive) {
-            immersive = false;
-            L.i("CarUi: juego a pantalla completa no (otra pantalla)");
         }
         if (!"aa".equals(name) && hidden && panel != null) {
             hidden = false;
@@ -2893,6 +2925,7 @@ final class CarUi {
         aaForGame();
         // Con el cable caído en este viaje (CableFallback), no se sugiere el cable.
         if (!name.equals(before) && cableHintFor(name) && onWifi() && !LinkState.cableFallback) showCableHint(name);
+        if (fromImmersive) alertAfterImmersive();
     }
 
     private static Supplier<CarScreen> factory(String name) {

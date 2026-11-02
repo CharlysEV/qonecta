@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- headqlink: juegos de consola a pantalla completa (NesScreen): el botón y el aviso para salir. -->
+<!-- headqlink: juegos de consola a pantalla completa (NesScreen): el botón, el aviso para salir y «Abrir a pantalla completa» en la lista. -->
 <resources>
     <string name="hql_game_full">全屏</string>
+    <string name="hql_game_full_open">以全屏打开</string>
     <string name="hql_game_full_exit">点按左上角退出全屏</string>
     <string name="hql_game_full_exit_pad">或按手柄上的 SELECT + START</string>
 </resources>

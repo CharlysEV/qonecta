@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- headqlink: juegos de consola a pantalla completa (NesScreen): el botón y el aviso para salir. -->
+<!-- headqlink: juegos de consola a pantalla completa (NesScreen): el botón, el aviso para salir y «Abrir a pantalla completa» en la lista. -->
 <resources>
     <string name="hql_game_full">Pantalla completa</string>
+    <string name="hql_game_full_open">Abrir a pantalla completa</string>
     <string name="hql_game_full_exit">Toca la esquina para salir</string>
     <string name="hql_game_full_exit_pad">o SELECT + START en el mando</string>
 </resources>
