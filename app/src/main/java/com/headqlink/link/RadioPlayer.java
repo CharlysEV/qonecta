@@ -48,6 +48,8 @@ final class RadioPlayer {
     /** Lo último que se paró a mano en este viaje (stopByUser): un «▶» de los controles lo vuelve a poner. */
     private static List<Station> lastList;
     private static int lastIndex = -1;
+    /** Callada porque otra cosa se ha quedado el sonido (otra app o la TV), no por una pausa: deja Android Auto enseguida. */
+    private static boolean displaced;
 
     private RadioPlayer() {
     }
@@ -62,6 +64,9 @@ final class RadioPlayer {
 
     private static void changed() {
         RadioSession.notice(current(), isPlaying());
+        // Fuente de música de Android Auto solo mientras suena (RadioSession).
+        RadioSession.radio(player != null && RadioSession.sounds(true, player.getPlayWhenReady(), player.getPlaybackState()),
+                player != null, displaced);
         for (Runnable r : listeners) r.run();
     }
 
@@ -126,6 +131,9 @@ final class RadioPlayer {
 
                 @Override
                 public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+                    // Otra app se ha quedado el sonido (ExoPlayer lo dice), o la TV (MediaFocus se lo ha pasado).
+                    displaced = !playWhenReady && (reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS
+                            || MediaFocus.takenFrom(mediaFocus));
                     changed();
                 }
             });
@@ -227,6 +235,7 @@ final class RadioPlayer {
         index = -1;
         nowTitle = "";
         error = "";
+        displaced = false;
         // Parada (con lo parado a mano, si lo hay) o liberada si Android Auto no la tiene.
         RadioSession.playerDown();
         changed();

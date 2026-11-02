@@ -843,10 +843,11 @@ volver a conectar; una canción, por donde iba. Si la habías parado, no. Se qui
 
 Mientras suena la radio (o «Mi música») de Qonecta+, **Android Auto lo enseña como lo que está sonando**: la canción,
 si la emisora la dice, o el nombre de la emisora, con su logo. Lo mismo sale en la notificación del móvil y, por
-Bluetooth, en el cuadro del coche (el logo, solo si el coche enseña portadas por Bluetooth). Entre las apps de música
-de Android Auto aparece **Qonecta+**, con tus emisoras **Favoritos** (las de ★) y **Recientes**: toca una y suena.
-Qonecta+ **nunca pone la radio sola** al conectar: suena lo que eliges, y lo que sonaba al apagar el coche solo si
-tienes «Seguir con la radio al conectar».
+Bluetooth, en el cuadro del coche (el logo, solo si el coche enseña portadas por Bluetooth). Mientras suena, **Qonecta+**
+aparece también entre las apps de música de Android Auto, con tus emisoras **Favoritos** (las de ★) y **Recientes**:
+toca una y cambias a ella. Con la radio parada no aparece, para que Android Auto no salte a Qonecta+ mientras suena
+Spotify u otra app: la radio se pone en el coche, desde Radio. Qonecta+ **nunca pone la radio sola** al conectar: suena
+lo que eliges, y lo que sonaba al apagar el coche solo si tienes «Seguir con la radio al conectar».
 
 > [!NOTE]
 > Para que Qonecta+ salga en Android Auto, activa una vez **«Fuentes desconocidas»** en los ajustes de desarrollador

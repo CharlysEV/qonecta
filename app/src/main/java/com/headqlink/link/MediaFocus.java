@@ -89,6 +89,11 @@ final class MediaFocus implements AudioManager.OnAudioFocusChangeListener {
         return interrupted;
     }
 
+    /** Otro reproductor nuestro (la TV, la web) se ha quedado el sonido que tenía focus. */
+    static boolean takenFrom(MediaFocus focus) {
+        return active != null && active != focus;
+    }
+
     @Override
     public void onAudioFocusChange(int change) {
         L.i("foco de audio: cambio " + change + (held ? "" : " (sin foco)") + (closed ? " (cerrado)" : "") + (interrupted ? " (interrumpido)" : ""));

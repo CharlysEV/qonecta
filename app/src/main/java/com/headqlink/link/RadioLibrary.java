@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 
+import androidx.media.MediaSessionManager;
 import androidx.media.utils.MediaConstants;
 
 import org.json.JSONArray;
@@ -27,8 +28,6 @@ import java.util.Set;
  */
 final class RadioLibrary {
     static final String ROOT = "root";
-    /** La raíz de quien no es Android Auto, el sistema ni el Bluetooth: se conecta, pero sin listas. */
-    static final String EMPTY_ROOT = "empty";
     static final String FAVS = "fav";
     static final String RECENT = "recent";
     /** Recientes que se guardan como mucho. */
@@ -64,8 +63,9 @@ final class RadioLibrary {
         return c.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
     }
 
-    /** Lo que hay dentro de una carpeta de Android Auto (en la raíz sin listas o en una que no existe, nada). */
-    static List<MediaBrowserCompat.MediaItem> children(Context c, String parentId) {
+    /** Lo que hay dentro de una carpeta de Android Auto (a quien no puede ver las listas, mayList, o en una que no existe, nada). */
+    static List<MediaBrowserCompat.MediaItem> children(Context c, String parentId, boolean mayList) {
+        if (!mayList) return new ArrayList<>();
         if (ROOT.equals(parentId)) return folders(Str.get(R.string.hql_radio_aa_favorites), Str.get(R.string.hql_radio_aa_recent));
         if (FAVS.equals(parentId)) return items(FAVS, favorites(c));
         if (RECENT.equals(parentId)) return items(RECENT, recents(c));
@@ -90,6 +90,21 @@ final class RadioLibrary {
     /** Puro: quien se conecta ve las listas (Qonecta+, el sistema o uno de TRUSTED). */
     static boolean trusted(String pkg, int uid, int myUid) {
         return uid == myUid || uid == android.os.Process.SYSTEM_UID || TRUSTED.contains(pkg);
+    }
+
+    /**
+     * Puro: quien pide una carpeta (onLoadChildren) la ve: de confianza y de verdad dueño del paquete que dice
+     * (packagesOfUid: los del uid que llama; por la mensajería de AndroidX el paquete lo pone quien llama). En Android
+     * 8.1 o anterior, lo que llega por el camino del sistema no dice quién es (LEGACY_CONTROLLER), pero por ahí solo entra
+     * quien onGetRoot dejó pasar.
+     */
+    static boolean mayList(String pkg, int uid, int myUid, String[] packagesOfUid, int sdk) {
+        if (sdk < 28 && MediaSessionManager.RemoteUserInfo.LEGACY_CONTROLLER.equals(pkg)) return true;
+        if (pkg == null || packagesOfUid == null || !trusted(pkg, uid, myUid)) return false;
+        for (String p : packagesOfUid) {
+            if (pkg.equals(p)) return true;
+        }
+        return false;
     }
 
     /** Puro: en filas (sin logos: Android Auto solo abre imágenes content://) y sin búsqueda. */

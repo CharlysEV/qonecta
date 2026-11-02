@@ -825,10 +825,12 @@ Settings › "Car screen" › "Resume the radio when connecting".
 
 While Qonecta+'s radio (or "My music") is playing, **Android Auto shows it as what's playing**: the song, if the
 station sends it, or the station's name, with its logo. The same shows in the phone's notification and, over
-Bluetooth, on the car's instrument cluster (the logo only if the car shows cover art over Bluetooth). Among Android
-Auto's music apps, **Qonecta+** appears with your **Favorites** (the ★ ones) and **Recent** stations: tap one and it
-plays. Qonecta+ **never starts the radio by itself** when connecting: what you choose plays, and what was playing when
-you switched the car off only if "Resume the radio when connecting" is on.
+Bluetooth, on the car's instrument cluster (the logo only if the car shows cover art over Bluetooth). While it plays,
+**Qonecta+** also appears among Android Auto's music apps, with your **Favorites** (the ★ ones) and **Recent**
+stations: tap one to switch to it. With the radio stopped it isn't there, so that Android Auto doesn't jump to
+Qonecta+ while Spotify or another app is playing: start the radio in the car, from Radio. Qonecta+ **never starts the
+radio by itself** when connecting: what you choose plays, and what was playing when you switched the car off only if
+"Resume the radio when connecting" is on.
 
 > [!NOTE]
 > For Qonecta+ to show up in Android Auto, turn on **"Unknown sources"** once in Android Auto's developer settings

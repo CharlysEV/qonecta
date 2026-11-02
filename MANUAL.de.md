@@ -909,9 +909,11 @@ Abschalten unter Einstellungen › „Fahrzeugbildschirm“ › „Radio beim Ve
 Während das Radio (oder „Meine Musik“) von Qonecta+ läuft, **zeigt Android Auto es als das, was gerade läuft**: den
 Titel, wenn der Sender ihn mitschickt, oder den Namen des Senders, mit seinem Logo. Dasselbe erscheint in der
 Benachrichtigung des Handys und, über Bluetooth, im Cockpit des Fahrzeugs (das Logo nur, wenn das Fahrzeug Cover über
-Bluetooth anzeigt). Unter den Musik-Apps von Android Auto erscheint **Qonecta+** mit deinen Sendern **Favoriten** (die
-mit ★) und **Zuletzt gehört**: Tippst du einen an, läuft er. Qonecta+ **startet das Radio beim Verbinden nie von
-selbst**: Es läuft, was du auswählst, und was beim Ausschalten lief, nur mit „Radio beim Verbinden fortsetzen“.
+Bluetooth anzeigt). Solange es läuft, erscheint **Qonecta+** auch unter den Musik-Apps von Android Auto, mit deinen
+Sendern **Favoriten** (die mit ★) und **Zuletzt gehört**: Tippst du einen an, wechselst du zu ihm. Ist das Radio aus,
+erscheint es dort nicht, damit Android Auto nicht zu Qonecta+ springt, während Spotify oder eine andere App läuft: Das
+Radio startest du im Fahrzeug unter Radio. Qonecta+ **startet das Radio beim Verbinden nie von selbst**: Es läuft, was
+du auswählst, und was beim Ausschalten lief, nur mit „Radio beim Verbinden fortsetzen“.
 
 > [!NOTE]
 > Damit Qonecta+ in Android Auto erscheint, aktiviere einmal **„Unbekannte Quellen“** in den Entwicklereinstellungen

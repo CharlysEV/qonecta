@@ -5,16 +5,20 @@ import com.andrerinas.openheadunit.R;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.core.app.NotificationCompat;
+import androidx.media3.common.Player;
 
 /**
  * La sesión multimedia de la radio y de «Mi música» (MediaSessionCompat): la que enseñan Android Auto (le da su token
@@ -28,8 +32,10 @@ import androidx.core.app.NotificationCompat;
  * música, y sin emisora eso no hace nada. Suena lo que el usuario elige (una emisora en Android Auto o en la pantalla
  * Radio), lo que estaba sonando o en pausa y lo que paró a mano en este mismo viaje (RadioPlayer.stopByUser). Al conectar,
  * solo «Seguir con la radio al conectar» (Config.radioResume) la pone en marcha, como antes.
+ *
+ * Qonecta+ solo es fuente de música de Android Auto mientras suena la radio (ver «fuente de Android Auto», abajo).
  */
-final class RadioSession {
+public final class RadioSession {
     private static final String CHANNEL = "hql_radio";
     private static final int NOTICE_ID = 0x5241;
 
@@ -123,6 +129,150 @@ final class RadioSession {
         session.setActive(false);
         session.release();
         session = null;
+    }
+
+    // ---------------------------------------------------------------- fuente de Android Auto
+
+    /*
+     * Qonecta+ solo es fuente de música de Android Auto (RadioBrowserService habilitado; el manifiesto lo trae
+     * deshabilitado) mientras suena la radio. Android Auto salta a la app que tenga una sesión sonando y un servicio de
+     * música, y Qonecta+ tiene más sesiones que suenan sin ser la radio: la del enlace con Android Auto (HeadunitRevived,
+     * en «sonando» desde que conecta y cada vez que Android Auto toma el sonido, o sea, con Spotify; por ella van los
+     * mandos del volante del C10) y la de la TV. Con el servicio siempre puesto, Android Auto saltaría a «Qonecta+» al
+     * conectar o con Spotify sonando y enseñaría esta sesión vacía (#297 al revés). Así, sin radio, todo sigue como antes
+     * de que la radio saliera en Android Auto; a cambio, «Favoritos» y «Recientes» solo están mientras suena.
+     */
+
+    /** Tras parar, o si otra cosa se queda el sonido (otra app, la TV o la música de Android Auto): lo que sigue de fuente. */
+    static final long OFF_SOON_MS = 2_000;
+    /** Tras una pausa (⏯ en Android Auto, el volante o la pantalla Radio) o un fallo de la emisora: lo que sigue de fuente. */
+    static final long OFF_PAUSED_MS = 60_000;
+
+    /** El servicio está habilitado ahora (null: sin saber todavía). */
+    private static Boolean sourceOn;
+    /** Cuándo (uptimeMillis) deja de ser fuente, o 0 si no está previsto. */
+    private static long offAt;
+    /** La radio suena (lo último que dijo RadioPlayer). */
+    private static boolean sounding;
+    /** Variante de pruebas («radioaa siempre»): fuente siempre, como antes del arreglo, para ver si Android Auto salta. */
+    private static boolean labAlways;
+    private static Handler main;
+    private static final Runnable SOURCE_OFF = () -> {
+        offAt = 0;
+        setSource(false);
+    };
+
+    /**
+     * Al arrancar la app (App.onCreate): sin radio, Qonecta+ no es fuente. Lo habilitado sobrevive al proceso: si se
+     * cerró con la radio sonando, Android Auto lo seguiría viendo.
+     */
+    public static void sourceAtStart(Context c) {
+        app = c.getApplicationContext();
+        if (main != null) main.removeCallbacks(SOURCE_OFF);
+        main = new Handler(Looper.getMainLooper());
+        offAt = 0;
+        sourceOn = null;
+        sounding = false;
+        labAlways = false;
+        setSource(false);
+    }
+
+    /**
+     * Lo que hace la radio (RadioPlayer.changed): suena → fuente ya; deja de sonar → deja de serlo al rato
+     * (offDelayMs: alive, con reproductor; displaced, callada porque otra cosa se ha quedado el sonido).
+     */
+    static void radio(boolean nowSounding, boolean alive, boolean displaced) {
+        sounding = nowSounding;
+        if (nowSounding) {
+            handler().removeCallbacks(SOURCE_OFF);
+            offAt = 0;
+            setSource(true);
+        } else {
+            offIn(offDelayMs(alive, displaced));
+        }
+    }
+
+    /** Otra cosa de Qonecta+ suena con su propia sesión (la TV): la radio, si no suena, deja de ser fuente enseguida. */
+    static void otherSounds() {
+        if (!sounding) offIn(OFF_SOON_MS);
+    }
+
+    /**
+     * Android Auto toma el sonido o lo suelta (AapService, el foco de su audio: su música, p. ej. Spotify). Si lo toma y
+     * la radio no suena, Qonecta+ deja de ser fuente enseguida: si no, la radio en pausa le quitaría la pantalla de
+     * Android Auto a Spotify. Desde cualquier hilo.
+     */
+    public static void aaSounds(boolean playing) {
+        if (!playing) return;
+        new Handler(Looper.getMainLooper()).post(RadioSession::otherSounds);
+    }
+
+    /** Variante de pruebas: fuente siempre (true) o solo mientras suena (false). */
+    static void labAlways(boolean always) {
+        labAlways = always;
+        if (always) {
+            handler().removeCallbacks(SOURCE_OFF);
+            offAt = 0;
+            setSource(true);
+        } else if (!sounding) {
+            offIn(OFF_SOON_MS);
+        }
+    }
+
+    static boolean labAlways() {
+        return labAlways;
+    }
+
+    private static void offIn(long ms) {
+        if (labAlways || Boolean.FALSE.equals(sourceOn)) return;
+        long at = SystemClock.uptimeMillis() + ms;
+        // Una ya prevista antes se queda: los avisos de la radio en pausa no la van retrasando.
+        if (offAt != 0 && offAt <= at) return;
+        offAt = at;
+        handler().removeCallbacks(SOURCE_OFF);
+        handler().postAtTime(SOURCE_OFF, at);
+    }
+
+    private static Handler handler() {
+        if (main == null) main = new Handler(Looper.getMainLooper());
+        return main;
+    }
+
+    private static void setSource(boolean on) {
+        Context c = app;
+        if (c == null || Boolean.valueOf(on).equals(sourceOn)) return;
+        try {
+            PackageManager pm = c.getPackageManager();
+            ComponentName cn = new ComponentName(c, RadioBrowserService.class);
+            // Apagada, la del manifiesto (deshabilitado). Sin matar la app: suena la radio.
+            int want = on ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED : PackageManager.COMPONENT_ENABLED_STATE_DEFAULT;
+            if (pm.getComponentEnabledSetting(cn) != want) {
+                pm.setComponentEnabledSetting(cn, want, PackageManager.DONT_KILL_APP);
+                L.i(on ? "radio: suena; Qonecta+ es fuente de música de Android Auto"
+                        : "radio: no suena; Qonecta+ deja de ser fuente de música de Android Auto");
+            }
+            sourceOn = on;
+        } catch (RuntimeException e) {
+            L.w("radio: no se pudo " + (on ? "poner" : "quitar") + " Qonecta+ como fuente de Android Auto ("
+                    + e.getClass().getSimpleName() + ")");
+        }
+    }
+
+    /**
+     * Puro: la radio suena para Android Auto: con reproductor que quiere sonar (cargando, sonando o callado un momento
+     * por una llamada o un aviso del navegador), sin haber terminado ni fallado.
+     */
+    static boolean sounds(boolean alive, boolean playWhenReady, int playbackState) {
+        return alive && playWhenReady && playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED;
+    }
+
+    /**
+     * Puro: cuánto sigue Qonecta+ de fuente cuando la radio deja de sonar. Parada, o callada porque otra cosa se ha
+     * quedado el sonido: enseguida. En pausa o con la emisora fallando: un rato, para que ⏯ (o elegir otra emisora) la
+     * vuelva a poner sin que Android Auto la haya soltado.
+     */
+    static long offDelayMs(boolean alive, boolean displaced) {
+        return !alive || displaced ? OFF_SOON_MS : OFF_PAUSED_MS;
     }
 
     // ---------------------------------------------------------------- notificación del móvil

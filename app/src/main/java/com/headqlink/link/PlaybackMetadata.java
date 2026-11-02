@@ -184,7 +184,10 @@ final class PlaybackMetadata implements AutoCloseable {
         if (state == PlaybackStateCompat.STATE_ERROR) b.setErrorMessage(PlaybackStateCompat.ERROR_CODE_UNKNOWN_ERROR, error);
         session.setPlaybackState(b.build());
         // Una fuente pausada no debe competir con Spotify o con la sesión de Android Auto.
-        session.setActive(playing && playback != Player.STATE_IDLE && playback != Player.STATE_ENDED);
+        boolean active = playing && playback != Player.STATE_IDLE && playback != Player.STATE_ENDED;
+        session.setActive(active);
+        // La TV suena con su sesión: Android Auto no debe saltar por ella a la radio parada (RadioSession).
+        if (active && ownsSession) RadioSession.otherSounds();
     }
 
     /**

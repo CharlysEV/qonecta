@@ -1336,6 +1336,8 @@ class AapService : Service() {
         // Link audio focus state changes to our MediaSession state
         commManager.onAudioFocusStateChanged = { isPlaying ->
             updateMediaSessionState(isPlaying)
+            // headqlink: Android Auto toma el sonido (su música): la radio de Qonecta+, si no suena, deja de ser su fuente.
+            com.headqlink.link.RadioSession.aaSounds(isPlaying)
         }
 
         // AapAudio owns focus for the projection session. CommManager requests static focus

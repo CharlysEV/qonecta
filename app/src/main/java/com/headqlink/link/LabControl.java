@@ -18,7 +18,8 @@ import java.util.Locale;
  * alemania on|off (el registro de cargadores de Alemania como si una ruta pasara por allí; off lo borra) · precios [LAT,LON]
  * (los precios ad hoc de Alemania alrededor de un punto; sin nada, Berlín) · carga demo|off
  * (la notificación de una carga inventada, para ver el Live Update) · ffmpeg (si el audio por FFmpeg está listo) · ia [hola]
- * (el SDK de Anthropic con una clave falsa; «hola»: una pregunta de verdad con la clave guardada).
+ * (el SDK de Anthropic con una clave falsa; «hola»: una pregunta de verdad con la clave guardada) · radioaa siempre|sonando
+ * (la radio como fuente de Android Auto siempre, como antes del arreglo, o solo mientras suena).
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
@@ -229,6 +230,16 @@ final class LabControl {
                 break;
             case "carga":
                 done = ChargeWatch.labNotify(ctx, !a.equals("off"));
+                break;
+            case "radioaa":
+                // La radio como fuente de Android Auto: «siempre», como antes del arreglo (para ver si Android Auto salta a
+                // Qonecta+ con Spotify o la TV sonando y la radio parada); «sonando», la de serie (solo mientras suena).
+                if (!"siempre".equals(a) && !"sonando".equals(a)) {
+                    return "no: radioaa siempre|sonando (ahora: " + (RadioSession.labAlways() ? "siempre" : "sonando") + ")";
+                }
+                RadioSession.labAlways("siempre".equals(a));
+                done = "siempre".equals(a) ? "Qonecta+ fuente de Android Auto siempre (la de antes del arreglo)"
+                        : "Qonecta+ fuente de Android Auto solo mientras suena la radio";
                 break;
             case "reconectar":
                 done = "reconecto (unos segundos sin imagen)";

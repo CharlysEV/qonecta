@@ -1,14 +1,23 @@
 package com.headqlink.link
 
 import android.app.NotificationManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.os.Binder
 import android.os.Bundle
+import android.os.IBinder
+import android.os.Looper
+import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.media.MediaBrowserServiceCompat
+import androidx.media.MediaSessionManager
 import androidx.media3.common.Player
+import java.lang.reflect.Proxy
+import java.time.Duration
 import com.bumptech.glide.request.target.CustomTarget
 import org.json.JSONArray
 import org.junit.After
@@ -29,6 +38,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config as RoboConfig
 import org.robolectric.annotation.ConscryptMode
+import org.robolectric.shadows.ShadowProcess
 
 /**
  * La radio en Android Auto (foro #297) y su logo en los controles (#286): qué se publica (canción y emisora), los
@@ -49,7 +59,10 @@ class RadioAaTest {
 
     @Before
     fun clean() {
+        // El uid de la app, fijo (Robolectric lo elige al azar): los de las otras apps de las pruebas no coinciden.
+        ShadowProcess.setUid(10_100)
         RadioPlayer.stop()
+        RadioSession.sourceAtStart(app)
     }
 
     @After
@@ -133,11 +146,21 @@ class RadioAaTest {
         assertNull(RadioLibrary.listOf("otra:123"))
         assertNull(RadioLibrary.listOf(null))
         // Las carpetas, con sus nombres; quien no es de confianza, nada.
-        assertEquals(listOf("Favorites", "Recent"), RadioLibrary.children(app, RadioLibrary.ROOT).map { it.description.title.toString() })
-        assertTrue(RadioLibrary.children(app, RadioLibrary.EMPTY_ROOT).isEmpty())
+        assertEquals(listOf("Favorites", "Recent"), RadioLibrary.children(app, RadioLibrary.ROOT, true).map { it.description.title.toString() })
+        assertTrue(RadioLibrary.children(app, RadioLibrary.ROOT, false).isEmpty())
         assertTrue(RadioLibrary.trusted("com.google.android.projection.gearhead", 10_200, 10_100))
         assertTrue(RadioLibrary.trusted("com.headqlink.app", 10_100, 10_100))
         assertFalse(RadioLibrary.trusted("com.ejemplo.otra", 10_300, 10_100))
+        // Quien pide una carpeta: de confianza y dueño de verdad del paquete que dice.
+        val aa = "com.google.android.projection.gearhead"
+        assertTrue(RadioLibrary.mayList(aa, 10_200, 10_100, arrayOf(aa), 35))
+        assertFalse(RadioLibrary.mayList(aa, 10_300, 10_100, arrayOf("com.ejemplo.otra"), 35))
+        assertFalse(RadioLibrary.mayList("com.ejemplo.otra", 10_300, 10_100, arrayOf("com.ejemplo.otra"), 35))
+        assertFalse(RadioLibrary.mayList(aa, 10_200, 10_100, null, 35))
+        // Android 8.1 o anterior: por el camino del sistema no se sabe quién es, pero ya pasó por onGetRoot.
+        val legacy = MediaSessionManager.RemoteUserInfo.LEGACY_CONTROLLER
+        assertTrue(RadioLibrary.mayList(legacy, -1, 10_100, null, 27))
+        assertFalse(RadioLibrary.mayList(legacy, -1, 10_100, null, 28))
         val extras = RadioLibrary.rootExtras()
         assertFalse(extras.getBoolean("android.media.browse.SEARCH_SUPPORTED", true))
     }
@@ -252,13 +275,201 @@ class RadioAaTest {
         try {
             assertNotNull(service.sessionToken)
             assertEquals(RadioLibrary.ROOT, service.onGetRoot("com.google.android.projection.gearhead", 10_200, null)!!.rootId)
-            assertEquals(RadioLibrary.EMPTY_ROOT, service.onGetRoot("com.ejemplo.otra", 10_300, null)!!.rootId)
+            // Los demás ni entran: sin raíz no reciben la sesión.
+            assertNull(service.onGetRoot("com.ejemplo.otra", 10_300, null))
             val recent = Bundle().apply { putBoolean(MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT, true) }
             assertNull(service.onGetRoot("com.android.systemui", 10_400, recent))
         } finally {
             controller.destroy()
         }
         assertNull(RadioPlayer.current())
+    }
+
+    @Test
+    fun anUntrustedAppCannotReadTheRecents() {
+        RadioLibrary.addRecent(app, station("Radio Nueva", "https://nueva.example/s"))
+        val aa = "com.google.android.projection.gearhead"
+        val other = "com.ejemplo.otra"
+        shadowOf(app.packageManager).setPackagesForUid(10_200, aa)
+        shadowOf(app.packageManager).setPackagesForUid(10_300, other)
+        val controller = Robolectric.buildService(RadioBrowserService::class.java).create()
+        try {
+            val service = controller.get()
+            // Otra app se conecta y se suscribe a «recent»: no entra, y no le llega nada.
+            val stranger = Client(service)
+            stranger.connect(other, 10_300)
+            assertEquals(false, stranger.connected)
+            stranger.subscribe(RadioLibrary.RECENT)
+            assertFalse(stranger.loaded.containsKey(RadioLibrary.RECENT))
+            // Aunque llegara a registrarse (la mensajería de AndroidX, sin onGetRoot), «recent» y «fav» le llegan vacías,
+            // también si dice ser Android Auto con su propio uid.
+            val sneaky = Client(service)
+            sneaky.register(other, 10_300)
+            sneaky.subscribe(RadioLibrary.RECENT)
+            sneaky.subscribe(RadioLibrary.FAVS)
+            assertEquals(emptyList<String>(), sneaky.loaded[RadioLibrary.RECENT]!!.map { it.mediaId })
+            assertEquals(emptyList<String>(), sneaky.loaded[RadioLibrary.FAVS]!!.map { it.mediaId })
+            val impostor = Client(service)
+            impostor.register(aa, 10_300)
+            impostor.subscribe(RadioLibrary.RECENT)
+            assertTrue(impostor.loaded[RadioLibrary.RECENT]!!.isEmpty())
+            // Android Auto sí: entra y ve las recientes.
+            val car = Client(service)
+            car.connect(aa, 10_200)
+            assertEquals(true, car.connected)
+            car.subscribe(RadioLibrary.ROOT)
+            car.subscribe(RadioLibrary.RECENT)
+            assertEquals(listOf(RadioLibrary.FAVS, RadioLibrary.RECENT), car.loaded[RadioLibrary.ROOT]!!.map { it.mediaId })
+            assertEquals("Radio Nueva", car.loaded[RadioLibrary.RECENT]!!.first().description.title.toString())
+        } finally {
+            controller.destroy()
+        }
+    }
+
+    @Test
+    fun qonectaIsAnAndroidAutoSourceOnlyWhileTheRadioSounds() {
+        val pm = app.packageManager
+        val cn = ComponentName(app, RadioBrowserService::class.java)
+        val looper = shadowOf(Looper.getMainLooper())
+        fun on() = pm.getComponentEnabledSetting(cn) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        // De serie, deshabilitado: sin radio, Android Auto no ve a Qonecta+ como app de música.
+        assertFalse(pm.getServiceInfo(cn, PackageManager.MATCH_DISABLED_COMPONENTS).enabled)
+        assertFalse(on())
+        // Suena: fuente ya. Parada: fuera enseguida.
+        RadioSession.radio(true, true, false)
+        assertTrue(on())
+        RadioPlayer.stop()
+        looper.idleFor(Duration.ofMillis(RadioSession.OFF_SOON_MS - 500))
+        assertTrue(on())
+        looper.idleFor(Duration.ofMillis(600))
+        assertFalse(on())
+        // En pausa: un rato, para que ⏯ la vuelva a poner; los avisos de la radio en pausa no lo alargan.
+        RadioSession.radio(true, true, false)
+        RadioSession.radio(false, true, false)
+        looper.idleFor(Duration.ofSeconds(30))
+        RadioSession.radio(false, true, false)
+        assertTrue(on())
+        looper.idleFor(Duration.ofSeconds(31))
+        assertFalse(on())
+        // Vuelve a sonar dentro del rato: sigue de fuente.
+        RadioSession.radio(true, true, false)
+        RadioSession.radio(false, true, false)
+        looper.idleFor(Duration.ofSeconds(10))
+        RadioSession.radio(true, true, false)
+        looper.idleFor(Duration.ofMinutes(2))
+        assertTrue(on())
+        // Otra app se queda el sonido: fuera enseguida.
+        RadioSession.radio(false, true, true)
+        looper.idleFor(Duration.ofMillis(RadioSession.OFF_SOON_MS + 100))
+        assertFalse(on())
+        // En pausa y suena la música de Android Auto (Spotify) o la TV: fuera enseguida.
+        RadioSession.radio(true, true, false)
+        RadioSession.radio(false, true, false)
+        RadioSession.aaSounds(true)
+        looper.idleFor(Duration.ofMillis(RadioSession.OFF_SOON_MS + 100))
+        assertFalse(on())
+        RadioSession.radio(true, true, false)
+        RadioSession.radio(false, true, false)
+        RadioSession.otherSounds()
+        looper.idleFor(Duration.ofMillis(RadioSession.OFF_SOON_MS + 100))
+        assertFalse(on())
+        // Mientras suena, ni Android Auto ni la TV la quitan.
+        RadioSession.radio(true, true, false)
+        RadioSession.aaSounds(true)
+        RadioSession.otherSounds()
+        looper.idleFor(Duration.ofMinutes(2))
+        assertTrue(on())
+        // La variante de pruebas «radioaa siempre»: fuente también parada.
+        RadioSession.labAlways(true)
+        RadioSession.radio(false, false, false)
+        looper.idleFor(Duration.ofMinutes(2))
+        assertTrue(on())
+        RadioSession.labAlways(false)
+        looper.idleFor(Duration.ofMillis(RadioSession.OFF_SOON_MS + 100))
+        assertFalse(on())
+        // Lo que se cuenta como sonar y cuánto sigue de fuente.
+        assertTrue(RadioSession.sounds(true, true, Player.STATE_READY))
+        assertTrue(RadioSession.sounds(true, true, Player.STATE_BUFFERING))
+        assertFalse(RadioSession.sounds(true, false, Player.STATE_READY))
+        assertFalse(RadioSession.sounds(true, true, Player.STATE_IDLE))
+        assertFalse(RadioSession.sounds(true, true, Player.STATE_ENDED))
+        assertFalse(RadioSession.sounds(false, true, Player.STATE_READY))
+        assertEquals(RadioSession.OFF_SOON_MS, RadioSession.offDelayMs(false, false))
+        assertEquals(RadioSession.OFF_SOON_MS, RadioSession.offDelayMs(true, true))
+        assertEquals(RadioSession.OFF_PAUSED_MS, RadioSession.offDelayMs(true, false))
+    }
+
+    @Test
+    fun theTvTakingTheSoundIsNotAPause() {
+        var paused = 0
+        val radio = MediaFocus(app) { paused++ }
+        val tv = MediaFocus(app) { }
+        try {
+            assertTrue(radio.acquire())
+            assertFalse(MediaFocus.takenFrom(radio))
+            assertTrue(tv.acquire())
+            assertEquals(1, paused)
+            assertTrue(MediaFocus.takenFrom(radio))
+            assertFalse(MediaFocus.takenFrom(tv))
+        } finally {
+            tv.close()
+            radio.close()
+        }
+        assertFalse(MediaFocus.takenFrom(radio))
+    }
+
+    /** Una app que se conecta a la radio por dentro de AndroidX (ServiceBinderImpl), como lo haría por Binder. */
+    private class Client(service: MediaBrowserServiceCompat) {
+        var connected: Boolean? = null
+        val loaded = mutableMapOf<String, List<MediaBrowserCompat.MediaItem>>()
+        private val binder = Binder()
+        private val type = Class.forName("androidx.media.MediaBrowserServiceCompat\$ServiceCallbacks")
+        private val impl: Any
+        private val callbacks: Any
+
+        init {
+            // En AndroidX Media 1.7 lo tiene el servicio; en la 1.6, su Handler.
+            impl = try {
+                MediaBrowserServiceCompat::class.java.getDeclaredField("mServiceBinderImpl").apply { isAccessible = true }.get(service)!!
+            } catch (_: NoSuchFieldException) {
+                val handler = MediaBrowserServiceCompat::class.java.getDeclaredField("mHandler").apply { isAccessible = true }.get(service)!!
+                handler.javaClass.getDeclaredField("mServiceBinderImpl").apply { isAccessible = true }.get(handler)!!
+            }
+            callbacks = Proxy.newProxyInstance(type.classLoader, arrayOf(type)) { proxy, m, args ->
+                when (m.name) {
+                    "asBinder" -> binder
+                    "onConnect" -> { connected = true; null }
+                    "onConnectFailed" -> { connected = false; null }
+                    "onLoadChildren" -> {
+                        @Suppress("UNCHECKED_CAST")
+                        loaded[args!![0] as String] = (args[1] as List<MediaBrowserCompat.MediaItem>?).orEmpty()
+                        null
+                    }
+                    "hashCode" -> System.identityHashCode(proxy)
+                    "equals" -> proxy === args!![0]
+                    "toString" -> "cliente de prueba"
+                    else -> null
+                }
+            }
+        }
+
+        fun connect(pkg: String, uid: Int) =
+            call("connect", arrayOf<Class<*>>(String::class.java, INT, INT, Bundle::class.java, type), pkg, 1, uid, null, callbacks)
+
+        fun register(pkg: String, uid: Int) =
+            call("registerCallbacks", arrayOf<Class<*>>(type, String::class.java, INT, INT, Bundle::class.java), callbacks, pkg, 1, uid, null)
+
+        fun subscribe(id: String) =
+            call("addSubscription", arrayOf<Class<*>>(String::class.java, IBinder::class.java, Bundle::class.java, type), id, Binder(), null, callbacks)
+
+        private fun call(name: String, types: Array<Class<*>>, vararg args: Any?) {
+            impl.javaClass.getDeclaredMethod(name, *types).apply { isAccessible = true }.invoke(impl, *args)
+            shadowOf(Looper.getMainLooper()).idle()
+        }
+
+        private companion object {
+            val INT: Class<*> = Int::class.javaPrimitiveType!!
+        }
     }
 
     // Robolectric no comunica el Binder de MediaSession con su controlador: se leen los valores que AndroidX guarda.

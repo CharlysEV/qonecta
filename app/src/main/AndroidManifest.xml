@@ -801,6 +801,9 @@
             y logo) sale en la pantalla de Android Auto, y en su lista de apps de música, «Qonecta+» con las favoritas y las
             recientes. Instalada fuera de Google Play, Android Auto solo la enseña con «Fuentes desconocidas» activado en
             sus ajustes de desarrollador. Conectarse no pone nada a sonar (RadioSession).
+            Deshabilitado de serie: RadioSession lo habilita solo mientras suena la radio. Si no, Android Auto saltaría a
+            Qonecta+ por las otras sesiones de la app que suenan (la del enlace con Android Auto, la de la TV) y
+            enseñaría la radio vacía en vez de Spotify. Solo entran Android Auto, el sistema y el Bluetooth.
         -->
         <meta-data
             android:name="com.google.android.gms.car.application"
@@ -808,6 +811,7 @@
 
         <service
             android:name="com.headqlink.link.RadioBrowserService"
+            android:enabled="false"
             android:exported="true"
             tools:ignore="ExportedService">
             <intent-filter>
