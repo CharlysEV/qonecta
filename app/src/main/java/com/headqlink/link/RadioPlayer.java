@@ -34,6 +34,14 @@ final class RadioPlayer {
         boolean local;
         String album = "";
         long durMs;
+        /**
+         * De una lista con usuario (M3uSource.Logins), solo en memoria: en Xtream va dentro de url; se guarda sin él
+         * (RadioLibrary.item). Sin usuario, NONE y "".
+         */
+        M3uSource.Login login = M3uSource.Login.NONE;
+        String loginId = "";
+        /** Con HTTP Basic, el servidor de su lista: a él va la cabecera con login; null si no. */
+        String authHost;
     }
 
     private static ExoPlayer player;
@@ -50,6 +58,9 @@ final class RadioPlayer {
     private static int lastIndex = -1;
     /** Callada porque otra cosa se ha quedado el sonido (otra app o la TV), no por una pausa: deja Android Auto enseguida. */
     private static boolean displaced;
+    /** HTTP Basic de lo que suena: su servidor y la cabecera (los lee el hilo de carga del reproductor); null si no. */
+    private static volatile String authHost;
+    private static volatile String authHeader;
 
     private RadioPlayer() {
     }
@@ -94,8 +105,12 @@ final class RadioPlayer {
         Station s = current();
         if (s == null) return;
         if (player == null) {
-            // Con FFmpeg de reserva: FLAC, OGG u Opus que el móvil no sepa decodificar también suenan.
-            player = VideoPlayer.newPlayer(app);
+            // Con FFmpeg de reserva: FLAC, OGG u Opus que el móvil no sepa decodificar también suenan. Con la cabecera de
+            // la lista de lo que suene (HTTP Basic), solo a su servidor.
+            player = VideoPlayer.newPlayer(app, host -> {
+                String h = authHost;
+                return h != null && h.equalsIgnoreCase(host) ? authHeader : null;
+            });
             player.setAudioAttributes(new AudioAttributes.Builder()
                     .setUsage(C.USAGE_MEDIA).setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(), false);
             mediaFocus = MediaFocus.bind(app, player);
@@ -150,11 +165,14 @@ final class RadioPlayer {
         metadata.setError("");
         publishMetadata();
         RadioLibrary.addRecent(app, s);
+        authHeader = s.authHost != null && !s.login.isEmpty() ? M3uSource.basicAuth(s.login) : null;
+        authHost = authHeader != null ? s.authHost : null;
         player.setMediaItem(new MediaItem.Builder().setUri(s.url)
                 .setMediaMetadata(new MediaMetadata.Builder().setStation(s.name).build()).build());
         player.prepare();
         player.play();
-        L.i(s.local ? "música: canción " + (index + 1) + " de " + list.size() : "radio: " + s.name + " · " + s.url);
+        L.i(s.local ? "música: canción " + (index + 1) + " de " + list.size()
+                : "radio: " + s.name + " · " + M3uSource.mask(s.url, s.login));
         changed();
     }
 
@@ -319,7 +337,8 @@ final class RadioPlayer {
     /** Al abrir la interfaz propia: sigue con lo que sonaba al cerrarse la anterior, si sonaba y no suena ya otra cosa. */
     static void resumeSaved(Context ctx) {
         if (current() != null) return;
-        Resume r = resumeFrom(ctx.getSharedPreferences(RESUME_PREFS, Context.MODE_PRIVATE).getString("state", null));
+        Resume r = resumeFrom(ctx.getSharedPreferences(RESUME_PREFS, Context.MODE_PRIVATE).getString("state", null),
+                RadioLibrary.logins(ctx));
         if (r == null) return;
         list.clear();
         list.addAll(r.list);
@@ -341,7 +360,9 @@ final class RadioPlayer {
                 Station s = l.get(k);
                 org.json.JSONObject o = new org.json.JSONObject();
                 o.put("name", s.name);
-                o.put("url", s.url);
+                // Sin el usuario de su lista, como los favoritos y las recientes.
+                o.put("url", RadioLibrary.storedUrl(s));
+                RadioLibrary.putLogin(o, s);
                 if (s.logo != null) o.put("logo", s.logo);
                 if (s.group != null) o.put("group", s.group);
                 if (s.local) {
@@ -359,6 +380,11 @@ final class RadioPlayer {
 
     /** Puro: lo guardado por {@link #resumeJson}, o null si no hay nada (o está roto). */
     static Resume resumeFrom(String json) {
+        return resumeFrom(json, id -> M3uSource.Login.NONE);
+    }
+
+    /** Puro: igual, con el usuario de su lista (logins) en las emisoras que lo tienen. */
+    static Resume resumeFrom(String json, RadioLibrary.LoginLookup logins) {
         if (json == null || json.isEmpty()) return null;
         try {
             org.json.JSONObject o = new org.json.JSONObject(json);
@@ -374,6 +400,7 @@ final class RadioPlayer {
                 s.local = e.optBoolean("local");
                 s.album = e.optString("album");
                 s.durMs = e.optLong("dur");
+                RadioLibrary.readLogin(e, s, logins);
                 if (!s.url.isEmpty()) out.add(s);
             }
             int i = o.optInt("index", -1);

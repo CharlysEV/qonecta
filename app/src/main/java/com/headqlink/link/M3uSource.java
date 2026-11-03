@@ -51,8 +51,8 @@ import java.util.zip.GZIPInputStream;
  *   un mensaje claro (ListError) en vez de canales basura. Vale también para una lista que ya estaba guardada.
  * - Usuario y contraseña opcionales por lista (foro #290): en un servidor estilo Xtream Codes, get.php con ellos; si no,
  *   HTTP Basic (request). Se guardan cifrados con el Android Keystore (Logins), fuera de las copias de seguridad, y no
- *   salen en el log (Redact → redactUrls) ni en la pantalla (mask); en los favoritos de la TV, cambiados por marcas
- *   (hideLogin).
+ *   salen en el log (Redact → redactUrls) ni en la pantalla (mask); en los favoritos de la TV y en lo guardado de la
+ *   radio (favoritos, recientes, seguir al conectar: RadioLibrary.item), cambiados por marcas (hideLogin).
  */
 final class M3uSource {
     /** Listas de iptv-org (TV de todo el mundo, por países) y de iprd (radio, por países); comprobadas el 1-11-2026. */
@@ -801,7 +801,6 @@ final class M3uSource {
     static String mask(String s) {
         return mask(s, null);
     }
-
     /**
      * Para el log (Redact, en cada línea): dentro de cada URL, lo mismo que mask. Fuera de las URLs no se toca (un usuario
      * «test» no debe tapar cada «test» del log).

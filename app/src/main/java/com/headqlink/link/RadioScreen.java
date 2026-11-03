@@ -182,16 +182,8 @@ final class RadioScreen implements CarScreen {
         }
         if (source < 0) {
             shown.clear();
-            for (int i = 0; i < favs.length(); i++) {
-                JSONObject o = favs.optJSONObject(i);
-                if (o == null) continue;
-                RadioPlayer.Station s = new RadioPlayer.Station();
-                s.name = o.optString("name");
-                s.url = o.optString("url");
-                s.logo = o.optString("logo");
-                s.group = o.optString("group");
-                shown.add(s);
-            }
+            // Con el usuario de su lista en las que lo tienen (guardadas sin él).
+            shown.addAll(RadioLibrary.stations(favs, RadioLibrary.logins(c)));
             if (shown.isEmpty()) showMessage(Str.get(R.string.hql_fav_none));
             else showGrid(c);
             return;
@@ -210,14 +202,18 @@ final class RadioScreen implements CarScreen {
             List<RadioPlayer.Station> list = new ArrayList<>();
             String error = null;
             String converted = null;
+            M3uSource.Login login = M3uSource.Login.NONE;
             try {
                 if (source == 0) {
                     list = popular(cc);
                 } else {
                     // La lista del usuario, comprobada (M3uSource): una página web, un mensaje claro y no emisoras basura.
                     M3uSource.Loaded got = M3uSource.load(c, src, loginId);
-                    list = fromM3u(got.text);
+                    list = fromM3u(got, loginId);
                     converted = got.converted;
+                    login = got.login;
+                    // Las recientes guardadas antes con su usuario dentro de la URL, ya sin él.
+                    if (!login.isEmpty()) RadioLibrary.hideLoginInRecents(c, login, loginId);
                 }
             } catch (Exception e) {
                 if (source == 0) {
@@ -232,8 +228,11 @@ final class RadioScreen implements CarScreen {
             List<RadioPlayer.Station> fl = list;
             String fe = error;
             String fc = converted;
+            M3uSource.Login fLogin = login;
             host.post(() -> {
                 if (destroyed || seq != loadSeq) return;
+                // Los favoritos guardados antes con su usuario dentro de la URL, ya sin él (como la TV).
+                if (M3uSource.hideInFavorites(favs, fLogin, loginId) > 0) Favorites.save(new Config(c), Favorites.RADIO, favs);
                 if (fl.isEmpty()) {
                     showMessage(fe != null ? fe : Str.get(R.string.hql_radio_none));
                 } else {
@@ -471,16 +470,26 @@ final class RadioScreen implements CarScreen {
         throw last != null ? last : new IllegalStateException("sin directorio");
     }
 
-    /** Las emisoras de una lista M3U ya comprobada (M3uSource.load); la JSON de TDTChannels es de TV, aquí no vale. */
-    private static List<RadioPlayer.Station> fromM3u(String text) throws Exception {
-        if (text.trim().startsWith("{")) throw M3uSource.ListError.of(M3uSource.ListError.NOT_LIST);
+    /**
+     * Las emisoras de una lista M3U ya comprobada (M3uSource.load), con el usuario de la lista (loginId) si lo tiene: en
+     * Xtream va dentro de cada URL y, con HTTP Basic, como cabecera a su servidor. La JSON de TDTChannels es de TV, aquí no
+     * vale.
+     */
+    private static List<RadioPlayer.Station> fromM3u(M3uSource.Loaded got, String loginId) throws Exception {
+        if (got.text.trim().startsWith("{")) throw M3uSource.ListError.of(M3uSource.ListError.NOT_LIST);
+        boolean withLogin = got.login != null && !got.login.isEmpty() && loginId != null && !loginId.isEmpty();
         List<RadioPlayer.Station> out = new ArrayList<>();
-        for (IptvScreen.Channel ch : IptvScreen.parse(text)) {
+        for (IptvScreen.Channel ch : IptvScreen.parse(got.text)) {
             RadioPlayer.Station s = new RadioPlayer.Station();
             s.name = ch.name;
             s.url = ch.url;
             s.logo = ch.logo;
             s.group = ch.group;
+            if (withLogin) {
+                s.login = got.login;
+                s.loginId = loginId;
+                s.authHost = got.authHeader != null ? got.authHost : null;
+            }
             out.add(s);
         }
         return out;
@@ -520,7 +529,7 @@ final class RadioScreen implements CarScreen {
                 RadioPlayer.Station s = shown.get(pos);
                 LinearLayout item = (LinearLayout) vh.itemView;
                 ImageView logo = (ImageView) item.getChildAt(0);
-                String name = Favorites.contains(favs, s.url) ? "★ " + s.name : s.name;
+                String name = Favorites.contains(favs, RadioLibrary.storedUrl(s)) ? "★ " + s.name : s.name;
                 // Una canción: el título y, debajo, el artista y la duración.
                 ((TextView) item.getChildAt(1)).setText(s.local ? name + "\n" + MusicLibrary.line(s) : name);
                 int icon = s.local ? R.drawable.hql_ic_music : R.drawable.hql_ic_radio;
@@ -539,7 +548,7 @@ final class RadioScreen implements CarScreen {
                     if (i < 0) return true;
                     RadioPlayer.Station st = shown.get(i);
                     if (st.local) return true; // las canciones no van a favoritos de la radio
-                    boolean in = Favorites.toggle(favs, Favorites.item(st.name, st.url, st.logo, st.group, null));
+                    boolean in = Favorites.toggle(favs, RadioLibrary.item(st));
                     Favorites.save(new Config(c), Favorites.RADIO, favs);
                     RadioBrowserService.changed(RadioLibrary.FAVS);
                     L.i("radio: " + (in ? "favorita añadida" : "favorita quitada") + " (" + favs.length() + ")");

@@ -44,11 +44,41 @@ final class RadioLibrary {
     }
 
     static List<RadioPlayer.Station> favorites(Context c) {
-        return stations(Favorites.load(new Config(c), Favorites.RADIO));
+        return stations(Favorites.load(new Config(c), Favorites.RADIO), logins(c));
     }
 
     static List<RadioPlayer.Station> recents(Context c) {
-        return stations(Favorites.fromJson(prefs(c).getString(KEY, "")));
+        return stations(Favorites.fromJson(prefs(c).getString(KEY, "")), logins(c));
+    }
+
+    /**
+     * Una lista con usuario se ha cargado: las recientes guardadas antes con él dentro de la URL (0.3.14), con marcas y su
+     * id (M3uSource.hideInFavorites, como los favoritos).
+     */
+    static void hideLoginInRecents(Context c, M3uSource.Login login, String loginId) {
+        SharedPreferences p = prefs(c);
+        JSONArray a = Favorites.fromJson(p.getString(KEY, ""));
+        if (M3uSource.hideInFavorites(a, login, loginId) > 0) p.edit().putString(KEY, a.toString()).apply();
+    }
+
+    /** El usuario guardado de un id (M3uSource.Logins.get). */
+    interface LoginLookup {
+        M3uSource.Login get(String id);
+    }
+
+    /** Los usuarios de las listas, cada uno leído una sola vez (Logins descifra el archivo en cada get) y solo si hace falta. */
+    static LoginLookup logins(Context c) {
+        Context app = c.getApplicationContext();
+        java.util.Map<String, M3uSource.Login> known = new java.util.HashMap<>();
+        M3uSource.Logins[] store = {null};
+        return id -> {
+            M3uSource.Login l = known.get(id);
+            if (l == null) {
+                if (store[0] == null) store[0] = new M3uSource.Logins(app);
+                known.put(id, l = store[0].get(id));
+            }
+            return l;
+        };
     }
 
     /** Una emisora acaba de empezar a sonar: la primera de las recientes. */
@@ -169,6 +199,11 @@ final class RadioLibrary {
 
     /** Puro: las emisoras de un JSON como el de Favorites ([{name,url,logo,group}]); las que no tienen URL, fuera. */
     static List<RadioPlayer.Station> stations(JSONArray a) {
+        return stations(a, id -> M3uSource.Login.NONE);
+    }
+
+    /** Puro: igual, con el usuario de su lista (logins) en las que lo tienen (readLogin). */
+    static List<RadioPlayer.Station> stations(JSONArray a, LoginLookup logins) {
         List<RadioPlayer.Station> out = new ArrayList<>();
         for (int i = 0; i < a.length(); i++) {
             JSONObject o = a.optJSONObject(i);
@@ -178,6 +213,7 @@ final class RadioLibrary {
             s.url = o.optString("url");
             s.logo = o.optString("logo");
             s.group = o.optString("group");
+            readLogin(o, s, logins);
             out.add(s);
         }
         return out;
@@ -186,12 +222,56 @@ final class RadioLibrary {
     /** Puro: las recientes con s la primera (si ya estaba, sube), como mucho max. */
     static JSONArray withRecent(JSONArray old, RadioPlayer.Station s, int max) {
         JSONArray out = new JSONArray();
-        out.put(Favorites.item(s.name, s.url, s.logo, s.group, null));
+        JSONObject first = item(s);
+        String key = first.optString("url");
+        out.put(first);
         for (int i = 0; i < old.length() && out.length() < max; i++) {
             JSONObject o = old.optJSONObject(i);
-            if (o == null || o.optString("url").isEmpty() || s.url.equals(o.optString("url"))) continue;
+            if (o == null || o.optString("url").isEmpty() || key.equals(o.optString("url"))) continue;
             out.put(o);
         }
         return out;
+    }
+
+    // ---------------------------------------------------------------- guardadas sin el usuario de su lista
+
+    /**
+     * Puro: una emisora como se guarda (favoritos, recientes): en una lista con usuario, la URL sin él (en Xtream va en
+     * la ruta: marcas, M3uSource.hideLogin), el id de su usuario y, con HTTP Basic, su servidor. Como la TV: ni las
+     * copias de ajustes (SettingsBackup) ni los archivos de la app llevan el usuario ni la contraseña.
+     */
+    static JSONObject item(RadioPlayer.Station s) {
+        JSONObject o = Favorites.item(s.name, storedUrl(s), s.logo, s.group, null);
+        try {
+            putLogin(o, s);
+        } catch (org.json.JSONException ignored) {
+            // No pasa con cadenas.
+        }
+        return o;
+    }
+
+    /** Puro: la URL de s como se guarda (y la clave de sus favoritos): sin el usuario de su lista. */
+    static String storedUrl(RadioPlayer.Station s) {
+        return s.loginId.isEmpty() ? s.url : M3uSource.hideLogin(s.url, s.login);
+    }
+
+    /** Puro: en lo guardado de s, el id del usuario de su lista y, con HTTP Basic, su servidor. */
+    static void putLogin(JSONObject o, RadioPlayer.Station s) throws org.json.JSONException {
+        if (s.loginId.isEmpty()) return;
+        o.put("login", s.loginId);
+        if (s.authHost != null) o.put("auth", s.authHost);
+    }
+
+    /**
+     * Puro: al revés que putLogin: el usuario de su lista (logins) y la URL de verdad (M3uSource.showLogin). Si ya no
+     * está (lista quitada, copia en otro móvil), las marcas se quedan: un error al ponerla, como en la TV.
+     */
+    static void readLogin(JSONObject o, RadioPlayer.Station s, LoginLookup logins) {
+        s.loginId = o.optString("login", "");
+        if (s.loginId.isEmpty()) return;
+        M3uSource.Login l = logins.get(s.loginId);
+        s.login = l != null ? l : M3uSource.Login.NONE;
+        s.url = M3uSource.showLogin(s.url, s.login);
+        s.authHost = o.has("auth") ? o.optString("auth") : null;
     }
 }

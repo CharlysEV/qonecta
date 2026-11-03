@@ -205,18 +205,34 @@ final class VideoPlayer {
      * Igual; con authHost y authorization (una lista de TV con HTTP Basic, M3uSource), lo que se pida a ese servidor (el
      * vídeo, sus trozos HLS) lleva también la cabecera; a otros servidores, no.
      */
-    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
     static ExoPlayer newPlayer(Context c, String authHost, String authorization) {
+        if (authHost == null || authHost.isEmpty() || authorization == null) return newPlayer(c, (Auth) null);
+        return newPlayer(c, host -> authHost.equalsIgnoreCase(host) ? authorization : null);
+    }
+
+    /** La cabecera Authorization para un servidor, o null si a ese no va ninguna. */
+    interface Auth {
+        String headerFor(String host);
+    }
+
+    /**
+     * Igual, con la cabecera que diga auth en cada petición (null: ninguna): la radio cambia de emisora, y de lista, sin
+     * cambiar de reproductor.
+     */
+    @androidx.annotation.OptIn(markerClass = androidx.media3.common.util.UnstableApi.class)
+    static ExoPlayer newPlayer(Context c, Auth auth) {
         Context app = c.getApplicationContext();
         logFfmpeg();
         androidx.media3.exoplayer.DefaultRenderersFactory r = new androidx.media3.exoplayer.DefaultRenderersFactory(app)
                 .setExtensionRendererMode(androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON);
         ExoPlayer.Builder b = new ExoPlayer.Builder(app, r);
-        if (authHost != null && !authHost.isEmpty() && authorization != null) {
-            java.util.Map<String, String> auth = java.util.Collections.singletonMap("Authorization", authorization);
+        if (auth != null) {
             androidx.media3.datasource.DataSource.Factory up = new androidx.media3.datasource.DefaultDataSource.Factory(app);
             androidx.media3.datasource.ResolvingDataSource.Factory withAuth = new androidx.media3.datasource.ResolvingDataSource.Factory(
-                    up, spec -> authHost.equalsIgnoreCase(spec.uri.getHost()) ? spec.withAdditionalHeaders(auth) : spec);
+                    up, spec -> {
+                        String h = auth.headerFor(spec.uri.getHost());
+                        return h != null ? spec.withAdditionalHeaders(java.util.Collections.singletonMap("Authorization", h)) : spec;
+                    });
             b.setMediaSourceFactory(new androidx.media3.exoplayer.source.DefaultMediaSourceFactory(withAuth));
         }
         return b.build();
