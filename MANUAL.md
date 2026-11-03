@@ -603,6 +603,26 @@ Tu mes en cifras, en la pestaña «Viajes» del móvil › «Ver el informe». C
 Los viajes son los del coche (cuenta de Leapmotor) si su historial cubre el mes entero, y si no, los que grabó la app.
 La nube solo guarda 35 días, así que cada mes se guarda resumido en el móvil. El primer mes sale sin comparación.
 
+### Planificar la ruta en el móvil (pestaña «Ruta»)
+
+La quinta pestaña de la app del móvil, **«Ruta»**, hace en casa lo que la pestaña Ruta del coche: planificas el viaje y
+las cargas antes de subir al coche.
+
+- **A dónde:** escribe la dirección con el teclado del móvil y pulsa Buscar (o toca Casa, Trabajo, un guardado o un
+  reciente). Puedes añadir hasta 3 **paradas intermedias** y marcar **ida y vuelta**.
+- **Salida:** desde donde está el móvil o desde Casa; la **batería al salir** es la de la nube de Leapmotor con su
+  antigüedad («Nube de Leapmotor, hace 2 h: 74 %»), y con un toque eliges 80, 90 o 100 % u otra (sin cuenta, la que
+  indicaste en el coche). La **hora**: «Ahora», «Hoy a las…» o «Mañana a las…»: el tiempo y el viento de cada tramo son
+  los de esa hora.
+- **«Calcular ruta»:** los km, las horas conduciendo y cargando, con cuánto llegas, el consejo de velocidad, cada parada
+  de carga (km, con cuánto llegas, hasta cuánto cargar, minutos y lo que cuesta si se sabe) con **«Cambiar»**, como en
+  el coche, y el mapa. Sin el coche no hay tráfico: los tiempos se ajustan con Google Maps al salir.
+- **«Ir con las paradas»** abre Google Maps ya. **«Usar en el próximo viaje»** la guarda (una sola, 48 h): al conectar
+  en «Auto extendido», el coche pregunta **«¿Usar la ruta que planificaste?»**; con «Sí» la recalcula con la batería
+  real y los tiempos de Google, abre Maps con las paradas y te dice si el plan ha cambiado («Ayer: 1 parada de carga;
+  hoy: 2»); con «No» se descarta. En «Auto», al conectar se abre Google Maps con las paradas tal y como salieron en el
+  móvil.
+
 ### Guía del camino («Auto extendido»)
 
 Te cuenta lo que merece la pena cerca de la carretera: castillos, catedrales, pueblos con historia, embalses, sierras…

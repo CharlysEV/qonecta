@@ -3560,8 +3560,8 @@ final class RoutePlanner {
             if (plan != p) return;
             rebuildChargers(p);
         }
-        L.i(String.format(Locale.US, "ruta: cargadores: %d zonas con datos, %d pedidas ahora, %d sin datos · %d junto a la ruta "
-                + "(%d de la DGT; %d zonas por completar con OpenStreetMap)", cached, fetched, p.missingTiles.size(), p.chargers.size(),
+        L.i(String.format(Locale.US, "%s: cargadores: %d zonas con datos, %d pedidas ahora, %d sin datos · %d junto a la ruta "
+                + "(%d de la DGT; %d zonas por completar con OpenStreetMap)", draft ? "ruta del móvil" : "ruta", cached, fetched, p.missingTiles.size(), p.chargers.size(),
                 p.dgtCount, p.osmPending.size()));
         if (!p.osmPending.isEmpty()) fetchOsmInBackground(p);
     }

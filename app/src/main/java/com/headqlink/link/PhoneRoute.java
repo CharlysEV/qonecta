@@ -450,7 +450,8 @@ final class PhoneRoute {
         }
         boolean other = !Double.isNaN(socChosen);
         for (int v : SOC_CHOICES) {
-            boolean on = !Double.isNaN(socChosen) && Math.round(socChosen) == v;
+            // Sin nube ni % indicado, el plan sale con el 80 %: marcado.
+            boolean on = Double.isNaN(socChosen) ? Double.isNaN(proposed) && v == 80 : Math.round(socChosen) == v;
             if (on) other = false;
             socs.addView(choice(v + " %", on, () -> setSoc(v)));
         }
@@ -577,12 +578,6 @@ final class PhoneRoute {
             paintResult();
             return;
         }
-        RoutePlanner.Place origin = origin();
-        if (origin == null) {
-            error = Str.get(R.string.hql_pr_no_origin);
-            paintResult();
-            return;
-        }
         if (draft == null) draft = RoutePlanner.draft(act);
         RoutePlanner d = draft;
         busy = true;
@@ -596,13 +591,18 @@ final class PhoneRoute {
         boolean rt = round;
         long at = departAt;
         double soc = socNow();
+        boolean home = fromHome;
         new Thread(() -> {
             RoutePlanner.Plan p = null;
             ChargePlanner.Result cp = null;
             String fail = null;
             try {
+                RoutePlanner.Place origin = origin(home);
+                if (origin == null) throw new NoOriginException();
                 p = d.planDraft(origin, to, via, rt, at);
                 cp = chargeFor(d, soc);
+            } catch (NoOriginException e) {
+                fail = "";
             } catch (Exception e) {
                 L.w("ruta del móvil: " + Http.safeError(e));
                 fail = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
@@ -616,17 +616,28 @@ final class PhoneRoute {
                 plan = got;
                 charge = gotCp;
                 planSoc = soc;
-                error = why == null ? null : Str.get(R.string.hql_pr_failed, why);
+                error = why == null ? null : why.isEmpty() ? Str.get(R.string.hql_pr_no_origin) : Str.get(R.string.hql_pr_failed, why);
                 paintDepart();
                 paintResult();
             });
         }, "hql-phone-plan").start();
     }
 
-    /** La salida: la última posición conocida del móvil, o Casa (elegida, o sin posición). null si ninguna. */
-    private RoutePlanner.Place origin() {
+    /** No se sabe desde dónde se sale (sin posición y sin Casa). */
+    private static final class NoOriginException extends Exception {
+    }
+
+    /** Lo que se espera a una posición nueva del móvil si no tiene ninguna reciente. */
+    private static final long FIX_WAIT_MS = 12_000;
+
+    /**
+     * La salida (fuera del hilo principal): la última posición conocida del móvil o, si no tiene ninguna reciente, una
+     * nueva (como mucho FIX_WAIT_MS); si no, o elegida, Casa. null si nada.
+     */
+    private RoutePlanner.Place origin(boolean fromHome) {
         SavedPlaces.Saved home = SavedPlaces.tagged(SavedPlaces.parse(new Config(act).savedPlaces()), SavedPlaces.HOME);
         double[] me = fromHome ? null : RoutePlanner.lastKnown(act);
+        if (me == null && !fromHome) me = freshFix(act, FIX_WAIT_MS);
         if (me != null) {
             RoutePlanner.Place o = new RoutePlanner.Place();
             o.name = Str.get(R.string.hql_pr_from_here);
@@ -636,6 +647,41 @@ final class PhoneRoute {
             return o;
         }
         return home == null ? null : home.place();
+    }
+
+    /** Una posición nueva del móvil (red o GPS), esperando como mucho waitMs: {lat, lon}, o null (sin permiso o sin fix). */
+    @android.annotation.SuppressLint("MissingPermission")
+    static double[] freshFix(android.content.Context c, long waitMs) {
+        android.location.LocationManager lm = c.getSystemService(android.location.LocationManager.class);
+        if (lm == null || android.os.Build.VERSION.SDK_INT < 30) return null;
+        java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(1);
+        android.location.Location[] got = new android.location.Location[1];
+        android.os.CancellationSignal cancel = new android.os.CancellationSignal();
+        try {
+            // A todos los que estén encendidos a la vez: vale la primera que llegue.
+            for (String prov : new String[]{"fused", android.location.LocationManager.NETWORK_PROVIDER,
+                    android.location.LocationManager.GPS_PROVIDER}) {
+                try {
+                    if (!lm.isProviderEnabled(prov)) continue;
+                    lm.getCurrentLocation(prov, cancel, c.getMainExecutor(), l -> {
+                        if (l == null || got[0] != null) return;
+                        got[0] = l;
+                        done.countDown();
+                    });
+                } catch (IllegalArgumentException e) {
+                    // Ese proveedor no existe en este móvil.
+                }
+            }
+            done.await(waitMs, java.util.concurrent.TimeUnit.MILLISECONDS);
+            cancel.cancel();
+        } catch (SecurityException e) {
+            return null;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
+        android.location.Location l = got[0];
+        return l == null ? null : new double[]{l.getLatitude(), l.getLongitude()};
     }
 
     /** El plan de carga del borrador con el % elegido y la capacidad del coche (la de la nube, si la hay). */
@@ -680,8 +726,10 @@ final class PhoneRoute {
         in.addView(title);
         String drive = DriveTab.duration(p.totalSeconds);
         boolean stops = cp != null && !cp.stops.isEmpty();
+        // «Sin paradas» solo si de verdad no hacen falta (sin cargador alcanzable, o sin plan en un REEV, no se dice).
         String sum = stops ? Str.get(R.string.hql_pr_summary, p.totalKm, drive, DriveTab.duration(Math.round(cp.chargeMinutes * 60)))
-                : Str.get(R.string.hql_pr_summary_nostop, p.totalKm, drive);
+                : cp != null && cp.outcome == ChargePlanner.Outcome.NO_STOPS ? Str.get(R.string.hql_pr_summary_nostop, p.totalKm, drive)
+                : Str.get(R.string.hql_pr_summary_drive, p.totalKm, drive);
         in.addView(text(sum, com.google.android.material.R.style.TextAppearance_Material3_BodyLarge, PhoneCharts.TEXT));
         if (cp != null && cp.outcome != ChargePlanner.Outcome.NO_CHARGER) {
             TextView arrive = text(Str.get(R.string.hql_pr_arrive, cp.arrivalPct), com.google.android.material.R.style.TextAppearance_Material3_TitleMedium,
@@ -936,12 +984,9 @@ final class PhoneRoute {
         } else {
             dropMap();
             try {
+                // Dentro de la lista: deslizar arriba y abajo mueve la lista (el mapa ocupa casi la pantalla y, si se quedara
+                // el gesto, no se llegaría a los botones de debajo); de lado y con dos dedos, el mapa.
                 map = RouteMap.web(act, RouteMap.html(p, cp, draft));
-                // Dentro de la lista: mover el mapa con el dedo es del mapa, no de la lista.
-                map.setOnTouchListener((v, e) -> {
-                    v.getParent().requestDisallowInterceptTouchEvent(true);
-                    return false;
-                });
                 mapKey = key;
             } catch (RuntimeException e) {
                 L.w("ruta del móvil: sin WebView para el mapa (" + e.getClass().getSimpleName() + ")");
@@ -950,7 +995,7 @@ final class PhoneRoute {
                 return new View(act);
             }
         }
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(300));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(260));
         lp.topMargin = dp(12);
         map.setLayoutParams(lp);
         return map;

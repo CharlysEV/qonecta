@@ -32,6 +32,7 @@
     <string name="hql_pr_no_origin">No sé desde dónde sales: activa la ubicación o guarda Casa en la pestaña Ruta del coche.</string>
     <string name="hql_pr_summary">%1$.0f km · %2$s conduciendo · %3$s cargando</string>
     <string name="hql_pr_summary_nostop">%1$.0f km · %2$s conduciendo · sin paradas</string>
+    <string name="hql_pr_summary_drive">%1$.0f km · %2$s conduciendo</string>
     <string name="hql_pr_arrive">Llegas con %1$.0f %%</string>
     <string name="hql_pr_weather">en el destino %1$s, %2$.0f °C</string>
     <string name="hql_pr_osrm_note">Ruta propia (OpenStreetMap): sin el coche no hay tráfico. Los tiempos se ajustan con Google Maps al salir.</string>

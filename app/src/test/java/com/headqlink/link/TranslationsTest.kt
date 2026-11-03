@@ -42,12 +42,12 @@ class TranslationsTest {
     private fun specs(s: String) = spec.findAll(s).map { it.value }.sorted().toList()
 
     private fun strings(dir: String): Map<String, String> =
-        listOf("hql_strings.xml", "hql_cloud_strings.xml", "hql_strings_i18n.xml")
+        listOf("hql_strings.xml", "hql_cloud_strings.xml", "hql_strings_i18n.xml", "hql_strings_ruta_movil.xml")
             .flatMap { elements(dir, it, "string") }.associate { it.getAttribute("name") to it.textContent }
 
     /** nombre → (cantidad → texto) */
     private fun plurals(dir: String): Map<String, Map<String, String>> =
-        elements(dir, "hql_plurals.xml", "plurals").associate { p ->
+        (elements(dir, "hql_plurals.xml", "plurals") + elements(dir, "hql_strings_ruta_movil.xml", "plurals")).associate { p ->
             val items = p.getElementsByTagName("item")
             p.getAttribute("name") to (0 until items.length).map { items.item(it) as Element }
                 .associate { it.getAttribute("quantity") to it.textContent }

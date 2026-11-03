@@ -645,6 +645,28 @@ Die Fahrten sind die des Fahrzeugs (Leapmotor-Konto), wenn sein Verlauf den ganz
 App aufgezeichneten. Die Cloud speichert nur 35 Tage, deshalb wird jeder Monat zusammengefasst auf dem Handy
 gespeichert. Der erste Monat erscheint ohne Vergleich.
 
+### Route auf dem Handy planen (Tab „Route“)
+
+Der fünfte Tab der Handy-App, **„Route“**, macht zu Hause, was der Tab „Route“ im Auto macht: Du planst die Fahrt und
+die Ladestopps, bevor du einsteigst.
+
+- **Wohin:** Gib die Adresse mit der Handytastatur ein und tippe auf Suchen (oder auf Zuhause, Arbeit, einen
+  gespeicherten oder einen letzten Ort). Du kannst bis zu 3 **Zwischenstopps** hinzufügen und **Hin- und Rückfahrt**
+  wählen.
+- **Abfahrt:** von dort, wo das Handy ist, oder von Zuhause; der **Akku bei Abfahrt** ist der aus der Leapmotor-Cloud
+  mit seinem Alter („Leapmotor-Cloud, vor 2 h: 74 %“), und mit einem Tipp wählst du 80, 90 oder 100 % oder einen
+  anderen Wert (ohne Konto den, den du im Auto eingestellt hast). Die **Uhrzeit**: „Jetzt“, „Heute um…“ oder „Morgen
+  um…“: Wetter und Wind jedes Abschnitts sind die zu dieser Uhrzeit.
+- **„Route berechnen“:** die km, die Stunden Fahrt und Laden, mit wie viel du ankommst, die Geschwindigkeitsempfehlung,
+  jeder Ladestopp (km, Ankunft mit, bis wie viel laden, Minuten und die Kosten, falls bekannt) mit **„Ändern“** wie im
+  Auto, und die Karte. Ohne Auto gibt es keine Verkehrsdaten: Die Zeiten werden bei der Abfahrt mit Google Maps
+  angepasst.
+- **„Mit Stopps navigieren“** öffnet Google Maps sofort. **„Für die nächste Fahrt verwenden“** speichert sie (nur eine,
+  48 h): Beim Verbinden in „Auto erweitert“ fragt das Auto **„Die geplante Route verwenden?“**; mit „Ja“ wird sie mit
+  dem echten Akkustand und den Zeiten von Google neu berechnet, Maps öffnet sich mit den Stopps und du erfährst, ob
+  sich der Plan geändert hat („Gestern: 1 Ladestopp; heute: 2“); mit „Nein“ wird sie verworfen. In „Auto“ öffnet sich
+  beim Verbinden Google Maps mit den Stopps so, wie sie auf dem Handy berechnet wurden.
+
 ### Reiseführer („Auto erweitert“)
 
 Er erzählt dir, was sich in der Nähe der Straße lohnt: Burgen, Kathedralen, geschichtsträchtige Orte, Stauseen,

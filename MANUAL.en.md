@@ -587,6 +587,26 @@ Trips come from the car (Leapmotor account) if its history covers the whole mont
 recorded. The cloud only keeps 35 days, so each month is saved as a summary on the phone. The first month has no
 comparison.
 
+### Planning the route on the phone ("Route" tab)
+
+The fifth tab of the phone app, **"Route"**, does at home what the car's Route tab does: you plan the trip and the
+charging before getting in the car.
+
+- **Where to:** type the address with the phone keyboard and tap Search (or tap Home, Work, a saved place or a recent
+  one). You can add up to 3 **stops on the way** and tick **round trip**.
+- **Departure:** from where the phone is or from Home; the **battery when leaving** is the one in the Leapmotor cloud
+  with its age ("Leapmotor cloud, 2 h ago: 74 %"), and with one tap you choose 80, 90 or 100 % or another value
+  (without an account, the one you set in the car). The **time**: "Now", "Today at…" or "Tomorrow at…": the weather
+  and the wind of each stretch are those of that time.
+- **"Calculate route":** the km, the hours driving and charging, what you arrive with, the speed advice, each charging
+  stop (km, what you arrive with, how far to charge, minutes and the cost when it is known) with **"Change"**, as in
+  the car, and the map. Without the car there is no traffic: times are adjusted with Google Maps when you leave.
+- **"Go with the stops"** opens Google Maps now. **"Use on the next trip"** saves it (only one, 48 h): when you connect
+  in "Auto extended", the car asks **"Use the route you planned?"**; with "Yes" it recalculates it with the real
+  battery and the Google times, opens Maps with the stops and tells you if the plan has changed ("Yesterday: 1 charging
+  stop; today: 2"); with "No" it is discarded. In "Auto", Google Maps opens with the stops as they came out on the
+  phone when you connect.
+
 ### Road guide ("Auto extended")
 
 It tells you what is worth seeing near the road: castles, cathedrals, historic towns, reservoirs, mountain ranges… It

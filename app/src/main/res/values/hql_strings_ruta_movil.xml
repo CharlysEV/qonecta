@@ -32,6 +32,7 @@
     <string name="hql_pr_no_origin">I don\'t know where you are leaving from: turn on location, or save Home in the car\'s Route tab.</string>
     <string name="hql_pr_summary">%1$.0f km · %2$s driving · %3$s charging</string>
     <string name="hql_pr_summary_nostop">%1$.0f km · %2$s driving · no stops</string>
+    <string name="hql_pr_summary_drive">%1$.0f km · %2$s driving</string>
     <string name="hql_pr_arrive">You arrive with %1$.0f %%</string>
     <string name="hql_pr_weather">at the destination %1$s, %2$.0f °C</string>
     <string name="hql_pr_osrm_note">Own route (OpenStreetMap): without the car there is no traffic. Times are adjusted with Google Maps when you leave.</string>

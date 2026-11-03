@@ -609,6 +609,26 @@ I viaggi sono quelli dell'auto (account Leapmotor) se la sua cronologia copre tu
 registrati dall'app. Il cloud conserva solo 35 giorni, quindi ogni mese viene salvato riassunto sul telefono. Il primo
 mese esce senza confronto.
 
+### Pianificare il percorso sul telefono (scheda «Percorso»)
+
+La quinta scheda dell'app del telefono, **«Percorso»**, fa a casa quello che fa la scheda Percorso dell'auto: pianifichi
+il viaggio e le ricariche prima di salire in auto.
+
+- **Dove:** scrivi l'indirizzo con la tastiera del telefono e tocca Cerca (o tocca Casa, Lavoro, un luogo salvato o uno
+  recente). Puoi aggiungere fino a 3 **soste intermedie** e segnare **andata e ritorno**.
+- **Partenza:** da dove si trova il telefono o da Casa; la **batteria alla partenza** è quella del cloud Leapmotor con
+  la sua età («Cloud Leapmotor, 2 h fa: 74 %»), e con un tocco scegli 80, 90 o 100 % o un altro valore (senza account,
+  quella indicata in auto). L'**ora**: «Adesso», «Oggi alle…» o «Domani alle…»: il meteo e il vento di ogni tratto sono
+  quelli di quell'ora.
+- **«Calcola percorso»:** i km, le ore di guida e di ricarica, con quanto arrivi, il consiglio di velocità, ogni sosta di
+  ricarica (km, con quanto arrivi, fino a quanto ricaricare, minuti e il costo se si conosce) con **«Cambia»**, come in
+  auto, e la mappa. Senza l'auto non c'è traffico: i tempi si aggiustano con Google Maps alla partenza.
+- **«Vai con le soste»** apre subito Google Maps. **«Usa nel prossimo viaggio»** lo salva (uno solo, 48 h): al
+  collegamento in «Auto esteso», l'auto chiede **«Usare il percorso che hai pianificato?»**; con «Sì» lo ricalcola con la
+  batteria reale e i tempi di Google, apre Maps con le soste e ti dice se il piano è cambiato («Ieri: 1 sosta di
+  ricarica; oggi: 2»); con «No» viene scartato. In «Auto», al collegamento si apre Google Maps con le soste così come
+  sono uscite sul telefono.
+
 ### Guida di viaggio («Auto esteso»)
 
 Ti racconta cosa vale la pena vedere vicino alla strada: castelli, cattedrali, borghi storici, laghi, montagne… Viene

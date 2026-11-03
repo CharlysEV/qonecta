@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- headqlink: 手机应用的「路线」标签页 (PhoneRoute) 和车上的「使用已规划的路线」(PlannedTrip)。 -->
+<resources>
+    <string name="hql_pr_title">规划路线</string>
+    <string name="hql_pr_intro">上车前在手机上规划路线和充电停靠点。连接后，车机会问你是否使用。</string>
+    <string name="hql_pr_where">去哪里？</string>
+    <string name="hql_pr_search_hint">地址或地点</string>
+    <string name="hql_pr_searching">正在搜索…</string>
+    <string name="hql_pr_no_results">没有找到。换一种写法试试。</string>
+    <string name="hql_pr_via_n">途经点 %1$d</string>
+    <string name="hql_pr_depart">出发</string>
+    <string name="hql_pr_from_here">从这里</string>
+    <string name="hql_pr_from_home">从家</string>
+    <string name="hql_pr_battery">出发时电量</string>
+    <string name="hql_pr_battery_cloud">零跑云端，%1$s：%2$.0f %%</string>
+    <string name="hql_pr_battery_cloud_wait">正在从零跑云端读取电量…</string>
+    <string name="hql_pr_battery_manual">你在车上设置的：%1$.0f %%</string>
+    <string name="hql_pr_battery_none">选择出发时的电量。</string>
+    <string name="hql_pr_battery_other">其他…</string>
+    <string name="hql_pr_battery_other_title">1 到 100</string>
+    <string name="hql_pr_when">时间</string>
+    <string name="hql_pr_now">现在</string>
+    <string name="hql_pr_today_pick">今天…</string>
+    <string name="hql_pr_tomorrow_pick">明天…</string>
+    <string name="hql_pr_today_at">今天 %1$s</string>
+    <string name="hql_pr_tomorrow_at">明天 %1$s</string>
+    <string name="hql_pr_calc">计算路线</string>
+    <string name="hql_pr_calculating">正在计算路线、天气和充电桩…</string>
+    <string name="hql_pr_failed">无法计算路线（%1$s）。请稍后再试。</string>
+    <string name="hql_pr_no_network">没有网络连接</string>
+    <string name="hql_pr_no_dest">请先选择目的地。</string>
+    <string name="hql_pr_no_origin">不知道你从哪里出发：请打开定位，或在车机的路线标签页保存「家」。</string>
+    <string name="hql_pr_summary">%1$.0f km · 驾驶 %2$s · 充电 %3$s</string>
+    <string name="hql_pr_summary_nostop">%1$.0f km · 驾驶 %2$s · 无需停靠</string>
+    <string name="hql_pr_summary_drive">%1$.0f km · 驾驶 %2$s</string>
+    <string name="hql_pr_arrive">到达时电量 %1$.0f %%</string>
+    <string name="hql_pr_weather">目的地 %1$s，%2$.0f °C</string>
+    <string name="hql_pr_osrm_note">自有路线（OpenStreetMap）：没有车就没有路况。出发时会用 Google 地图调整时间。</string>
+    <string name="hql_pr_flat">没有海拔数据（服务未响应）：按平路计算。</string>
+    <string name="hql_pr_reev">增程版：没有充电计划，缺的电由发电机补上。</string>
+    <string name="hql_pr_cost">充电约 %1$s（按设置中的每 kWh 价格）</string>
+    <string name="hql_pr_use_next">用于下次出行</string>
+    <string name="hql_pr_saved_title">已为下次出行准备好</string>
+    <string name="hql_pr_saved_text">%1$s · %2$s。在车上连接后会问你是否使用（有效期至 %3$s）。</string>
+    <string name="hql_pr_saved_now">你正在车上：车机屏幕上已经在问了。</string>
+    <string name="hql_pr_remove">移除</string>
+    <string name="hql_pr_no_stops">无需充电停靠</string>
+    <plurals name="hql_pr_stops">
+        <item quantity="other">%1$d 个充电停靠点</item>
+    </plurals>
+    <string name="hql_planned_ask_title">使用你规划的路线？</string>
+    <string name="hql_planned_ask_text">%1$s · %2$s。将按实际电量和 Google 地图的时间重新计算。</string>
+    <string name="hql_planned_yes">是</string>
+    <string name="hql_planned_no">否</string>
+    <string name="hql_planned_applied_title">在手机上规划的路线</string>
+    <string name="hql_planned_applied_text">%1$s · %2$.0f km</string>
+    <string name="hql_planned_changed">规划时：%1$s；现在：%2$s。</string>
+    <string name="hql_planned_changed_yesterday">昨天：%1$s；今天：%2$s。</string>
+    <string name="hql_planned_other_stops">现在改在 %1$s 停靠。</string>
+</resources>

@@ -610,6 +610,24 @@ O seu mês em números, no separador «Viagens» do telemóvel › «Ver o relat
 As viagens são as do carro (conta Leapmotor) se o seu histórico cobrir o mês inteiro; se não, as que a app gravou. A
 nuvem só guarda 35 dias, por isso cada mês fica guardado em resumo no telemóvel. O primeiro mês aparece sem comparação.
 
+### Planear a rota no telemóvel (separador «Rota»)
+
+O quinto separador da app do telemóvel, **«Rota»**, faz em casa o que o separador Rota do carro faz: planeia a viagem e
+os carregamentos antes de entrar no carro.
+
+- **Para onde:** escreva a morada com o teclado do telemóvel e toque em Procurar (ou toque em Casa, Trabalho, um local
+  guardado ou um recente). Pode juntar até 3 **paragens intermédias** e marcar **ida e volta**.
+- **Partida:** de onde está o telemóvel ou de Casa; a **bateria à partida** é a da nuvem da Leapmotor com a sua idade
+  («Nuvem da Leapmotor, há 2 h: 74 %»), e com um toque escolhe 80, 90 ou 100 % ou outro valor (sem conta, a que indicou
+  no carro). A **hora**: «Agora», «Hoje às…» ou «Amanhã às…»: o tempo e o vento de cada troço são os dessa hora.
+- **«Calcular rota»:** os km, as horas a conduzir e a carregar, com quanto chega, o conselho de velocidade, cada paragem
+  de carregamento (km, com quanto chega, até quanto carregar, minutos e o custo quando se sabe) com **«Trocar»**, como no
+  carro, e o mapa. Sem o carro não há trânsito: os tempos são ajustados com o Google Maps à partida.
+- **«Ir com as paragens»** abre já o Google Maps. **«Usar na próxima viagem»** guarda-a (só uma, 48 h): ao ligar no
+  «Auto estendido», o carro pergunta **«Usar a rota que planeou?»**; com «Sim» recalcula-a com a bateria real e os
+  tempos do Google, abre o Maps com as paragens e diz-lhe se o plano mudou («Ontem: 1 paragem de carregamento; hoje:
+  2»); com «Não» é descartada. No «Auto», ao ligar abre-se o Google Maps com as paragens tal como saíram no telemóvel.
+
 ### Guia da estrada («Auto estendido»)
 
 Conta-lhe o que vale a pena perto da estrada: castelos, catedrais, vilas com história, albufeiras, serras… Vem da

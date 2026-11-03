@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- headqlink: tabblad «Route» van de telefoon-app (PhoneRoute) en «de geplande route gebruiken» in de auto (PlannedTrip). -->
+<resources>
+    <string name="hql_pr_title">Route plannen</string>
+    <string name="hql_pr_intro">De route en de laadstops, op de telefoon gepland voordat je instapt. Bij het verbinden vraagt de auto of hij ze moet gebruiken.</string>
+    <string name="hql_pr_where">Waar ga je heen?</string>
+    <string name="hql_pr_search_hint">Adres of plaats</string>
+    <string name="hql_pr_searching">Zoeken…</string>
+    <string name="hql_pr_no_results">Niets gevonden. Probeer het anders te schrijven.</string>
+    <string name="hql_pr_via_n">Stop %1$d</string>
+    <string name="hql_pr_depart">Vertrek</string>
+    <string name="hql_pr_from_here">Vanaf hier</string>
+    <string name="hql_pr_from_home">Vanaf Thuis</string>
+    <string name="hql_pr_battery">Accu bij vertrek</string>
+    <string name="hql_pr_battery_cloud">Leapmotor-cloud, %1$s: %2$.0f %%</string>
+    <string name="hql_pr_battery_cloud_wait">De accu wordt uit de Leapmotor-cloud gelezen…</string>
+    <string name="hql_pr_battery_manual">Die je in de auto hebt ingesteld: %1$.0f %%</string>
+    <string name="hql_pr_battery_none">Kies met hoeveel accu je vertrekt.</string>
+    <string name="hql_pr_battery_other">Ander…</string>
+    <string name="hql_pr_battery_other_title">Van 1 tot 100</string>
+    <string name="hql_pr_when">Wanneer</string>
+    <string name="hql_pr_now">Nu</string>
+    <string name="hql_pr_today_pick">Vandaag om…</string>
+    <string name="hql_pr_tomorrow_pick">Morgen om…</string>
+    <string name="hql_pr_today_at">Vandaag om %1$s</string>
+    <string name="hql_pr_tomorrow_at">Morgen om %1$s</string>
+    <string name="hql_pr_calc">Route berekenen</string>
+    <string name="hql_pr_calculating">Route, weer en laadpalen worden berekend…</string>
+    <string name="hql_pr_failed">De route kon niet worden berekend (%1$s). Probeer het zo meteen opnieuw.</string>
+    <string name="hql_pr_no_network">geen internetverbinding</string>
+    <string name="hql_pr_no_dest">Kies eerst een bestemming.</string>
+    <string name="hql_pr_no_origin">Ik weet niet waar je vertrekt: zet de locatie aan of sla Thuis op in het tabblad Route van de auto.</string>
+    <string name="hql_pr_summary">%1$.0f km · %2$s rijden · %3$s laden</string>
+    <string name="hql_pr_summary_nostop">%1$.0f km · %2$s rijden · zonder stops</string>
+    <string name="hql_pr_summary_drive">%1$.0f km · %2$s rijden</string>
+    <string name="hql_pr_arrive">Je komt aan met %1$.0f %%</string>
+    <string name="hql_pr_weather">op de bestemming %1$s, %2$.0f °C</string>
+    <string name="hql_pr_osrm_note">Eigen route (OpenStreetMap): zonder de auto is er geen verkeer. De tijden worden bij vertrek met Google Maps bijgesteld.</string>
+    <string name="hql_pr_flat">Zonder hoogtes (de dienst antwoordde niet): de route wordt berekend alsof hij vlak is.</string>
+    <string name="hql_pr_reev">REEV: geen laadplan, de generator vult aan wat ontbreekt.</string>
+    <string name="hql_pr_cost">Laden ≈ %1$s (met je prijs per kWh uit Instellingen)</string>
+    <string name="hql_pr_use_next">Gebruiken bij de volgende rit</string>
+    <string name="hql_pr_saved_title">Klaar voor de volgende rit</string>
+    <string name="hql_pr_saved_text">%1$s · %2$s. Bij het verbinden in de auto wordt gevraagd of hij ze gebruikt (tot %3$s).</string>
+    <string name="hql_pr_saved_now">Je zit in de auto: de vraag staat nu op zijn scherm.</string>
+    <string name="hql_pr_remove">Verwijderen</string>
+    <string name="hql_pr_no_stops">geen laadstops</string>
+    <plurals name="hql_pr_stops">
+        <item quantity="one">%1$d laadstop</item>
+        <item quantity="other">%1$d laadstops</item>
+    </plurals>
+    <string name="hql_planned_ask_title">De route gebruiken die je gepland hebt?</string>
+    <string name="hql_planned_ask_text">%1$s · %2$s. Hij wordt opnieuw berekend met de echte accu en de tijden van Google Maps.</string>
+    <string name="hql_planned_yes">Ja</string>
+    <string name="hql_planned_no">Nee</string>
+    <string name="hql_planned_applied_title">Op de telefoon geplande route</string>
+    <string name="hql_planned_applied_text">%1$s · %2$.0f km</string>
+    <string name="hql_planned_changed">Bij het plannen: %1$s; nu: %2$s.</string>
+    <string name="hql_planned_changed_yesterday">Gisteren: %1$s; vandaag: %2$s.</string>
+    <string name="hql_planned_other_stops">Nu stopt hij bij %1$s.</string>
+</resources>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- headqlink: Tab «Route» der Handy-App (PhoneRoute) und «die geplante Route verwenden» im Auto (PlannedTrip). -->
+<resources>
+    <string name="hql_pr_title">Route planen</string>
+    <string name="hql_pr_intro">Route und Ladestopps schon auf dem Handy planen, bevor du einsteigst. Beim Verbinden fragt das Auto, ob es sie verwenden soll.</string>
+    <string name="hql_pr_where">Wohin?</string>
+    <string name="hql_pr_search_hint">Adresse oder Ort</string>
+    <string name="hql_pr_searching">Suche läuft…</string>
+    <string name="hql_pr_no_results">Nichts gefunden. Versuche es anders zu schreiben.</string>
+    <string name="hql_pr_via_n">Stopp %1$d</string>
+    <string name="hql_pr_depart">Abfahrt</string>
+    <string name="hql_pr_from_here">Von hier</string>
+    <string name="hql_pr_from_home">Von Zuhause</string>
+    <string name="hql_pr_battery">Akku bei Abfahrt</string>
+    <string name="hql_pr_battery_cloud">Leapmotor-Cloud, %1$s: %2$.0f %%</string>
+    <string name="hql_pr_battery_cloud_wait">Akkustand wird aus der Leapmotor-Cloud gelesen…</string>
+    <string name="hql_pr_battery_manual">Im Auto eingestellt: %1$.0f %%</string>
+    <string name="hql_pr_battery_none">Wähle, mit wie viel Akku du losfährst.</string>
+    <string name="hql_pr_battery_other">Anderer…</string>
+    <string name="hql_pr_battery_other_title">Von 1 bis 100</string>
+    <string name="hql_pr_when">Wann</string>
+    <string name="hql_pr_now">Jetzt</string>
+    <string name="hql_pr_today_pick">Heute um…</string>
+    <string name="hql_pr_tomorrow_pick">Morgen um…</string>
+    <string name="hql_pr_today_at">Heute um %1$s</string>
+    <string name="hql_pr_tomorrow_at">Morgen um %1$s</string>
+    <string name="hql_pr_calc">Route berechnen</string>
+    <string name="hql_pr_calculating">Route, Wetter und Ladesäulen werden berechnet…</string>
+    <string name="hql_pr_failed">Die Route konnte nicht berechnet werden (%1$s). Versuche es gleich noch einmal.</string>
+    <string name="hql_pr_no_network">keine Internetverbindung</string>
+    <string name="hql_pr_no_dest">Wähle zuerst ein Ziel.</string>
+    <string name="hql_pr_no_origin">Ich weiß nicht, wo du losfährst: Schalte den Standort ein oder speichere „Zuhause“ im Tab „Route“ im Auto.</string>
+    <string name="hql_pr_summary">%1$.0f km · %2$s Fahrt · %3$s Laden</string>
+    <string name="hql_pr_summary_nostop">%1$.0f km · %2$s Fahrt · ohne Ladestopp</string>
+    <string name="hql_pr_summary_drive">%1$.0f km · %2$s Fahrt</string>
+    <string name="hql_pr_arrive">Ankunft mit %1$.0f %%</string>
+    <string name="hql_pr_weather">am Ziel %1$s, %2$.0f °C</string>
+    <string name="hql_pr_osrm_note">Eigene Route (OpenStreetMap): Ohne Auto gibt es keine Verkehrsdaten. Die Zeiten werden bei der Abfahrt mit Google Maps angepasst.</string>
+    <string name="hql_pr_flat">Ohne Höhendaten (der Dienst hat nicht geantwortet): Die Route wird berechnet, als wäre sie flach.</string>
+    <string name="hql_pr_reev">REEV: kein Ladeplan, der Generator liefert, was fehlt.</string>
+    <string name="hql_pr_cost">Laden ≈ %1$s (mit deinem kWh-Preis aus den Einstellungen)</string>
+    <string name="hql_pr_use_next">Für die nächste Fahrt verwenden</string>
+    <string name="hql_pr_saved_title">Bereit für die nächste Fahrt</string>
+    <string name="hql_pr_saved_text">%1$s · %2$s. Beim Verbinden im Auto wirst du gefragt, ob sie verwendet werden soll (bis %3$s).</string>
+    <string name="hql_pr_saved_now">Du bist im Auto: Die Frage erscheint jetzt auf seinem Bildschirm.</string>
+    <string name="hql_pr_remove">Entfernen</string>
+    <string name="hql_pr_no_stops">keine Ladestopps</string>
+    <plurals name="hql_pr_stops">
+        <item quantity="one">%1$d Ladestopp</item>
+        <item quantity="other">%1$d Ladestopps</item>
+    </plurals>
+    <string name="hql_planned_ask_title">Die geplante Route verwenden?</string>
+    <string name="hql_planned_ask_text">%1$s · %2$s. Sie wird mit dem echten Akkustand und den Zeiten von Google Maps neu berechnet.</string>
+    <string name="hql_planned_yes">Ja</string>
+    <string name="hql_planned_no">Nein</string>
+    <string name="hql_planned_applied_title">Auf dem Handy geplante Route</string>
+    <string name="hql_planned_applied_text">%1$s · %2$.0f km</string>
+    <string name="hql_planned_changed">Bei der Planung: %1$s; jetzt: %2$s.</string>
+    <string name="hql_planned_changed_yesterday">Gestern: %1$s; heute: %2$s.</string>
+    <string name="hql_planned_other_stops">Jetzt wird bei %1$s geladen.</string>
+</resources>
