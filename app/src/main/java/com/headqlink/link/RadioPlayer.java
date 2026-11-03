@@ -21,6 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * pantalla Radio (como la música de AA) y se para al cerrar la interfaz propia. Pide el foco de audio, así que pausa la
  * música de AA y se pausa si AA (o una llamada) lo toma. Una canción, al acabar, da paso a la siguiente. Lo que suena sale
  * en Android Auto, en el coche por Bluetooth y en la notificación del móvil (RadioSession), y desde ahí se controla.
+ * Si se va la salida de audio (el Bluetooth del coche al bajarse, unos auriculares), se pausa: no sigue por el altavoz.
  * Solo hilo principal.
  */
 final class RadioPlayer {
@@ -58,6 +59,11 @@ final class RadioPlayer {
     private static int lastIndex = -1;
     /** Callada porque otra cosa se ha quedado el sonido (otra app o la TV), no por una pausa: deja Android Auto enseguida. */
     private static boolean displaced;
+    /**
+     * En pausa porque se fue la salida de audio (el Bluetooth del coche, unos auriculares), no por una pausa del usuario:
+     * al cerrarse la interfaz propia cuenta como que sonaba («Seguir con la radio al conectar»).
+     */
+    private static boolean noisyPaused;
     /** HTTP Basic de lo que suena: su servidor y la cabecera (los lee el hilo de carga del reproductor); null si no. */
     private static volatile String authHost;
     private static volatile String authHeader;
@@ -114,6 +120,8 @@ final class RadioPlayer {
             player.setAudioAttributes(new AudioAttributes.Builder()
                     .setUsage(C.USAGE_MEDIA).setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(), false);
             mediaFocus = MediaFocus.bind(app, player);
+            // Se va el Bluetooth del coche (bajarse del coche) o unos auriculares: en pausa, no por el altavoz del móvil.
+            player.setHandleAudioBecomingNoisy(true);
             player.addListener(new Player.Listener() {
                 @Override
                 public void onMediaMetadataChanged(MediaMetadata m) {
@@ -150,6 +158,11 @@ final class RadioPlayer {
                     // Otra app se ha quedado el sonido (ExoPlayer lo dice), o la TV (MediaFocus se lo ha pasado).
                     displaced = !playWhenReady && (reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS
                             || MediaFocus.takenFrom(mediaFocus));
+                    noisyPaused = !playWhenReady && reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY;
+                    if (noisyPaused) {
+                        L.i("radio: se ha ido la salida de audio (Bluetooth del coche o auriculares): en pausa, no sigue"
+                                + " por el altavoz");
+                    }
                     changed();
                 }
             });
@@ -160,6 +173,7 @@ final class RadioPlayer {
         player.setWakeMode(s.local ? C.WAKE_MODE_LOCAL : C.WAKE_MODE_NETWORK);
         nowTitle = s.local ? s.group : "";
         error = "";
+        noisyPaused = false;
         // Ya suena algo: lo parado antes no vuelve con «▶».
         lastList = null;
         metadata.setError("");
@@ -227,7 +241,10 @@ final class RadioPlayer {
         start(ctx.getApplicationContext());
     }
 
-    /** Para del todo y olvida (fin de la interfaz propia o de Android Auto): después, un «▶» ya no la vuelve a poner. */
+    /**
+     * Para del todo y olvida (fin de la interfaz propia, de Android Auto o de la sesión con el coche): después, un «▶» ya no
+     * la vuelve a poner.
+     */
     static void stop() {
         lastList = null;
         halt();
@@ -255,9 +272,22 @@ final class RadioPlayer {
         nowTitle = "";
         error = "";
         displaced = false;
+        noisyPaused = false;
         // Parada (con lo parado a mano, si lo hay) o liberada si Android Auto no la tiene.
         RadioSession.playerDown();
         changed();
+    }
+
+    /**
+     * Se acaba la sesión con el coche sin la interfaz propia (modo «Auto»; con ella la para CarUi.stop): para del todo y
+     * olvida, como cuando se va Android Auto (RadioBrowserService.onDestroy). Hace falta: sin coche, Android Auto puede
+     * seguir conectado esperándolo minutos (AaPark) y RadioBrowserService con él, y la radio seguía sonando por el altavoz
+     * del móvil y su sesión, en pausa, se quedaba con las teclas.
+     */
+    static void carGone() {
+        if (CarUi.running()) return;
+        if (current() != null) L.i("radio: se acaba la sesión con el coche (modo Auto): paro la radio");
+        stop();
     }
 
     /** Lo parado a mano en este viaje que un «▶» vuelve a poner, o null. */
@@ -290,6 +320,8 @@ final class RadioPlayer {
     static void pauseFromControls() {
         if (player == null) return;
         player.pause();
+        // Pausa del usuario (aunque ya la hubiera pausado la salida de audio): al cerrar, ya no sonaba.
+        noisyPaused = false;
         changed();
     }
 
@@ -319,19 +351,25 @@ final class RadioPlayer {
     }
 
     /**
-     * Al cerrarse la interfaz propia, antes de {@link #stop()}: si sonaba algo, se guarda para seguir en la próxima
-     * sesión («Seguir con la radio al conectar»); si estaba en pausa o parado, se olvida (como la radio de un coche).
+     * Al cerrarse la interfaz propia, antes de {@link #stop()}: si sonaba algo (o lo pausó solo la salida de audio al irse
+     * el Bluetooth del coche, que suele irse antes que el enlace), se guarda para seguir en la próxima sesión («Seguir con
+     * la radio al conectar»); si estaba en pausa o parado, se olvida (como la radio de un coche).
      */
     static void saveForResume(Context ctx) {
         android.content.SharedPreferences p = ctx.getSharedPreferences(RESUME_PREFS, Context.MODE_PRIVATE);
         Station s = current();
-        if (s == null || !isPlaying()) {
+        if (s == null || !soundedAtClose(isPlaying(), noisyPaused)) {
             if (p.contains("state")) L.i("radio: no sonaba al cerrar; no seguirá en la próxima conexión");
             p.edit().remove("state").apply();
             return;
         }
         p.edit().putString("state", resumeJson(list, index, s.local ? player.getCurrentPosition() : 0)).apply();
         L.i("radio: sonaba " + (s.local ? "una canción" : s.name) + " al cerrar; seguirá en la próxima conexión");
+    }
+
+    /** Puro: al cerrar, sonaba: sonando, o en pausa solo porque se fue la salida de audio (no la pausó el usuario). */
+    static boolean soundedAtClose(boolean playing, boolean noisyPaused) {
+        return playing || noisyPaused;
     }
 
     /** Al abrir la interfaz propia: sigue con lo que sonaba al cerrarse la anterior, si sonaba y no suena ya otra cosa. */
