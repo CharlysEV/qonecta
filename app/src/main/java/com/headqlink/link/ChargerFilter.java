@@ -54,8 +54,9 @@ final class ChargerFilter {
         NETWORKS.put("enel", new String[]{"Enel X", "enel"});
         NETWORKS.put("totalenergies", new String[]{"TotalEnergies", "totalenergies", "total energies"});
         NETWORKS.put("shell", new String[]{"Shell Recharge", "shell"});
-        // En el registro alemán, Aral pulse figura como «BP Europa SE».
-        NETWORKS.put("bp", new String[]{"bp pulse", "bp pulse", "aral pulse", "aral", "bp europa"});
+        // En el registro alemán, Aral pulse figura como «BP Europa SE». Aral es la marca de bp en Alemania: va en el
+        // nombre para que se vea que el filtro las incluye (foro LPMFF, #344).
+        NETWORKS.put("bp", new String[]{"bp pulse / Aral", "bp pulse", "aral pulse", "aral", "bp europa"});
         NETWORKS.put("plenoil", new String[]{"Plenoil", "plenoil"});
         NETWORKS.put("acciona", new String[]{"Acciona", "acciona"});
         NETWORKS.put("edp", new String[]{"EDP", "edp"});
