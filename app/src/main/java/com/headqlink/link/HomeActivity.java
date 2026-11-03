@@ -168,6 +168,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         if (insights != null && tab == 1) insights.show();
         if (phoneHome != null && tab == 2) phoneHome.show();
         if (phoneCar != null && tab == 3) phoneCar.show();
+        if (phoneRoute != null && tab == 4) phoneRoute.show();
         // Si este móvil ha planificado rutas por Alemania, el registro oficial de allí al día (con Wi-Fi; barato si no toca).
         BnetzaChargers.refreshIfDue(this);
         // Lo que ha gastado la app en reposo hasta ahora (para la tarjeta de Viajes).
@@ -226,6 +227,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         if (insights != null) insights.hide();
         if (phoneHome != null) phoneHome.hide();
         if (phoneCar != null) phoneCar.hide();
+        if (phoneRoute != null) phoneRoute.hide();
         LinkState.removeListener(this);
         pulse(false);
         super.onPause();
@@ -584,6 +586,8 @@ public class HomeActivity extends Activity implements LinkState.Listener {
     private PhoneHome phoneHome;
     /** Pestaña «Mi coche» (PhoneCar): la app de Leapmotor a nuestra manera (28-10). */
     private PhoneCar phoneCar;
+    /** Pestaña «Ruta» (PhoneRoute): planificar la ruta y las cargas en el móvil para el próximo viaje (3-11). */
+    private PhoneRoute phoneRoute;
     private View connectionPage;
     private int tab;
     private com.google.android.material.bottomnavigation.BottomNavigationView navBar;
@@ -611,6 +615,8 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         pages.addView(phoneHome.view());
         phoneCar = new PhoneCar(this);
         pages.addView(phoneCar.view());
+        phoneRoute = new PhoneRoute(this);
+        pages.addView(phoneRoute.view());
         shell.addView(pages, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
         // Barra de navegación de Material 3 (con la píldora en la pestaña activa).
         com.google.android.material.bottomnavigation.BottomNavigationView bar =
@@ -622,6 +628,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         menu.add(0, 1, 1, Str.get(R.string.hql_tab_trips)).setIcon(R.drawable.hql_ic_efficiency);
         menu.add(0, 2, 2, Str.get(R.string.hql_ha_title)).setIcon(R.drawable.hql_ic_home);
         menu.add(0, 3, 3, Str.get(R.string.hql_car_tab)).setIcon(R.drawable.hql_ln_car);
+        menu.add(0, 4, 4, Str.get(R.string.hql_tab_route)).setIcon(R.drawable.hql_ic_route);
         int[][] states = {{android.R.attr.state_checked}, {}};
         android.content.res.ColorStateList fg = new android.content.res.ColorStateList(states, new int[]{0xFF00E5C7, 0xFF8296A9});
         bar.setItemIconTintList(fg);
@@ -640,7 +647,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         applyTab();
     }
 
-    /** Lleva a una pestaña (0 Conexión, 1 Viajes, 2 Home Assistant, 3 Mi coche): los enlaces «Todos los viajes ›». */
+    /** Lleva a una pestaña (0 Conexión, 1 Viajes, 2 Home Assistant, 3 Mi coche, 4 Ruta): los enlaces «Todos los viajes ›». */
     void showTab(int i) {
         selectTab(i);
     }
@@ -657,6 +664,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         insights.view().setVisibility(tab == 1 ? View.VISIBLE : View.GONE);
         phoneHome.view().setVisibility(tab == 2 ? View.VISIBLE : View.GONE);
         phoneCar.view().setVisibility(tab == 3 ? View.VISIBLE : View.GONE);
+        phoneRoute.view().setVisibility(tab == 4 ? View.VISIBLE : View.GONE);
         if (navBar.getSelectedItemId() != tab) navBar.setSelectedItemId(tab);
         if (tab == 1) insights.show();
         else insights.hide();
@@ -664,6 +672,8 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         else phoneHome.hide();
         if (tab == 3) phoneCar.show();
         else phoneCar.hide();
+        if (tab == 4) phoneRoute.show();
+        else phoneRoute.hide();
     }
 
     private void showMenu(View anchor) {

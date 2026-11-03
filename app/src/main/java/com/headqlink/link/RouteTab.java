@@ -2909,7 +2909,7 @@ final class RouteTab implements CarScreen {
     }
 
     /** «−4 min · paradas: 2 → 1», «mismo tiempo» o «con ella no llegas». */
-    private String deltaText(ChargePlanner.Alternative a, ChargePlanner.Result cp) {
+    static String deltaText(ChargePlanner.Alternative a, ChargePlanner.Result cp) {
         if (!a.works()) return Str.get(R.string.hql_plan_change_no_arrive);
         long d = Math.round(a.deltaMin);
         String t = d == 0 ? Str.get(R.string.hql_plan_change_same)

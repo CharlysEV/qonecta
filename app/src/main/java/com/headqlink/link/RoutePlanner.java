@@ -1651,6 +1651,13 @@ final class RoutePlanner {
         default void onMapsGone() {
         }
 
+        /**
+         * Hay una ruta planificada en el móvil (PlannedTrip): «¿Usar la ruta que planificaste?», con Sí y No
+         * (RoutePlanner.answerPlanned). stops: las paradas de carga que salieron en el móvil.
+         */
+        default void onPlannedTrip(String name, int stops) {
+        }
+
     }
 
     static volatile DestGuessListener destGuesses;
@@ -1934,6 +1941,97 @@ final class RoutePlanner {
                         p != null ? Str.get(R.string.hql_share_applied_text, pl.name, p.totalKm) : pl.name, ALERT_READY);
             }
         }, "shared-dest").start();
+    }
+
+    // ------------------------------------------------------------------ ruta planificada en el móvil
+
+    /** Tras empezar la sesión, cuándo se pregunta por la ruta planificada en el móvil (que Android Auto ya esté). */
+    static final long PLANNED_AFTER_MS = SHARED_AFTER_MS;
+
+    /**
+     * Al empezar la sesión con el coche (CarUi), o al guardarla con la sesión ya en marcha (delayMs 0): si hay una ruta
+     * planificada en el móvil (PlannedTrip), la tarjeta «¿Usar la ruta que planificaste?» (DestGuessListener.onPlannedTrip).
+     * Con un viaje ya puesto (retomado tras un reinicio, o elegido en el coche) no se pregunta: queda para la próxima.
+     */
+    static void offerPlanned(Context ctx, long delayMs) {
+        Context app = ctx.getApplicationContext();
+        new Thread(() -> {
+            if (delayMs > 0) SystemClock.sleep(delayMs);
+            RoutePlanner r = instance;
+            if (r == null || r.demo) return;
+            PlannedTrip t = PlannedTrip.peek(app);
+            if (t == null) return;
+            if (manual != null) {
+                L.i("ruta del móvil: ya hay un viaje puesto; la pregunta queda para la próxima sesión");
+                return;
+            }
+            // El panel del coche se apunta al montarse: unos segundos como mucho.
+            DestGuessListener gl = destGuesses;
+            for (int i = 0; gl == null && i < 10 && instance == r; i++) {
+                SystemClock.sleep(1000);
+                gl = destGuesses;
+            }
+            if (gl == null || instance != r) return;
+            L.i("ruta del móvil: pregunto si se usa la ruta planificada (" + t.stops.size() + " paradas de carga, "
+                    + t.vias.size() + " intermedias)");
+            gl.onPlannedTrip(t.dest.name, t.stops.size());
+        }, "planned-trip-offer").start();
+    }
+
+    /** La respuesta del conductor a la tarjeta: con «Sí», el viaje del móvil (applyPlanned); con «No», se descarta. */
+    static void answerPlanned(Context ctx, boolean yes) {
+        PlannedTrip t = PlannedTrip.answer(ctx, yes);
+        if (t != null) applyPlanned(ctx, t);
+    }
+
+    /**
+     * El viaje planificado en el móvil pasa a ser el de ahora, como uno elegido en el coche: el destino, las paradas, la
+     * ida y vuelta, la velocidad elegida y las paradas de carga fijadas a mano. El plan se rehace con lo real (la batería
+     * de ahora, la posición y, con Maps navegando, sus tiempos) y se abre la navegación con las paradas, como useShared;
+     * si ya no sale el del móvil («ayer 1 parada, hoy 2»), la tarjeta lo dice.
+     */
+    static void applyPlanned(Context ctx, PlannedTrip t) {
+        Context app = ctx.getApplicationContext();
+        L.i("ruta del móvil: la pongo y abro la navegación");
+        nextGuess = false;
+        nextGuessChecked = false;
+        routeOffer = null;
+        Place pl = t.dest;
+        setTrip(pl, t.vias, t.round);
+        // setTrip quita la velocidad del viaje anterior: la elegida en el móvil, para este destino.
+        if (t.speedCap > 0 && !DemoMode.active()) {
+            speedCapKmh = t.speedCap;
+            speedCapFor = pl.name;
+        }
+        RoutePlanner r0 = instance;
+        if (r0 != null) r0.restorePins(t.pins, pl);
+        if (r0 == null) return;
+        new Thread(() -> {
+            long t0 = SystemClock.elapsedRealtime();
+            Plan p = null;
+            ChargePlanner.Result cp = null;
+            while (SystemClock.elapsedRealtime() - t0 < SHARED_PLAN_WAIT_MS) {
+                RoutePlanner r = instance;
+                if (r == null || manual != pl) return;
+                p = r.plan;
+                cp = r.lastChargePlan();
+                // El plan de carga de este plan (el de antes de setTrip puede seguir guardado un momento).
+                if (p != null && cp != null && cp.km == p.km) break;
+                cp = null;
+                SystemClock.sleep(1000);
+            }
+            if (manual != pl) return;
+            if (p != null && ((cp != null && cp.next() != null) || p.multi())) NavApps.goWithStops(app, p, cp);
+            else NavApps.go(app, pl.lat, pl.lon);
+            String text = p != null ? Str.get(R.string.hql_planned_applied_text, pl.name, p.totalKm) : pl.name;
+            String diff = PlannedTrip.diff(t, cp, System.currentTimeMillis());
+            if (diff != null) {
+                text += ". " + diff;
+                L.i("ruta del móvil: el plan de ahora no es el del móvil (" + t.stops.size() + " → " + cp.stops.size() + " paradas de carga)");
+            }
+            ChargeAlertListener l = chargeAlerts;
+            if (l != null) l.onChargeAlert(Str.get(R.string.hql_planned_applied_title), text, diff == null ? ALERT_READY : ALERT_WARN);
+        }, "planned-trip").start();
     }
 
     /** El panel del coche: el usuario ha elegido uno de la tarjeta (sigue la navegación de Maps). */

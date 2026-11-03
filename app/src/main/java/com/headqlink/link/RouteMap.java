@@ -84,7 +84,7 @@ final class RouteMap {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private static WebView web(Context ctx, String html) {
+    static WebView web(Context ctx, String html) {
         WebView w = new WebView(ctx);
         w.setBackgroundColor(CarKit.SURFACE_HI);
         WebSettings s = w.getSettings();

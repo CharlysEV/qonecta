@@ -52,6 +52,16 @@ final class NavApps {
      */
     static void goWithStops(Context ctx, RoutePlanner.Plan p, ChargePlanner.Result cp) {
         double from = cp != null ? cp.fromKm : p.km[Math.min(Math.max(0, p.progress), p.n - 1)];
+        java.util.List<double[]> route = ahead(points(p, cp), from + ChargePlanner.HERE_KM, MAX_WAYPOINTS);
+        if (route.isEmpty()) route.add(new double[]{p.destLat, p.destLon, p.totalKm});
+        goThrough(ctx, route);
+    }
+
+    /**
+     * Puro: los puntos del viaje {lat, lon, km} sin ordenar: las paradas de carga del plan (cp puede ser null) y las del
+     * viaje (las intermedias, el destino y, de ida y vuelta, la vuelta), o el destino.
+     */
+    static java.util.List<double[]> points(RoutePlanner.Plan p, ChargePlanner.Result cp) {
         java.util.List<double[]> pts = new java.util.ArrayList<>();
         if (cp != null) for (ChargePlanner.Stop st : cp.stops) pts.add(new double[]{st.charger.lat, st.charger.lon, st.km});
         for (int i = 0; i < p.waypoints.size() && i < p.waypointKm.length; i++) {
@@ -59,8 +69,15 @@ final class NavApps {
             pts.add(new double[]{w.lat, w.lon, p.waypointKm[i]});
         }
         if (p.waypoints.isEmpty()) pts.add(new double[]{p.destLat, p.destLon, p.totalKm});
-        java.util.List<double[]> route = ahead(pts, from + ChargePlanner.HERE_KM, MAX_WAYPOINTS);
-        if (route.isEmpty()) route.add(new double[]{p.destLat, p.destLon, p.totalKm});
+        return pts;
+    }
+
+    /**
+     * Navegar por los puntos de route ({lat, lon, km}, en orden; el último es a donde se va y los demás, como mucho
+     * MAX_WAYPOINTS, puntos intermedios). Waze va al primero (no admite paradas).
+     */
+    static void goThrough(Context ctx, java.util.List<double[]> route) {
+        if (route.isEmpty()) return;
         if (useWaze(ctx)) {
             go(ctx, route.get(0)[0], route.get(0)[1]);
             return;
