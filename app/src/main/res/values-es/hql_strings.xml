@@ -1193,7 +1193,7 @@
     <string name="hql_tr_surface">Firme en mal estado</string>
     <string name="hql_tr_other">Incidencia</string>
     <string name="hql_theme_auto">Automático</string>
-    <string name="hql_theme_help">Android Auto, el panel y las pantallas del modo extendido. Automático: como la pantalla del coche o, si el coche no lo dice, con el sensor de luz del móvil.</string>
+    <string name="hql_theme_help">Android Auto, el panel y las pantallas del modo extendido. Automático: como la pantalla del coche o, si el coche no lo dice, por la salida y la puesta del sol donde estás y, cuando el móvil ya ha visto la luz del día, con su sensor de luz (túneles, garajes).</string>
     <string name="hql_cable_hint">Por Wi-Fi, los juegos, la TV y los vídeos pueden ir a saltos. Con el cable USB van más fluidos.</string>
     <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
     <string name="hql_mate_controls">Mandos</string>

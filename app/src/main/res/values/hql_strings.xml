@@ -1192,7 +1192,7 @@
     <string name="hql_tr_surface">Poor road surface</string>
     <string name="hql_tr_other">Incident</string>
     <string name="hql_theme_auto">Automatic</string>
-    <string name="hql_theme_help">Android Auto, the side panel and the extended-mode screens. Automatic: like the car screen or, if the car doesn\'t say, with the phone\'s light sensor.</string>
+    <string name="hql_theme_help">Android Auto, the side panel and the extended-mode screens. Automatic: like the car screen or, if the car doesn\'t say, by sunrise and sunset where you are and, once the phone has seen daylight, with its light sensor (tunnels, garages).</string>
     <string name="hql_cable_hint">Over Wi-Fi, games, TV and videos may stutter. With the USB cable they run smoother.</string>
     <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
     <string name="hql_mate_controls">Controls</string>

@@ -1188,7 +1188,7 @@
     <string name="hql_tr_surface">Fondo stradale dissestato</string>
     <string name="hql_tr_other">Evento</string>
     <string name="hql_theme_auto">Automatico</string>
-    <string name="hql_theme_help">Android Auto, il pannello e le schermate della modalità estesa. Automatico: come lo schermo dell\'auto o, se l\'auto non lo dice, con il sensore di luce del telefono.</string>
+    <string name="hql_theme_help">Android Auto, il pannello e le schermate della modalità estesa. Automatico: come lo schermo dell\'auto o, se l\'auto non lo dice, secondo l\'alba e il tramonto dove ti trovi e, quando il telefono ha già visto la luce del giorno, con il suo sensore di luce (gallerie, garage).</string>
     <string name="hql_cable_hint">Via Wi-Fi, giochi, TV e video possono andare a scatti. Con il cavo USB sono più fluidi.</string>
     <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
     <string name="hql_mate_controls">Comandi</string>

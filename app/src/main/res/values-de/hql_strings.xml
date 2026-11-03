@@ -1187,7 +1187,7 @@
     <string name="hql_tr_surface">Schlechter Straßenbelag</string>
     <string name="hql_tr_other">Meldung</string>
     <string name="hql_theme_auto">Automatisch</string>
-    <string name="hql_theme_help">Android Auto, die Seitenleiste und die Bildschirme des erweiterten Modus. Automatisch: wie der Autobildschirm oder, wenn das Auto es nicht meldet, mit dem Lichtsensor des Handys.</string>
+    <string name="hql_theme_help">Android Auto, die Seitenleiste und die Bildschirme des erweiterten Modus. Automatisch: wie der Autobildschirm oder, wenn das Auto es nicht meldet, nach Sonnenauf- und -untergang am Standort und, sobald das Handy Tageslicht gesehen hat, mit seinem Lichtsensor (Tunnel, Garagen).</string>
     <string name="hql_cable_hint">Über WLAN können Spiele, TV und Videos ruckeln. Mit dem USB-Kabel laufen sie flüssiger.</string>
     <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
     <string name="hql_mate_controls">Steuerung</string>

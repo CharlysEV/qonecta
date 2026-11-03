@@ -1188,7 +1188,7 @@
     <string name="hql_tr_surface">Piso em mau estado</string>
     <string name="hql_tr_other">Ocorrência</string>
     <string name="hql_theme_auto">Automático</string>
-    <string name="hql_theme_help">Android Auto, o painel e os ecrãs do modo estendido. Automático: como o ecrã do carro ou, se o carro não o disser, pelo sensor de luz do telemóvel.</string>
+    <string name="hql_theme_help">Android Auto, o painel e os ecrãs do modo estendido. Automático: como o ecrã do carro ou, se o carro não o disser, pelo nascer e pôr do sol onde está e, quando o telemóvel já viu a luz do dia, pelo seu sensor de luz (túneis, garagens).</string>
     <string name="hql_cable_hint">Por Wi-Fi, os jogos, a TV e os vídeos podem dar saltos. Com o cabo USB ficam mais fluidos.</string>
     <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
     <string name="hql_mate_controls">Comandos</string>

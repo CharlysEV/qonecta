@@ -84,6 +84,10 @@ class Settings(private val context: Context) {
                 .apply()
         }
 
+    /** headqlink: lastKnownLocation es de verdad (sin guardar devuelve Tel Aviv, el valor de serie de Open Headunit). */
+    val hasLastKnownLocation: Boolean
+        get() = prefs.contains("last-loc-latitude")
+
     var resolutionId: Int
         get() = prefs.getInt("resolutionId", 0)
         set(value) = prefs.edit().putInt("resolutionId", value).apply()

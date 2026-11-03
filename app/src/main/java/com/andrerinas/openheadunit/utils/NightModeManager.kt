@@ -39,6 +39,11 @@ class NightModeManager(
     
     private val handler = Handler(Looper.getMainLooper())
 
+    // headqlink: con el sensor de luz, el sol manda hasta que el móvil vea el día (AutoNight; móvil guardado en la consola).
+    private val autoNight = com.headqlink.link.AutoNight()
+    // La última posición del sistema al conectar, por si el GPS aún no ha dado ninguna en la sesión.
+    private var startFix: android.location.Location? = null
+
     private companion object {
         /** headqlink: con el sensor de luz, el cambio de día a noche (o al revés) tiene que durar 8 s. */
         const val SENSOR_DEBOUNCE_MS = 8000L
@@ -92,7 +97,10 @@ class NightModeManager(
         }
         
         ContextCompat.registerReceiver(context, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
-        
+
+        autoNight.reset()
+        startFix = LocationHolder.bestEffortDeviceFix(context)
+
         // Initial setup of sensors/observers based on current settings
         refreshListeners()
 
@@ -200,19 +208,30 @@ class NightModeManager(
                     .resolveNight(context, settings)
             }
             Settings.NightMode.LIGHT_SENSOR -> {
+                // headqlink: en el coche la luz que ve el móvil sube y baja mucho (sombras, la mano, el soporte):
+                // con 10 lux de margen AA cambiaba de día a noche cada pocos segundos (log del 2026-10-16). Para
+                // volver al día hace falta bastante más luz (×2,5 del umbral) y un rato estable (SENSOR_DEBOUNCE_MS).
+                val dayLux = maxOf(threshold * 2.5f, threshold + 50f)
+                var sensorNight = false
                 if (currentLux >= 0) {
-                    // Hysteresis Logic
-                    // headqlink: en el coche la luz que ve el móvil sube y baja mucho (sombras, la mano, el soporte):
-                    // con 10 lux de margen AA cambiaba de día a noche cada pocos segundos (log del 2026-10-16). Para
-                    // volver al día hace falta bastante más luz (×2,5 del umbral) y un rato estable (SENSOR_DEBOUNCE_MS).
-                    val dayLux = maxOf(threshold * 2.5f, threshold + 50f)
                     val currentIsNight = lastEmittedValue ?: false
-                    
-                    isNight = if (currentIsNight) {
+                    sensorNight = if (currentIsNight) {
                         currentLux < dayLux
                     } else {
                         currentLux < threshold
                     }
+                }
+                // headqlink: y el sol en la posición del móvil hasta que vea el día o si lleva 5 min guardado (AutoNight).
+                val wasBySun = autoNight.bySun
+                val pos = sunLocation()
+                val sunNight = pos?.let { com.headqlink.link.AutoNight.sunNight(it.latitude, it.longitude, System.currentTimeMillis()) }
+                isNight = autoNight.isNight(System.currentTimeMillis(), currentLux, sensorNight, sunNight, dayLux)
+                if (autoNight.bySun != wasBySun || lastEmittedValue == null) {
+                    AppLog.i("NightModeManager: " + when {
+                        sunNight == null -> "sin posición: sensor de luz (${currentLux.toInt()} lux)"
+                        autoNight.bySun -> "por el sol (" + (if (sunNight) "noche" else "día") + "): el sensor no ve el día (${currentLux.toInt()} lux)"
+                        else -> "sensor de luz (${currentLux.toInt()} lux): ya ha visto el día"
+                    })
                 }
             }
             Settings.NightMode.SCREEN_BRIGHTNESS -> {
@@ -291,6 +310,23 @@ class NightModeManager(
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+
+    /**
+     * headqlink: dónde mirar el sol: el punto fijo de los ajustes si se eligió; si no, el último GPS de la sesión (sin
+     * mirar la edad: para el sol vale una posición de hace horas), la del sistema al conectar o la última guardada. Null
+     * si no se sabe ninguna (el valor de serie de lastKnownLocation es Tel Aviv, no cuenta).
+     */
+    private fun sunLocation(): android.location.Location? {
+        if (settings.useFixedSunriseLocation) {
+            return android.location.Location("").apply {
+                latitude = settings.fixedSunriseLatitude
+                longitude = settings.fixedSunriseLongitude
+            }
+        }
+        return LocationHolder.currentLocation(null, 0)
+            ?: startFix
+            ?: settings.lastKnownLocation.takeIf { settings.hasLastKnownLocation }
+    }
 
     private fun readBrightness(): Int {
         // On API 28+ (Android 9+) the brightness slider primarily writes to

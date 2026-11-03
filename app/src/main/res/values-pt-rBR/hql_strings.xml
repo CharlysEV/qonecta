@@ -1188,7 +1188,7 @@
     <string name="hql_tr_surface">Pavimento em mau estado</string>
     <string name="hql_tr_other">Ocorrência</string>
     <string name="hql_theme_auto">Automático</string>
-    <string name="hql_theme_help">Android Auto, o painel e as telas do modo estendido. Automático: como a tela do carro ou, se o carro não informar, pelo sensor de luz do celular.</string>
+    <string name="hql_theme_help">Android Auto, o painel e as telas do modo estendido. Automático: como a tela do carro ou, se o carro não informar, pelo nascer e pôr do sol onde você está e, quando o celular já viu a luz do dia, pelo sensor de luz dele (túneis, garagens).</string>
     <string name="hql_cable_hint">Pelo Wi-Fi, jogos, TV e vídeos podem travar. Com o cabo USB ficam mais fluidos.</string>
     <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
     <string name="hql_mate_controls">Comandos</string>

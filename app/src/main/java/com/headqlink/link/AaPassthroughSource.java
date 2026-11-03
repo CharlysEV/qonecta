@@ -329,7 +329,9 @@ final class AaPassthroughSource implements VideoSource {
      * - si el coche dijo alguna vez su tema (Global/DarkModeOn), ese;
      * - si no, el sensor de luz del móvil (como hace el propio Android Auto: viaje del 2026-10-09, en túneles, en el
      *   garaje y en días nublados AA y la pantalla del coche se oscurecían y nuestra barra no, porque le mandábamos
-     *   amanecer y atardecer). El coche no avisa cuando cambia su tema automático;
+     *   amanecer y atardecer). El coche no avisa cuando cambia su tema automático. Con posición, el sensor solo cuenta
+     *   cuando ha visto el día en la sesión y no lleva 5 min a oscuras de día; si no, el sol (AutoNight: móvil guardado
+     *   en la consola, foro #271);
      * - sin sensor de luz, amanecer y atardecer.
      */
     static Settings.NightMode sessionNightMode(int theme, int carDark, boolean hasLightSensor) {
@@ -361,7 +363,7 @@ final class AaPassthroughSource implements VideoSource {
         } else if (d >= 0) {
             L.i("AA: modo " + (d == 1 ? "noche" : "día") + " como la pantalla del coche (el último que dijo)");
         } else {
-            L.i("AA: día y noche " + (light ? "con el sensor de luz del móvil (túneles, garajes)" : "por el amanecer y el atardecer (sin sensor de luz)"));
+            L.i("AA: día y noche " + (light ? "por el sol y, cuando ve el día, con el sensor de luz del móvil (túneles, garajes)" : "por el amanecer y el atardecer (sin sensor de luz)"));
         }
         if (App.Companion.provide(ctx).getCommManager().isConnected()) {
             requestNightUpdate(ctx);

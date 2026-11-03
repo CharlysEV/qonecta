@@ -1187,7 +1187,7 @@
     <string name="hql_tr_surface">Slecht wegdek</string>
     <string name="hql_tr_other">Melding</string>
     <string name="hql_theme_auto">Automatisch</string>
-    <string name="hql_theme_help">Android Auto, het zijpaneel en de schermen van de uitgebreide modus. Automatisch: zoals het autoscherm of, als de auto het niet doorgeeft, met de lichtsensor van de telefoon.</string>
+    <string name="hql_theme_help">Android Auto, het zijpaneel en de schermen van de uitgebreide modus. Automatisch: zoals het autoscherm of, als de auto het niet doorgeeft, volgens zonsopkomst en zonsondergang waar je bent en, zodra de telefoon daglicht heeft gezien, met zijn lichtsensor (tunnels, garages).</string>
     <string name="hql_cable_hint">Via wifi kunnen games, tv en video\'s haperen. Met de USB-kabel lopen ze vloeiender.</string>
     <!-- Leapmotor Mate en Casa (Home Assistant): pestañas Coche y Mandos, nombres cortos. -->
     <string name="hql_mate_controls">Bediening</string>
