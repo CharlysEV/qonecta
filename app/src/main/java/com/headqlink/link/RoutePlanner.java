@@ -157,6 +157,8 @@ final class RoutePlanner {
         volatile int progress;
         /** Hora (de pared) a la que se calculó. */
         long builtAtMs;
+        /** Hora (de pared) de salida con la que se calculó el tiempo de cada tramo (borrador del móvil); 0: al calcularla. */
+        long departAtMs;
         // Para comparar al llegar: la primera lectura de la nube tras calcularla (NaN: aún no) y el punto de la ruta.
         double startSoc = Double.NaN;
         double startOdo = Double.NaN;
@@ -527,14 +529,14 @@ final class RoutePlanner {
 
     /** Los sensores que mueven la ruta (para saber si el GPS está al día). */
     CarSensors.Snapshot sensorSnapshot() {
-        return sensors.snapshot();
+        return sensors == null ? new CarSensors.Snapshot() : sensors.snapshot();
     }
 
     /** Última posición conocida del móvil (NaN si no hay). */
     double[] position() {
         Place o = testOrigin();
         if (o != null) return new double[]{o.lat, o.lon};
-        CarSensors.Snapshot s = sensors.snapshot();
+        CarSensors.Snapshot s = sensorSnapshot();
         return new double[]{s.lat, s.lon};
     }
     private long lastAttemptMs;
@@ -545,9 +547,15 @@ final class RoutePlanner {
     private final boolean demo;
 
     private RoutePlanner(Context ctx) {
+        this(ctx, false);
+    }
+
+    private RoutePlanner(Context ctx, boolean draft) {
         this.ctx = ctx.getApplicationContext();
-        this.sensors = CarSensors.start(ctx);
-        demo = DemoMode.active();
+        this.draft = draft;
+        // El borrador del móvil no mira el GPS ni los sensores del viaje: calcula desde la salida que se le dé.
+        this.sensors = draft ? null : CarSensors.start(ctx);
+        demo = !draft && DemoMode.active();
     }
 
     static synchronized RoutePlanner start(Context ctx) {
@@ -589,6 +597,107 @@ final class RoutePlanner {
 
     static RoutePlanner get() {
         return instance;
+    }
+
+    // ------------------------------------------------------------------ borrador del móvil
+
+    /**
+     * Borrador de la pestaña «Ruta» de la app del móvil (PhoneRoute; pedido en el foro LPMFF, #339): un planificador aparte
+     * del viaje en curso. No se apunta en instance, no tiene bucle, ni GPS ni sensores, no avisa (ni tarjeta ni voz) y no
+     * toca nada estático del viaje: destino, paradas, ida y vuelta, velocidad elegida, tarjetas ni modo prueba. Calcula al
+     * pedirlo (planDraft), desde la salida y a la hora que se le den; mientras se ve la pestaña, draftTick hace el repaso
+     * pequeño de step (cargadores que falten, registros oficiales recién llegados).
+     */
+    static RoutePlanner draft(Context ctx) {
+        return new RoutePlanner(ctx, true);
+    }
+
+    /** Es el borrador del móvil (draft), no el del viaje en curso. */
+    private final boolean draft;
+    /** Velocidad máxima elegida en el borrador (km/h; 0: ninguna). La del viaje en curso es speedCapKmh. */
+    private volatile int draftCap;
+
+    boolean isDraft() {
+        return draft;
+    }
+
+    /**
+     * Borrador: la ruta de origin a dest (paradas intermedias via, como mucho SavedPlaces.MAX_VIA, y si vuelve a la
+     * salida), con el tiempo previsto a la hora de salida departAtMs (0: ya). Pide los servicios abiertos: fuera del hilo
+     * principal y solo al pulsar «Calcular» (sus normas de uso). Lanza si no sale.
+     */
+    synchronized Plan planDraft(Place origin, Place dest, List<Place> via, boolean round, long departAtMs) throws Exception {
+        if (!draft) throw new IllegalStateException("solo en el borrador");
+        List<Place> v = new ArrayList<>();
+        if (via != null) for (Place x : via) if (x != null && v.size() < SavedPlaces.MAX_VIA) v.add(x);
+        Plan np;
+        if (!v.isEmpty() || round) {
+            Place o = new Place();
+            o.name = Str.get(R.string.hql_pl_back);
+            o.detail = "";
+            o.lat = origin.lat;
+            o.lon = origin.lon;
+            np = build(dest.name, origin.lat, origin.lon, Double.NaN, Double.NaN, tripPoints(o, v, dest, round), dest, departAtMs);
+            np.roundTrip = round;
+        } else {
+            np = build(dest.name, origin.lat, origin.lon, dest.lat, dest.lon, null, null, departAtMs);
+        }
+        np.builtAtMs = System.currentTimeMillis();
+        plan = np;
+        // Sin lugares (el log se exporta).
+        L.i(String.format(Locale.US, "ruta del móvil: %.1f km · %.1f kWh estimados · %d cargadores%s%s", np.totalKm, np.kwhCum[np.n - 1],
+                np.chargers.size(), np.multi() ? " · " + np.waypoints.size() + " tramos" + (round ? ", ida y vuelta" : "") : "",
+                departAtMs > System.currentTimeMillis() + 60_000
+                        ? String.format(Locale.US, " · salida dentro de %.1f h", (departAtMs - System.currentTimeMillis()) / 3_600_000.0) : ""));
+        return np;
+    }
+
+    /** Borrador: pone este plan (planDraft, y las pruebas). */
+    synchronized void adopt(Plan p) {
+        if (!draft) throw new IllegalStateException("solo en el borrador");
+        plan = p;
+    }
+
+    /** Borrador: lo que hace step con una ruta ya calculada (cargadores que falten, registros oficiales nuevos). */
+    synchronized void draftTick() {
+        Plan p = plan;
+        if (draft && p != null) refreshRouteData(p);
+    }
+
+    /** Borrador: la velocidad máxima con la que hacer su plan de carga (0: quitarla). No toca la del viaje en curso. */
+    void setDraftSpeedCap(int kmh) {
+        if (!draft) return;
+        draftCap = Math.max(0, kmh);
+        synchronized (chargeLock) {
+            chargeKey = "";
+        }
+    }
+
+    /** La velocidad máxima para el plan de carga de p: la del borrador o la elegida en el coche (speedCap). */
+    private int capFor(Plan p) {
+        return draft ? (p == null ? 0 : draftCap) : speedCap(p);
+    }
+
+    /** Las paradas elegidas a mano ahora («Cambiar»), una copia: el móvil las guarda con la ruta (PlannedTrip). */
+    List<ChargerMarks.Mark> pinsNow() {
+        synchronized (chargeLock) {
+            return new ArrayList<>(pins);
+        }
+    }
+
+    /**
+     * Las paradas elegidas a mano en el móvil, para el viaje a dest: valen para el plan de ese destino en cuanto esté
+     * (como si se hubieran elegido aquí). Con null o vacía, ninguna.
+     */
+    void restorePins(List<ChargerMarks.Mark> marks, Place dest) {
+        synchronized (chargeLock) {
+            pins.clear();
+            if (marks != null) pins.addAll(marks);
+            pinsDest = destKey(dest.lat, dest.lon);
+            pinsVersion++;
+            chargeKey = "";
+        }
+        if (marks != null && !marks.isEmpty()) L.i("ruta: " + marks.size() + " paradas elegidas a mano en el móvil, para este viaje");
     }
 
     Plan plan() {
@@ -678,25 +787,7 @@ final class RoutePlanner {
         if (f != null && f != p) finishPending(f);
         // Tráfico de la DGT sobre la ruta (obras, accidentes, retenciones, vehículos detenidos…).
         DgtTraffic.update(ctx, p, p == null ? 0 : p.km[Math.min(p.progress, p.n - 1)], this::trafficAlert);
-        // Ruta por Suiza: el estado de sus cargadores (cada pocos minutos; si un sitio queda fuera de servicio, sube la
-        // versión y la lista se rehace sin él).
-        if (p != null && p.swiss) SwissChargers.statusIfDue(ctx);
-        // Ruta por Alemania: los precios ad hoc que falten o hayan caducado (barato si no falta nada).
-        if (p != null && !demo && p.adHocTiles != null) AdHocPrices.want(ctx, p.adHocTiles);
-        if (p != null && !demo && !p.routeTiles.isEmpty() && p.dgtVersion != OfficialChargers.version()) {
-            // Han llegado (o se han renovado) los puntos de la DGT: la lista de la ruta, con ellos.
-            rebuildChargers(p);
-            L.i("ruta: cargadores con los registros oficiales y los precios ad hoc al día: " + p.chargers.size() + " junto a la ruta ("
-                    + p.dgtCount + " oficiales, " + adHocCount(p.chargers) + " con precio ad hoc)");
-        }
-        if (p != null && !p.osmPending.isEmpty() && SystemClock.elapsedRealtime() - lastOsmExtraMs > OSM_EXTRA_RETRY_MS) {
-            fetchOsmInBackground(p);
-        }
-        if (p != null && !p.missingTiles.isEmpty() && SystemClock.elapsedRealtime() - lastChargerRetryMs > CHARGER_RETRY_MS) {
-            lastChargerRetryMs = SystemClock.elapsedRealtime();
-            L.i("ruta: reintento los cargadores que faltan (" + p.missingTiles.size() + " zonas)");
-            chargersInBackground(p, false);
-        }
+        if (p != null) refreshRouteData(p);
         followChargeSession(p);
         if (p != null) followCharge(p);
         // Destino: el de AA si lo manda; si no, el elegido aquí.
@@ -851,9 +942,10 @@ final class RoutePlanner {
                 destPlace = m;
             }
             // Al recalcular, el destino ya está situado: no se vuelve a buscar.
-            Plan np = wps != null && !wps.isEmpty() ? build(dest, oLat, oLon, Double.NaN, Double.NaN, wps, destPlace)
-                    : replan ? build(dest, oLat, oLon, p.destLat, p.destLon, null, null)
-                    : useManual ? build(dest, oLat, oLon, m.lat, m.lon, null, null) : build(dest, oLat, oLon, Double.NaN, Double.NaN, null, null);
+            Plan np = wps != null && !wps.isEmpty() ? build(dest, oLat, oLon, Double.NaN, Double.NaN, wps, destPlace, 0)
+                    : replan ? build(dest, oLat, oLon, p.destLat, p.destLon, null, null, 0)
+                    : useManual ? build(dest, oLat, oLon, m.lat, m.lon, null, null, 0)
+                    : build(dest, oLat, oLon, Double.NaN, Double.NaN, null, null, 0);
             np.builtAtMs = System.currentTimeMillis();
             if (np.multi() || wps != null) np.roundTrip = replan ? p.roundTrip : roundTrip;
             if (guessed && !guessChecked && !replan) {
@@ -899,6 +991,34 @@ final class RoutePlanner {
             failRetryMs = noNetwork(e) ? 30_000 : 120_000;
             if (!replan) status = Str.get(R.string.hql_route_failed, e.getMessage());
             L.w("ruta: " + Http.safeError(e));
+        }
+    }
+
+    /**
+     * Lo que se pone al día de una ruta ya calculada en cada vuelta (step) y en el repaso del borrador (draftTick): el
+     * estado de los cargadores suizos, los precios ad hoc, los registros oficiales recién llegados y los cargadores de
+     * OpenStreetMap que falten.
+     */
+    private void refreshRouteData(Plan p) {
+        String who = draft ? "ruta del móvil" : "ruta";
+        // Ruta por Suiza: el estado de sus cargadores (cada pocos minutos; si un sitio queda fuera de servicio, sube la
+        // versión y la lista se rehace sin él).
+        if (p.swiss) SwissChargers.statusIfDue(ctx);
+        // Ruta por Alemania: los precios ad hoc que falten o hayan caducado (barato si no falta nada).
+        if (!demo && p.adHocTiles != null) AdHocPrices.want(ctx, p.adHocTiles);
+        if (!demo && !p.routeTiles.isEmpty() && p.dgtVersion != OfficialChargers.version()) {
+            // Han llegado (o se han renovado) los puntos de la DGT: la lista de la ruta, con ellos.
+            rebuildChargers(p);
+            L.i(who + ": cargadores con los registros oficiales y los precios ad hoc al día: " + p.chargers.size() + " junto a la ruta ("
+                    + p.dgtCount + " oficiales, " + adHocCount(p.chargers) + " con precio ad hoc)");
+        }
+        if (!p.osmPending.isEmpty() && SystemClock.elapsedRealtime() - lastOsmExtraMs > OSM_EXTRA_RETRY_MS) {
+            fetchOsmInBackground(p);
+        }
+        if (!p.missingTiles.isEmpty() && SystemClock.elapsedRealtime() - lastChargerRetryMs > CHARGER_RETRY_MS) {
+            lastChargerRetryMs = SystemClock.elapsedRealtime();
+            L.i(who + ": reintento los cargadores que faltan (" + p.missingTiles.size() + " zonas)");
+            chargersInBackground(p, false);
         }
     }
 
@@ -1471,7 +1591,7 @@ final class RoutePlanner {
     /** El destino en el sitio alternativo, si desde aquí cuadra con Google: pasa a ser el del plan. */
     private boolean tryAlternative(Plan np, Place alt, String dest, CarSensors.Snapshot s, double googleKm) {
         try {
-            Plan ap = build(dest, s.lat, s.lon, alt.lat, alt.lon, null, null);
+            Plan ap = build(dest, s.lat, s.lon, alt.lat, alt.lon, null, null, 0);
             if (farFromGoogle(ap.totalKm, googleKm)) {
                 L.i(String.format(Locale.US, "ruta: el otro sitio del destino tampoco cuadra (%.1f km, Google %.1f)", ap.totalKm, googleKm));
                 return false;
@@ -1929,7 +2049,7 @@ final class RoutePlanner {
         if (testMode) return new double[]{socNow(), cs != null && cs.hasData() ? cs.capacityKwh : EnergyModel.usableKwh(), 0};
         double real = cs == null ? Double.NaN : cs.soc(DemoMode.wallClockMs(), CarCloud.SOC_MAX_AGE_MS);
         if (!Double.isNaN(real)) {
-            double est = sinceReading(real, cs.capacityKwh, cs.dataTimeMs(), sensors.snapshot().kwhTotal);
+            double est = sinceReading(real, cs.capacityKwh, cs.dataTimeMs(), sensorSnapshot().kwhTotal);
             return new double[]{est, cs.capacityKwh, 1};
         }
         return new double[]{socNow(), EnergyModel.usableKwh(), 0};
@@ -2011,11 +2131,12 @@ final class RoutePlanner {
                     + (realSoc ? "/real" : "/indicado") + "/c" + pl.chargerVersion + "/curva" + c.learnedChargeCurve() + "/m" + marks.hashCode() + (food ? "/f" + FoodNearby.version : "")
                     + "/p" + pinsVersion;
             int prog = Math.min(pl.progress, pl.n - 1);
-            double f = demo ? DemoMode.planTrend() : trend.factor();
+            double f = demo ? DemoMode.planTrend() : draft ? 1 : trend.factor();
             double mr = pl.mapsRatio;
-            int cap = speedCap(pl);
+            int cap = capFor(pl);
             double from0 = pl.km[prog];
-            double[] near = testOrigin() == null ? nearSegment(pl, from0) : null;
+            // El borrador del móvil no va con Maps: sin su recuadro.
+            double[] near = testOrigin() == null && !draft ? nearSegment(pl, from0) : null;
             String key = settings + "/" + prog + "/" + Math.round(soc * 2) + "/" + Math.round(f * 100) + "/" + Math.round(mr * 100) + "/" + charging
                     + "/v" + cap + (near == null ? "" : "/n" + Math.round(near[1] * 100) + "@" + Math.round(near[0]));
             if (key.equals(chargeKey)) return charge;
@@ -2060,13 +2181,15 @@ final class RoutePlanner {
             int sig = r.outcome.ordinal() * 100 + r.stops.size();
             if (sig != chargeLogged || change != ChargePlanner.Change.NONE) {
                 chargeLogged = sig;
-                L.i(String.format(Locale.US, "ruta: plan de carga%s: %s, %d paradas, %.0f min cargando, llegada %.0f %%, gasto ×%.2f%s, %s",
+                L.i(String.format(Locale.US, "%s: plan de carga%s: %s, %d paradas, %.0f min cargando, llegada %.0f %%, gasto ×%.2f%s, %s",
+                        draft ? "ruta del móvil" : "ruta",
                         change == ChargePlanner.Change.NONE ? "" : " recalculado (" + change.name().toLowerCase(Locale.ROOT) + ")",
                         r.outcome.name().toLowerCase(Locale.ROOT), r.stops.size(), r.chargeMinutes, r.arrivalPct, f,
                         mr == 1 ? "" : String.format(Locale.US, ", km de Maps ×%.2f", mr), curveNote(s)));
             }
-            if (change != ChargePlanner.Change.NONE) alert(change, before, r);
-            RouteOffer offer = routeOffer;
+            // El borrador no avisa (ni tarjeta ni voz) ni contesta a la tarjeta «Ruta a…» del viaje en curso.
+            if (change != ChargePlanner.Change.NONE && !draft) alert(change, before, r);
+            RouteOffer offer = draft ? null : routeOffer;
             if (offer != null && !demo) {
                 // Destino leído de Maps, ya planificado: la tarjeta «Ruta a…» con lo que sale (y, con paradas, si se
                 // añaden a Google Maps).
@@ -2103,7 +2226,11 @@ final class RoutePlanner {
 
     /** El destino de un plan (lat,lon redondeados a ~100 m). */
     private static String destKey(Plan pl) {
-        return String.format(Locale.US, "%.3f,%.3f", pl.destLat, pl.destLon);
+        return destKey(pl.destLat, pl.destLon);
+    }
+
+    private static String destKey(double lat, double lon) {
+        return String.format(Locale.US, "%.3f,%.3f", lat, lon);
     }
 
     /** Las elegidas a mano que están en esta lista (por id o por estar en el mismo sitio). Con chargeLock. */
@@ -2178,8 +2305,8 @@ final class RoutePlanner {
         if (k.equals(speedLogged)) return;
         speedLogged = k;
         if (a == null) return;
-        L.i(String.format(Locale.US, "ruta: consejo de velocidad: a %d km/h, %d → %d paradas, +%.0f min conduciendo, %+.0f min "
-                        + "cargando (%+.0f min en total)%s", a.capKmh, a.stopsBefore, a.stopsAfter, a.extraDriveMin, -a.chargeSavedMin,
+        L.i(String.format(Locale.US, "%s: consejo de velocidad: a %d km/h, %d → %d paradas, +%.0f min conduciendo, %+.0f min "
+                        + "cargando (%+.0f min en total)%s", draft ? "ruta del móvil" : "ruta", a.capKmh, a.stopsBefore, a.stopsAfter, a.extraDriveMin, -a.chargeSavedMin,
                 -a.gainMin(), a.rescue ? ", y así se llega" : ""));
     }
 
@@ -2764,12 +2891,13 @@ final class RoutePlanner {
     /**
      * La ruta a destination desde (lat0, lon0). wps: viaje de varios tramos (paradas, destino y, de ida y vuelta, la
      * vuelta), con destPlace el destino entre ellos (o null si ya se pasó); null: un solo destino (dLat, dLon, o NaN para
-     * buscarlo por el nombre).
+     * buscarlo por el nombre). departAtMs: la hora de salida (de pared) para el tiempo previsto de cada tramo; 0, ya.
      */
-    private Plan build(String destination, double lat0, double lon0, double dLat, double dLon, List<Place> wps, Place destPlace)
-            throws Exception {
+    private Plan build(String destination, double lat0, double lon0, double dLat, double dLon, List<Place> wps, Place destPlace,
+                       long departAtMs) throws Exception {
         Plan p = new Plan();
         p.destination = destination;
+        p.departAtMs = departAtMs;
 
         // 1. Destino → coordenadas (con preferencia por la zona actual), salvo que ya las tengamos.
         if (!Double.isNaN(dLat)) {
@@ -2782,7 +2910,8 @@ final class RoutePlanner {
         // prueban hasta tres y se queda el que da una ruta como la de Google. Un viaje de varios tramos, de una vez y sin
         // comparar con Google (Google Maps va a su siguiente parada, no al final).
         boolean trip = wps != null && !wps.isEmpty();
-        Google gl = trip || mapsEnd != null ? null : google(destination);
+        // El borrador del móvil no se compara con Google: lo que navegue Maps ahora no es ese viaje.
+        Google gl = trip || mapsEnd != null || draft ? null : google(destination);
         double googleM = gl != null ? gl.remainingM : -1;
         List<double[]> places = new ArrayList<>();
         JSONObject route = null;
@@ -2923,7 +3052,7 @@ final class RoutePlanner {
         int k = Math.min(10, n);
         int[] sampleIdx = new int[k];
         for (int j = 0; j < k; j++) sampleIdx[j] = k == 1 ? n - 1 : Math.round(j * (n - 1) / (float) (k - 1));
-        double[][] wx = weatherAt(p, sampleIdx, etaS); // por muestra: viento km/h, desde, temp, lluvia, código
+        double[][] wx = weatherAt(p, sampleIdx, etaS, departAtMs); // por muestra: viento km/h, desde, temp, lluvia, código
         p.headwind = new double[n];
         p.temp = new double[n];
         for (int i = 0; i < n; i++) {
@@ -3157,9 +3286,14 @@ final class RoutePlanner {
         return out;
     }
 
-    private double[][] weatherAt(Plan p, int[] idx, double[] etaS) {
-        double[][] out = new double[idx.length][];
-        for (int j = 0; j < idx.length; j++) out[j] = new double[]{0, 0, 15, 0, -1};
+    /**
+     * El tiempo previsto (Open-Meteo) en los puntos idx de la ruta a la hora de paso por cada uno: la de salida (departAtMs;
+     * 0 o ya pasada, ahora) más lo que se tarda hasta allí (etaS). Con una salida de mañana se piden más días de previsión.
+     */
+    private double[][] weatherAt(Plan p, int[] idx, double[] etaS, long departAtMs) {
+        long now = System.currentTimeMillis();
+        long depart = Math.max(now, departAtMs);
+        double[][] out = defaultWeather(idx.length);
         try {
             StringBuilder la = new StringBuilder();
             StringBuilder lo = new StringBuilder();
@@ -3173,27 +3307,60 @@ final class RoutePlanner {
             }
             String body = Http.get("https://api.open-meteo.com/v1/forecast?latitude=" + la + "&longitude=" + lo
                     + "&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,precipitation,weather_code"
-                    + "&wind_speed_unit=kmh&forecast_days=2&timeformat=unixtime");
-            JSONArray arr = body.trim().startsWith("[") ? new JSONArray(body) : new JSONArray().put(new JSONObject(body));
-            long now = System.currentTimeMillis() / 1000;
-            for (int j = 0; j < idx.length && j < arr.length(); j++) {
-                JSONObject h = arr.getJSONObject(j).getJSONObject("hourly");
-                JSONArray t = h.getJSONArray("time");
-                long when = now + Math.round(etaS[idx[j]]);
-                int best = 0;
-                for (int q = 1; q < t.length(); q++) {
-                    if (Math.abs(t.getLong(q) - when) < Math.abs(t.getLong(best) - when)) best = q;
-                }
-                // A la altura del coche el viento es ~0,7 del medido a 10 m.
-                out[j] = new double[]{
-                        h.getJSONArray("wind_speed_10m").optDouble(best, 0) * 0.7,
-                        h.getJSONArray("wind_direction_10m").optDouble(best, 0),
-                        h.getJSONArray("temperature_2m").optDouble(best, 15),
-                        h.getJSONArray("precipitation").optDouble(best, 0),
-                        h.getJSONArray("weather_code").optDouble(best, -1)};
-            }
+                    + "&wind_speed_unit=kmh&forecast_days=" + forecastDays(now, depart, etaS.length == 0 ? 0 : etaS[etaS.length - 1])
+                    + "&timeformat=unixtime");
+            out = pickWeather(body, idx, etaS, depart / 1000);
         } catch (Exception e) {
             L.w("ruta: sin tiempo previsto: " + Http.safeError(e));
+        }
+        return out;
+    }
+
+    /** Sin previsión: sin viento, 15 °C, sin lluvia y sin código. */
+    private static double[][] defaultWeather(int n) {
+        double[][] out = new double[n][];
+        for (int j = 0; j < n; j++) out[j] = new double[]{0, 0, 15, 0, -1};
+        return out;
+    }
+
+    /** Días de previsión que da Open-Meteo como mucho. */
+    static final int MAX_FORECAST_DAYS = 16;
+
+    /**
+     * Puro: días de previsión que pedir para llegar al final de un viaje que sale a departMs y dura tripS: Open-Meteo los
+     * cuenta desde las 00:00 (UTC, con timeformat=unixtime) de hoy. Como poco 2 (lo de siempre) y como mucho 16.
+     */
+    static int forecastDays(long nowMs, long departMs, double tripS) {
+        long day = 86_400_000L;
+        long today = nowMs - Math.floorMod(nowMs, day);
+        long end = Math.max(nowMs, departMs) + Math.round(Math.max(0, tripS) * 1000);
+        int days = (int) ((end - today) / day) + 1;
+        return Math.max(2, Math.min(MAX_FORECAST_DAYS, days));
+    }
+
+    /**
+     * Puro: de la respuesta de Open-Meteo (un objeto por punto, o uno solo), por cada punto idx el viento a la altura del
+     * coche, de dónde sopla, la temperatura, la lluvia y el código del tiempo de la hora más cercana a su paso: la de
+     * salida (departSec, segundos de pared) más etaS. Lo que falte, sin viento y a 15 °C.
+     */
+    static double[][] pickWeather(String body, int[] idx, double[] etaS, long departSec) throws org.json.JSONException {
+        double[][] out = defaultWeather(idx.length);
+        JSONArray arr = body.trim().startsWith("[") ? new JSONArray(body) : new JSONArray().put(new JSONObject(body));
+        for (int j = 0; j < idx.length && j < arr.length(); j++) {
+            JSONObject h = arr.getJSONObject(j).getJSONObject("hourly");
+            JSONArray t = h.getJSONArray("time");
+            long when = departSec + Math.round(etaS[idx[j]]);
+            int best = 0;
+            for (int q = 1; q < t.length(); q++) {
+                if (Math.abs(t.getLong(q) - when) < Math.abs(t.getLong(best) - when)) best = q;
+            }
+            // A la altura del coche el viento es ~0,7 del medido a 10 m.
+            out[j] = new double[]{
+                    h.getJSONArray("wind_speed_10m").optDouble(best, 0) * 0.7,
+                    h.getJSONArray("wind_direction_10m").optDouble(best, 0),
+                    h.getJSONArray("temperature_2m").optDouble(best, 15),
+                    h.getJSONArray("precipitation").optDouble(best, 0),
+                    h.getJSONArray("weather_code").optDouble(best, -1)};
         }
         return out;
     }

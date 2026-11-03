@@ -162,7 +162,16 @@ final class Http {
         return request(url, body, 15_000, 60_000);
     }
 
+    /** Solo para las pruebas (JVM): contesta en lugar de la red. */
+    interface Fake {
+        String answer(String url, String body) throws Exception;
+    }
+
+    static volatile Fake fake;
+
     private static String request(String url, String body, int connectMs, int readMs) throws Exception {
+        Fake f = fake;
+        if (f != null) return f.answer(url, body);
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
         con.setConnectTimeout(connectMs);
         con.setReadTimeout(readMs);
