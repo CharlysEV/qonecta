@@ -1025,6 +1025,12 @@ final class VideoPipeline {
         return p != null && p.active != null;
     }
 
+    /** La sesión con el coche enganchada ahora al vídeo, o null (para las órdenes de LabControl que hablan con el coche). */
+    static SessionPort activePort() {
+        VideoPipeline p = current;
+        return p != null ? p.active : null;
+    }
+
     /**
      * Hilo hql-video: IDR pedido por la sesión activa. Con encoder, IdrRequestGate: el primero de la sesión
      * (STREAM_START) y el que sustituye a uno descartado por grande (OVERSIZED), al momento; los demás (KEY_FRAME_REQ del

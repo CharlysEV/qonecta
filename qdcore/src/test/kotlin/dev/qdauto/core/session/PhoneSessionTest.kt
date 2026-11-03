@@ -330,6 +330,30 @@ class PhoneSessionTest {
     }
 
     @Test
+    fun carAppBackgroundAndForegroundGoOutMidStreamWithoutPausing() {
+        // hql (orden de laboratorio «fondo»/«frente», Maggus #324): con el vídeo en marcha salen tal cual, sin PARA y
+        // como QDLink (44 B, LC/a.java:3037-3075), y el vídeo sigue.
+        val r = rig()
+        r.car.next()
+        r.car.send(carInfo1920x1080())
+        r.car.send(CarMessages.videoArgs(1920, 1080, 3, 30, 4_000_000, 1))
+        r.car.send(CarMessages.videoCtrl(1))
+        assertTrue(r.listener.streaming.await(5, java.util.concurrent.TimeUnit.SECONDS))
+        assertTrue(r.session.sendCodecConfig(sps + pps))
+        assertTrue(r.session.sendFrame(idr, true, 0))
+        assertTrue(r.session.sendCarAppBackground())
+        assertTrue(r.session.sendCarAppForeground())
+        assertTrue(r.session.sendFrame(pFrame, false, 1))
+        // 3 de control del saludo (PHONE_INFO, UPDATE_NOTIFY, SPEECH_ARGS), SPS/PPS, IDR, los 2 nuevos y el P.
+        val sent = generateSequence { r.car.nextFrame() }.take(8).toList()
+        val control = sent.filter { it.header.msgType == MsgType.CONTROL }.map { it.wireBytes() }
+        assertContentEquals(PhoneMessages.carAppBackground(), control[control.size - 2])
+        assertContentEquals(PhoneMessages.carAppForeground(), control.last())
+        assertContentEquals(pFrame, sent.last { it.header.msgType == MsgType.VIDEO }.payload())
+        assertEquals(SessionState.STREAMING, r.session.state)
+    }
+
+    @Test
     fun malformedHeadersAreSurfacedNotFatal() {
         val r = rig()
         r.car.next()

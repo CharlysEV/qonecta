@@ -21,7 +21,7 @@ import java.util.Locale;
  * (el SDK de Anthropic con una clave falsa; «hola»: una pregunta de verdad con la clave guardada) · radioaa
  * [fuente si|no · enlace normal|apartado] (la radio en Android Auto: Qonecta+ app de música de Android Auto o no, desde su
  * próxima sesión; la sesión del enlace con Android Auto apartada solo mientras la radio tiene la música o siempre; sin
- * nada, cómo está).
+ * nada, cómo está) · frente · fondo (CAR_APP_FOREGROUND o CAR_APP_BACKGROUND al coche: ¿vuelve a QDLink si se le pide?).
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
@@ -253,6 +253,20 @@ final class LabControl {
                 }
                 break;
             }
+            case "frente":
+            case "fondo": {
+                // Maggus #324: la cámara tapa QDLink y, al quitarse, el coche no siempre vuelve a él; el coche no avisa de
+                // nada. «fondo» manda CAR_APP_BACKGROUND, lo mismo que el botón de salir de QDLink (el coche lo atiende), y
+                // «frente» CAR_APP_FOREGROUND, que QDLink define pero nunca envía: si con él el coche vuelve a QDLink, se
+                // puede pensar cuándo pedirlo de verdad. Probar en parado: «fondo», esperar el menú del coche y «frente».
+                SessionPort port = VideoPipeline.activePort();
+                if (port == null) return "no: no hay sesión con el coche";
+                boolean front = cmd.equals("frente");
+                boolean sent = front ? port.getSession().sendCarAppForeground() : port.getSession().sendCarAppBackground();
+                if (!sent) return "no: la sesión no lo aceptó (cerrándose)";
+                done = (front ? "CAR_APP_FOREGROUND" : "CAR_APP_BACKGROUND") + " mandado a S" + port.getId();
+                break;
+            }
             case "reconectar":
                 done = "reconecto (unos segundos sin imagen)";
                 reconnect(ctx);
@@ -268,7 +282,7 @@ final class LabControl {
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, precios, carga, ffmpeg, ia, radioaa, boost, termica, noche, hud, perfil, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, precios, carga, ffmpeg, ia, radioaa, boost, termica, noche, hud, perfil, frente, fondo, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);
