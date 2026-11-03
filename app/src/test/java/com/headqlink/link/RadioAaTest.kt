@@ -201,12 +201,16 @@ class RadioAaTest {
             assertEquals("Artista - Canción", md.getString(MediaMetadataCompat.METADATA_KEY_TITLE))
             assertEquals("Radio Uno", md.getString(MediaMetadataCompat.METADATA_KEY_ARTIST))
             assertEquals("Radio Uno", md.getString(PlaybackMetadata.KEY_STATION))
-            // El logo no va como dirección http: solo como imagen, de 512 px como mucho.
+            // El logo no va como dirección http: solo como imagen, el de una emisora en su lienzo de 512 px (lo mismo
+            // para Android Auto, el Bluetooth y la notificación).
             assertNull(md.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))
             target(metadata).onResourceReady(Bitmap.createBitmap(1024, 512, Bitmap.Config.ARGB_8888), null)
-            val art = publishedMetadata(session).getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART)
-            assertEquals(512, art.width)
-            assertEquals(256, art.height)
+            val published = publishedMetadata(session)
+            val art = published.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART)
+            assertEquals(PlaybackMetadata.FRAME_PX, art.width)
+            assertEquals(PlaybackMetadata.FRAME_PX, art.height)
+            assertTrue(art === published.getBitmap(MediaMetadataCompat.METADATA_KEY_ART))
+            assertTrue(art === published.getBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON))
             val st = publishedState(session)
             assertEquals(PlaybackStateCompat.STATE_PLAYING, st.state)
             // En directo: sin posición (la del flujo no es la de la canción).
