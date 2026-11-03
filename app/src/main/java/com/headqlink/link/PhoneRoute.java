@@ -306,6 +306,7 @@ final class PhoneRoute {
             }
             int n = 0;
             for (RoutePlanner.Place p : PlaceSearch.recents(c.recentPlaces())) {
+                if (isSaved(saved, p)) continue; // Casa ya sale con su atajo: no otra vez como reciente
                 if (n++ >= 5) break;
                 chips.addView(chip("🕓 " + p.name, () -> choose(p)));
             }
@@ -373,6 +374,17 @@ final class PhoneRoute {
                 paintWhere();
             });
         }, "hql-phone-search").start();
+    }
+
+    /** Un reciente que es un sitio guardado: a menos de SavedPlaces.SAME_M, o con su mismo nombre. */
+    static boolean isSaved(List<SavedPlaces.Saved> saved, RoutePlanner.Place p) {
+        for (SavedPlaces.Saved s : saved) {
+            if (RoadInfo.dist(s.lat, s.lon, p.lat, p.lon) < SavedPlaces.SAME_M) return true;
+            String name = SavedPlaces.HOME.equals(s.tag) ? Str.get(R.string.hql_pl_home)
+                    : SavedPlaces.WORK.equals(s.tag) ? Str.get(R.string.hql_pl_work) : s.name;
+            if (name != null && name.equalsIgnoreCase(p.name)) return true;
+        }
+        return false;
     }
 
     private void chooseSaved(SavedPlaces.Saved s) {
@@ -619,6 +631,8 @@ final class PhoneRoute {
                 error = why == null ? null : why.isEmpty() ? Str.get(R.string.hql_pr_no_origin) : Str.get(R.string.hql_pr_failed, why);
                 paintDepart();
                 paintResult();
+                // El resultado sale debajo del botón, fuera de la vista: se baja hasta él.
+                root.post(() -> root.smoothScrollTo(0, resultBody.getTop()));
             });
         }, "hql-phone-plan").start();
     }
@@ -762,7 +776,8 @@ final class PhoneRoute {
         MaterialButton use = M3.button(act, Str.get(R.string.hql_pr_use_next), true);
         use.setOnClickListener(v -> saveForNext());
         actions.addView(use, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        MaterialButton go = M3.button(act, Str.get(R.string.hql_plan_go), false);
+        // Sin paradas de carga, «Ir con las paradas» no tiene sentido: solo «Ir».
+        MaterialButton go = M3.button(act, Str.get(stops ? R.string.hql_plan_go : R.string.hql_go), false);
         go.setOnClickListener(v -> NavApps.goWithStops(act, p, charge));
         actions.addView(go, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         in.addView(actions);
@@ -823,9 +838,8 @@ final class PhoneRoute {
 
     /** El plan de carga: el consejo de velocidad, los tramos del viaje y cada parada con «Cambiar» e «Ir». */
     private void paintPlan(LinearLayout in, RoutePlanner.Plan p, ChargePlanner.Result cp) {
-        if (cp.outcome == ChargePlanner.Outcome.NO_STOPS) {
-            in.addView(warn(Str.get(R.string.hql_plan_none, cp.arrivalPct), PhoneCharts.OK));
-        } else if (cp.outcome == ChargePlanner.Outcome.NO_CHARGER) {
+        // Sin paradas no se repite «llegas con X %»: ya lo dicen el resumen y la línea verde de arriba.
+        if (cp.outcome == ChargePlanner.Outcome.NO_CHARGER) {
             in.addView(warn(cp.stops.isEmpty() ? Str.get(R.string.hql_plan_impossible)
                     : Str.get(R.string.hql_plan_summary_stuck, cp.stops.size(), DriveTab.duration(Math.round(cp.chargeMinutes * 60)),
                     cp.kmMark(cp.stops.get(cp.stops.size() - 1).km)), PhoneCharts.WARN));
