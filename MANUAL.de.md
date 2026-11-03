@@ -663,9 +663,12 @@ die Ladestopps, bevor du einsteigst.
   angepasst.
 - **„Mit Stopps navigieren“** öffnet Google Maps sofort. **„Für die nächste Fahrt verwenden“** speichert sie (nur eine,
   48 h): Beim Verbinden in „Auto erweitert“ fragt das Auto **„Die geplante Route verwenden?“**; mit „Ja“ wird sie mit
-  dem echten Akkustand und den Zeiten von Google neu berechnet, Maps öffnet sich mit den Stopps und du erfährst, ob
-  sich der Plan geändert hat („Gestern: 1 Ladestopp; heute: 2“); mit „Nein“ wird sie verworfen. In „Auto“ öffnet sich
-  beim Verbinden Google Maps mit den Stopps so, wie sie auf dem Handy berechnet wurden.
+  dem echten Akkustand und den Zeiten von Google neu berechnet, Maps öffnet sich mit den Stopps und du erfährst, ob sich
+  der Plan geändert hat („Gestern: 1 Ladestopp; heute: 2“); mit „Nein“ wird sie verworfen. In „Auto“ öffnet sich beim
+  Verbinden nichts von selbst: Auf dem Handy erscheint eine Benachrichtigung (Android Auto zeigt sie auch) mit **„Die
+  geplante Route verwenden?“**, dem Ziel und den Ladestopps; **„Mit Stopps navigieren“** öffnet Google Maps mit den
+  Stopps so, wie sie auf dem Handy berechnet wurden, und **„Nein“** verwirft sie. Ohne Antwort verschwindet sie von
+  selbst, wenn du die Verbindung zum Auto trennst oder die Route abläuft.
 
 ### Reiseführer („Auto erweitert“)
 

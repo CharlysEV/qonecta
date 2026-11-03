@@ -891,9 +891,6 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
             LinkState.setCar(LinkState.Car.CONNECTED, LinkState.car == LinkState.Car.CONNECTED ? LinkState.carDetail : "");
             setStatus(Str.get(R.string.hql_car_connected));
             apply(carConnectedNow());
-            // Modo «Auto» (sin nuestra pantalla en el coche): la ruta planificada en el móvil, a Google Maps con sus paradas.
-            // En «Auto extendido» la pregunta el coche (CarUi → RoutePlanner.offerPlanned).
-            if (Config.MODE_AA.equals(cfg.mode())) PlannedTrip.openSoon(LinkService.this);
         }
 
         @Override
@@ -1322,6 +1319,7 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         life.close();
         main.removeCallbacks(lifeTimer);
         main.removeCallbacks(cableFallbackTimer);
+        PlannedNotice.onCarLost(this);
         // Cerrado sin pasar por shutdownAll (p. ej. sin poder pasar a primer plano) con AA en pausa: que no quede
         // aparcado y con su servidor encendido sin nadie que lo cierre.
         if (!aaClosed && AaPark.parked && !AaGuardService.active) closeAa(false);
@@ -1383,6 +1381,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
     /** Coche perdido: el juego que estuviera en marcha, en pausa (sin imagen ni sonido) hasta que vuelva. */
     private LinkLifecycle.Decision carLostNow() {
         NesScreen.carPresent(false);
+        // La pregunta de la ruta planificada (modo «Auto») sin responder, fuera: la ruta sigue para el viaje siguiente.
+        PlannedNotice.onCarLost(this);
         return life.carLost(now(), env(), graceMs(), cfg.carWaitMs());
     }
 
@@ -1391,6 +1391,9 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         NesScreen.carPresent(true);
         // El Bluetooth del coche, por su dirección (para reconocerlo aunque se llame de otra forma).
         CarBluetooth.learn(this);
+        // Modo «Auto» (sin nuestra pantalla en el coche): la ruta planificada en el móvil, «¿Usar la ruta que planificaste?»
+        // en una notificación; nada se abre solo. En «Auto extendido» pregunta el coche (CarUi → RoutePlanner.offerPlanned).
+        PlannedNotice.onCarConnected(this, cfg.mode());
         if (cableNoticePending && !usbActive) {
             // Primera sesión por Wi-Fi Direct tras caerse el cable: el aviso en la pantalla del coche, ahora que se ve (si la
             // interfaz propia aún no está, por voz).

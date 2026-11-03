@@ -463,6 +463,22 @@
             android:name="com.headqlink.link.OpenWifiGuard$Receiver"
             android:exported="false" />
 
+        <!--
+            headqlink: «¿Usar la ruta que planificaste?» en la notificación del modo «Auto» (PlannedNotice): «No» es un
+            receptor; «Ir con las paradas», una actividad sin ventana (un receptor de una notificación no puede abrir Maps).
+        -->
+        <receiver
+            android:name="com.headqlink.link.PlannedNotice$No"
+            android:exported="false" />
+
+        <activity
+            android:name="com.headqlink.link.PlannedNotice$Go"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.HeadQLink.Translucent" />
+
         <receiver
             android:name=".app.AutoStartReceiver"
             android:directBootAware="true"

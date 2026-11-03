@@ -626,7 +626,10 @@ os carregamentos antes de entrar no carro.
 - **«Ir com as paragens»** abre já o Google Maps. **«Usar na próxima viagem»** guarda-a (só uma, 48 h): ao ligar no
   «Auto estendido», o carro pergunta **«Usar a rota que planeou?»**; com «Sim» recalcula-a com a bateria real e os
   tempos do Google, abre o Maps com as paragens e diz-lhe se o plano mudou («Ontem: 1 paragem de carregamento; hoje:
-  2»); com «Não» é descartada. No «Auto», ao ligar abre-se o Google Maps com as paragens tal como saíram no telemóvel.
+  2»); com «Não» é descartada. No «Auto», ao ligar não se abre nada sozinho: aparece uma notificação no telemóvel (o
+  Android Auto também a mostra) com **«Usar a rota que planeou?»**, o destino e as paragens de carregamento; **«Ir com
+  as paragens»** abre o Google Maps com as paragens tal como saíram no telemóvel e **«Não»** descarta-a. Se não
+  responder, desaparece sozinha ao desligar do carro ou quando a rota caduca.
 
 ### Guia da estrada («Auto estendido»)
 

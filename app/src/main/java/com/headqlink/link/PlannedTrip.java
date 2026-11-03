@@ -17,8 +17,8 @@ import java.util.List;
  * intermedias, si es de ida y vuelta, las paradas de carga elegidas a mano («Cambiar»), la velocidad elegida y, para
  * decir al conectar si el plan ha cambiado, las paradas que salieron en el móvil. Al empezar la sesión con el coche, la
  * tarjeta «¿Usar la ruta que planificaste?» (RoutePlanner.offerPlanned); con «Sí» se recalcula con los datos reales y se
- * abre Google Maps con las paradas, con «No» se descarta. En el modo «Auto» (sin nuestra pantalla en el coche), Google
- * Maps con las paradas del móvil. Una sola guardada; caduca al usarse o a las MAX_AGE_MS. Solo en el móvil y sin pasar
+ * abre Google Maps con las paradas, con «No» se descarta. En el modo «Auto» (sin nuestra pantalla en el coche), la
+ * misma pregunta en una notificación del móvil (PlannedNotice). Una sola guardada; caduca al usarse o a las MAX_AGE_MS. Solo en el móvil y sin pasar
  * por el registro: los lugares no se escriben en el log. Guardarla quita el destino compartido (SharedDest), y al revés.
  */
 final class PlannedTrip {
@@ -44,7 +44,7 @@ final class PlannedTrip {
     double totalKm;
     /**
      * Los puntos del viaje {lat, lon, km} en el orden de la ruta (paradas de carga, intermedias, destino y vuelta), tal
-     * y como salieron en el móvil: para el modo «Auto», donde no hay planificador en el coche (openInPlainMode).
+     * y como salieron en el móvil: para el modo «Auto», donde no hay planificador en el coche (PlannedNotice.go).
      */
     List<double[]> route = new ArrayList<>();
 
@@ -155,8 +155,10 @@ final class PlannedTrip {
         return t;
     }
 
+    /** La quita (y, si estaba, la pregunta del modo «Auto» en la notificación). */
     static void clear(Context c) {
         new Config(c).putString(K, "");
+        PlannedNotice.cancel(c);
     }
 
     /**
@@ -168,29 +170,6 @@ final class PlannedTrip {
         clear(c);
         if (t != null) L.i("ruta del móvil: el conductor " + (yes ? "la usa" : "no la usa") + " en este viaje");
         return yes ? t : null;
-    }
-
-    /** En el modo «Auto», tras conectar se espera esto antes de abrir Maps (que Android Auto ya esté en el coche). */
-    static final long PLAIN_AFTER_MS = 12_000;
-
-    /**
-     * Modo «Auto» (sin nuestra pantalla en el coche): no hay tarjeta en la que preguntar ni planificador en marcha, así
-     * que, al conectar, Google Maps se abre con las paradas tal y como salieron en el móvil (para eso se guardó) y la
-     * ruta se da por usada.
-     */
-    static void openSoon(Context c) {
-        Context app = c.getApplicationContext();
-        if (peek(app) == null) return;
-        new Thread(() -> {
-            android.os.SystemClock.sleep(PLAIN_AFTER_MS);
-            PlannedTrip t = peek(app);
-            if (t == null || RoutePlanner.get() != null) return;
-            clear(app);
-            java.util.List<double[]> pts = NavApps.ahead(t.route, -1, NavApps.MAX_WAYPOINTS);
-            if (pts.isEmpty()) pts.add(new double[]{t.dest.lat, t.dest.lon, t.totalKm});
-            L.i("ruta del móvil: modo Auto, abro Google Maps con las paradas del móvil (" + (pts.size() - 1) + " por el camino)");
-            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> NavApps.goThrough(app, pts));
-        }, "planned-trip-plain").start();
     }
 
     // ------------------------------------------------------------------ antes y ahora

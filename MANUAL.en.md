@@ -602,10 +602,12 @@ charging before getting in the car.
   stop (km, what you arrive with, how far to charge, minutes and the cost when it is known) with **"Change"**, as in
   the car, and the map. Without the car there is no traffic: times are adjusted with Google Maps when you leave.
 - **"Go with the stops"** opens Google Maps now. **"Use on the next trip"** saves it (only one, 48 h): when you connect
-  in "Auto extended", the car asks **"Use the route you planned?"**; with "Yes" it recalculates it with the real
-  battery and the Google times, opens Maps with the stops and tells you if the plan has changed ("Yesterday: 1 charging
-  stop; today: 2"); with "No" it is discarded. In "Auto", Google Maps opens with the stops as they came out on the
-  phone when you connect.
+  in "Auto extended", the car asks **"Use the route you planned?"**; with "Yes" it recalculates it with the real battery
+  and the Google times, opens Maps with the stops and tells you if the plan has changed ("Yesterday: 1 charging stop;
+  today: 2"); with "No" it is discarded. In "Auto", nothing opens by itself when you connect: a notification appears on
+  the phone (Android Auto shows it too) with **"Use the route you planned?"**, the destination and the charging stops;
+  **"Go with the stops"** opens Google Maps with the stops as they came out on the phone and **"No"** discards it. If
+  you don't answer, it goes away by itself when you disconnect from the car or when the route expires.
 
 ### Road guide ("Auto extended")
 

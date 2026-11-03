@@ -620,8 +620,10 @@ las cargas antes de subir al coche.
 - **«Ir con las paradas»** abre Google Maps ya. **«Usar en el próximo viaje»** la guarda (una sola, 48 h): al conectar
   en «Auto extendido», el coche pregunta **«¿Usar la ruta que planificaste?»**; con «Sí» la recalcula con la batería
   real y los tiempos de Google, abre Maps con las paradas y te dice si el plan ha cambiado («Ayer: 1 parada de carga;
-  hoy: 2»); con «No» se descarta. En «Auto», al conectar se abre Google Maps con las paradas tal y como salieron en el
-  móvil.
+  hoy: 2»); con «No» se descarta. En «Auto», al conectar no se abre nada solo: sale una notificación en el móvil
+  (Android Auto también la enseña) con **«¿Usar la ruta que planificaste?»**, el destino y las paradas de carga; **«Ir
+  con las paradas»** abre Google Maps con las paradas tal y como salieron en el móvil y **«No»** la descarta. Si no
+  respondes, se quita sola al desconectar del coche o cuando caduca la ruta.
 
 ### Guía del camino («Auto extendido»)
 

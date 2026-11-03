@@ -624,10 +624,12 @@ il viaggio e le ricariche prima di salire in auto.
   ricarica (km, con quanto arrivi, fino a quanto ricaricare, minuti e il costo se si conosce) con **«Cambia»**, come in
   auto, e la mappa. Senza l'auto non c'è traffico: i tempi si aggiustano con Google Maps alla partenza.
 - **«Vai con le soste»** apre subito Google Maps. **«Usa nel prossimo viaggio»** lo salva (uno solo, 48 h): al
-  collegamento in «Auto esteso», l'auto chiede **«Usare il percorso che hai pianificato?»**; con «Sì» lo ricalcola con la
-  batteria reale e i tempi di Google, apre Maps con le soste e ti dice se il piano è cambiato («Ieri: 1 sosta di
-  ricarica; oggi: 2»); con «No» viene scartato. In «Auto», al collegamento si apre Google Maps con le soste così come
-  sono uscite sul telefono.
+  collegamento in «Auto esteso», l'auto chiede **«Usare il percorso che hai pianificato?»**; con «Sì» lo ricalcola con
+  la batteria reale e i tempi di Google, apre Maps con le soste e ti dice se il piano è cambiato («Ieri: 1 sosta di
+  ricarica; oggi: 2»); con «No» viene scartato. In «Auto», al collegamento non si apre nulla da solo: compare una
+  notifica sul telefono (Android Auto la mostra anche) con **«Usare il percorso che hai pianificato?»**, la destinazione
+  e le soste di ricarica; **«Vai con le soste»** apre Google Maps con le soste così come sono uscite sul telefono e
+  **«No»** lo scarta. Se non rispondi, sparisce da sola quando ti scolleghi dall'auto o quando il percorso scade.
 
 ### Guida di viaggio («Auto esteso»)
 
