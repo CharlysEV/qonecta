@@ -186,6 +186,11 @@ final class CarUi {
         }
 
         @Override
+        public void onPlannedTrip(String name, int stops) {
+            main.post(() -> showPlannedTrip(name, stops));
+        }
+
+        @Override
         public void onMapsGone() {
             main.post(() -> {
                 if (!guessPending) return;
@@ -1148,6 +1153,8 @@ final class CarUi {
             RoutePlanner.start(ctx);
             RoutePlanner.chargeAlerts = chargeAlert;
             RoutePlanner.destGuesses = destGuess;
+            // La ruta planificada en el móvil (pestaña Ruta): unos segundos después, «¿Usar la ruta que planificaste?».
+            RoutePlanner.offerPlanned(ctx, RoutePlanner.PLANNED_AFTER_MS);
             RoadInfo.start(ctx);
             if (!resumeScreen()) {
                 open("aa");
@@ -2034,6 +2041,39 @@ final class CarUi {
         if (!replaying) {
             main.removeCallbacks(guessExpire);
             main.postDelayed(guessExpire, ok ? ALERT_SHOW_MS : 2 * 60_000L);
+        }
+        renderAlert();
+    }
+
+    /** Sin respuesta, la pregunta por la ruta del móvil se quita pasado esto (la ruta sigue guardada para la próxima). */
+    static final long PLANNED_ASK_MS = 3 * 60_000L;
+
+    /**
+     * Hay una ruta planificada en el móvil (pestaña Ruta, PlannedTrip): «¿Usar la ruta que planificaste? Sevilla · 2
+     * paradas de carga», con «Sí» (se recalcula con la batería real y los tiempos de Google y se abre Maps con las
+     * paradas) y «No» (se descarta). Sin respuesta, se quita sola y la ruta queda para la próxima sesión.
+     */
+    private void showPlannedTrip(String name, int stops) {
+        if (guessCard == null) return;
+        guessReplay = () -> showPlannedTrip(name, stops);
+        guessKind = "ruta del móvil";
+        guessBtns.removeAllViews();
+        guessCard.setBackground(CarStyle.round(CarTheme.alertBg(true), 24));
+        guessTitle.setTextColor(CarKit.GREEN);
+        guessTitle.setText(Str.get(R.string.hql_planned_ask_title));
+        guessText.setText(Str.get(R.string.hql_planned_ask_text, name, PlannedTrip.stopsText(stops)));
+        guessPill(Str.get(R.string.hql_planned_yes), true, () -> {
+            clearGuess();
+            RoutePlanner.answerPlanned(ctx, true);
+        });
+        guessPill(Str.get(R.string.hql_planned_no), false, () -> {
+            clearGuess();
+            RoutePlanner.answerPlanned(ctx, false);
+        });
+        guessPending = true;
+        if (!replaying) {
+            main.removeCallbacks(guessExpire);
+            main.postDelayed(guessExpire, PLANNED_ASK_MS);
         }
         renderAlert();
     }

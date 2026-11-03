@@ -109,6 +109,8 @@ public final class ShareDestActivity extends AppCompatActivity {
             msg = getString(R.string.hql_share_now, p.name);
         } else {
             SharedDest.save(this, p);
+            // Lo último que se pide manda: la ruta planificada en el móvil (pestaña Ruta), si había, ya no.
+            PlannedTrip.clear(this);
             L.i("destino compartido: guardado para el próximo viaje");
             msg = getString(R.string.hql_share_saved, p.name);
         }

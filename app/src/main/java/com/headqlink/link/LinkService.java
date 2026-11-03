@@ -891,6 +891,9 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
             LinkState.setCar(LinkState.Car.CONNECTED, LinkState.car == LinkState.Car.CONNECTED ? LinkState.carDetail : "");
             setStatus(Str.get(R.string.hql_car_connected));
             apply(carConnectedNow());
+            // Modo «Auto» (sin nuestra pantalla en el coche): la ruta planificada en el móvil, a Google Maps con sus paradas.
+            // En «Auto extendido» la pregunta el coche (CarUi → RoutePlanner.offerPlanned).
+            if (Config.MODE_AA.equals(cfg.mode())) PlannedTrip.openSoon(LinkService.this);
         }
 
         @Override
