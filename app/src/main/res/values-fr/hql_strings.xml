@@ -919,6 +919,13 @@
     <string name="hql_trips_export_csv">CSV seul</string>
     <string name="hql_trips_export_gpx">CSV et parcours</string>
     <string name="hql_trips_export_failed">Échec de l\'export</string>
+    <string name="hql_trip_delete">Supprimer</string>
+    <string name="hql_trip_delete_title">Supprimer ce trajet ?</string>
+    <string name="hql_trip_delete_text">%1$s\n\nIl disparaît de la liste, de la carte et de tous les chiffres de Qonecta+ (totaux, mois, consommation). Cette action est irréversible.</string>
+    <string name="hql_trip_delete_car">Ce que compte l’historique de la voiture elle-même (votre compte Leapmotor) ne change pas : le trajet y reste.</string>
+    <string name="hql_trip_deleted">Trajet supprimé</string>
+    <string name="hql_trip_delete_failed">Impossible de supprimer le trajet</string>
+    <string name="hql_trip_delete_live">C’est le trajet en cours : vous pourrez le supprimer une fois terminé.</string>
     <string name="hql_trips_export_header" formatted="false">date|départ|arrivée|km|minutes|kWh|kWh/100 km|source de la conso|coût (€)|% au départ|% à l\'arrivée|montée (m)|descente (m)|vitesse max. (km/h)|essence (L)</string>
     <string name="hql_ins_no_drives">Aucun parcours : les trajets faits avec Qonecta+ sont enregistrés ici.</string>
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>

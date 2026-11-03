@@ -379,6 +379,18 @@ final class TripPostcard {
         }, "hql-diary-after").start();
     }
 
+    /** Se ha borrado el viaje que empezó a las startMs (TripLog.delete): si su postal estaba avisada, el aviso se quita. */
+    static void forget(Context ctx, long startMs) {
+        Context app = ctx.getApplicationContext();
+        if (app.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getLong(K_LAST, 0) != startMs) return;
+        try {
+            NotificationManager nm = app.getSystemService(NotificationManager.class);
+            if (nm != null) nm.cancel(NOTIF_ID);
+        } catch (RuntimeException e) {
+            L.w("diario: no se pudo quitar el aviso (" + e.getClass().getSimpleName() + ")");
+        }
+    }
+
     private static void notifyReady(Context app, TripLog.Trip t) {
         if (Build.VERSION.SDK_INT < 26) return;
         NotificationManager nm = app.getSystemService(NotificationManager.class);

@@ -30,7 +30,8 @@ import java.util.TimeZone;
  * - Últimos 30 días: km, viajes, kWh, consumo medio y coste; km de cada día con la línea de consumo.
  * - Cómo gastas: consumo de los últimos viajes frente a la media, según lo largo del viaje y el mejor viaje.
  * - Cargas: cada carga guardada (ChargeLog) con su curva de potencia frente al %.
- * - Recorridos: los viajes hechos con HeadQLink con la silueta del trazado; al tocar, su mapa (TripMapActivity).
+ * - Recorridos: los viajes hechos con HeadQLink con la silueta del trazado; al tocar, su mapa (TripMapActivity); al
+ *   mantener pulsado, «Borrar» (TripLog.delete).
  * Los datos se leen en otro hilo al entrar y cada minuto mientras se ve.
  */
 final class PhoneInsights {
@@ -672,6 +673,7 @@ final class PhoneInsights {
             // Lo que bajó la batería del móvil en el viaje (sin enchufar).
             if (t.phoneUsedPct() >= 0) line += " · " + Str.get(R.string.hql_trip_phone_short, t.phoneUsedPct());
             txt.addView(small(line));
+            String what = day(t.startMs) + " · " + time(t.startMs) + "\n" + line;
             row.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             android.widget.ImageView go = new android.widget.ImageView(act);
             go.setImageResource(R.drawable.ic_chevron_right);
@@ -682,10 +684,58 @@ final class PhoneInsights {
             row.setBackgroundResource(selectable());
             row.setOnClickListener(v -> act.startActivity(new Intent(act, TripMapActivity.class)
                     .putExtra(TripMapActivity.EXTRA_START, t.startMs)));
+            // Mantener pulsado: «Borrar» (en la demostración, nada: sus viajes no son ficheros).
+            row.setOnLongClickListener(v -> {
+                if (DemoMode.active()) return false;
+                askDelete(v, t, d, what);
+                return true;
+            });
             c.addView(row);
         }
         exportButton(c, d);
         addCard(c);
+    }
+
+    /**
+     * Mantener pulsado un recorrido (LPMFF #341): un menú con «Borrar» y, tras confirmarlo con su fecha y sus cifras, se
+     * borra (TripLog.delete) y la pestaña se rehace sin él. El viaje en curso no: se dice por qué.
+     */
+    private void askDelete(View anchor, TripLog.Trip t, Data d, String what) {
+        if (!TripLog.deletable(t.startMs)) {
+            android.widget.Toast.makeText(act, Str.get(R.string.hql_trip_delete_live), android.widget.Toast.LENGTH_LONG).show();
+            return;
+        }
+        android.widget.PopupMenu menu = new android.widget.PopupMenu(act, anchor, Gravity.END);
+        menu.getMenu().add(Str.get(R.string.hql_trip_delete));
+        menu.setOnMenuItemClickListener(item -> {
+            confirmDelete(t, d, what);
+            return true;
+        });
+        menu.show();
+    }
+
+    private void confirmDelete(TripLog.Trip t, Data d, String what) {
+        String text = Str.get(R.string.hql_trip_delete_text, what);
+        // Con la cuenta de Leapmotor, el coche tiene el viaje en su historial: lo que sale de él no cambia.
+        if (CloudHistory.match(d.history, t.startMs, t.endMs()) != null) text += "\n\n" + Str.get(R.string.hql_trip_delete_car);
+        new com.google.android.material.dialog.MaterialAlertDialogBuilder(act)
+                .setTitle(Str.get(R.string.hql_trip_delete_title))
+                .setMessage(text)
+                .setPositiveButton(Str.get(R.string.hql_trip_delete), (x, w) -> runDelete(t.startMs))
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void runDelete(long startMs) {
+        new Thread(() -> {
+            boolean ok = TripLog.delete(act, startMs);
+            main.post(() -> {
+                if (act.isFinishing()) return;
+                android.widget.Toast.makeText(act, Str.get(ok ? R.string.hql_trip_deleted : R.string.hql_trip_delete_failed),
+                        android.widget.Toast.LENGTH_SHORT).show();
+                if (visible) refresh();
+            });
+        }, "hql-trip-delete").start();
     }
 
     /** «Exportar viajes»: CSV con todos los viajes guardados y, si se quiere, sus recorridos en GPX (TripExport). */

@@ -21,7 +21,7 @@ import java.util.Locale;
  * de ahí salen las paradas, TripStops), km, tiempo, desnivel, energía estimada (EnergyModel) y velocidad máxima, y lo
  * guarda en files/trips/ al terminar si se han recorrido más de 300 m. Con la cuenta de Leapmotor (CarCloud), además el
  * % de batería, el cuentakilómetros y, en un REEV, los litros del depósito al empezar y al terminar: de ahí salen el
- * consumo real y la gasolina gastada.
+ * consumo real y la gasolina gastada. Desde el móvil se puede borrar uno guardado (delete; LPMFF #341).
  */
 final class TripLog {
     static final class Trip {
@@ -392,8 +392,7 @@ final class TripLog {
             File dir = new File(ctx.getExternalFilesDir(null), "trips");
             //noinspection ResultOfMethodCallIgnored
             dir.mkdirs();
-            String name = "trip-" + new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(new Date(startMs)) + ".json";
-            Files.write(new File(dir, name).toPath(), o.toString().getBytes(StandardCharsets.UTF_8));
+            Files.write(new File(dir, fileName(startMs)).toPath(), o.toString().getBytes(StandardCharsets.UTF_8));
             L.i(String.format(Locale.US, "viaje guardado: %.1f km, %.1f kWh estimados%s", km, s.kwhTotal - startKwh,
                     s.gpsGapSec > 0 ? String.format(Locale.US, " (%d s sin GPS en %d huecos, sumados en línea recta)", s.gpsGapSec, s.gpsGaps) : ""));
         } catch (Exception e) {
@@ -403,6 +402,79 @@ final class TripLog {
 
     private static double round(double v) {
         return Math.round(v * 1e5) / 1e5;
+    }
+
+    /** El fichero de un viaje en files/trips/, por su inicio (en la zona horaria de cuando se guardó). */
+    static String fileName(long startMs) {
+        return "trip-" + new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(new Date(startMs)) + ".json";
+    }
+
+    // ------------------------------------------------------------------ borrar un viaje
+
+    /** Cuántos viajes se han borrado desde que arrancó la app: lo que tenga los viajes leídos (Viajes del coche) los relee. */
+    private static volatile int deletions;
+
+    static int deletions() {
+        return deletions;
+    }
+
+    /**
+     * ¿Se puede borrar el viaje guardado que empezó a las startMs? El que sigue en curso no (al retomarlo, TripCarry, su
+     * fichero ya está guardado, pero se volvería a escribir al acabar), ni los de la demostración (DemoMode).
+     */
+    static boolean deletable(long startMs) {
+        return !DemoMode.active() && startMs > 0 && startMs != liveStartMs();
+    }
+
+    /**
+     * Hilo de fondo (lee y borra ficheros): borra el viaje guardado que empezó a las startMs (Viajes › Recorridos,
+     * mantener pulsado) y lo que dependía de él y se guarda aparte: el informe de su mes (MonthlyReport.afterDelete), el
+     * gasto parado de Coche › Estado si salía de él y el aviso de la postal. Lo demás (los totales, los 30 días, el
+     * consumo, los récords, el gasto parado, Mi coche, exportar) se calcula de los ficheros cada vez que se lee.
+     * Devuelve si se borró.
+     */
+    static boolean delete(Context ctx, long startMs) {
+        if (!deletable(startMs)) return false;
+        Context app = ctx.getApplicationContext();
+        File dir = new File(app.getExternalFilesDir(null), "trips");
+        File f = null;
+        long minutes = 0;
+        // Primero el de su nombre; si no (se guardó con otra zona horaria), se busca por el inicio de dentro.
+        List<File> candidates = new ArrayList<>();
+        candidates.add(new File(dir, fileName(startMs)));
+        File[] all = dir.listFiles((d, n) -> n.endsWith(".json"));
+        if (all != null) candidates.addAll(Arrays.asList(all));
+        for (File c : candidates) {
+            if (!c.isFile()) continue;
+            try {
+                JSONObject o = new JSONObject(new String(Files.readAllBytes(c.toPath()), StandardCharsets.UTF_8));
+                if (o.optLong("start") != startMs) continue;
+                f = c;
+                minutes = o.optLong("minutes");
+                break;
+            } catch (Exception e) {
+                // Ilegible: no es este (recent tampoco lo enseña).
+            }
+        }
+        if (f == null || !f.delete()) {
+            L.w("viaje: no se pudo borrar (" + (f == null ? "no está" : "el fichero no se deja") + ")");
+            return false;
+        }
+        deletions++;
+        L.i("viaje borrado a mano"); // sin la fecha ni el sitio: el log se exporta
+        try {
+            MonthlyReport.afterDelete(app, startMs);
+        } catch (RuntimeException e) {
+            L.w("viaje borrado: el informe del mes no se pudo rehacer (" + e.getClass().getSimpleName() + ")");
+        }
+        // El gasto parado de Coche › Estado empezaba al final de este viaje: ya no hay con qué medirlo.
+        ParkedDrain.Park p = ParkedDrain.sinceParked;
+        if (p != null && p.fromMs == startMs + minutes * 60_000L) {
+            ParkedDrain.sinceParked = null;
+            ParkedDrain.sinceParkedUnusual = false;
+        }
+        TripPostcard.forget(app, startMs);
+        return true;
     }
 
     /** Últimos viajes guardados, del más reciente al más antiguo. */

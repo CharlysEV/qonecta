@@ -275,12 +275,7 @@ final class MonthlyReport {
             }
         }
 
-        // Dinero: lo cargado en rápida, al precio de la rápida; el resto, al de casa; más la gasolina (REEV).
-        if (!Double.isNaN(s.kwh)) {
-            double fast = Math.min(s.fastKwh, s.kwh);
-            s.costEur = fast * p.fast + (s.kwh - fast) * p.home + (Double.isNaN(s.fuelL) ? 0 : s.fuelL * p.fuel);
-        }
-        if (p.comparePrice > 0 && p.petrolLPer100 > 0 && s.km > 0) s.petrolEur = s.km * p.petrolLPer100 / 100 * p.comparePrice;
+        money(s, p);
 
         // Con el coche parado: los aparcamientos que acaban este mes (entre viajes grabados por la app).
         List<ParkedDrain.Park> parks = ParkedDrain.parks(trips, defaultCap);
@@ -299,6 +294,57 @@ final class MonthlyReport {
         }
         if (anyParkedKwh) s.parkedKwh = parkedKwh;
         return s;
+    }
+
+    /** Dinero: lo cargado en rápida, al precio de la rápida; el resto, al de casa; más la gasolina (REEV). */
+    private static void money(Summary s, Prices p) {
+        s.costEur = Double.NaN;
+        s.petrolEur = Double.NaN;
+        if (!Double.isNaN(s.kwh)) {
+            double fast = Math.min(s.fastKwh, s.kwh);
+            s.costEur = fast * p.fast + (s.kwh - fast) * p.home + (Double.isNaN(s.fuelL) ? 0 : s.fuelL * p.fuel);
+        }
+        if (p.comparePrice > 0 && p.petrolLPer100 > 0 && s.km > 0) s.petrolEur = s.km * p.petrolLPer100 / 100 * p.comparePrice;
+    }
+
+    /**
+     * Puro: el mes guardado después de borrar un viaje (TripLog.delete), con fresh recalculado ya sin él y con la misma
+     * fuente que stored (compute con historyAtMs 0 si stored era de la app). Si los viajes del mes eran los de la app,
+     * los viajes, km, energía, dinero y destacados pasan a ser los de fresh; si eran los del coche (su historial), no
+     * cambian: el coche sigue contando ese viaje. En los dos casos, los aparcamientos (entre viajes de la app) son los de
+     * fresh. Las cargas y lo completo, lo guardado (ChargeLog solo guarda las últimas, y la nube, 35 días).
+     */
+    static Summary withoutTrip(Summary stored, Summary fresh, Prices p) {
+        if (stored == null) return null;
+        if (fresh == null) return stored;
+        Summary s = copy(stored);
+        if (!stored.fromCar) {
+            s.trips = fresh.trips;
+            s.km = fresh.km;
+            s.kwh = fresh.kwh;
+            s.fuelL = fresh.fuelL;
+            s.longestKm = fresh.longestKm;
+            s.longestMs = fresh.longestMs;
+            s.bestPer100 = fresh.bestPer100;
+            s.bestKm = fresh.bestKm;
+            s.bestMs = fresh.bestMs;
+            s.topDayKm = fresh.topDayKm;
+            s.topDayMs = fresh.topDayMs;
+            money(s, p);
+        }
+        s.parks = fresh.parks;
+        s.parkedPct = fresh.parkedPct;
+        s.parkedKwh = fresh.parkedKwh;
+        s.parkedHours = fresh.parkedHours;
+        return s;
+    }
+
+    private static Summary copy(Summary s) {
+        try {
+            return Summary.fromJson(s.toJson());
+        } catch (JSONException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private static void highlight(Summary s, long startMs, double km, double per100, Map<Long, Double> perDay, TimeZone tz) {
@@ -399,34 +445,77 @@ final class MonthlyReport {
         Context app = ctx.getApplicationContext();
         TimeZone tz = TimeZone.getDefault();
         long now = System.currentTimeMillis();
-        List<CloudHistory.Trip> history = new ArrayList<>(CarCloud.history());
-        long historyAt = CarCloud.historyAtMs();
-        if (history.isEmpty() && !DemoMode.active()) {
-            JSONObject o = new CarCloudStore(app).history();
-            if (o != null) {
-                history = CloudHistory.tripsFromJson(o);
-                historyAt = o.optLong("tripsAt");
-            }
-        }
-        List<TripLog.Trip> trips = TripLog.recent(app, 600);
-        List<ChargeSession> charges;
-        try {
-            charges = ChargeLog.load(app);
-        } catch (RuntimeException e) {
-            charges = new ArrayList<>();
-        }
-        long since = appSince(app);
-        Prices prices = Prices.of(new Config(app));
-        double cap = CarSpec.current().usableKwh;
+        Inputs in = Inputs.read(app, 600);
         Map<String, Summary> all = load(app);
         int[] cur = monthOf(now, tz);
         for (int d = -2; d <= 0; d++) {
             int[] ym = shift(cur[0], cur[1], d);
-            Summary fresh = compute(ym[0], ym[1], tz, history, historyAt, trips, since, charges, cap, prices);
+            Summary fresh = compute(ym[0], ym[1], tz, in.history, in.historyAt, in.trips, in.since, in.charges, in.cap, in.prices);
             all.put(fresh.key(), d == 0 ? fresh : keep(all.get(fresh.key()), fresh));
         }
         if (!DemoMode.active()) save(app, all);
         return all;
+    }
+
+    /**
+     * Hilo de fondo, al borrar un viaje (TripLog.delete; el fichero ya no está): su mes y el siguiente (el aparcamiento
+     * de después del viaje acaba en él) se rehacen sin él (withoutTrip) y se guardan aunque tengan menos km, que keep no
+     * dejaría. Los meses que no estaban guardados, nada: refresh ya los calcula sin él.
+     */
+    static void afterDelete(Context ctx, long startMs) {
+        if (DemoMode.active()) return;
+        Context app = ctx.getApplicationContext();
+        TimeZone tz = TimeZone.getDefault();
+        Map<String, Summary> all = load(app);
+        int[] ym = monthOf(startMs, tz);
+        Inputs in = null;
+        boolean changed = false;
+        for (int d = 0; d <= 1; d++) {
+            int[] m = shift(ym[0], ym[1], d);
+            Summary stored = all.get(key(m[0], m[1]));
+            if (stored == null) continue;
+            // Todos los viajes: un mes viejo puede quedar más allá de los 600 de refresh.
+            if (in == null) in = Inputs.read(app, Integer.MAX_VALUE);
+            Summary fresh = compute(m[0], m[1], tz, in.history, stored.fromCar ? in.historyAt : 0, in.trips, in.since, in.charges,
+                    in.cap, in.prices);
+            all.put(stored.key(), withoutTrip(stored, fresh, in.prices));
+            changed = true;
+        }
+        if (changed) save(app, all);
+    }
+
+    /** Lo del móvil con lo que se calcula un mes: historial del coche (o el guardado), viajes, cargas y precios. */
+    private static final class Inputs {
+        List<CloudHistory.Trip> history;
+        long historyAt;
+        List<TripLog.Trip> trips;
+        List<ChargeSession> charges;
+        long since;
+        Prices prices;
+        double cap;
+
+        static Inputs read(Context app, int maxTrips) {
+            Inputs in = new Inputs();
+            in.history = new ArrayList<>(CarCloud.history());
+            in.historyAt = CarCloud.historyAtMs();
+            if (in.history.isEmpty() && !DemoMode.active()) {
+                JSONObject o = new CarCloudStore(app).history();
+                if (o != null) {
+                    in.history = CloudHistory.tripsFromJson(o);
+                    in.historyAt = o.optLong("tripsAt");
+                }
+            }
+            in.trips = TripLog.recent(app, maxTrips);
+            try {
+                in.charges = ChargeLog.load(app);
+            } catch (RuntimeException e) {
+                in.charges = new ArrayList<>();
+            }
+            in.since = appSince(app);
+            in.prices = Prices.of(new Config(app));
+            in.cap = CarSpec.current().usableKwh;
+            return in;
+        }
     }
 
     /** Desde cuándo graba viajes la app: la instalación. */

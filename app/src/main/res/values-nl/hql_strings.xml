@@ -918,6 +918,13 @@
     <string name="hql_trips_export_csv">Alleen CSV</string>
     <string name="hql_trips_export_gpx">CSV en routes</string>
     <string name="hql_trips_export_failed">Exporteren mislukt</string>
+    <string name="hql_trip_delete">Verwijderen</string>
+    <string name="hql_trip_delete_title">Deze rit verwijderen?</string>
+    <string name="hql_trip_delete_text">%1$s\n\nHij verdwijnt uit de lijst, van de kaart en uit alle cijfers van Qonecta+ (totalen, maanden, verbruik). Dit kan niet ongedaan worden gemaakt.</string>
+    <string name="hql_trip_delete_car">Wat de rittengeschiedenis van de auto zelf (je Leapmotor-account) telt, verandert niet: daar blijft de rit staan.</string>
+    <string name="hql_trip_deleted">Rit verwijderd</string>
+    <string name="hql_trip_delete_failed">De rit kon niet worden verwijderd</string>
+    <string name="hql_trip_delete_live">Dit is de rit die nu bezig is: je kunt hem verwijderen zodra hij klaar is.</string>
     <string name="hql_trips_export_header" formatted="false">datum|vertrek|aankomst|km|minuten|kWh|kWh/100 km|bron van verbruik|kosten (€)|% bij vertrek|% bij aankomst|stijging (m)|daling (m)|max. snelheid (km/h)|benzine (L)</string>
     <string name="hql_ins_no_drives">Nog geen routes: ritten met Qonecta+ worden hier bewaard.</string>
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>

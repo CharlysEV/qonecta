@@ -69,6 +69,31 @@ final class TripsTab implements CarScreen {
         ctx = h.context();
         cfg = new Config(ctx);
         sensors = CarSensors.start(ctx);
+        load();
+        Locale loc = Locale.getDefault();
+        dayFmt = new java.text.SimpleDateFormat(android.text.format.DateFormat.getBestDateTimePattern(loc, "EEEdMMM"), loc);
+        timeFmt = android.text.format.DateFormat.getTimeFormat(ctx);
+
+        narrowUi = CarKit.narrow;
+        View page = page();
+        running = true;
+        tick();
+        root = new FrameLayout(ctx);
+        root.addView(page, CarStyle.match());
+        if (previewDetail && longest >= 0) {
+            previewDetail = false;
+            TripLog.Trip t = trips.get(longest);
+            root.post(() -> openDetail(t));
+        }
+        return root;
+    }
+
+    /** Los borrados que ya se han visto (TripLog.deletions): si se borra un viaje en el móvil, la lista se relee. */
+    private int seenDeletions;
+
+    /** Lee los viajes guardados y lo que sale de ellos (récords, totales, el fantasma). */
+    private void load() {
+        seenDeletions = TripLog.deletions();
         trips = TripLog.recent(ctx, 30);
         routeRecords = Ghost.routeRecords(trips);
         new Thread(() -> ghostTrips = TripLog.recent(ctx, GHOST_TRIPS), "hql-ghost").start();
@@ -77,11 +102,25 @@ final class TripsTab implements CarScreen {
         efficient = TripStats.mostEfficient(trips, history);
         climb = TripStats.mostClimb(trips);
         allTotals = TripStats.totals(trips, Long.MIN_VALUE, Long.MAX_VALUE);
-        Locale loc = Locale.getDefault();
-        dayFmt = new java.text.SimpleDateFormat(android.text.format.DateFormat.getBestDateTimePattern(loc, "EEEdMMM"), loc);
-        timeFmt = android.text.format.DateFormat.getTimeFormat(ctx);
+    }
 
-        narrowUi = CarKit.narrow;
+    /** Se ha borrado un viaje en el móvil mientras se ve: la lista y la columna derecha, otra vez (lo abierto, encima, sigue). */
+    private void reload() {
+        load();
+        // Como al crearla (CarHubScreen.open): en la pantalla partida, la página en una columna.
+        CarKit.narrow = narrowUi;
+        View page;
+        try {
+            page = page();
+        } finally {
+            CarKit.narrow = false;
+        }
+        root.removeViewAt(0);
+        root.addView(page, 0, CarStyle.match());
+    }
+
+    /** La lista de viajes y, a la derecha, los 14 días y los récords. */
+    private View page() {
         LinearLayout row = CarKit.row(ctx);
         LinearLayout list = CarKit.col(ctx);
         ScrollView sv = new ScrollView(ctx);
@@ -111,16 +150,7 @@ final class TripsTab implements CarScreen {
         LinearLayout right = CarKit.add(row, CarKit.col(ctx), 1f, 0);
         CarKit.add(right, CarKit.fit(new CarKit.Card(ctx, Str.get(R.string.hql_last_14_days), this::paintDays), 464, 282), 1f, 0);
         CarKit.add(right, CarKit.fit(new CarKit.Card(ctx, Str.get(R.string.hql_records), this::paintRecords), 464, 282), 1f, 0);
-        running = true;
-        tick();
-        root = new FrameLayout(ctx);
-        root.addView(CarKit.page(ctx, row), CarStyle.match());
-        if (previewDetail && longest >= 0) {
-            previewDetail = false;
-            TripLog.Trip t = trips.get(longest);
-            root.post(() -> openDetail(t));
-        }
-        return root;
+        return CarKit.page(ctx, row);
     }
 
     /** Abre el viaje en grande (mapa, cifras y paradas) encima de la lista. */
@@ -139,6 +169,7 @@ final class TripsTab implements CarScreen {
 
     private void tick() {
         if (!running) return;
+        if (seenDeletions != TripLog.deletions() && root != null) reload();
         s = sensors.snapshot();
         liveReal = TripLog.liveReal(CarCloud.car());
         updateGhost();

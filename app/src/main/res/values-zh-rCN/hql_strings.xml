@@ -917,6 +917,13 @@
     <string name="hql_trips_export_csv">仅 CSV</string>
     <string name="hql_trips_export_gpx">CSV 和路线</string>
     <string name="hql_trips_export_failed">导出失败</string>
+    <string name="hql_trip_delete">删除</string>
+    <string name="hql_trip_delete_title">删除这次行程？</string>
+    <string name="hql_trip_delete_text">%1$s\n\n它会从列表、地图以及 Qonecta+ 的所有数据（总计、月份、能耗）中移除。此操作无法撤销。</string>
+    <string name="hql_trip_delete_car">车辆自身行程历史（你的 Leapmotor 账户）中的统计不会改变：那里仍保留这次行程。</string>
+    <string name="hql_trip_deleted">行程已删除</string>
+    <string name="hql_trip_delete_failed">无法删除行程</string>
+    <string name="hql_trip_delete_live">这是正在进行的行程：结束后即可删除。</string>
     <string name="hql_trips_export_header" formatted="false">日期|出发|到达|公里|分钟|kWh|kWh/100 km|能耗来源|费用 (€)|出发时电量 %|到达时电量 %|爬升 (m)|下降 (m)|最高速度 (km/h)|汽油 (L)</string>
     <string name="hql_ins_no_drives">暂无驾驶记录：使用 Qonecta+ 的行程会保存在这里。</string>
     <string name="hql_ins_drive_line">%1$s km · %2$s · %3$s</string>
