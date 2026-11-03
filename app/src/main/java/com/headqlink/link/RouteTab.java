@@ -808,15 +808,13 @@ final class RouteTab implements CarScreen {
         plan = planner.plan();
         // Batería: la real del coche si la hay (nube de Leapmotor); si no, la indicada con ±5.
         cloud = CarCloud.car();
-        long clkNow = DemoMode.wallClockMs();
-        double real = cloud.soc(clkNow, CarCloud.SOC_MAX_AGE_MS);
-        boolean testSoc = RoutePlanner.testMode();
-        // Dato de la nube viejo (y desenchufado): no se fía como «ahora»; se deja ajustar a mano, partiendo de ese %.
-        socStale = !testSoc && CarCloud.socStale(cloud, clkNow);
-        realSoc = !Double.isNaN(real) && !testSoc && !socStale;
-        if (socStale && Double.isNaN(planner.socNow())) planner.setSoc(Math.round(real));
-        soc = realSoc ? real : planner.socNow();
-        capKwh = realSoc || socStale || (testSoc && cloud.hasData()) ? cloud.capacityKwh : EnergyModel.usableKwh();
+        // El mismo % que usa el bucle del planificador (el de la nube menos lo gastado desde esa lectura, o el indicado):
+        // con dos, el plan de carga se rehacía (y podía avisar) cada vez que lo pedía el otro.
+        double[] b = planner.battery(cloud);
+        soc = b[0];
+        capKwh = b[1];
+        realSoc = b[2] > 0;
+        socStale = b[3] > 0;
         socControls.setVisibility(realSoc ? View.GONE : View.VISIBLE);
         status = planner.status();
         CarSensors.Snapshot gps = planner.sensorSnapshot();

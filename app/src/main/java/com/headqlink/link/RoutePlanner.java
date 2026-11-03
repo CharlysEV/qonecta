@@ -2112,6 +2112,10 @@ final class RoutePlanner {
     private final ChargePlanner.Trend trend = new ChargePlanner.Trend();
     private ChargePlanner.Result charge;
     private String chargeKey = "";
+    /** El % con el que se hizo el plan de ahora (con chargeLock); NaN sin plan. */
+    private double chargeSoc = Double.NaN;
+    /** Cuánto tiene que moverse el % para rehacer el plan por él. */
+    static final double SOC_STEP = 1;
     private String chargeSettings = "";
     private Plan chargeFor;
     private int chargeLogged = -1;
@@ -2140,17 +2144,22 @@ final class RoutePlanner {
     }
 
     /**
-     * % de batería y capacidad (kWh) para la ruta, y 1 si son los reales del coche (nube, al día) o 0 si es el %
-     * indicado.
+     * % de batería y capacidad (kWh) para la ruta, 1 si son los reales del coche (nube, al día) o 0 si es el % indicado,
+     * y 1 si el de la nube es viejo (CarCloud.socStale: se usa el indicado, partiendo de ese %). La única fuente del %:
+     * el bucle y la pestaña Ruta (lo que se ve) piden este, para que el plan no se rehaga (ni avise) saltando entre dos %.
      */
     double[] battery(CarCloud.Snapshot cs) {
-        if (testMode) return new double[]{socNow(), cs != null && cs.hasData() ? cs.capacityKwh : EnergyModel.usableKwh(), 0};
-        double real = cs == null ? Double.NaN : cs.soc(DemoMode.wallClockMs(), CarCloud.SOC_MAX_AGE_MS);
-        if (!Double.isNaN(real)) {
-            double est = sinceReading(real, cs.capacityKwh, cs.dataTimeMs(), sensorSnapshot().kwhTotal);
-            return new double[]{est, cs.capacityKwh, 1};
+        if (testMode) return new double[]{socNow(), cs != null && cs.hasData() ? cs.capacityKwh : EnergyModel.usableKwh(), 0, 0};
+        long now = DemoMode.wallClockMs();
+        double real = cs == null ? Double.NaN : cs.soc(now, CarCloud.SOC_MAX_AGE_MS);
+        if (Double.isNaN(real)) return new double[]{socNow(), EnergyModel.usableKwh(), 0, 0};
+        // Dato viejo (y desenchufado): no se fía como «ahora»; se deja ajustar a mano, partiendo de ese %.
+        if (CarCloud.socStale(cs, now)) {
+            if (Double.isNaN(socNow())) setSoc(Math.round(real));
+            return new double[]{socNow(), cs.capacityKwh, 0, 1};
         }
-        return new double[]{socNow(), EnergyModel.usableKwh(), 0};
+        double est = sinceReading(real, cs.capacityKwh, cs.dataTimeMs(), sensorSnapshot().kwhTotal);
+        return new double[]{est, cs.capacityKwh, 1, 0};
     }
 
     /** El dato de la nube del que se parte y la energía del modelo en ese momento. */
@@ -2229,13 +2238,17 @@ final class RoutePlanner {
                     + (realSoc ? "/real" : "/indicado") + "/c" + pl.chargerVersion + "/curva" + c.learnedChargeCurve() + "/m" + marks.hashCode() + (food ? "/f" + FoodNearby.version : "")
                     + "/p" + pinsVersion;
             int prog = Math.min(pl.progress, pl.n - 1);
+            // El % del plan se mueve de SOC_STEP en SOC_STEP: unas décimas arriba y abajo (la estimación entre lecturas,
+            // el redondeo de la nube) no lo rehacen ni lo hacen avisar.
+            if (charge == null || Double.isNaN(chargeSoc) || Math.abs(soc - chargeSoc) >= SOC_STEP) chargeSoc = soc;
+            soc = chargeSoc;
             double f = demo ? DemoMode.planTrend() : draft ? 1 : trend.factor();
             double mr = pl.mapsRatio;
             int cap = capFor(pl);
             double from0 = pl.km[prog];
             // El borrador del móvil no va con Maps: sin su recuadro.
             double[] near = testOrigin() == null && !draft ? nearSegment(pl, from0) : null;
-            String key = settings + "/" + prog + "/" + Math.round(soc * 2) + "/" + Math.round(f * 100) + "/" + Math.round(mr * 100) + "/" + charging
+            String key = settings + "/" + prog + "/" + Math.round(soc * 100) + "/" + Math.round(f * 100) + "/" + Math.round(mr * 100) + "/" + charging
                     + "/v" + cap + (near == null ? "" : "/n" + Math.round(near[1] * 100) + "@" + Math.round(near[0]));
             if (key.equals(chargeKey)) return charge;
             chargeKey = key;
