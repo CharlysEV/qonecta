@@ -1474,4 +1474,11 @@ Hiervoor heb je een eigen API-sleutel van Anthropic nodig (console.anthropic.com
     <string name="hql_companion_save">Opslaan</string>
     <string name="hql_companion_delete">Sleutel wissen</string>
     <string name="hql_companion_deleted">Sleutel gewist</string>
+    <!-- Favoritos de radio en el móvil: ordenar, renombrar y quitar (RadioFavsEditor) -->
+    <string name="hql_radio_favs">Radiofavorieten</string>
+    <string name="hql_radio_favs_help">Sleep de greep om de volgorde te wijzigen en tik op een zender om hem te hernoemen. Het ★-tabblad in de auto en Android Auto tonen ze in deze volgorde en met deze namen.</string>
+    <string name="hql_radio_favs_none">Nog geen radiofavorieten. Houd op het radioscherm van de auto een zender ingedrukt om hem toe te voegen.</string>
+    <string name="hql_radio_fav_rename">Hernoemen</string>
+    <string name="hql_radio_fav_rename_help">Laat leeg om terug te gaan naar ‘%1$s’.</string>
+    <string name="hql_radio_fav_remove_q">‘%1$s’ uit favorieten verwijderen?</string>
 </resources>

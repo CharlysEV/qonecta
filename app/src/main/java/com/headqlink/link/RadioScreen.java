@@ -181,6 +181,8 @@ final class RadioScreen implements CarScreen {
             return;
         }
         if (source < 0) {
+            // Las de ahora: en el móvil se pueden haber ordenado, renombrado o quitado (RadioFavsEditor).
+            favs = Favorites.load(new Config(c), Favorites.RADIO);
             shown.clear();
             // Con el usuario de su lista en las que lo tienen (guardadas sin él).
             shown.addAll(RadioLibrary.stations(favs, RadioLibrary.logins(c)));
@@ -232,6 +234,7 @@ final class RadioScreen implements CarScreen {
             host.post(() -> {
                 if (destroyed || seq != loadSeq) return;
                 // Los favoritos guardados antes con su usuario dentro de la URL, ya sin él (como la TV).
+                favs = Favorites.load(new Config(c), Favorites.RADIO);
                 if (M3uSource.hideInFavorites(favs, fLogin, loginId) > 0) Favorites.save(new Config(c), Favorites.RADIO, favs);
                 if (fl.isEmpty()) {
                     showMessage(fe != null ? fe : Str.get(R.string.hql_radio_none));
@@ -548,6 +551,8 @@ final class RadioScreen implements CarScreen {
                     if (i < 0) return true;
                     RadioPlayer.Station st = shown.get(i);
                     if (st.local) return true; // las canciones no van a favoritos de la radio
+                    // Sobre las guardadas de ahora (no las de al abrir: el móvil puede haberlas cambiado).
+                    favs = Favorites.load(new Config(c), Favorites.RADIO);
                     boolean in = Favorites.toggle(favs, RadioLibrary.item(st));
                     Favorites.save(new Config(c), Favorites.RADIO, favs);
                     RadioBrowserService.changed(RadioLibrary.FAVS);

@@ -687,8 +687,8 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         menuGroup(sheet, col, 1, Str.get(R.string.hql_menu_car), R.drawable.hql_ic_gauges, coche);
         if (ext) {
             menuGroup(sheet, col, 2, Str.get(R.string.hql_menu_content), R.drawable.hql_ic_tv,
-                    new int[][]{{2, R.string.hql_tv_list}, {3, R.string.hql_radio_list}, {12, R.string.hql_web_bookmarks},
-                            {16, R.string.hql_ha_menu}, {20, R.string.hql_video_folder}, {22, R.string.hql_companion_menu}});
+                    new int[][]{{2, R.string.hql_tv_list}, {3, R.string.hql_radio_list}, {23, R.string.hql_radio_favs},
+                            {12, R.string.hql_web_bookmarks}, {16, R.string.hql_ha_menu}, {20, R.string.hql_video_folder}, {22, R.string.hql_companion_menu}});
             // Una sola carpeta para todas las consolas: cada emulador coge sus archivos.
             menuGroup(sheet, col, 3, Str.get(R.string.hql_games), R.drawable.hql_ic_games, new int[][]{{14, R.string.hql_nes_folder}});
         }
@@ -819,6 +819,10 @@ public class HomeActivity extends Activity implements LinkState.Listener {
                 break;
             case 3:
                 showList(true);
+                break;
+            case 23:
+                // Ordenar, renombrar y quitar las emisoras con ★ (las del coche y Android Auto).
+                RadioFavsEditor.show(this);
                 break;
             case 4:
                 showLanguage();

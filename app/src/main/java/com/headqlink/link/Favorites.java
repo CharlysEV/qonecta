@@ -10,12 +10,14 @@ import java.util.List;
 /**
  * Favoritos de la TV y de la radio del coche (puro, lo prueban los tests): se marcan manteniendo pulsado un canal o una
  * emisora, y salen en la pestaña ★ aunque vengan de otra lista. Guardados en Config como JSON [{name,url,logo,group,urls}],
- * con la URL (la primera fuente) de clave.
+ * con la URL (la primera fuente) de clave. Los de la radio se ordenan, renombran y quitan en el móvil (RadioFavsEditor).
  */
 final class Favorites {
     static final String TV = "tv";
     static final String RADIO = "radio";
     static final int MAX = 200;
+    /** El nombre de su lista, guardado mientras se le haya puesto otro (rename). */
+    private static final String ORIG = "orig";
 
     private Favorites() {
     }
@@ -62,6 +64,57 @@ final class Favorites {
         if (a.length() >= MAX) a.remove(0);
         a.put(item);
         return true;
+    }
+
+    // ---------------------------------------------------------------- editar (la app del móvil, RadioFavsEditor)
+
+    /** Puro: el de from pasa al puesto to (los de en medio corren uno); fuera de rango, nada. Se cambia a en su sitio. */
+    static void move(JSONArray a, int from, int to) {
+        int n = a.length();
+        if (from < 0 || from >= n || to < 0 || to >= n || from == to) return;
+        List<Object> l = new ArrayList<>(n);
+        for (int i = 0; i < n; i++) l.add(a.opt(i));
+        l.add(to, l.remove(from));
+        try {
+            for (int i = 0; i < n; i++) a.put(i, l.get(i));
+        } catch (JSONException ignored) {
+            // No pasa: los mismos objetos en otro orden.
+        }
+    }
+
+    /** Puro: quita el del puesto i (fuera de rango, nada). */
+    static void removeAt(JSONArray a, int i) {
+        if (i >= 0 && i < a.length()) a.remove(i);
+    }
+
+    /** El nombre con el que entró (el de su lista), aunque se le haya puesto otro. */
+    static String originalName(JSONObject o) {
+        return o.has(ORIG) ? o.optString(ORIG) : o.optString("name");
+    }
+
+    /**
+     * Puro: le pone otro nombre; vacío, o el de su lista, vuelve al de su lista. Mientras lleve otro, el de su lista se
+     * guarda en «orig». El resto (url, urls, logo, grupo, login, auth) no se toca: la URL sigue siendo su clave.
+     */
+    static void rename(JSONObject o, String name) {
+        String orig = originalName(o);
+        String n = name == null ? "" : name.trim();
+        try {
+            if (n.isEmpty() || n.equals(orig)) {
+                o.put("name", orig);
+                o.remove(ORIG);
+            } else {
+                o.put(ORIG, orig);
+                o.put("name", n);
+            }
+        } catch (JSONException ignored) {
+            // No pasa con cadenas.
+        }
+    }
+
+    /** Puro: si lleva otro nombre que el de su lista. */
+    static boolean renamed(JSONObject o) {
+        return o.has(ORIG);
     }
 
     static JSONObject item(String name, String url, String logo, String group, List<String> urls) {

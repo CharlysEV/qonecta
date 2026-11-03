@@ -1474,4 +1474,11 @@ Dafür brauchst du einen eigenen API-Schlüssel von Anthropic (console.anthropic
     <string name="hql_companion_save">Speichern</string>
     <string name="hql_companion_delete">Schlüssel löschen</string>
     <string name="hql_companion_deleted">Schlüssel gelöscht</string>
+    <!-- Favoritos de radio en el móvil: ordenar, renombrar y quitar (RadioFavsEditor) -->
+    <string name="hql_radio_favs">Radio-Favoriten</string>
+    <string name="hql_radio_favs_help">Zum Sortieren am Griff ziehen, zum Umbenennen auf einen Sender tippen. Der ★-Tab im Auto und Android Auto zeigen sie in dieser Reihenfolge und mit diesen Namen.</string>
+    <string name="hql_radio_favs_none">Noch keine Radio-Favoriten. Halte im Auto auf dem Radio-Bildschirm einen Sender gedrückt, um ihn hinzuzufügen.</string>
+    <string name="hql_radio_fav_rename">Umbenennen</string>
+    <string name="hql_radio_fav_rename_help">Leer lassen, um den ursprünglichen Namen „%1$s“ wiederherzustellen.</string>
+    <string name="hql_radio_fav_remove_q">„%1$s“ aus den Favoriten entfernen?</string>
 </resources>

@@ -1475,4 +1475,11 @@ Il faut ta propre clé d\'API Anthropic (console.anthropic.com › API Keys). Ch
     <string name="hql_companion_save">Enregistrer</string>
     <string name="hql_companion_delete">Supprimer la clé</string>
     <string name="hql_companion_deleted">Clé supprimée</string>
+    <!-- Favoritos de radio en el móvil: ordenar, renombrar y quitar (RadioFavsEditor) -->
+    <string name="hql_radio_favs">Radios favorites</string>
+    <string name="hql_radio_favs_help">Faites glisser la poignée pour changer l\'ordre et touchez une station pour la renommer. L\'onglet ★ de la voiture et Android Auto les affichent dans cet ordre et avec ces noms.</string>
+    <string name="hql_radio_favs_none">Pas encore de radios favorites. Sur l\'écran Radio de la voiture, maintenez une station appuyée pour l\'ajouter.</string>
+    <string name="hql_radio_fav_rename">Renommer</string>
+    <string name="hql_radio_fav_rename_help">Laissez vide pour revenir à « %1$s ».</string>
+    <string name="hql_radio_fav_remove_q">Retirer « %1$s » des favoris ?</string>
 </resources>

@@ -1476,4 +1476,11 @@
     <string name="hql_companion_save">保存</string>
     <string name="hql_companion_delete">删除密钥</string>
     <string name="hql_companion_deleted">密钥已删除</string>
+    <!-- Favoritos de radio en el móvil: ordenar, renombrar y quitar (RadioFavsEditor) -->
+    <string name="hql_radio_favs">电台收藏</string>
+    <string name="hql_radio_favs_help">拖动把手可调整顺序，点按电台可重命名。车机的 ★ 标签页和 Android Auto 会按此顺序、以这些名称显示。</string>
+    <string name="hql_radio_favs_none">还没有收藏的电台。在车机的电台界面长按一个电台即可收藏。</string>
+    <string name="hql_radio_fav_rename">重命名</string>
+    <string name="hql_radio_fav_rename_help">留空则恢复为“%1$s”。</string>
+    <string name="hql_radio_fav_remove_q">从收藏中移除“%1$s”？</string>
 </resources>
