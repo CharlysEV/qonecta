@@ -34,6 +34,10 @@ final class VideoEncoder {
         void onCodecConfig(byte[] spsPps);
 
         void onFrame(byte[] data, int len, boolean keyFrame, long ptsUs);
+
+        /** El códec ha dejado de funcionar por su cuenta (hilo enc-drain): ya no dará frames. */
+        default void onError(String why) {
+        }
     }
 
     static final class Params {
@@ -454,6 +458,23 @@ final class VideoEncoder {
             "vendor.low-latency.enable",
     };
 
+    /** fallbackKey ya calculadas (listar los códecs cuesta unos ms y el plan se calcula en cada sesión). */
+    private static final java.util.Map<String, String> FALLBACK_KEYS = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /**
+     * Móvil y códec para EncoderFallback: «SM-S918B · c2.qti.avc.encoder», el que start() elegiría para w x h a fps
+     * («por defecto» si no hay uno por hardware).
+     */
+    static String fallbackKey(int w, int h, int fps) {
+        String size = w + "x" + h + "@" + fps;
+        String k = FALLBACK_KEYS.get(size);
+        if (k != null) return k;
+        String name = pickHardwareEncoder(w, h, fps);
+        k = android.os.Build.MODEL + " · " + (name != null ? name : "por defecto");
+        FALLBACK_KEYS.put(size, k);
+        return k;
+    }
+
     /**
      * Encoder AVC por hardware que declare poder con w x h a fps, prefiriendo el del fabricante del
      * chip (c2.qti, c2.mtk, c2.exynos, OMX.*...): createEncoderByType puede devolver el de software
@@ -574,6 +595,8 @@ final class VideoEncoder {
                 if (running) {
                     failed = true;
                     L.w("encoder: el códec ha dejado de funcionar: " + e);
+                    // Quien lo usa decide (VideoPipeline → EncoderFallback): reiniciarlo más seguro o lo de siempre.
+                    sink.onError(String.valueOf(e));
                 }
                 break;
             }

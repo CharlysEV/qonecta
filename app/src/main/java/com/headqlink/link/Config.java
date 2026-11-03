@@ -207,9 +207,21 @@ final class Config {
 
     /** Elige un perfil ("" = recomendado) y quita los ajustes manuales que lo contradirían. */
     void setVideoProfile(String id) {
+        // Elegido a mano: el codificador se vuelve a probar desde arriba una vez (EncoderFallback).
         sp.edit().putString(VIDEO_PROFILE, id == null ? "" : id)
                 .remove(FPS).remove(WIDTH).remove(HEIGHT).remove(AA_REENCODE)
-                .remove(LOW_LATENCY).remove("enc_max_clocks").apply();
+                .remove(LOW_LATENCY).remove("enc_max_clocks").remove(ENC_FALLBACK).apply();
+    }
+
+    /** Escalón del codificador recordado por móvil y códec (EncoderFallback.encode), o "". */
+    static final String ENC_FALLBACK = "enc_fallback";
+
+    String encFallback() {
+        return sp.getString(ENC_FALLBACK, "");
+    }
+
+    void setEncFallback(String s) {
+        sp.edit().putString(ENC_FALLBACK, s == null ? "" : s).apply();
     }
 
     void applyExtras(Intent i) {

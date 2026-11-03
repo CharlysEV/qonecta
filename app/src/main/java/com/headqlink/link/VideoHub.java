@@ -14,6 +14,9 @@ import dev.qdauto.core.session.KeyframeReason;
  * orden de llegada, en el hilo hql-video (los callbacks de las sesiones solo encolan, y como llegan en orden del hilo de
  * eventos de cada sesión, «enganchar» va siempre antes que el IDR de STREAM_START). Guarda el modo noche del coche entre
  * sesiones. El táctil va directo (sin cola) a la fuente.
+ *
+ * Si el codificador falla al arrancar (EncoderFallback), se recrea el vídeo con el escalón siguiente, más seguro, y se
+ * vuelve a enganchar a la misma sesión, sin soltar el coche.
  */
 final class VideoHub {
     private static final long TICK_MS = 500;
@@ -243,12 +246,25 @@ final class VideoHub {
             } else {
                 verdict = "CREADO";
             }
-            try {
-                p = VideoPipeline.create(ctx, cfg, plan, carDark, h);
-            } catch (Exception e) {
-                L.e("no se pudo arrancar el vídeo (" + plan + ")", e);
-                lastVerdict = "ERROR";
-                return;
+            p = null;
+            while (p == null) {
+                try {
+                    p = VideoPipeline.create(ctx, cfg, plan, carDark, h, this::encoderTrouble);
+                } catch (VideoPipeline.EncoderStartFailed e) {
+                    // El codificador no arranca: el escalón siguiente, si queda, y otra vez (cada vuelta baja uno).
+                    VideoPlan next = stepDown(plan, e.wanted, e.params, String.valueOf(e.getCause()), 0, 0)
+                            ? VideoPlan.compute(cfg, car) : null;
+                    if (next == null || next.encStep <= plan.encStep) {
+                        L.e("no se pudo arrancar el vídeo (" + plan + ")", e);
+                        lastVerdict = "ERROR";
+                        return;
+                    }
+                    plan = next;
+                } catch (Exception e) {
+                    L.e("no se pudo arrancar el vídeo (" + plan + ")", e);
+                    lastVerdict = "ERROR";
+                    return;
+                }
             }
             pipeline = p;
             live = p;
@@ -260,12 +276,53 @@ final class VideoHub {
         // El cartel del coche con la imagen de esta sesión, cuando ya se ve (unos segundos después).
         VideoPipeline shown = p;
         h.postDelayed(() -> {
-            if (pipeline == shown) CarUi.showVideoInfo(plan.videoW, shown.fpsCap(), ThermalGuard.batteryTempC(ctx));
+            if (pipeline == shown) CarUi.showVideoInfo(shown.plan.videoW, shown.fpsCap(), ThermalGuard.batteryTempC(ctx));
         }, 4000);
         String msg = "vídeo " + verdict + " para S" + port.getId() + ": " + plan
                 + ("REUTILIZADO".equals(verdict) && sinceDetachMs >= 0 ? " · " + sinceDetachMs + " ms sin sesión" : "");
         L.i(msg);
         QdTrace.i("HQL/Vídeo", msg);
+    }
+
+    /** VideoPipeline.EncoderTrouble: ya en hql-video, pero desde dentro de la pipeline; se recrea en una vuelta aparte. */
+    private void encoderTrouble(VideoPipeline p, String why) {
+        h.post(() -> onEncoderFailed(p, why));
+    }
+
+    /**
+     * El codificador de la pipeline viva ha fallado. Al arrancar (EncoderFallback.early), se recuerda el escalón
+     * siguiente, se recrea el vídeo con él y se engancha a la misma sesión sin soltar el coche. Un error tardío, o sin
+     * escalones, como siempre: la pipeline queda rota y se recrea al volver a enganchar.
+     */
+    private void onEncoderFailed(VideoPipeline p, String why) {
+        if (quitting || pipeline != p) return;
+        if (!stepDown(p.plan, p.wanted(), p.encoderParams(), why, p.encoderFrames(), p.encoderAgeMs())) return;
+        SessionPort port = p.active();
+        VideoPlan.Car car = p.plan.car;
+        doStop("codificador: reinicio con un escalón más seguro");
+        if (port != null && !port.getClosed()) {
+            L.i("VIDEO: vuelvo a enganchar S" + port.getId() + " con el codificador nuevo (sin soltar el coche)");
+            doAttach(port, car);
+        }
+    }
+
+    /**
+     * Decide si se baja de escalón (EncoderFallback.afterFailure); si sí, lo recuerda para este móvil y códec. Una línea
+     * en el log siempre: «codificador: falló con X, sigo con Y» (o por qué no se baja).
+     */
+    private boolean stepDown(VideoPlan plan, EncoderFallback.Wanted w, String params, String why, int frames, long ageMs) {
+        if (w == null || plan.encKey.isEmpty()) {
+            L.w("codificador: falló (" + why + ") sin datos para bajar de escalón");
+            return false;
+        }
+        int next = EncoderFallback.afterFailure(plan.encStep, w, frames, ageMs);
+        String line = EncoderFallback.failLine(plan.encKey, plan.encStep, params, why, frames, ageMs, next);
+        L.w(line);
+        QdTrace.i("HQL/Vídeo", line);
+        if (next < 0) return false;
+        cfg.setEncFallback(EncoderFallback.encode(EncoderFallback.remember(
+                EncoderFallback.decode(cfg.encFallback()), plan.encKey, plan.encProfile, next)));
+        return true;
     }
 
     private void doStop(String why) {

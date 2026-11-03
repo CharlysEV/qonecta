@@ -66,10 +66,34 @@ final class VideoPipeline {
     /** IDR sin pedir y sin nada que contar (los periódicos del patrón y de la app): como mucho una línea cada tanto. */
     private static final long QUIET_IDR_LOG_MS = 10_000;
 
+    /**
+     * Un codificador que falla al arrancar sin dar frames, o que no da ninguno en este tiempo desde el primero que se le
+     * dio (por si un códec se queda mudo sin avisar del error): EncoderFallback.
+     */
+    static final long NO_FIRST_FRAME_NS = 3_000_000_000L;
+
+    /** El codificador ha fallado (hilo hql-video): VideoHub decide si lo reinicia más seguro (EncoderFallback). */
+    interface EncoderTrouble {
+        void onEncoderFailed(VideoPipeline p, String why);
+    }
+
+    /** No arrancó el codificador (configure o start): con lo que pedía, para EncoderFallback. */
+    static final class EncoderStartFailed extends IOException {
+        final EncoderFallback.Wanted wanted;
+        final String params;
+
+        EncoderStartFailed(Throwable cause, EncoderFallback.Wanted wanted, String params) {
+            super("el codificador no arranca: " + cause, cause);
+            this.wanted = wanted;
+            this.params = params;
+        }
+    }
+
     final VideoPlan plan;
     private final Context ctx;
     private final Config cfg;
     private final Handler h;
+    private final EncoderTrouble trouble;
     /**
      * Juego (emulador) en pantalla: el vídeo puede ir a los fps de la sesión (60 por cable). Sin juego, como mucho
      * CONTENT_FPS: Android Auto y nuestras pantallas no necesitan más, y a 60 el móvil se calienta para nada.
@@ -179,16 +203,18 @@ final class VideoPipeline {
     private long lastAaCycleMs = Long.MIN_VALUE / 4;
     private long lastAaOversizeWarnMs = Long.MIN_VALUE / 4;
 
-    private VideoPipeline(Context ctx, Config cfg, VideoPlan plan, Handler h) {
+    private VideoPipeline(Context ctx, Config cfg, VideoPlan plan, Handler h, EncoderTrouble trouble) {
         this.ctx = ctx.getApplicationContext();
         this.cfg = cfg;
         this.plan = plan;
         this.h = h;
+        this.trouble = trouble;
     }
 
     /** Hilo hql-video: crea la fuente y, según el modo, el reenvío directo o el encoder. */
-    static VideoPipeline create(Context ctx, Config cfg, VideoPlan plan, Boolean carDark, Handler h) throws IOException {
-        VideoPipeline p = new VideoPipeline(ctx, cfg, plan, h);
+    static VideoPipeline create(Context ctx, Config cfg, VideoPlan plan, Boolean carDark, Handler h,
+                                EncoderTrouble trouble) throws IOException {
+        VideoPipeline p = new VideoPipeline(ctx, cfg, plan, h, trouble);
         try {
             p.start(carDark);
         } catch (IOException | RuntimeException e) {
@@ -287,6 +313,18 @@ final class VideoPipeline {
     /** El SPS del encoder se reescribe para baja latencia (Config.spsLowDelay). */
     private boolean lowDelaySps;
 
+    // Arranque del codificador (EncoderFallback).
+    /** Lo que pedía el perfil antes del escalón del plan. */
+    private EncoderFallback.Wanted wanted;
+    /** Frames que ha dado el codificador (hilo enc-drain). */
+    private volatile int encFrames;
+    private long encStartNs;
+    /** Con la puerta GL: cuándo se le dio el primer frame (0 = ninguno). */
+    private volatile long firstSubmitNs;
+    /** Ya se avisó a VideoHub del fallo (hql-video): una vez por codificador. */
+    private boolean troubleReported;
+    private boolean stepOkLogged;
+
     private void startEncoder() throws IOException {
         int carFps = plan.car.argsFps;
         int carBitrate = plan.car.argsBitrate;
@@ -313,6 +351,9 @@ final class VideoPipeline {
         // cada IDR afinaba la imagen entera y pesaba de mediana 2,3 veces el IDR (hasta 250-335 KB a 1,2-2,5 Mbit/s). El
         // c2.qti no hace caso de los cambios de QP en marcha, así que tiene que ir aquí.
         vp.qpPMin = labQp > 0 ? labQp : profQp;
+        // El bitrate de «Coche» con lo que pide el coche: el tope del escalón CAR_SIZE de EncoderFallback.
+        int carStepBps = VideoProfile.of(VideoProfile.CAR).withFluidity(cfg.fluidity())
+                .startBitrate(carBitrate, carFps, EncoderFallback.CAR_WIDTH);
         boolean latestFrame = source instanceof AaPassthroughSource;
         if (latestFrame) {
             // Como SspSession: sin IDR periódicos (el coche pide uno cuando lo necesita), intra-refresh. VBR en todos los
@@ -335,6 +376,7 @@ final class VideoPipeline {
                     abrCable = !VideoProfile.byWifi(carFps);
                 }
             }
+            applyEncoderStep(carStepBps);
             if (prof.followsCar) {
                 L.i(String.format(Locale.US, "VIDEO fluidez %d fps (perfil %s): %d fps · %.1f Mbit/s; el coche pide %d fps · %.1f Mbit/s",
                         prof.fluidity, prof.id, vp.fps, vp.bitrate / 1e6, carFps, carBitrate / 1e6));
@@ -354,9 +396,11 @@ final class VideoPipeline {
                     pendingSinceNs = now;
                     lastSubmitNs = now;
                     pendingEnc.incrementAndGet();
+                    if (firstSubmitNs == 0) firstSubmitNs = now;
                 }
             });
         }
+        if (!latestFrame) applyEncoderStep(carStepBps);
         L.i("VIDEO start: coche pide " + plan.car.argsW + "x" + plan.car.argsH + "@" + carFps + " " + carBitrate + "bps intervalo "
                 + plan.car.argsInterval + " | usamos " + vp);
         encJitter = new Jitter("encoder", Math.max(1, vp.fps));
@@ -383,9 +427,20 @@ final class VideoPipeline {
             public void onFrame(byte[] data, int len, boolean keyFrame, long ptsUs) {
                 onEncodedFrame(data, len, keyFrame, ptsUs);
             }
+
+            @Override
+            public void onError(String why) {
+                h.post(() -> reportEncoderTrouble("error del códec: " + why));
+            }
         });
         L.i("fuente de vídeo: " + cfg.mode() + " -> " + source.getClass().getSimpleName());
-        android.view.Surface in = encoder.start();
+        encStartNs = System.nanoTime();
+        android.view.Surface in;
+        try {
+            in = encoder.start();
+        } catch (IOException | RuntimeException e) {
+            throw new EncoderStartFailed(e, wanted, encoderParams());
+        }
         IdrSizeController ctl = new IdrSizeController(encoder.qpControl(), PAYLOAD_CAP);
         idrCtl = ctl;
         L.i("VIDEO " + ctl.describe());
@@ -405,10 +460,83 @@ final class VideoPipeline {
         }
     }
 
+    /**
+     * Escalón del plan (EncoderFallback) sobre los parámetros ya calculados: antes, lo que pedía el perfil (para saber qué
+     * escalones cambian algo si falla). Con el escalón 0 no cambia nada. Antes de crear el controlador del enlace.
+     */
+    private void applyEncoderStep(int carStepBps) {
+        wanted = new EncoderFallback.Wanted(vp.lowLatency || vp.maxClocks, vp.profile, plan.videoW,
+                Math.max(vp.bitrate, abrMax), carStepBps);
+        int step = plan.encStep;
+        if (step <= EncoderFallback.AS_IS) return;
+        EncoderFallback.apply(step, vp);
+        vp.bitrate = EncoderFallback.bitrate(step, vp.bitrate, carStepBps);
+        if (abrMax > 0) {
+            abrMax = EncoderFallback.bitrate(step, abrMax, carStepBps);
+            abrMin = Math.min(abrMin, abrMax);
+            abrBps = Math.min(abrBps, abrMax);
+            abrInitial = Math.min(abrInitial, abrMax);
+        }
+        L.i("codificador: empiezo en el escalón " + step + " «" + EncoderFallback.describe(step) + "», recordado para "
+                + plan.encKey + " (falló con más; elegir un perfil a mano lo vuelve a probar desde arriba)");
+    }
+
+    /** Lo que lleva el codificador, para el log de EncoderFallback. */
+    String encoderParams() {
+        VideoEncoder.Params p = vp;
+        return p == null ? "?" : p + (p.lowLatency ? " · baja latencia" : "");
+    }
+
+    EncoderFallback.Wanted wanted() {
+        return wanted;
+    }
+
+    /** Frames que ha dado el codificador y ms desde que arrancó (EncoderFallback). */
+    int encoderFrames() {
+        return encFrames;
+    }
+
+    long encoderAgeMs() {
+        return encStartNs > 0 ? (System.nanoTime() - encStartNs) / 1_000_000 : 0;
+    }
+
+    /** Hilo hql-video: el codificador ha fallado; se avisa una vez a VideoHub. */
+    private void reportEncoderTrouble(String why) {
+        if (stopped || troubleReported || encoder == null) return;
+        troubleReported = true;
+        if (trouble != null) trouble.onEncoderFailed(this, why);
+    }
+
+    /**
+     * Puro: ¿codificador mudo al arrancar? Ningún frame NO_FIRST_FRAME_NS después del primero que se le dio (con la puerta
+     * GL) o de arrancar (sin ella); sin frames dados todavía (puerta cerrada, sin sesión), nada que reprocharle.
+     */
+    static boolean silentAtStart(long nowNs, int frames, long sinceNs) {
+        return frames <= 0 && sinceNs > 0 && nowNs - sinceNs >= NO_FIRST_FRAME_NS;
+    }
+
+    /** Hilo hql-video (tick): codificador mudo al arrancar y, con un escalón recordado, si va bien. */
+    private void checkEncoderStart(long nowNs) {
+        if (encoder == null || stopped || troubleReported) return;
+        int frames = encFrames;
+        long since = gated ? firstSubmitNs : encStartNs;
+        if (silentAtStart(nowNs, frames, since)) {
+            reportEncoderTrouble("ningún frame " + (nowNs - since) / 1_000_000 + " ms después de darle el primero");
+            return;
+        }
+        if (!stepOkLogged && plan.encStep > EncoderFallback.AS_IS && frames > 0
+                && nowNs - encStartNs >= EncoderFallback.EARLY_MS * 1_000_000L) {
+            stepOkLogged = true;
+            L.i("codificador: con el escalón " + plan.encStep + " «" + EncoderFallback.describe(plan.encStep) + "» va bien ("
+                    + frames + " frames); queda recordado para " + plan.encKey);
+        }
+    }
+
     /** Hilo enc-drain: el búfer se reutiliza, pero el núcleo copia el frame al encolarlo. */
     private void onEncodedFrame(byte[] buf, int len, boolean flagKey, long ptsUs) {
         Jitter j = encJitter;
         if (j != null) j.tick();
+        encFrames++;
         lastEncoderFrameNs = System.nanoTime();
         // pendingEnc - 1 sin bajar de 0 (bucle CAS: getAndUpdate es de API 24).
         while (true) {
@@ -988,8 +1116,9 @@ final class VideoPipeline {
         }));
     }
 
-    /** Hilo hql-video, cada 500 ms: vigilante del IDR en el reenvío directo. */
+    /** Hilo hql-video, cada 500 ms: arranque del codificador y vigilante del IDR en el reenvío directo. */
     void tick() {
+        checkEncoderStart(System.nanoTime());
         KeyframePolicy pol = policy;
         SessionPort p = active;
         if (pol == null || p == null || stopped) return;

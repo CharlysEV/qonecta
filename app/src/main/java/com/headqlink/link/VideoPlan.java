@@ -68,9 +68,21 @@ final class VideoPlan {
     final Car car;
     /** Config.videoFingerprint(): todo lo de los ajustes que cambia el vídeo. */
     final String settings;
+    /**
+     * Escalón del codificador (EncoderFallback; 0 = tal cual), el móvil y códec con que se recuerda y el perfil con que
+     * se aprendió («» en el reenvío directo, sin codificador propio). Con CAR_SIZE, videoW y videoH ya son los de «Coche».
+     */
+    final int encStep;
+    final String encKey;
+    final String encProfile;
 
     VideoPlan(String mode, String profileId, boolean reencode, boolean extended, boolean passthrough,
               int videoW, int videoH, int fps, Car car, String settings) {
+        this(mode, profileId, reencode, extended, passthrough, videoW, videoH, fps, car, settings, 0, "", "");
+    }
+
+    VideoPlan(String mode, String profileId, boolean reencode, boolean extended, boolean passthrough,
+              int videoW, int videoH, int fps, Car car, String settings, int encStep, String encKey, String encProfile) {
         this.mode = mode;
         this.profileId = profileId;
         this.reencode = reencode;
@@ -81,6 +93,9 @@ final class VideoPlan {
         this.fps = fps;
         this.car = car;
         this.settings = settings;
+        this.encStep = encStep;
+        this.encKey = encKey;
+        this.encProfile = encProfile;
     }
 
     /** Plan para los ajustes actuales y lo que pidió el coche. */
@@ -96,8 +111,20 @@ final class VideoPlan {
         boolean reencode = extended || (Config.MODE_AA.equals(mode) && cfg.aaReencode());
         boolean passthrough = Config.MODE_AA.equals(mode) && !cfg.aaReencode();
         int fps = aa ? cfg.aaFps(car.argsFps) : cfg.fps(car.argsFps);
-        return new VideoPlan(mode, aa ? cfg.videoProfile().id : "", reencode, extended, passthrough,
-                dims[0], dims[1], fps, car, cfg.videoFingerprint());
+        String profileId = aa ? cfg.videoProfile().id : "";
+        int encStep = 0;
+        String encKey = "";
+        String encProfile = "";
+        if (!passthrough) {
+            // Con codificador propio: el escalón recordado para este móvil y códec (EncoderFallback), con el tamaño de
+            // partida (la clave no cambia al bajar a 1280 de ancho).
+            encKey = VideoEncoder.fallbackKey(dims[0], dims[1], fps);
+            encProfile = mode + "/" + profileId;
+            encStep = EncoderFallback.startStep(EncoderFallback.decode(cfg.encFallback()), encKey, encProfile);
+            dims = EncoderFallback.size(encStep, dims[0], dims[1]);
+        }
+        return new VideoPlan(mode, profileId, reencode, extended, passthrough,
+                dims[0], dims[1], fps, car, cfg.videoFingerprint(), encStep, encKey, encProfile);
     }
 
     /** Por qué este plan no sirve donde otro (para el log al recrear), o "" si son iguales. */
@@ -112,6 +139,7 @@ final class VideoPlan {
         if (fps != o.fps) sb.append("fps ").append(o.fps).append("→").append(fps).append(' ');
         if (!car.equals(o.car)) sb.append("coche (").append(o.car).append(" → ").append(car).append(") ");
         if (!settings.equals(o.settings)) sb.append("ajustes ");
+        if (encStep != o.encStep) sb.append("escalón del codificador ").append(o.encStep).append("→").append(encStep).append(' ');
         return sb.toString().trim();
     }
 
@@ -122,17 +150,18 @@ final class VideoPlan {
         VideoPlan p = (VideoPlan) o;
         return reencode == p.reencode && extended == p.extended && passthrough == p.passthrough && videoW == p.videoW
                 && videoH == p.videoH && fps == p.fps && mode.equals(p.mode) && profileId.equals(p.profileId)
-                && car.equals(p.car) && settings.equals(p.settings);
+                && car.equals(p.car) && settings.equals(p.settings) && encStep == p.encStep;
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(new Object[]{mode, profileId, reencode, extended, passthrough, videoW, videoH, fps, car, settings});
+        return Arrays.hashCode(new Object[]{mode, profileId, reencode, extended, passthrough, videoW, videoH, fps, car, settings, encStep});
     }
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "%s%s %s %dx%d@%d · %s", mode, profileId.isEmpty() ? "" : "/" + profileId,
-                passthrough ? "reenvío directo" : reencode ? "último frame" : "encoder", videoW, videoH, fps, car);
+        return String.format(Locale.US, "%s%s %s %dx%d@%d · %s%s", mode, profileId.isEmpty() ? "" : "/" + profileId,
+                passthrough ? "reenvío directo" : reencode ? "último frame" : "encoder", videoW, videoH, fps, car,
+                encStep > 0 ? " · codificador en escalón " + encStep + " (" + EncoderFallback.describe(encStep) + ")" : "");
     }
 }
