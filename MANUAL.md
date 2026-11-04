@@ -858,8 +858,9 @@ su biblioteca: carpeta Música, Descargas o un USB), por artista y álbum. Toca 
 mandos del volante. Necesita el permiso «Fotos, vídeos, música y ubicación» (Android 13 o superior).
 
 Si la radio o «Mi música» sonaba cuando terminó la conexión con el coche (al apagarlo, por ejemplo), sigue sola al
-volver a conectar; una canción, por donde iba. Si la habías parado, no. Se quita en Ajustes › «Pantalla del coche» ›
-«Seguir con la radio al conectar».
+volver a conectar; una canción, por donde iba. Si la habías parado, no. Vale en los dos modos: en «Auto» (sin el
+panel), la emisora vuelve unos segundos después de conectar, cuando Android Auto ya está en el coche, y no si ya suena
+otra música. Se quita en Ajustes › «Pantalla del coche» › «Seguir con la radio al conectar».
 
 ### La radio en Android Auto
 

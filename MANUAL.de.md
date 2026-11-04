@@ -927,7 +927,9 @@ Mini-Player im Panel und den Lenkradtasten. Dafür braucht es die Berechtigung �
 
 Lief das Radio oder „Meine Musik“, als die Verbindung zum Fahrzeug endete (zum Beispiel beim Ausschalten), läuft es
 beim nächsten Verbinden von selbst weiter; ein Titel an der Stelle, an der er war. Hattest du es angehalten, nicht.
-Abschalten unter Einstellungen › „Fahrzeugbildschirm“ › „Radio beim Verbinden fortsetzen“.
+Das gilt in beiden Modi: Bei „Auto“ (ohne Panel) kommt der Sender ein paar Sekunden nach dem Verbinden zurück, sobald
+Android Auto im Fahrzeug ist, und nicht, wenn schon andere Musik läuft. Abschalten unter Einstellungen ›
+„Fahrzeugbildschirm“ › „Radio beim Verbinden fortsetzen“.
 
 ### Das Radio in Android Auto
 

@@ -840,8 +840,10 @@ It plays like the radio: it keeps going when you change screen, with the panel's
 wheel buttons. It needs the "Photos, videos, music and location" permission (Android 13 or later).
 
 If the radio or "My music" was playing when the connection with the car ended (when you switch it off, for example),
-it carries on by itself when you connect again; a song, from where it was. Not if you had stopped it. Turn it off in
-Settings › "Car screen" › "Resume the radio when connecting".
+it carries on by itself when you connect again; a song, from where it was. Not if you had stopped it. It works in both
+modes: in "Auto" (without the panel), the station comes back a few seconds after connecting, once Android Auto is on
+the car, and not if other music is already playing. Turn it off in Settings › "Car screen" › "Resume the radio when
+connecting".
 
 ### The radio in Android Auto
 

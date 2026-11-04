@@ -865,8 +865,9 @@ biblioteca: pasta Música, Transferências ou uma pen USB), por artista e álbum
 volante. Precisa da permissão «Fotos, vídeos, música e localização» (Android 13 ou superior).
 
 Se a rádio ou «A minha música» estava a tocar quando a ligação ao carro terminou (ao desligá-lo, por exemplo),
-continua sozinha na ligação seguinte; uma música, onde ia. Se a tinha parado, não. Desliga-se em Definições › «Ecrã
-do carro» › «Continuar a rádio ao ligar».
+continua sozinha na ligação seguinte; uma música, onde ia. Se a tinha parado, não. Funciona nos dois modos: em
+«Auto» (sem o painel), a estação volta uns segundos depois de ligar, quando o Android Auto já está no carro, e não se
+já estiver a tocar outra música. Desliga-se em Definições › «Ecrã do carro» › «Continuar a rádio ao ligar».
 
 ### A rádio no Android Auto
 

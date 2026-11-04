@@ -134,7 +134,7 @@ class RadioCarGoneTest {
         // Android Auto conectado a la radio (RadioBrowserService): en modo Auto puede quedarse minutos esperando al coche.
         RadioSession.browserUp(app)
         val session = RadioSession.get(app)
-        // Lo guardado de una sesión anterior del modo extendido no se toca.
+        // Lo guardado de una sesión anterior.
         prefs.edit().putString("state", RadioPlayer.resumeJson(listOf(station("Radio Vieja")), 0, 0)).commit()
         playing()
         outputGone()
@@ -142,7 +142,7 @@ class RadioCarGoneTest {
         assertEquals(1, shadowOf(nm).allNotifications.size)
         // Se acaba la sesión con el coche sin la interfaz propia (AaPassthroughSource.stop).
         assertFalse(CarUi.running())
-        RadioPlayer.carGone()
+        RadioPlayer.carGone(app)
         looper.idle()
         assertNull(RadioPlayer.current())
         assertFalse(RadioPlayer.isPlaying())
@@ -154,7 +154,8 @@ class RadioCarGoneTest {
         assertNull(RadioPlayer.lastStopped())
         RadioPlayer.playFromControls(app)
         assertNull(RadioPlayer.current())
-        assertEquals("Radio Vieja", saved()!!.list[0].name)
+        // Pausada solo por la salida de audio: sonaba, y se guarda para la próxima conexión (RadioPlayer.carBack).
+        assertEquals("Radio Uno", saved()!!.list[0].name)
         // Sin Android Auto, la sesión se libera.
         RadioSession.browserDown()
         assertFalse(RadioSession.isToken(session.sessionToken.token))
@@ -163,7 +164,7 @@ class RadioCarGoneTest {
     @Test
     fun aRadioPlayingWhenTheCarGoesIsStoppedToo() {
         playing()
-        RadioPlayer.carGone()
+        RadioPlayer.carGone(app)
         looper.idle()
         assertNull(RadioPlayer.current())
         assertFalse(RadioSession.owner())

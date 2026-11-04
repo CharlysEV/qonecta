@@ -20,7 +20,8 @@ import java.util.List;
  * mientras la radio tiene la música (RadioSession, «la música de Qonecta+»). Instalada fuera de Google Play, Android Auto
  * solo la enseña con «Fuentes desconocidas» activado en sus ajustes de desarrollador. Conectarse no pone nada a sonar:
  * solo elegir una emisora o «▶» (RadioSession). Sin la interfaz propia en marcha (modo «Auto»), lo que se puso desde
- * Android Auto se para cuando se va, o antes, al acabarse la sesión con el coche (RadioPlayer.carGone).
+ * Android Auto se para cuando se va, o antes, al acabarse la sesión con el coche (RadioPlayer.carGone; con «Seguir con
+ * la radio al conectar», vuelve en la próxima: RadioPlayer.carBack).
  *
  * Solo entran Android Auto, el sistema y el Bluetooth (RadioLibrary.trusted): el servicio está exportado y las listas
  * dicen qué emisoras escuchas.

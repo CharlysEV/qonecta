@@ -1320,6 +1320,7 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         main.removeCallbacks(lifeTimer);
         main.removeCallbacks(cableFallbackTimer);
         PlannedNotice.onCarLost(this);
+        RadioPlayer.cancelCarBack();
         // Cerrado sin pasar por shutdownAll (p. ej. sin poder pasar a primer plano) con AA en pausa: que no quede
         // aparcado y con su servidor encendido sin nadie que lo cierre.
         if (!aaClosed && AaPark.parked && !AaGuardService.active) closeAa(false);
@@ -1383,6 +1384,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         NesScreen.carPresent(false);
         // La pregunta de la ruta planificada (modo «Auto») sin responder, fuera: la ruta sigue para el viaje siguiente.
         PlannedNotice.onCarLost(this);
+        // La radio que iba a seguir (modo «Auto») ya no: lo guardado espera a la próxima conexión.
+        RadioPlayer.cancelCarBack();
         return life.carLost(now(), env(), graceMs(), cfg.carWaitMs());
     }
 
@@ -1394,6 +1397,8 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
         // Modo «Auto» (sin nuestra pantalla en el coche): la ruta planificada en el móvil, «¿Usar la ruta que planificaste?»
         // en una notificación; nada se abre solo. En «Auto extendido» pregunta el coche (CarUi → RoutePlanner.offerPlanned).
         PlannedNotice.onCarConnected(this, cfg.mode());
+        // Modo «Auto»: «Seguir con la radio al conectar», ya con Android Auto en el coche (en «Auto extendido», CarUi).
+        RadioPlayer.carBack(this, cfg.mode());
         if (cableNoticePending && !usbActive) {
             // Primera sesión por Wi-Fi Direct tras caerse el cable: el aviso en la pantalla del coche, ahora que se ve (si la
             // interfaz propia aún no está, por voz).

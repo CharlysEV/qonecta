@@ -61,7 +61,7 @@ final class RadioPlayer {
     private static boolean displaced;
     /**
      * En pausa porque se fue la salida de audio (el Bluetooth del coche, unos auriculares), no por una pausa del usuario:
-     * al cerrarse la interfaz propia cuenta como que sonaba («Seguir con la radio al conectar»).
+     * al cerrarse la interfaz propia o perder el coche cuenta como que sonaba («Seguir con la radio al conectar»).
      */
     private static boolean noisyPaused;
     /** HTTP Basic de lo que suena: su servidor y la cabecera (los lee el hilo de carga del reproductor); null si no. */
@@ -283,9 +283,16 @@ final class RadioPlayer {
      * olvida, como cuando se va Android Auto (RadioBrowserService.onDestroy). Hace falta: sin coche, Android Auto puede
      * seguir conectado esperándolo minutos (AaPark) y RadioBrowserService con él, y la radio seguía sonando por el altavoz
      * del móvil y su sesión, en pausa, se quedaba con las teclas.
+     *
+     * Antes, con «Seguir con la radio al conectar», se guarda lo que sonaba (o lo pausó solo la salida de audio), como
+     * CarUi.stop, para la próxima conexión (carBack); en pausa del usuario o parada a mano, se olvida. Sin nada puesto, lo
+     * guardado de una conexión que se cortó antes de seguir espera a la siguiente.
      */
-    static void carGone() {
+    static void carGone(Context ctx) {
         if (CarUi.running()) return;
+        Context app = ctx.getApplicationContext();
+        if (!new Config(app).radioResume() || (current() == null && lastStopped() != null)) forgetResume(app);
+        else if (current() != null) saveForResume(app);
         if (current() != null) L.i("radio: se acaba la sesión con el coche (modo Auto): paro la radio");
         stop();
     }
@@ -351,7 +358,7 @@ final class RadioPlayer {
     }
 
     /**
-     * Al cerrarse la interfaz propia, antes de {@link #stop()}: si sonaba algo (o lo pausó solo la salida de audio al irse
+     * Al cerrarse la interfaz propia (o al perder el coche en «Auto», carGone), antes de {@link #stop()}: si sonaba algo (o lo pausó solo la salida de audio al irse
      * el Bluetooth del coche, que suele irse antes que el enlace), se guarda para seguir en la próxima sesión («Seguir con
      * la radio al conectar»); si estaba en pausa o parado, se olvida (como la radio de un coche).
      */
@@ -372,7 +379,10 @@ final class RadioPlayer {
         return playing || noisyPaused;
     }
 
-    /** Al abrir la interfaz propia: sigue con lo que sonaba al cerrarse la anterior, si sonaba y no suena ya otra cosa. */
+    /**
+     * Al abrir la interfaz propia (o, en «Auto», ya con Android Auto en el coche: carBack): sigue con lo que sonaba al
+     * cerrarse la anterior, si sonaba y no suena ya otra cosa.
+     */
     static void resumeSaved(Context ctx) {
         if (current() != null) return;
         Resume r = resumeFrom(ctx.getSharedPreferences(RESUME_PREFS, Context.MODE_PRIVATE).getString("state", null),
@@ -386,6 +396,121 @@ final class RadioPlayer {
                 + " desde " + r.posMs / 1000 + " s" : s.name));
         start(ctx.getApplicationContext());
         if (r.posMs > 0 && player != null) player.seekTo(r.posMs);
+    }
+
+    private static void forgetResume(Context app) {
+        android.content.SharedPreferences p = app.getSharedPreferences(RESUME_PREFS, Context.MODE_PRIVATE);
+        if (p.contains("state")) p.edit().remove("state").apply();
+    }
+
+    // ---------------------------------------------------------------- modo «Auto»: seguir al volver el coche
+
+    /*
+     * En «Auto extendido» sigue CarUi al abrirse (resumeSaved). En «Auto» no hay interfaz propia: lo guarda carGone al
+     * perder el coche y, en la primera conexión siguiente, carBack lo pone una vez, cuando Android Auto ya está en el coche
+     * (el audio sale por él y no por el altavoz). Suena como si se pusiera a mano: la radio toma la música y Android Auto
+     * enseña la emisora (RadioSession.audible). No sigue si ya suena otra música (la que puso el usuario en el móvil o la
+     * que Android Auto retoma al conectar) ni si la radio ya tiene emisora; en los dos casos, lo guardado se olvida.
+     */
+
+    /** Tras conectar se espera esto antes de seguir, como la pregunta de la ruta (PlannedNotice). */
+    static final long AUTO_RESUME_AFTER_MS = PlannedNotice.AFTER_MS;
+    /** Android Auto aún no está en el coche, o habla su navegador o un aviso: se vuelve a mirar dentro de esto. */
+    static final long AUTO_RESUME_RETRY_MS = 3_000;
+    /** Y, si en esto (desde el primer intento) no se ha podido, se olvida. */
+    static final long AUTO_RESUME_GIVE_UP_MS = 60_000;
+    /** Lo que se hace al mirar (autoResume). */
+    static final int AUTO_RESUME = 0;
+    static final int AUTO_WAIT = 1;
+    static final int AUTO_FORGET = 2;
+
+    /** ¿Android Auto conectado y en el coche? Solo cambia en las pruebas (JVM). */
+    static volatile java.util.function.BooleanSupplier aaInCar = AaPassthroughSource::aaConnectedNow;
+    private static android.os.Handler main;
+    private static Runnable carBackTask;
+
+    /** Sesión con el coche (otra vez) en marcha (LinkService). Solo en «Auto» y con algo guardado. Hilo principal. */
+    static void carBack(Context ctx, String mode) {
+        if (!Config.MODE_AA.equals(mode)) return;
+        Context app = ctx.getApplicationContext();
+        if (!new Config(app).radioResume()
+                || !app.getSharedPreferences(RESUME_PREFS, Context.MODE_PRIVATE).contains("state")) return;
+        cancelCarBack();
+        if (main == null) main = new android.os.Handler(android.os.Looper.getMainLooper());
+        long[] first = {-1};
+        carBackTask = new Runnable() {
+            @Override
+            public void run() {
+                long now = android.os.SystemClock.elapsedRealtime();
+                if (first[0] < 0) first[0] = now;
+                carBackNow(app, now - first[0] >= AUTO_RESUME_GIVE_UP_MS, this);
+            }
+        };
+        main.postDelayed(carBackTask, AUTO_RESUME_AFTER_MS);
+    }
+
+    /** Sesión con el coche terminada: no se intenta (lo guardado sigue para la próxima conexión). Hilo principal. */
+    static void cancelCarBack() {
+        if (carBackTask != null && main != null) main.removeCallbacks(carBackTask);
+        carBackTask = null;
+    }
+
+    private static void carBackNow(Context app, boolean late, Runnable task) {
+        if (carBackTask != task) return;
+        carBackTask = null;
+        // Con la interfaz propia (se ha cambiado de modo), sigue ella al abrirse.
+        if (CarUi.running()) return;
+        long g = com.andrerinas.openheadunit.aap.AapAudio.getLastGuidanceMs();
+        boolean speaking = VoiceAlert.speaking()
+                || (g > 0 && android.os.SystemClock.elapsedRealtime() - g < RoadGuide.GUIDANCE_QUIET_MS);
+        boolean on = new Config(app).radioResume();
+        boolean has = current() != null;
+        boolean other = !has && otherMusic(app);
+        switch (autoResume(on, has, speaking, other, aaInCar.getAsBoolean(), late)) {
+            case AUTO_WAIT:
+                carBackTask = task;
+                main.postDelayed(task, AUTO_RESUME_RETRY_MS);
+                return;
+            case AUTO_FORGET:
+                L.i("radio: modo Auto: no sigo con lo que sonaba al perder el coche ("
+                        + (!on ? "ajuste apagado" : has ? "ya hay emisora" : other ? "suena otra música"
+                        : "Android Auto no ha llegado al coche") + ")");
+                forgetResume(app);
+                return;
+            default:
+                // Una vez: lo que vuelva a sonar se guarda otra vez al perder el coche (carGone).
+                resumeSaved(app);
+                forgetResume(app);
+        }
+    }
+
+    /**
+     * Puro: seguir con lo guardado (AUTO_RESUME), mirar otra vez dentro de un rato (AUTO_WAIT) u olvidarlo (AUTO_FORGET).
+     * Con el ajuste apagado, con emisora ya puesta o con otra música sonando (other), se olvida. Hablando el navegador o un
+     * aviso (speaking; su audio puede contar como música) o sin Android Auto en el coche, se espera, salvo si ya es tarde
+     * (late). Si no, sigue.
+     */
+    static int autoResume(boolean on, boolean hasStation, boolean speaking, boolean other, boolean aaInCar, boolean late) {
+        if (!on || hasStation) return AUTO_FORGET;
+        if (speaking) return late ? AUTO_FORGET : AUTO_WAIT;
+        if (other) return AUTO_FORGET;
+        if (!aaInCar) return late ? AUTO_FORGET : AUTO_WAIT;
+        return AUTO_RESUME;
+    }
+
+    /** ¿Suena otra música en el móvil (otra app, o la de Android Auto, que la reproduce Qonecta+)? */
+    private static boolean otherMusic(Context c) {
+        try {
+            android.media.AudioManager am = (android.media.AudioManager) c.getSystemService(Context.AUDIO_SERVICE);
+            if (am == null) return false;
+            if (android.os.Build.VERSION.SDK_INT < 26) return am.isMusicActive();
+            for (android.media.AudioPlaybackConfiguration pc : am.getActivePlaybackConfigurations()) {
+                int u = pc.getAudioAttributes().getUsage();
+                if (u == android.media.AudioAttributes.USAGE_MEDIA || u == android.media.AudioAttributes.USAGE_GAME) return true;
+            }
+        } catch (RuntimeException ignored) {
+        }
+        return false;
     }
 
     /** Puro: la lista (como mucho RESUME_MAX alrededor de la que suena), la que suena y la posición, en JSON. */

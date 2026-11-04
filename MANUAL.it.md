@@ -867,8 +867,10 @@ Android: cartella Musica, Download o una chiavetta USB), per artista e album. To
 al volante. Serve il permesso «Foto, video, musica e posizione» (Android 13 o successivo).
 
 Se la radio o «La mia musica» era in riproduzione quando è finita la connessione con l'auto (spegnendola, per
-esempio), riparte da sola alla connessione successiva; un brano, da dove era. Se l'avevi fermata, no. Si disattiva in
-Impostazioni › «Schermo dell'auto» › «Riprendi la radio alla connessione».
+esempio), riparte da sola alla connessione successiva; un brano, da dove era. Se l'avevi fermata, no. Vale in
+entrambe le modalità: in «Auto» (senza il pannello), la stazione torna pochi secondi dopo la connessione, quando
+Android Auto è già sull'auto, e non se sta già suonando altra musica. Si disattiva in Impostazioni › «Schermo
+dell'auto» › «Riprendi la radio alla connessione».
 
 ### La radio in Android Auto
 

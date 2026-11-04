@@ -968,8 +968,9 @@ final class Config {
 
     /** Tarjeta flotante con la próxima parada sobre Android Auto (CarUi/FloatCard). */
     /**
-     * «Seguir con la radio al conectar» (por defecto, sí): si la radio o «Mi música» sonaba al cerrarse la interfaz propia,
-     * sigue sola en la próxima sesión (RadioPlayer.saveForResume / resumeSaved). Si estaba parada, no.
+     * «Seguir con la radio al conectar» (por defecto, sí): si la radio o «Mi música» sonaba al cerrarse la interfaz propia
+     * (o, en «Auto», al perder el coche), sigue sola en la próxima sesión (RadioPlayer.saveForResume / resumeSaved; en
+     * «Auto», carGone / carBack). Si estaba parada, no.
      */
     static final String RADIO_RESUME = "radio_resume";
 

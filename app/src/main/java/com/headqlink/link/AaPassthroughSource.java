@@ -1053,8 +1053,9 @@ final class AaPassthroughSource implements VideoSource {
             carUi = null;
         } else {
             // Modo «Auto»: sin la interfaz propia (que la para al cerrarse), la radio puesta desde Android Auto se para con
-            // la sesión con el coche; si no, con AA esperando al coche seguía por el altavoz del móvil.
-            main.post(RadioPlayer::carGone);
+            // la sesión con el coche; si no, con AA esperando al coche seguía por el altavoz del móvil. Lo que sonaba sigue en
+            // la próxima conexión («Seguir con la radio al conectar», RadioPlayer.carBack).
+            main.post(() -> RadioPlayer.carGone(ctx));
         }
         if (splashUi != null) {
             splashUi.stop();
