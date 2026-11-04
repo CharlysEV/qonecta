@@ -218,7 +218,9 @@ public class CarCloudActivity extends Activity {
         certRestart.setVisibility(half.kind == CertPick.Step.Kind.NEED_KEY || half.kind == CertPick.Step.Kind.NEED_CERT
                 ? View.VISIBLE : View.GONE);
         // Sesión caducada: el formulario (con el correo puesto) sin tener que cerrar sesión antes.
-        boolean expired = hasSession && CarCloud.snapshot().state == CarCloud.State.EXPIRED;
+        // También si se sabe sin leer (la nube rechazó la renovación o la sesión guardada no se puede abrir): lo apunta
+        // CarCloudSession, y sin esto la cuenta salía «iniciada» con la app recién abierta y nada funcionaba.
+        boolean expired = hasSession && (store.reloginReason() != null || CarCloud.snapshot().state == CarCloud.State.EXPIRED);
         loginBox.setVisibility(hasSession && !expired ? View.GONE : View.VISIBLE);
         sessionBox.setVisibility(hasSession ? View.VISIBLE : View.GONE);
         session.setText(Str.get(R.string.hql_cloud_logged_in, store.maskedEmail()));

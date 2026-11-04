@@ -77,8 +77,12 @@ final class CarCloudStore {
     private final SharedPreferences sp;
     private final Box box;
 
+    /** Solo pruebas: la caja de todos los almacenes que se abren con un Context (null: la del Keystore). */
+    static Box boxForTest;
+
     CarCloudStore(Context ctx) {
-        this(new File(noBackupDir(ctx), DIR), ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE), new KeystoreBox());
+        this(new File(noBackupDir(ctx), DIR), ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE),
+                boxForTest != null ? boxForTest : new KeystoreBox());
     }
 
     CarCloudStore(File dir, SharedPreferences sp, Box box) {
@@ -282,7 +286,36 @@ final class CarCloudStore {
         } catch (JSONException e) {
             throw new IOException("no se pudo guardar la sesión");
         }
-        sp.edit().putString(K_CAR_TYPE, s.carType).putString(K_EMAIL_MASKED, maskEmail(s.email)).apply();
+        // Guardar una sesión nueva (entrar, o un token renovado) es la prueba de que vale: fuera el «vuelve a entrar».
+        sp.edit().putString(K_CAR_TYPE, s.carType).putString(K_EMAIL_MASKED, maskEmail(s.email)).remove(K_RELOGIN).apply();
+    }
+
+    /**
+     * Config en claro: por qué hay que volver a entrar («renovación rechazada (17…)», «sesión guardada ilegible…»), sin
+     * tokens ni datos. Mientras esté, no se pide nada a la nube con la sesión guardada (ni se renueva en bucle): se espera
+     * a que el usuario vuelva a entrar. La sesión guardada NO se borra (el correo sigue puesto en el formulario).
+     */
+    private static final String K_RELOGIN = "relogin";
+
+    /** Por qué hay que volver a entrar, o null si la sesión guardada vale (o no hay). */
+    String reloginReason() {
+        return sp.getString(K_RELOGIN, null);
+    }
+
+    void markRelogin(String why) {
+        String w = why == null || why.isEmpty() ? "sin motivo" : why;
+        sp.edit().putString(K_RELOGIN, w.length() > 200 ? w.substring(0, 200) : w).apply();
+    }
+
+    /**
+     * Puro: lo guardado no se podrá abrir nunca con esta clave (la etiqueta GCM no cuadra: otra clave o el fichero
+     * estropeado; o la clave invalidada). Lo demás (el Keystore ocupado o sin arrancar tras una actualización) puede ser
+     * pasajero: se reintenta sin dar la sesión por perdida.
+     */
+    static boolean lostForGood(GeneralSecurityException e) {
+        if (e instanceof javax.crypto.BadPaddingException) return true; // también AEADBadTagException
+        // Por nombre: la clase es de Android 6 y la variante de GitHub arranca en Android 4.1.
+        return "KeyPermanentlyInvalidatedException".equals(e.getClass().getSimpleName());
     }
 
     /** El historial guardado de la nube, o null. */
@@ -338,7 +371,7 @@ final class CarCloudStore {
         wipeFile(F_SESSION);
         wipeFile(F_HISTORY);
         wipeFile(F_PIN);
-        sp.edit().remove(K_CAR_TYPE).remove(K_EMAIL_MASKED).apply();
+        sp.edit().remove(K_CAR_TYPE).remove(K_EMAIL_MASKED).remove(K_RELOGIN).apply();
     }
 
     /** «Cerrar sesión y borrar datos»: todo, incluidos el certificado, los ajustes y la clave del Keystore. */
@@ -465,9 +498,10 @@ final class CarCloudStore {
 
         @Override
         public byte[] open(byte[] sealed) throws GeneralSecurityException {
-            if (sealed.length < 1 + 12 + 16) throw new GeneralSecurityException("datos cifrados cortos");
+            // Un fichero estropeado no se arregla reintentando (CarCloudStore.lostForGood).
+            if (sealed.length < 1 + 12 + 16) throw new javax.crypto.BadPaddingException("datos cifrados cortos");
             int ivLen = sealed[0] & 0xFF;
-            if (ivLen < 12 || ivLen > 16 || sealed.length < 1 + ivLen + 16) throw new GeneralSecurityException("formato");
+            if (ivLen < 12 || ivLen > 16 || sealed.length < 1 + ivLen + 16) throw new javax.crypto.BadPaddingException("formato");
             Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
             c.init(Cipher.DECRYPT_MODE, key(), new GCMParameterSpec(128, sealed, 1, ivLen));
             return c.doFinal(sealed, 1 + ivLen, sealed.length - 1 - ivLen);

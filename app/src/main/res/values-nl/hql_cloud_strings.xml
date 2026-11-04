@@ -212,6 +212,8 @@
     <string name="hql_cc_done">✓ %1$s</string>
     <string name="hql_cc_sent">%1$s: verstuurd; de auto heeft het niet bevestigd</string>
     <string name="hql_cc_failed">%1$s: mislukt (%2$s)</string>
+    <string name="hql_cc_session_closed">Leapmotor-sessie gesloten: open Qonecta+ en log opnieuw in</string>
+    <string name="hql_cc_failed_closed">%1$s: niet verzonden. Leapmotor-sessie gesloten: open Qonecta+ en log opnieuw in</string>
     <string name="hql_cloud_orders">Opdrachten aan de auto vanuit de Qonecta+-widget: vergrendelen, openen, kofferbak, klimaat en zoeken, ook met je stem</string>
     <string name="hql_cloud_add_widget">Ze verschijnen in de Qonecta+-widget als je hem hoger maakt (4×3): lang indrukken en naar beneden trekken.</string>
     <string name="hql_cw_voice_short">Stem</string>

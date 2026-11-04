@@ -212,6 +212,8 @@
     <string name="hql_cc_done">✓ %1$s</string>
     <string name="hql_cc_sent">%1$s：已发送；车辆未确认</string>
     <string name="hql_cc_failed">%1$s：失败（%2$s）</string>
+    <string name="hql_cc_session_closed">Leapmotor 登录已失效：请打开 Qonecta+ 重新登录</string>
+    <string name="hql_cc_failed_closed">%1$s：未发送。Leapmotor 登录已失效：请打开 Qonecta+ 重新登录</string>
     <string name="hql_cloud_orders">从 Qonecta+ 小组件向车辆发送指令：上锁、解锁、后备箱、空调和寻车，也可语音</string>
     <string name="hql_cloud_add_widget">将 Qonecta+ 小组件调高（4×3）即可显示：长按后向下拖动。</string>
     <string name="hql_cw_voice_short">语音</string>

@@ -48,6 +48,23 @@ final class CarOrders {
     private CarOrders() {
     }
 
+    /**
+     * ¿Hay que volver a entrar en la cuenta de Leapmotor? (la nube rechazó la sesión o no se puede abrir la guardada,
+     * CarCloudSession). Con el ajuste de las órdenes puesto, el widget lo dice en lugar de un error al tocar.
+     */
+    static boolean sessionClosed(Context c) {
+        return new Config(c).getBool(K_ENABLED) && CarCloudStore.supported() && new CarCloudStore(c).reloginReason() != null;
+    }
+
+    /** Se ha vuelto a entrar: fuera el resultado de la última orden (sería el «sesión cerrada» de antes). */
+    static void sessionRestored(Context c) {
+        Config cfg = new Config(c);
+        String last = cfg.getString(K_LAST);
+        if (last == null || last.isEmpty()) return;
+        cfg.putString(K_LAST, "");
+        refresh(c);
+    }
+
     /** ¿Se pueden mandar órdenes? (el ajuste y el PIN guardado) */
     static boolean enabled(Context c) {
         return new Config(c).getBool(K_ENABLED) && new CarCloudStore(c).hasPin();

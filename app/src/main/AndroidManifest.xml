@@ -772,6 +772,11 @@
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
+        <!-- headqlink: despertador para renovar el token de Leapmotor antes de que caduque (también en reposo). -->
+        <receiver
+            android:name="com.headqlink.link.CarCloudSession$RefreshAlarm"
+            android:exported="false" />
+
         <service
             android:name="com.headqlink.link.LinkService"
             android:exported="false"

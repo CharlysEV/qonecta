@@ -111,12 +111,15 @@ final class LinkWidgetViews {
         rv.setViewVisibility(R.id.hql_w_car, show ? View.VISIBLE : View.GONE);
         if (!show) return;
         boolean on = CarOrders.enabled(c);
+        // Sesión de Leapmotor cerrada (4-11, LPMFF: «error» al abrir sin decir por qué): se dice antes de tocar.
+        boolean closed = CarOrders.sessionClosed(c);
         String last = new Config(c).getString(CarOrders.K_LAST);
         rv.setTextViewText(R.id.hql_w_car_status, c.getString(R.string.hql_cw_title) + " · "
-                + (!on ? c.getString(R.string.hql_cw_setup)
+                + (closed ? c.getString(R.string.hql_cc_session_closed)
+                : !on ? c.getString(R.string.hql_cw_setup)
                 : last != null && !last.isEmpty() ? last : c.getString(R.string.hql_cw_ready)));
-        rv.setFloat(R.id.hql_w_car_row, "setAlpha", on ? 1f : OFF_ALPHA);
-        if (!on) rv.setOnClickPendingIntent(R.id.hql_w_car_status, CarOrders.tap(c, "setup", 7));
+        rv.setFloat(R.id.hql_w_car_row, "setAlpha", on && !closed ? 1f : OFF_ALPHA);
+        if (!on || closed) rv.setOnClickPendingIntent(R.id.hql_w_car_status, CarOrders.tap(c, "setup", 7));
         rv.setOnClickPendingIntent(R.id.hql_w_car_lock, CarOrders.tap(c, "lock", 1));
         rv.setOnClickPendingIntent(R.id.hql_w_car_unlock, CarOrders.tap(c, "unlock", 2));
         rv.setOnClickPendingIntent(R.id.hql_w_car_trunk, CarOrders.tap(c, "trunk", 3));

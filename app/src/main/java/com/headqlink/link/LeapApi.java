@@ -135,6 +135,14 @@ final class LeapApi {
         boolean tokenProblem() {
             return httpCode == 401 || serverMessage.toLowerCase(Locale.ROOT).contains("token");
         }
+
+        /**
+         * La nube no ha dicho nada de la sesión: un fallo suyo (HTTP 5xx) o una respuesta que no es JSON (una página de
+         * mantenimiento, un proxy). Al renovar el token, eso no es un rechazo: se reintenta luego.
+         */
+        boolean serverTrouble() {
+            return httpCode >= 500 || apiCode == -1;
+        }
     }
 
     /** La sesión ya no vale (el refresco falló): hay que volver a entrar con el correo y la contraseña. */
@@ -334,6 +342,9 @@ final class LeapApi {
             res = parse(call(accountIdentity, PATH_REFRESH, h, "refreshToken=" + LeapCrypto.encodeComponent(s.refreshToken)),
                     "token refresh");
         } catch (ApiException e) {
+            // Un fallo del servidor no cierra la sesión (antes, un 502 o una página de mantenimiento al renovar pedía
+            // volver a entrar): sale como un error de red y se reintenta.
+            if (e.serverTrouble()) throw e;
             // Para el log: lo que contestó la nube al refresco y a la llamada que lo pidió (qué significa el 17).
             String why = lastTokenProblem;
             throw new SessionExpiredException("refresco rechazado (" + e.apiCode + ", HTTP " + e.httpCode

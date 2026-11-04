@@ -212,6 +212,8 @@
     <string name="hql_cc_done">✓ %1$s</string>
     <string name="hql_cc_sent">%1$s: gesendet; das Auto hat es nicht bestätigt</string>
     <string name="hql_cc_failed">%1$s: fehlgeschlagen (%2$s)</string>
+    <string name="hql_cc_session_closed">Leapmotor-Sitzung beendet: Qonecta+ öffnen und neu anmelden</string>
+    <string name="hql_cc_failed_closed">%1$s: nicht gesendet. Leapmotor-Sitzung beendet: Qonecta+ öffnen und neu anmelden</string>
     <string name="hql_cloud_orders">Befehle an das Auto über das Qonecta+-Widget: verriegeln, entriegeln, Kofferraum, Klima und finden, auch per Sprache</string>
     <string name="hql_cloud_add_widget">Sie erscheinen im Qonecta+-Widget, wenn du es höher machst (4×3): lange drücken und nach unten ziehen.</string>
     <string name="hql_cw_voice_short">Sprache</string>

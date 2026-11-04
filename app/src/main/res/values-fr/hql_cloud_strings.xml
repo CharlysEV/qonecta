@@ -212,6 +212,8 @@
     <string name="hql_cc_done">✓ %1$s</string>
     <string name="hql_cc_sent">%1$s : envoyé ; la voiture n\'a pas confirmé</string>
     <string name="hql_cc_failed">%1$s : échec (%2$s)</string>
+    <string name="hql_cc_session_closed">Session Leapmotor fermée : ouvrez Qonecta+ et reconnectez-vous</string>
+    <string name="hql_cc_failed_closed">%1$s : non envoyé. Session Leapmotor fermée : ouvrez Qonecta+ et reconnectez-vous</string>
     <string name="hql_cloud_orders">Commandes de la voiture depuis le widget Qonecta+ : verrouiller, ouvrir, coffre, clim et localiser, aussi à la voix</string>
     <string name="hql_cloud_add_widget">Elles apparaissent dans le widget Qonecta+ en l\'agrandissant (4×3) : appui long puis étirez-le vers le bas.</string>
     <string name="hql_cw_voice_short">Voix</string>

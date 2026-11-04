@@ -40,6 +40,17 @@ public final class CarControlActivity extends AppCompatActivity {
         super.onCreate(b);
         L.init(this);
         if (b != null) return;
+        // Hay que volver a entrar: se dice claro (y lleva a la cuenta) en lugar de mandar la orden y dar un error.
+        if (CarOrders.sessionClosed(this)) {
+            show(new MaterialAlertDialogBuilder(this)
+                    .setMessage(R.string.hql_cc_session_closed)
+                    .setPositiveButton(R.string.hql_cc_open_settings, (d, w) -> {
+                        startActivity(new Intent(this, CarCloudActivity.class));
+                        finish();
+                    })
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> finish()));
+            return;
+        }
         if (!CarOrders.enabled(this)) {
             show(new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.hql_cc_disabled_title)
@@ -242,8 +253,8 @@ public final class CarControlActivity extends AppCompatActivity {
             try {
                 f = CarCloudSession.readPosition(this);
             } catch (Exception e) {
-                error = Http.safeError(e);
-                L.w("widget «Coche»: «Localizar» fallido: " + error);
+                L.w("widget «Coche»: «Localizar» fallido: " + Http.safeError(e));
+                error = e instanceof LeapApi.SessionExpiredException ? Str.get(R.string.hql_cc_session_closed) : Http.safeError(e);
             }
             double[] me = RoutePlanner.lastKnown(this);
             CarCloudSession.Found found = f;
@@ -331,7 +342,7 @@ public final class CarControlActivity extends AppCompatActivity {
             } catch (Exception e) {
                 good = false;
                 L.w("widget «Coche»: orden " + c + " fallida: " + Http.safeError(e));
-                result = Str.get(R.string.hql_cc_failed, c.label(), Http.safeError(e));
+                result = failureText(c, e);
             }
             String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
             new Config(this).putString(CarOrders.K_LAST, result + " · " + time);
@@ -344,6 +355,15 @@ public final class CarControlActivity extends AppCompatActivity {
                 if (ok) main.postDelayed(this::finish, CLOSE_AFTER_MS);
             });
         }, "car-command").start();
+    }
+
+    /**
+     * El resultado de una orden fallida: con la sesión de Leapmotor cerrada, qué hacer («abre Qonecta+ y vuelve a
+     * entrar»); antes salía «no se pudo (SessionExpiredException: refresco rechazado…)». Lo demás, el error tal cual.
+     */
+    static String failureText(CarCommand c, Exception e) {
+        if (e instanceof LeapApi.SessionExpiredException) return Str.get(R.string.hql_cc_failed_closed, c.label());
+        return Str.get(R.string.hql_cc_failed, c.label(), Http.safeError(e));
     }
 
     /** Un texto en la ventanita: mientras se manda, sin botones; al acabar, con «Aceptar». */
