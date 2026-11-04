@@ -216,6 +216,24 @@
     <string name="hql_cc_failed_closed">%1$s: non inviato. Sessione Leapmotor chiusa: apri Qonecta+ e accedi di nuovo</string>
     <string name="hql_cloud_orders">Comandi all\'auto dal widget di Qonecta+: chiudere, aprire, bagagliaio, clima e trovare, anche a voce</string>
     <string name="hql_cloud_add_widget">Compaiono nel widget di Qonecta+ allungandolo (4×3): tienilo premuto e trascinalo verso il basso.</string>
+    <!-- «Cerrar el coche al alejarme» (AutoLock). -->
+    <string name="hql_autolock_title">Chiudere l\'auto quando mi allontano</string>
+    <string name="hql_autolock_detail">Quando il telefono perde il Bluetooth dell\'auto, Qonecta+ aspetta un minuto e controlla l\'auto nel cloud Leapmotor. Se è aperta con tutte le porte e il bagagliaio chiusi, la chiude e ti avvisa (con un pulsante «Apri»). Se qualcosa è aperto o non ottiene un dato recente, non la chiude e ti avvisa. Passa dal cloud: ci mette qualche secondo e l\'auto deve avere copertura.</string>
+    <string name="hql_autolock_needs_account">Serve l\'account Leapmotor collegato (passi sopra).</string>
+    <string name="hql_autolock_needs_pin">Serve il PIN dell\'auto salvato (passo 5).</string>
+    <string name="hql_autolock_t03">La tua T03 non si chiude da sola quando ti allontani: Qonecta+ può farlo.</string>
+    <string name="hql_autolock_channel">Chiusura allontanandosi</string>
+    <string name="hql_autolock_done">Ho chiuso l\'auto quando ti sei allontanato</string>
+    <string name="hql_autolock_done_text">Tutte le porte e il bagagliaio erano chiusi. Se non volevi chiuderla, tocca «Apri».</string>
+    <string name="hql_autolock_unlock">Apri</string>
+    <string name="hql_autolock_open_title">L\'auto è ancora aperta</string>
+    <string name="hql_autolock_open_text">%1$s. Non l\'ho chiusa: chiudila tu.</string>
+    <string name="hql_autolock_unknown_title">Non ho potuto controllare l\'auto: potrebbe essere ancora aperta</string>
+    <string name="hql_autolock_unknown_text">Il cloud Leapmotor non mi ha dato un dato recente dell\'auto (senza copertura nell\'auto o sul telefono, oppure devi accedere di nuovo), quindi non l\'ho chiusa alla cieca. Controlla in La mia auto.</string>
+    <string name="hql_autolock_failed_title">Non ho potuto chiudere l\'auto</string>
+    <string name="hql_autolock_failed_text">L\'auto non l\'ha confermato (%1$s). Potrebbe essere ancora aperta.</string>
+    <string name="hql_autolock_no_answer">nessuna risposta</string>
+    <string name="hql_autolock_retry">Riprova</string>
     <string name="hql_cw_voice_short">Voce</string>
     <string name="hql_cc_find_title">La tua auto</string>
     <string name="hql_cc_find_searching">Cerco dov\'è l\'auto…</string>

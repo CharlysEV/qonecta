@@ -216,6 +216,24 @@
     <string name="hql_cc_failed_closed">%1$s: não enviado. Sessão da Leapmotor encerrada: abra o Qonecta+ e entre de novo</string>
     <string name="hql_cloud_orders">Comandos ao carro pelo widget do Qonecta+: trancar, abrir, porta-malas, clima e localizar, também por voz</string>
     <string name="hql_cloud_add_widget">Aparecem no widget do Qonecta+ ao deixá-lo mais alto (4×3): toque e segure e arraste para baixo.</string>
+    <!-- «Cerrar el coche al alejarme» (AutoLock). -->
+    <string name="hql_autolock_title">Trancar o carro quando eu me afastar</string>
+    <string name="hql_autolock_detail">Quando o celular perde o Bluetooth do carro, o Qonecta+ espera um minuto e confere o carro na nuvem da Leapmotor. Se estiver destrancado com todas as portas e o porta-malas fechados, ele tranca e te avisa (com um botão «Destrancar»). Se algo estiver aberto ou não houver um dado recente, ele não tranca e te avisa. Vai pela nuvem: leva alguns segundos e o carro precisa de sinal.</string>
+    <string name="hql_autolock_needs_account">Precisa da conta Leapmotor conectada (passos acima).</string>
+    <string name="hql_autolock_needs_pin">Precisa do PIN do carro salvo (passo 5).</string>
+    <string name="hql_autolock_t03">Seu T03 não tranca sozinho quando você se afasta: o Qonecta+ pode fazer isso.</string>
+    <string name="hql_autolock_channel">Trancar ao se afastar</string>
+    <string name="hql_autolock_done">Tranquei o carro quando você se afastou</string>
+    <string name="hql_autolock_done_text">Todas as portas e o porta-malas estavam fechados. Se você não queria trancar, toque em «Destrancar».</string>
+    <string name="hql_autolock_unlock">Destrancar</string>
+    <string name="hql_autolock_open_title">O carro continua destrancado</string>
+    <string name="hql_autolock_open_text">%1$s. Não tranquei: feche e tranque você mesmo.</string>
+    <string name="hql_autolock_unknown_title">Não consegui conferir o carro: ele pode continuar aberto</string>
+    <string name="hql_autolock_unknown_text">A nuvem da Leapmotor não me deu um dado recente do carro (sem sinal no carro ou no celular, ou é preciso entrar de novo), então não tranquei às cegas. Confira em Meu carro.</string>
+    <string name="hql_autolock_failed_title">Não consegui trancar o carro</string>
+    <string name="hql_autolock_failed_text">O carro não confirmou (%1$s). Ele pode continuar aberto.</string>
+    <string name="hql_autolock_no_answer">sem resposta</string>
+    <string name="hql_autolock_retry">Tentar de novo</string>
     <string name="hql_cw_voice_short">Voz</string>
     <string name="hql_cc_find_title">Seu carro</string>
     <string name="hql_cc_find_searching">Procurando onde está o carro…</string>

@@ -22,6 +22,8 @@ import java.util.Locale;
  * al desbloquear (LinkLifecycle).
  * Si el Bluetooth del coche se va sin haber llegado a conectar, se para (no se queda buscando); tras una sesión, sigue
  * esperando al coche hasta que vence «Esperar al coche».
+ * Con «Cerrar el coche al alejarme» (AutoLock), la pérdida del Bluetooth del coche programa su comprobación al minuto y
+ * la vuelta la anula, aunque la conexión automática esté apagada.
  *
  * Android solo deja arrancar un servicio en primer plano desde segundo plano en algunos casos; si
  * no lo permite, queda una notificación «Toca para conectar». Quitar la optimización de batería
@@ -41,7 +43,9 @@ public final class CarBtReceiver extends BroadcastReceiver {
         // La desconexión del coche se escucha siempre (el coche se ha cerrado: LinkService cierra todo si no hay sesión);
         // la conexión, solo con la conexión automática por Bluetooth.
         boolean gone = BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action);
-        if (!cfg.btAutoConnect() && !(gone && LinkState.running)) return;
+        // «Cerrar el coche al alejarme» (AutoLock) escucha las dos: la pérdida (alejarse) y la vuelta (no hacer nada).
+        boolean link = cfg.btAutoConnect() || (gone && LinkState.running);
+        if (!link && !AutoLock.enabled(ctx)) return;
         BluetoothDevice dev;
         if (android.os.Build.VERSION.SDK_INT >= 33) {
             dev = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE, BluetoothDevice.class);
@@ -57,6 +61,8 @@ public final class CarBtReceiver extends BroadcastReceiver {
         L.init(ctx);
         boolean connected = BluetoothDevice.ACTION_ACL_CONNECTED.equals(action);
         L.i("Bluetooth del coche " + (connected ? "conectado" : "desconectado") + ": " + name);
+        AutoLock.onCarBluetooth(ctx, connected, System.currentTimeMillis());
+        if (!link) return;
         Intent i = new Intent(ctx, LinkService.class)
                 .setAction(connected ? LinkService.ACTION_BT_CAR : LinkService.ACTION_BT_CAR_GONE);
         if (!connected) {

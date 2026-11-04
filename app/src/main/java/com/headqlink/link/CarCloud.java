@@ -537,8 +537,8 @@ final class CarCloud {
         WidgetUpdater.poke();
     }
 
-    /** Cuenta una lectura del día; false si ya se llegó al tope (se registra una vez). */
-    private static synchronized boolean takeDailyQuota() {
+    /** Cuenta una lectura del día; false si ya se llegó al tope (se registra una vez). También AutoLockJob. */
+    static synchronized boolean takeDailyQuota() {
         long day = java.util.concurrent.TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis() + java.util.TimeZone.getDefault().getOffset(System.currentTimeMillis()));
         if (day != readsDay) {
             readsDay = day;

@@ -28,6 +28,8 @@ import java.util.Locale;
 public final class CarControlActivity extends AppCompatActivity {
     static final String EXTRA_WHAT = "what";
     static final String VOICE = "voice";
+    /** «Abrir» del aviso «He cerrado el coche al alejarte» (AutoLockJob): vale aunque las órdenes del widget estén apagadas. */
+    static final String EXTRA_AUTO_LOCK = "auto_lock";
     private static final int REQ_SPEECH = 1;
     /** Con el resultado bueno a la vista, la ventanita se cierra sola tras esto. */
     private static final long CLOSE_AFTER_MS = 2500;
@@ -51,7 +53,8 @@ public final class CarControlActivity extends AppCompatActivity {
                     .setNegativeButton(android.R.string.cancel, (d, w) -> finish()));
             return;
         }
-        if (!CarOrders.enabled(this)) {
+        boolean fromAutoLock = getIntent().getBooleanExtra(EXTRA_AUTO_LOCK, false) && AutoLock.enabled(this) && AutoLock.ready(this);
+        if (!CarOrders.enabled(this) && !fromAutoLock) {
             show(new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.hql_cc_disabled_title)
                     .setMessage(R.string.hql_cc_disabled_text)

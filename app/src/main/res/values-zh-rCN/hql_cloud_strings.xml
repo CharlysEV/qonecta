@@ -216,6 +216,24 @@
     <string name="hql_cc_failed_closed">%1$s：未发送。Leapmotor 登录已失效：请打开 Qonecta+ 重新登录</string>
     <string name="hql_cloud_orders">从 Qonecta+ 小组件向车辆发送指令：上锁、解锁、后备箱、空调和寻车，也可语音</string>
     <string name="hql_cloud_add_widget">将 Qonecta+ 小组件调高（4×3）即可显示：长按后向下拖动。</string>
+    <!-- «Cerrar el coche al alejarme» (AutoLock). -->
+    <string name="hql_autolock_title">离开时自动锁车</string>
+    <string name="hql_autolock_detail">手机与车辆的蓝牙断开后，Qonecta+ 会等待一分钟，然后通过 Leapmotor 云端查看车辆状态。如果车辆未上锁且所有车门和后备箱都已关闭，就会锁车并通知你（附「解锁」按钮）。如果有东西没关，或拿不到最新数据，就不会锁车并提醒你。这一功能经由云端：需要几秒钟，且车辆需要有移动网络信号。</string>
+    <string name="hql_autolock_needs_account">需要先连接 Leapmotor 账户（见上面的步骤）。</string>
+    <string name="hql_autolock_needs_pin">需要先保存车辆 PIN（第 5 步）。</string>
+    <string name="hql_autolock_t03">你的 T03 离开时不会自动锁车：Qonecta+ 可以代劳。</string>
+    <string name="hql_autolock_channel">离开时锁车</string>
+    <string name="hql_autolock_done">你离开时我已锁车</string>
+    <string name="hql_autolock_done_text">所有车门和后备箱都已关闭。如果你不想锁车，请点「解锁」。</string>
+    <string name="hql_autolock_unlock">解锁</string>
+    <string name="hql_autolock_open_title">车辆仍未上锁</string>
+    <string name="hql_autolock_open_text">%1$s。我没有锁车：请自行关好并锁车。</string>
+    <string name="hql_autolock_unknown_title">无法检查车辆：可能仍未上锁</string>
+    <string name="hql_autolock_unknown_text">Leapmotor 云端没有给出车辆的最新数据（车内或手机没有信号，或需要重新登录），所以我没有盲目锁车。请在「我的车」中查看。</string>
+    <string name="hql_autolock_failed_title">无法锁车</string>
+    <string name="hql_autolock_failed_text">车辆没有确认（%1$s）。可能仍未上锁。</string>
+    <string name="hql_autolock_no_answer">无响应</string>
+    <string name="hql_autolock_retry">重试</string>
     <string name="hql_cw_voice_short">语音</string>
     <string name="hql_cc_find_title">你的车</string>
     <string name="hql_cc_find_searching">正在查找车辆位置…</string>

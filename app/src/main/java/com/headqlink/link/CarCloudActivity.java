@@ -89,6 +89,10 @@ public class CarCloudActivity extends Activity {
     /** Órdenes al coche desde el widget de Qonecta+ (CarOrders), con el PIN guardado. */
     private com.google.android.material.materialswitch.MaterialSwitch orders;
     private View addWidget;
+    /** «Cerrar el coche al alejarme» (AutoLock) y lo que explica (qué falta, la sugerencia para el T03). */
+    private MaterialSwitch autoLock;
+    private TextView autoLockDetail;
+    private static final int REQ_AUTO_LOCK_PERMS = 42;
     private android.widget.EditText pinInput;
     private MaterialButton wipe;
 
@@ -135,6 +139,15 @@ public class CarCloudActivity extends Activity {
             render();
             L.i("nube Leapmotor: órdenes al coche desde el widget " + (on ? "activadas" : "desactivadas"));
             CarOrders.refresh(this);
+        });
+        autoLock = findViewById(R.id.hql_cloud_autolock);
+        autoLockDetail = findViewById(R.id.hql_cloud_autolock_detail);
+        autoLock.setOnCheckedChangeListener((v, on) -> {
+            if (rendering) return;
+            new Config(this).putBool(AutoLock.K_ENABLED, on);
+            L.i("cierre al alejarse: " + (on ? "activado" : "desactivado"));
+            if (on) askAutoLockPermissions();
+            render();
         });
         pinInput = findViewById(R.id.hql_cloud_pin);
         findViewById(R.id.hql_cloud_pin_save).setOnClickListener(v -> savePin());
@@ -266,7 +279,30 @@ public class CarCloudActivity extends Activity {
         orders.setVisibility(pin ? View.VISIBLE : View.GONE);
         orders.setChecked(new Config(this).getBool(CarOrders.K_ENABLED));
         addWidget.setVisibility(pin && orders.isChecked() ? View.VISIBLE : View.GONE);
+        // Cerrar el coche al alejarme: se enciende con la cuenta y el PIN; encendido, siempre se puede apagar.
+        boolean lockOn = AutoLock.enabled(this);
+        boolean account = hasCert && hasSession && store.enabled() && !tail.isEmpty();
+        autoLock.setChecked(lockOn);
+        autoLock.setEnabled(lockOn || (account && pin));
+        String need = !account ? Str.get(R.string.hql_autolock_needs_account) : !pin ? Str.get(R.string.hql_autolock_needs_pin) : null;
+        boolean t03 = CarCloudStore.isT03(type) || CarSpec.current().isT03();
+        autoLockDetail.setText((t03 && !lockOn ? Str.get(R.string.hql_autolock_t03) + "\n" : "")
+                + (need != null ? need + "\n" : "") + Str.get(R.string.hql_autolock_detail));
         rendering = false;
+    }
+
+    /** Lo que necesita para enterarse de que se aleja (el Bluetooth del coche) y para avisar (notificaciones). */
+    private void askAutoLockPermissions() {
+        List<String> want = new ArrayList<>();
+        if (android.os.Build.VERSION.SDK_INT >= 31
+                && checkSelfPermission(android.Manifest.permission.BLUETOOTH_CONNECT) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            want.add(android.Manifest.permission.BLUETOOTH_CONNECT);
+        }
+        if (android.os.Build.VERSION.SDK_INT >= 33
+                && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            want.add(android.Manifest.permission.POST_NOTIFICATIONS);
+        }
+        if (!want.isEmpty()) requestPermissions(want.toArray(new String[0]), REQ_AUTO_LOCK_PERMS);
     }
 
     private interface Job {

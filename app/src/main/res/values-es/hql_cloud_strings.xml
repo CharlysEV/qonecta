@@ -216,6 +216,24 @@
     <string name="hql_cc_failed_closed">%1$s: no se ha enviado. Sesión de Leapmotor cerrada: abre Qonecta+ y vuelve a entrar</string>
     <string name="hql_cloud_orders">Órdenes al coche desde el widget de Qonecta+: cerrar, abrir, maletero, clima y localizar, también por voz</string>
     <string name="hql_cloud_add_widget">Salen en el widget de Qonecta+ al hacerlo más alto (4×3): mantenlo pulsado y estíralo hacia abajo.</string>
+    <!-- «Cerrar el coche al alejarme» (AutoLock). -->
+    <string name="hql_autolock_title">Cerrar el coche al alejarme</string>
+    <string name="hql_autolock_detail">Cuando el móvil pierde el Bluetooth del coche, Qonecta+ espera un minuto y mira el coche en la nube de Leapmotor. Si está abierto con todas las puertas y el maletero cerrados, lo cierra y te avisa (con un botón «Abrir»). Si hay algo abierto o no consigue un dato reciente, no lo cierra y te avisa. Va por la nube: tarda unos segundos y el coche necesita cobertura.</string>
+    <string name="hql_autolock_needs_account">Necesita la cuenta de Leapmotor conectada (pasos de arriba).</string>
+    <string name="hql_autolock_needs_pin">Necesita el PIN del coche guardado (paso 5).</string>
+    <string name="hql_autolock_t03">Tu T03 no se cierra solo al alejarte: Qonecta+ puede hacerlo.</string>
+    <string name="hql_autolock_channel">Cierre al alejarte</string>
+    <string name="hql_autolock_done">He cerrado el coche al alejarte</string>
+    <string name="hql_autolock_done_text">Tenía todas las puertas y el maletero cerrados. Si no querías cerrarlo, toca «Abrir».</string>
+    <string name="hql_autolock_unlock">Abrir</string>
+    <string name="hql_autolock_open_title">El coche sigue abierto</string>
+    <string name="hql_autolock_open_text">%1$s. No lo he cerrado: ciérralo tú.</string>
+    <string name="hql_autolock_unknown_title">No he podido comprobar el coche: puede seguir abierto</string>
+    <string name="hql_autolock_unknown_text">La nube de Leapmotor no me ha dado un dato reciente del coche (sin cobertura en el coche o en el móvil, o hay que volver a entrar), así que no lo he cerrado a ciegas. Míralo en «Mi coche».</string>
+    <string name="hql_autolock_failed_title">No he podido cerrar el coche</string>
+    <string name="hql_autolock_failed_text">El coche no lo ha confirmado (%1$s). Puede seguir abierto.</string>
+    <string name="hql_autolock_no_answer">no contesta</string>
+    <string name="hql_autolock_retry">Reintentar</string>
     <string name="hql_cw_voice_short">Voz</string>
     <string name="hql_cc_find_title">Tu coche</string>
     <string name="hql_cc_find_searching">Buscando dónde está el coche…</string>

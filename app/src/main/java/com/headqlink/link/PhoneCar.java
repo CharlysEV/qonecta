@@ -140,7 +140,8 @@ final class PhoneCar {
     }
 
     private String shape() {
-        return (PhoneInsights.hasAccount(act) ? "a" : "-") + (snap.hasData() ? "d" : "-") + (CarOrders.enabled(act) ? "o" : "-");
+        return (PhoneInsights.hasAccount(act) ? "a" : "-") + (snap.hasData() ? "d" : "-") + (CarOrders.enabled(act) ? "o" : "-")
+                + (AutoLock.enabled(act) ? "l" : "-");
     }
 
     private void build() {
@@ -446,6 +447,15 @@ final class PhoneCar {
             hint.setPadding(0, 0, 0, dp(6));
             hint.setOnClickListener(v -> act.startActivity(new Intent(act, CarCloudActivity.class)));
             box.addView(hint);
+        }
+        // El T03 no se cierra solo al alejarte: la sugerencia, discreta, hasta que se encienda (o con otro coche, nada).
+        if (CarSpec.current().isT03() && !AutoLock.enabled(act)) {
+            TextView tip = text(Str.get(R.string.hql_autolock_t03) + " ›", com.google.android.material.R.style.TextAppearance_Material3_BodySmall,
+                    PhoneCharts.DIM);
+            tip.setGravity(Gravity.CENTER);
+            tip.setPadding(dp(8), dp(2), dp(8), dp(6));
+            tip.setOnClickListener(v -> act.startActivity(new Intent(act, CarCloudActivity.class)));
+            box.addView(tip);
         }
         return box;
     }

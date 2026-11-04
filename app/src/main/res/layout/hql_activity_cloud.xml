@@ -430,6 +430,31 @@
                         android:text="@string/hql_cloud_add_widget" />
                 </LinearLayout>
 
+                <!-- «Cerrar el coche al alejarme» (AutoLock): con la cuenta y el PIN; sin ellos, dice qué falta. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/hql_panel"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/hql_cloud_autolock"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:text="@string/hql_autolock_title" />
+
+                    <TextView
+                        android:id="@+id/hql_cloud_autolock_detail"
+                        style="@style/HQL.Text.RowDetail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/hql_autolock_detail" />
+                </LinearLayout>
+
                 <!-- Prueba -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/hql_cloud_test"

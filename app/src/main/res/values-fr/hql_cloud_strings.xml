@@ -216,6 +216,24 @@
     <string name="hql_cc_failed_closed">%1$s : non envoyé. Session Leapmotor fermée : ouvrez Qonecta+ et reconnectez-vous</string>
     <string name="hql_cloud_orders">Commandes de la voiture depuis le widget Qonecta+ : verrouiller, ouvrir, coffre, clim et localiser, aussi à la voix</string>
     <string name="hql_cloud_add_widget">Elles apparaissent dans le widget Qonecta+ en l\'agrandissant (4×3) : appui long puis étirez-le vers le bas.</string>
+    <!-- «Cerrar el coche al alejarme» (AutoLock). -->
+    <string name="hql_autolock_title">Verrouiller la voiture quand je m\'éloigne</string>
+    <string name="hql_autolock_detail">Quand le téléphone perd le Bluetooth de la voiture, Qonecta+ attend une minute et vérifie la voiture dans le cloud Leapmotor. Si elle est déverrouillée avec toutes les portes et le coffre fermés, il la verrouille et te prévient (avec un bouton « Ouvrir »). Si quelque chose est ouvert ou s\'il n\'obtient pas de donnée récente, il ne verrouille pas et te prévient. Ça passe par le cloud : ça prend quelques secondes et la voiture doit avoir du réseau.</string>
+    <string name="hql_autolock_needs_account">Il faut le compte Leapmotor connecté (étapes ci-dessus).</string>
+    <string name="hql_autolock_needs_pin">Il faut le PIN de la voiture enregistré (étape 5).</string>
+    <string name="hql_autolock_t03">Ta T03 ne se verrouille pas toute seule quand tu t\'éloignes : Qonecta+ peut le faire.</string>
+    <string name="hql_autolock_channel">Verrouillage en s\'éloignant</string>
+    <string name="hql_autolock_done">J\'ai verrouillé la voiture quand tu t\'es éloigné</string>
+    <string name="hql_autolock_done_text">Toutes les portes et le coffre étaient fermés. Si tu ne voulais pas la verrouiller, touche « Ouvrir ».</string>
+    <string name="hql_autolock_unlock">Ouvrir</string>
+    <string name="hql_autolock_open_title">La voiture est toujours déverrouillée</string>
+    <string name="hql_autolock_open_text">%1$s. Je ne l\'ai pas verrouillée : ferme-la et verrouille-la toi-même.</string>
+    <string name="hql_autolock_unknown_title">Je n\'ai pas pu vérifier la voiture : elle est peut-être encore ouverte</string>
+    <string name="hql_autolock_unknown_text">Le cloud Leapmotor ne m\'a pas donné de donnée récente de la voiture (pas de réseau dans la voiture ou sur le téléphone, ou il faut te reconnecter), donc je ne l\'ai pas verrouillée à l\'aveugle. Regarde dans Ma voiture.</string>
+    <string name="hql_autolock_failed_title">Je n\'ai pas pu verrouiller la voiture</string>
+    <string name="hql_autolock_failed_text">La voiture ne l\'a pas confirmé (%1$s). Elle est peut-être encore ouverte.</string>
+    <string name="hql_autolock_no_answer">pas de réponse</string>
+    <string name="hql_autolock_retry">Réessayer</string>
     <string name="hql_cw_voice_short">Voix</string>
     <string name="hql_cc_find_title">Votre voiture</string>
     <string name="hql_cc_find_searching">Recherche de la voiture…</string>

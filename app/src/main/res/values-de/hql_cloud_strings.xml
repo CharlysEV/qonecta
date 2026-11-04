@@ -216,6 +216,24 @@
     <string name="hql_cc_failed_closed">%1$s: nicht gesendet. Leapmotor-Sitzung beendet: Qonecta+ öffnen und neu anmelden</string>
     <string name="hql_cloud_orders">Befehle an das Auto über das Qonecta+-Widget: verriegeln, entriegeln, Kofferraum, Klima und finden, auch per Sprache</string>
     <string name="hql_cloud_add_widget">Sie erscheinen im Qonecta+-Widget, wenn du es höher machst (4×3): lange drücken und nach unten ziehen.</string>
+    <!-- «Cerrar el coche al alejarme» (AutoLock). -->
+    <string name="hql_autolock_title">Auto beim Weggehen verriegeln</string>
+    <string name="hql_autolock_detail">Verliert das Handy das Bluetooth des Autos, wartet Qonecta+ eine Minute und prüft das Auto in der Leapmotor-Cloud. Ist es entriegelt und sind alle Türen und der Kofferraum zu, verriegelt es das Auto und sagt dir Bescheid (mit der Taste „Entriegeln“). Ist etwas offen oder gibt es keine aktuellen Daten, verriegelt es nicht und warnt dich. Das läuft über die Cloud: Es dauert ein paar Sekunden, und das Auto braucht Mobilfunkempfang.</string>
+    <string name="hql_autolock_needs_account">Dafür muss das Leapmotor-Konto verbunden sein (Schritte oben).</string>
+    <string name="hql_autolock_needs_pin">Dafür muss die PIN des Autos gespeichert sein (Schritt 5).</string>
+    <string name="hql_autolock_t03">Dein T03 verriegelt sich beim Weggehen nicht von selbst: Qonecta+ kann das übernehmen.</string>
+    <string name="hql_autolock_channel">Verriegeln beim Weggehen</string>
+    <string name="hql_autolock_done">Ich habe das Auto beim Weggehen verriegelt</string>
+    <string name="hql_autolock_done_text">Alle Türen und der Kofferraum waren zu. Wolltest du das nicht, tippe auf „Entriegeln“.</string>
+    <string name="hql_autolock_unlock">Entriegeln</string>
+    <string name="hql_autolock_open_title">Das Auto ist noch entriegelt</string>
+    <string name="hql_autolock_open_text">%1$s. Ich habe es nicht verriegelt: Bitte schließe und verriegle es selbst.</string>
+    <string name="hql_autolock_unknown_title">Ich konnte das Auto nicht prüfen: Es ist vielleicht noch offen</string>
+    <string name="hql_autolock_unknown_text">Die Leapmotor-Cloud hat mir keine aktuellen Daten des Autos geliefert (kein Empfang im Auto oder am Handy, oder du musst dich neu anmelden), also habe ich es nicht blind verriegelt. Sieh in „Mein Auto“ nach.</string>
+    <string name="hql_autolock_failed_title">Ich konnte das Auto nicht verriegeln</string>
+    <string name="hql_autolock_failed_text">Das Auto hat es nicht bestätigt (%1$s). Es ist vielleicht noch offen.</string>
+    <string name="hql_autolock_no_answer">keine Antwort</string>
+    <string name="hql_autolock_retry">Erneut versuchen</string>
     <string name="hql_cw_voice_short">Sprache</string>
     <string name="hql_cc_find_title">Dein Auto</string>
     <string name="hql_cc_find_searching">Suche das Auto…</string>

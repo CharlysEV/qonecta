@@ -216,6 +216,24 @@
     <string name="hql_cc_failed_closed">%1$s: not sent. Leapmotor session closed: open Qonecta+ and sign in again</string>
     <string name="hql_cloud_orders">Car commands from the Qonecta+ widget: lock, unlock, trunk, climate and find, also by voice</string>
     <string name="hql_cloud_add_widget">They show in the Qonecta+ widget when you make it taller (4×3): long-press it and drag it down.</string>
+    <!-- «Cerrar el coche al alejarme» (AutoLock). -->
+    <string name="hql_autolock_title">Lock the car when I walk away</string>
+    <string name="hql_autolock_detail">When the phone loses the car\'s Bluetooth, Qonecta+ waits a minute and checks the car in the Leapmotor cloud. If it\'s unlocked with every door and the boot closed, it locks it and tells you (with an Unlock button). If something is open, or it can\'t get a recent reading, it doesn\'t lock and warns you. It goes through the cloud: it takes a few seconds and the car needs mobile coverage.</string>
+    <string name="hql_autolock_needs_account">Needs the Leapmotor account connected (steps above).</string>
+    <string name="hql_autolock_needs_pin">Needs the car PIN saved (step 5).</string>
+    <string name="hql_autolock_t03">Your T03 doesn\'t lock itself when you walk away: Qonecta+ can do it.</string>
+    <string name="hql_autolock_channel">Lock on walking away</string>
+    <string name="hql_autolock_done">I locked the car as you walked away</string>
+    <string name="hql_autolock_done_text">Every door and the boot were closed. If you didn\'t want it locked, tap Unlock.</string>
+    <string name="hql_autolock_unlock">Unlock</string>
+    <string name="hql_autolock_open_title">The car is still unlocked</string>
+    <string name="hql_autolock_open_text">%1$s. I didn\'t lock it: close it and lock it yourself.</string>
+    <string name="hql_autolock_unknown_title">I couldn\'t check the car: it may still be unlocked</string>
+    <string name="hql_autolock_unknown_text">The Leapmotor cloud didn\'t give me a recent reading of the car (no coverage in the car or on the phone, or you need to sign in again), so I didn\'t lock it blindly. Check it in My car.</string>
+    <string name="hql_autolock_failed_title">I couldn\'t lock the car</string>
+    <string name="hql_autolock_failed_text">The car didn\'t confirm it (%1$s). It may still be unlocked.</string>
+    <string name="hql_autolock_no_answer">no answer</string>
+    <string name="hql_autolock_retry">Try again</string>
     <string name="hql_cw_voice_short">Voice</string>
     <string name="hql_cc_find_title">Your car</string>
     <string name="hql_cc_find_searching">Finding where the car is…</string>

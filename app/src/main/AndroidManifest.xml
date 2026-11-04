@@ -777,6 +777,16 @@
             android:name="com.headqlink.link.CarCloudSession$RefreshAlarm"
             android:exported="false" />
 
+        <!-- headqlink: «Cerrar el coche al alejarme» (al minuto de perder el Bluetooth del coche) y su «Reintentar». -->
+        <service
+            android:name="com.headqlink.link.AutoLockJob"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <receiver
+            android:name="com.headqlink.link.AutoLockJob$Retry"
+            android:exported="false" />
+
         <service
             android:name="com.headqlink.link.LinkService"
             android:exported="false"

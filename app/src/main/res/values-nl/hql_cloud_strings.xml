@@ -216,6 +216,24 @@
     <string name="hql_cc_failed_closed">%1$s: niet verzonden. Leapmotor-sessie gesloten: open Qonecta+ en log opnieuw in</string>
     <string name="hql_cloud_orders">Opdrachten aan de auto vanuit de Qonecta+-widget: vergrendelen, openen, kofferbak, klimaat en zoeken, ook met je stem</string>
     <string name="hql_cloud_add_widget">Ze verschijnen in de Qonecta+-widget als je hem hoger maakt (4×3): lang indrukken en naar beneden trekken.</string>
+    <!-- «Cerrar el coche al alejarme» (AutoLock). -->
+    <string name="hql_autolock_title">Auto vergrendelen als ik wegloop</string>
+    <string name="hql_autolock_detail">Als de telefoon de Bluetooth van de auto kwijtraakt, wacht Qonecta+ een minuut en kijkt de auto na in de Leapmotor-cloud. Is hij ontgrendeld met alle deuren en de kofferbak dicht, dan vergrendelt hij hem en laat het je weten (met een knop „Ontgrendelen”). Staat er iets open of is er geen recent gegeven, dan vergrendelt hij niet en waarschuwt hij je. Het gaat via de cloud: het duurt een paar seconden en de auto heeft bereik nodig.</string>
+    <string name="hql_autolock_needs_account">Hiervoor moet het Leapmotor-account gekoppeld zijn (stappen hierboven).</string>
+    <string name="hql_autolock_needs_pin">Hiervoor moet de pincode van de auto opgeslagen zijn (stap 5).</string>
+    <string name="hql_autolock_t03">Je T03 vergrendelt niet vanzelf als je wegloopt: Qonecta+ kan dat doen.</string>
+    <string name="hql_autolock_channel">Vergrendelen bij weglopen</string>
+    <string name="hql_autolock_done">Ik heb de auto vergrendeld toen je wegliep</string>
+    <string name="hql_autolock_done_text">Alle deuren en de kofferbak waren dicht. Wilde je dat niet, tik dan op „Ontgrendelen”.</string>
+    <string name="hql_autolock_unlock">Ontgrendelen</string>
+    <string name="hql_autolock_open_title">De auto is nog ontgrendeld</string>
+    <string name="hql_autolock_open_text">%1$s. Ik heb hem niet vergrendeld: doe hem zelf dicht en op slot.</string>
+    <string name="hql_autolock_unknown_title">Ik kon de auto niet controleren: hij staat misschien nog open</string>
+    <string name="hql_autolock_unknown_text">De Leapmotor-cloud gaf me geen recent gegeven van de auto (geen bereik in de auto of op de telefoon, of je moet opnieuw inloggen), dus ik heb hem niet blind vergrendeld. Kijk in Mijn auto.</string>
+    <string name="hql_autolock_failed_title">Ik kon de auto niet vergrendelen</string>
+    <string name="hql_autolock_failed_text">De auto heeft het niet bevestigd (%1$s). Hij staat misschien nog open.</string>
+    <string name="hql_autolock_no_answer">geen antwoord</string>
+    <string name="hql_autolock_retry">Opnieuw proberen</string>
     <string name="hql_cw_voice_short">Stem</string>
     <string name="hql_cc_find_title">Je auto</string>
     <string name="hql_cc_find_searching">Zoeken waar de auto staat…</string>
