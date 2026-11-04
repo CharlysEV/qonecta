@@ -2,7 +2,7 @@
 <!-- headqlink: Tab «Route» der Handy-App (PhoneRoute) und «die geplante Route verwenden» im Auto (PlannedTrip). -->
 <resources>
     <string name="hql_pr_title">Route planen</string>
-    <string name="hql_pr_intro">Route und Ladestopps schon auf dem Handy planen, bevor du einsteigst. Beim Verbinden fragt das Auto, ob es sie verwenden soll.</string>
+    <string name="hql_pr_intro">Route und Ladestopps schon auf dem Handy planen, bevor du einsteigst. Beim Verbinden im Auto fragt dich Qonecta+, ob du sie verwenden willst.</string>
     <string name="hql_pr_where">Wohin?</string>
     <string name="hql_pr_search_hint">Adresse oder Ort</string>
     <string name="hql_pr_searching">Suche läuft…</string>

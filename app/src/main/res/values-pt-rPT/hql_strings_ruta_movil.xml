@@ -2,7 +2,7 @@
 <!-- headqlink: separador «Rota» da app do telemóvel (PhoneRoute) e «usar a rota planeada» no carro (PlannedTrip). -->
 <resources>
     <string name="hql_pr_title">Planear rota</string>
-    <string name="hql_pr_intro">A rota e as paragens de carregamento, planeadas no telemóvel antes de entrar no carro. Ao ligar, o carro pergunta se a quer usar.</string>
+    <string name="hql_pr_intro">A rota e as paragens de carregamento, planeadas no telemóvel antes de entrar no carro. Ao ligar ao carro, o Qonecta+ pergunta se a quer usar.</string>
     <string name="hql_pr_where">Para onde vai?</string>
     <string name="hql_pr_search_hint">Morada ou local</string>
     <string name="hql_pr_searching">A procurar…</string>

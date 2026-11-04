@@ -2,7 +2,7 @@
 <!-- headqlink: «Ruta» tab of the phone app (PhoneRoute) and «use the route you planned» in the car (PlannedTrip). Aparte de hql_strings.xml. -->
 <resources>
     <string name="hql_pr_title">Plan a route</string>
-    <string name="hql_pr_intro">The route and the charging stops, planned on the phone before you get in the car. When you connect, the car asks whether to use it.</string>
+    <string name="hql_pr_intro">The route and the charging stops, planned on the phone before you get in the car. When you connect in the car, Qonecta+ asks whether to use it.</string>
     <string name="hql_pr_where">Where to?</string>
     <string name="hql_pr_search_hint">Address or place</string>
     <string name="hql_pr_searching">Searching…</string>

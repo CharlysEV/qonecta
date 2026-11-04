@@ -2,7 +2,7 @@
 <!-- headqlink: pestaña «Ruta» de la app del móvil (PhoneRoute) y «usar la ruta que planificaste» en el coche (PlannedTrip). -->
 <resources>
     <string name="hql_pr_title">Planificar ruta</string>
-    <string name="hql_pr_intro">La ruta y las paradas de carga, planificadas en el móvil antes de subir al coche. Al conectar, el coche te pregunta si la usa.</string>
+    <string name="hql_pr_intro">La ruta y las paradas de carga, planificadas en el móvil antes de subir al coche. Al conectar en el coche, Qonecta+ te pregunta si la usas.</string>
     <string name="hql_pr_where">¿A dónde vas?</string>
     <string name="hql_pr_search_hint">Dirección o sitio</string>
     <string name="hql_pr_searching">Buscando…</string>

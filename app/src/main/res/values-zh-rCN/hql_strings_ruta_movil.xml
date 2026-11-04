@@ -2,7 +2,7 @@
 <!-- headqlink: 手机应用的「路线」标签页 (PhoneRoute) 和车上的「使用已规划的路线」(PlannedTrip)。 -->
 <resources>
     <string name="hql_pr_title">规划路线</string>
-    <string name="hql_pr_intro">上车前在手机上规划路线和充电停靠点。连接后，车机会问你是否使用。</string>
+    <string name="hql_pr_intro">上车前在手机上规划路线和充电停靠点。在车上连接后，Qonecta+ 会问你是否使用。</string>
     <string name="hql_pr_where">去哪里？</string>
     <string name="hql_pr_search_hint">地址或地点</string>
     <string name="hql_pr_searching">正在搜索…</string>

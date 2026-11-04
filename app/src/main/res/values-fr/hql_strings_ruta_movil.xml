@@ -2,7 +2,7 @@
 <!-- headqlink : onglet « Itinéraire » de l'appli du téléphone (PhoneRoute) et « utiliser l'itinéraire planifié » dans la voiture (PlannedTrip). -->
 <resources>
     <string name="hql_pr_title">Planifier un itinéraire</string>
-    <string name="hql_pr_intro">L\'itinéraire et les arrêts de recharge, planifiés sur le téléphone avant de monter en voiture. À la connexion, la voiture te demande s\'il faut l\'utiliser.</string>
+    <string name="hql_pr_intro">L\'itinéraire et les arrêts de recharge, planifiés sur le téléphone avant de monter en voiture. À la connexion dans la voiture, Qonecta+ te demande s\'il faut l\'utiliser.</string>
     <string name="hql_pr_where">Où vas-tu ?</string>
     <string name="hql_pr_search_hint">Adresse ou lieu</string>
     <string name="hql_pr_searching">Recherche…</string>

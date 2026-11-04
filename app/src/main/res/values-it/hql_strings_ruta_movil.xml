@@ -2,7 +2,7 @@
 <!-- headqlink: scheda «Percorso» dell'app del telefono (PhoneRoute) e «usare il percorso pianificato» in auto (PlannedTrip). -->
 <resources>
     <string name="hql_pr_title">Pianifica un percorso</string>
-    <string name="hql_pr_intro">Il percorso e le soste di ricarica, pianificati sul telefono prima di salire in auto. Al collegamento, l\'auto ti chiede se usarlo.</string>
+    <string name="hql_pr_intro">Il percorso e le soste di ricarica, pianificati sul telefono prima di salire in auto. Al collegamento in auto, Qonecta+ ti chiede se usarlo.</string>
     <string name="hql_pr_where">Dove vai?</string>
     <string name="hql_pr_search_hint">Indirizzo o luogo</string>
     <string name="hql_pr_searching">Ricerca…</string>
