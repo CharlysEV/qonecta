@@ -1080,13 +1080,31 @@ aus (alle 90 s, wenn der Bereich „Fahrzeug“ angezeigt wird, wie bei LMB10); 
 Abfragen pro Tag (einschließlich Verlauf), um eine inoffizielle API nicht übermäßig zu belasten. Beim Trennen hört es
 auf. „Echte Fahrzeugdaten nutzen“ schaltet es ab, ohne etwas zu löschen.
 
+**Auto beim Weggehen verriegeln** (optional, ab Werk aus; in „Fahrzeugdaten“). Der C10 verriegelt sich beim Weggehen
+von selbst, der T03 nicht – das kann Qonecta+ für dich übernehmen (es funktioniert mit jedem Modell; bei einem T03 schlägt
+„Mein Auto“ es vor). Verliert das Handy das Bluetooth des Autos, wartet es eine Minute (kommt das Bluetooth in dieser
+Minute zurück, passiert nichts) und prüft das Auto in der Leapmotor-Cloud:
+
+- ist es schon verriegelt, eingeschaltet oder in Fahrt, passiert nichts;
+- ist es entriegelt und sind alle Türen und der Kofferraum zu, verriegelt es das Auto und meldet „Ich habe das Auto beim
+  Weggehen verriegelt“, mit der Taste **„Entriegeln“** (dafür musst du das Handy entsperren und bestätigen); bestätigt
+  das Auto es nicht, kommt „Ich konnte das Auto nicht verriegeln“ mit **„Erneut versuchen“**;
+- es **verriegelt nicht**, wenn eine Tür oder der Kofferraum offen ist („Das Auto ist noch entriegelt“, mit welcher),
+  und auch nicht ohne verlässliche Daten: Die Cloud antwortet nicht, die Sitzung ist abgelaufen oder die Daten stammen
+  von vor dem Weggehen („Ich konnte das Auto nicht prüfen: Es ist vielleicht noch offen“). Es verriegelt nie blind.
+
+Dafür müssen das Leapmotor-Konto verbunden und die PIN des Autos gespeichert sein (es ist der einzige Befehl ohne
+Rückfrage, und er verriegelt nur). Es läuft über die Cloud: Es dauert ein paar Sekunden, das Auto braucht
+Mobilfunkempfang (in einer Tiefgarage ohne Empfang kommt meist die Meldung, dass es nicht prüfen konnte) und das Handy
+eine Verbindung. Nur einmal pro Weggehen, mit einer Abfrage aus dem Tageslimit (zwei, wenn es das Verriegeln prüfen muss).
+
 **Datenschutz und Sicherheit.**
 
 - Nur lesend, mit einer optionalen Ausnahme: die **Befehle des Widgets „Auto“ und des Reiters „Mein Auto“** (verriegeln, entriegeln, Kofferraum,
   Klima, finden und Ladekabel entriegeln), und nur, wenn du die PIN des Fahrzeugs in „Fahrzeugdaten“ → „5 · PIN des Autos“ speicherst und dort
   die Befehle über das Widget einschaltest (es ist die PIN der Leapmotor-App; sie wird verschlüsselt auf dem Handy
   gespeichert und landet nie im Log). Ohne PIN **sendet Qonecta+ nie Befehle an das Fahrzeug**, und andere Befehle gibt
-  es nicht (weder das Ladelimit noch die Ladeplanung). Jeder Befehl wird vor dem Senden bestätigt; „PIN vergessen“ löscht die PIN.
+  es nicht (weder das Ladelimit noch die Ladeplanung). Jeder Befehl wird vor dem Senden bestätigt (außer „Auto beim Weggehen verriegeln“, wenn du es einschaltest – das verriegelt nur); „PIN vergessen“ löscht die PIN.
 - Deine Daten gehen **nur an die Server von Leapmotor**. Die Position des Fahrzeugs wird weder gelesen noch gespeichert.
 - Zertifikat, Sitzung und Fahrtenverlauf werden mit einem Schlüssel aus dem Android Keystore **verschlüsselt**
   gespeichert, außerhalb der Backups. Das Passwort wird nicht gespeichert: Läuft die Sitzung ab, zeigt „Status“ das an,

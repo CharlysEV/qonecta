@@ -997,13 +997,31 @@ depois a cada 15 minutos; se falhar, aos 2, 5 e 10 minutos; e no máximo 400 lei
 para não abusar de uma API não oficial. Para ao desligar. «Usar os dados reais
 do carro» desativa-o sem apagar nada.
 
+**Trancar o carro quando me afastar** (opcional, desligado de origem; em «Dados do carro»). O C10 tranca-se sozinho
+quando te afastas; o T03 não, e o Qonecta+ pode fazê-lo por ti (funciona com qualquer modelo; com um T03 sugere-o em «O
+meu carro»). Quando o telemóvel perde o Bluetooth do carro, espera um minuto (se nesse minuto o Bluetooth voltar, não
+faz nada) e verifica o carro na nuvem da Leapmotor:
+
+- se já está trancado, ligado ou em andamento, não faz nada;
+- se está destrancado com todas as portas e a mala fechadas, tranca-o e avisa «Tranquei o carro quando te afastaste»,
+  com um botão **«Destrancar»** (pede para desbloquear o telemóvel e confirmar); se o carro não o confirmar, «Não
+  consegui trancar o carro», com **«Tentar de novo»**;
+- **não o tranca** se houver uma porta ou a mala abertas («O carro continua destrancado», com qual) nem se não
+  conseguir um dado fiável: a nuvem não responde, a sessão expirou ou o dado é de antes de te afastares («Não consegui
+  verificar o carro: pode continuar aberto»). Nunca tranca às cegas.
+
+Precisa da conta Leapmotor ligada e do PIN do carro guardado (é a única ordem enviada sem confirmação, e só tranca). Vai
+pela nuvem: demora uns segundos, o carro precisa de rede (numa garagem sem rede, o normal é o aviso de que não conseguiu
+verificar) e o telemóvel, ligação. Uma só vez por afastamento, com uma leitura do limite diário (duas se tiver de
+confirmar o trancamento).
+
 **Privacidade e segurança.**
 
 - Só de leitura, com uma exceção opcional: as **ordens do widget «Carro» e do separador «O meu carro»** (trancar, destrancar, bagageira,
   climatização, localizar e desbloquear o cabo de carregamento), e só se guardar o PIN do carro em «Dados do carro» → «5 · PIN do carro» e aí ativar as
   ordens a partir do widget (o PIN é o da app da Leapmotor; fica cifrado no telemóvel e nunca vai para o registo). Sem
   PIN, o Qonecta+ **nunca envia ordens ao carro**, e não existe nenhuma outra (nem o limite nem a programação do carregamento). Cada ordem é
-  confirmada antes de ser enviada; «Esquecer PIN» apaga-o.
+  confirmada antes de ser enviada (exceto «Trancar o carro quando me afastar», se o ativares, que só tranca); «Esquecer PIN» apaga-o.
 - Os seus dados vão **só para os servidores da Leapmotor**. A posição do carro não é lida nem guardada.
 - O certificado, a sessão e o histórico de viagens ficam **cifrados** com uma chave do Android Keystore, fora das
   cópias de segurança. A

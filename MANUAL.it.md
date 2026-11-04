@@ -1004,13 +1004,31 @@ ogni 5 e poi ogni 15 minuti; dopo un errore, a 2, 5 e 10 minuti; e al massimo 40
 per non abusare di un'API non ufficiale. Si ferma quando ti disconnetti. «Usa i dati reali dell'auto» lo disattiva senza
 cancellare nulla.
 
+**Chiudere l'auto quando mi allontano** (facoltativo, spento di serie; in «Dati dell'auto»). La C10 si chiude da sola
+quando ti allontani; la T03 no, e Qonecta+ può farlo per te (vale con qualsiasi modello; con una T03 te lo suggerisce in
+«La mia auto»). Quando il telefono perde il Bluetooth dell'auto, aspetta un minuto (se in quel minuto il Bluetooth torna,
+non fa nulla) e controlla l'auto nel cloud Leapmotor:
+
+- se è già chiusa, accesa o in marcia, non fa nulla;
+- se è aperta con tutte le porte e il bagagliaio chiusi, la chiude e avvisa «Ho chiuso l'auto quando ti sei
+  allontanato», con un pulsante **«Apri»** (chiede di sbloccare il telefono e confermare); se l'auto non lo conferma,
+  «Non ho potuto chiudere l'auto», con **«Riprova»**;
+- **non la chiude** se una porta o il bagagliaio sono aperti («L'auto è ancora aperta», con quale) né se non ottiene un
+  dato affidabile: il cloud non risponde, la sessione è scaduta o il dato è di prima che ti allontanassi («Non ho
+  potuto controllare l'auto: potrebbe essere ancora aperta»). Non chiude mai alla cieca.
+
+Servono l'account Leapmotor collegato e il PIN dell'auto salvato (è l'unico comando inviato senza conferma, e chiude
+soltanto). Passa dal cloud: ci mette qualche secondo, l'auto deve avere copertura (in un garage senza copertura arriverà
+quasi sempre l'avviso che non ha potuto controllarla) e il telefono una connessione. Una sola volta per allontanamento,
+con una lettura del limite giornaliero (due se deve verificare la chiusura).
+
 **Privacy e sicurezza.**
 
 - Sola lettura, con un'eccezione facoltativa: i **comandi del widget «Auto» e della scheda «La mia auto»** (chiudere, aprire, bagagliaio, clima e
   localizzare e sbloccare il cavo di ricarica), e solo se salvi il PIN dell'auto in «Dati dell'auto» → «5 · PIN dell'auto» e lì attivi i comandi dal
   widget (il PIN è quello dell'app Leapmotor; resta cifrato sul telefono e non finisce mai nel registro). Senza PIN,
   Qonecta+ **non invia mai comandi all'auto**, e non esiste nessun altro comando (né il limite né la programmazione della ricarica). Ogni
-  comando va confermato prima dell'invio; «Dimentica PIN» lo cancella.
+  comando va confermato prima dell'invio (tranne «Chiudere l'auto quando mi allontano», se lo attivi, che chiude soltanto); «Dimentica PIN» lo cancella.
 - I tuoi dati vanno **solo ai server di Leapmotor**. La posizione dell'auto non viene né letta né salvata.
 - Il certificato, la sessione e lo storico dei viaggi vengono salvati **cifrati** con una chiave dell'Android Keystore,
   fuori dai backup. La password non viene salvata: se la sessione scade, «Stato» te lo dice e accedi di nuovo dal

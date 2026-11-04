@@ -974,13 +974,31 @@ minutes; after errors, at 2, 5 and 10 minutes; and at most 400 reads a day (hist
 unofficial API. It stops when you disconnect. "Use the real car
 data" turns it off without deleting anything.
 
+**Lock the car when I walk away** (optional, off by default; in "Car data"). The C10 locks itself when you walk away;
+the T03 doesn't, and Qonecta+ can do it for you (it works with any model; with a T03 it suggests it in "My car"). When
+the phone loses the car's Bluetooth, it waits a minute (if the Bluetooth comes back within that minute, it does nothing)
+and checks the car in the Leapmotor cloud:
+
+- if it's already locked, switched on or moving, it does nothing;
+- if it's unlocked with every door and the boot closed, it locks it and says "I locked the car as you walked away", with
+  an **"Unlock"** button (it asks you to unlock the phone and confirm); if the car doesn't confirm it, "I couldn't lock
+  the car", with **"Try again"**;
+- it **doesn't lock** if a door or the boot is open ("The car is still unlocked", saying which) or if it can't get a
+  reliable reading: the cloud doesn't answer, the session has expired or the reading is from before you walked away ("I
+  couldn't check the car: it may still be unlocked"). It never locks blindly.
+
+It needs the Leapmotor account connected and the car PIN saved (it's the only command sent without asking, and it only
+locks). It goes through the cloud: it takes a few seconds, the car needs mobile coverage (in a garage without coverage
+you'll most likely get the "couldn't check" warning) and the phone needs a connection. Once per walk-away, with one
+reading of the daily cap (two if it has to check the lock).
+
 **Privacy and security.**
 
 - Read-only, with one optional exception: the **commands of the "Car" widget and of the "My car" tab** (lock, unlock, boot, climate, find and unlock the charging cable),
   and only if you save your car PIN in "Car data" → "5 · Car PIN" and turn on the widget commands there (the PIN is
   the one in the Leapmotor app; stored encrypted on the phone and never logged). Without a PIN, Qonecta+ **never sends
   commands to the car**, and no other command exists (no charging or limits). Every command is confirmed before it is
-  sent; "Forget PIN" deletes it.
+  sent (except "Lock the car when I walk away", if you turn it on, which only locks); "Forget PIN" deletes it.
 - Your data only goes **to Leapmotor's servers**. The car's location is neither read nor stored.
 - The certificate, the session and the trip history are stored **encrypted** with an Android Keystore key, outside
   backups. The password

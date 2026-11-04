@@ -990,13 +990,31 @@ cada 15 minutos; si falla, a los 2, 5 y 10 minutos; y como mucho 400 lecturas al
 abusar de una API no oficial. Se para al desconectar. «Usar los datos reales
 del coche» lo apaga sin borrar nada.
 
+**Cerrar el coche al alejarme** (opcional, apagado de serie; en «Datos del coche»). El C10 se cierra solo al alejarte;
+el T03 no, y Qonecta+ puede hacerlo por ti (vale con cualquier modelo; con un T03 te lo sugiere en «Mi coche»). Cuando el
+móvil pierde el Bluetooth del coche, espera un minuto (si en ese minuto vuelve el Bluetooth, no hace nada) y mira el
+coche en la nube de Leapmotor:
+
+- si ya está cerrado, encendido o en marcha, no hace nada;
+- si está abierto con todas las puertas y el maletero cerrados, lo cierra y avisa «He cerrado el coche al alejarte», con
+  un botón **«Abrir»** (pide desbloquear el móvil y confirmar); si el coche no lo confirma, «No he podido cerrar el
+  coche», con **«Reintentar»**;
+- **no lo cierra** si hay una puerta o el maletero abiertos («El coche sigue abierto», con cuál) ni si no consigue un
+  dato fiable: la nube no contesta, la sesión ha caducado o el dato es de antes de alejarte («No he podido comprobar el
+  coche: puede seguir abierto»). Nunca cierra a ciegas.
+
+Necesita la cuenta de Leapmotor conectada y el PIN del coche guardado (es la única orden que se manda sin confirmar, y
+solo cierra). Va por la nube: tarda unos segundos, el coche necesita cobertura (en un garaje sin cobertura, lo normal
+es el aviso de que no ha podido comprobarlo) y el móvil, red. Una sola vez por alejamiento, con una lectura del tope
+diario (dos si hay que comprobar el cierre).
+
 **Privacidad y seguridad.**
 
 - Solo lectura, con una excepción opcional: las **órdenes del widget «Coche» y de la pestaña «Mi coche»** (cerrar, abrir, maletero, clima,
   localizar y desbloquear el cable de carga), y solo si guardas el PIN del coche en «Datos del coche» → «5 · PIN del coche» y activas allí las órdenes
   desde el widget (el PIN es el de la app de Leapmotor; se guarda cifrado en el móvil y nunca va al log). Sin PIN,
   Qonecta+ **nunca manda órdenes al coche**, y no existe ninguna otra (ni el límite ni la programación de la carga). Cada orden se confirma
-  antes de mandarla; «Olvidar PIN» lo borra.
+  antes de mandarla (salvo «Cerrar el coche al alejarme», si lo activas, que solo cierra); «Olvidar PIN» lo borra.
 - Tus datos van **solo a los servidores de Leapmotor**. No se lee ni se guarda la posición del coche.
 - El certificado, la sesión y el historial de viajes se guardan **cifrados** con una clave del Android Keystore, fuera
   de las copias de seguridad. La contraseña no se guarda: si la sesión caduca, «Estado» lo dice y se vuelve a entrar en el móvil.
