@@ -528,6 +528,14 @@ final class IptvScreen implements CarScreen {
                 status.setText(ch.name + " · " + Str.get(R.string.hql_cannot_play, e.getErrorCodeName()));
                 pv.showController();
             }
+
+            @Override
+            public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+                // Se ha ido el Bluetooth del coche o unos auriculares: en pausa (newPlayer), no por el altavoz; ▶ sigue.
+                if (!VideoPlayer.outputGone(playWhenReady, reason)) return;
+                L.i("TV: se ha ido la salida de audio (Bluetooth del coche o auriculares): en pausa, no sigue por el altavoz");
+                pv.showController();
+            }
         });
         player.setMediaItem(MediaItem.fromUri(src));
         player.prepare();

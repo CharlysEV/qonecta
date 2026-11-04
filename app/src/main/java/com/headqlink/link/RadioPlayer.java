@@ -120,8 +120,8 @@ final class RadioPlayer {
             player.setAudioAttributes(new AudioAttributes.Builder()
                     .setUsage(C.USAGE_MEDIA).setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(), false);
             mediaFocus = MediaFocus.bind(app, player);
-            // Se va el Bluetooth del coche (bajarse del coche) o unos auriculares: en pausa, no por el altavoz del móvil.
-            player.setHandleAudioBecomingNoisy(true);
+            // Si se va el Bluetooth del coche (bajarse del coche) o unos auriculares, en pausa, no por el altavoz del móvil:
+            // ya lo hace newPlayer (como en los vídeos y la TV).
             player.addListener(new Player.Listener() {
                 @Override
                 public void onMediaMetadataChanged(MediaMetadata m) {
@@ -158,7 +158,7 @@ final class RadioPlayer {
                     // Otra app se ha quedado el sonido (ExoPlayer lo dice), o la TV (MediaFocus se lo ha pasado).
                     displaced = !playWhenReady && (reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_FOCUS_LOSS
                             || MediaFocus.takenFrom(mediaFocus));
-                    noisyPaused = !playWhenReady && reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY;
+                    noisyPaused = VideoPlayer.outputGone(playWhenReady, reason);
                     if (noisyPaused) {
                         L.i("radio: se ha ido la salida de audio (Bluetooth del coche o auriculares): en pausa, no sigue"
                                 + " por el altavoz");

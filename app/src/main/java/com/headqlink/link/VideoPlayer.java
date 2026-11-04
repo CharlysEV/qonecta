@@ -33,7 +33,8 @@ import java.util.List;
 /**
  * Reproductor de vídeo del coche, con controles grandes: dos toques en un lado ±10 s, velocidad 1×/1,5×/2×, subtítulos
  * (.srt junto al vídeo, en la carpeta de la app), barra de avance gruesa para el dedo, «¿Seguir desde 12:34?» (marca de
- * 48 h, MediaResume) y, al acabar, el siguiente de la misma lista.
+ * 48 h, MediaResume) y, al acabar, el siguiente de la misma lista. Si se va la salida de audio (el Bluetooth del coche al
+ * bajarse, unos auriculares), se pausa: no sigue por el altavoz (newPlayer, también para la TV).
  */
 final class VideoPlayer {
     static final long SEEK_MS = 10_000;
@@ -65,6 +66,11 @@ final class VideoPlayer {
 
     boolean playing() {
         return player != null;
+    }
+
+    /** Para las pruebas: si va (o va a ir en cuanto cargue) o está en pausa. */
+    boolean playWhenReady() {
+        return player != null && player.getPlayWhenReady();
     }
 
     private final Runnable hide = () -> {
@@ -173,6 +179,15 @@ final class VideoPlayer {
             }
 
             @Override
+            public void onPlayWhenReadyChanged(boolean playWhenReady, int reason) {
+                if (outputGone(playWhenReady, reason)) {
+                    L.i("vídeos: se ha ido la salida de audio (Bluetooth del coche o auriculares): en pausa, no sigue por"
+                            + " el altavoz");
+                    showControls();
+                }
+            }
+
+            @Override
             public void onPlayerError(androidx.media3.common.PlaybackException e) {
                 L.w("vídeos: error al reproducir (" + e.getErrorCodeName() + ")");
             }
@@ -235,7 +250,15 @@ final class VideoPlayer {
                     });
             b.setMediaSourceFactory(new androidx.media3.exoplayer.source.DefaultMediaSourceFactory(withAuth));
         }
+        // Todos (vídeos, TV, radio): si se va el Bluetooth del coche (bajarse del coche) o unos auriculares, en pausa; no
+        // siguen por el altavoz del móvil.
+        b.setHandleAudioBecomingNoisy(true);
         return b.build();
+    }
+
+    /** Puro: la pausa la ha puesto la salida de audio al irse (Bluetooth del coche, auriculares), no el usuario. */
+    static boolean outputGone(boolean playWhenReady, int reason) {
+        return !playWhenReady && reason == Player.PLAY_WHEN_READY_CHANGE_REASON_AUDIO_BECOMING_NOISY;
     }
 
     private static boolean ffmpegLogged;
