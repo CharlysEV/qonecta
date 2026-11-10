@@ -269,6 +269,7 @@ can change it (the texts of its ⋮ menu or how it handles the connection). Vers
 |---|---|
 | 17.7.x | **Tested** with Qonecta+ (October 2026) |
 | 17.9.x | **Tested** with Qonecta+ (October 2026): dozens of trips over Wi-Fi Direct and cable without problems |
+| 18.0.x | **Tested** with Qonecta+ (November 2026): 20 sessions over Wi-Fi Direct without problems |
 | 17.8, 18 and later | **Not tested yet.** Other projects (Open Headunit) report that with 17.8 the connection drops after 1-2 s |
 
 The "Checklist" shows it in the "Android Auto 17.x" row (tested / not tested yet), and the log records it at start-up

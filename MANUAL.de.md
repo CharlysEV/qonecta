@@ -282,6 +282,7 @@ diesen Versionen wurde getestet:
 |---|---|
 | 17.7.x | Mit Qonecta+ **getestet** (Oktober 2026) |
 | 17.9.x | Mit Qonecta+ **getestet** (Oktober 2026): Dutzende Fahrten per Wi-Fi Direct und Kabel ohne Probleme |
+| 18.0.x | Mit Qonecta+ **getestet** (November 2026): 20 Sitzungen per Wi-Fi Direct ohne Probleme |
 | 17.8, 18 und neuer | **Noch nicht getestet.** Andere Projekte (Open Headunit) berichten, dass mit 17.8 die Verbindung nach 1–2 s abbricht |
 
 „Voraussetzungen prüfen“ zeigt das in der Zeile „Android Auto 17.x“ (getestet / noch nicht getestet), und das Log hält es

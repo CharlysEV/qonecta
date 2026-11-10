@@ -19,6 +19,9 @@ final class AaVersions {
             // 28-10: 15 sesiones con el C10 en 17.9.664044 (Wi-Fi Direct y cable) sin el fallo de «el helper ya no
             // funciona» de Open Headunit; el usuario la da por válida.
             {"17.9", "2026-10"},
+            // 10-11: registro de un T03 (Motorola edge 60) con 18.0.664264: 20 sesiones por Wi-Fi Direct, todas con
+            // imagen (7,6 h, una de 76 min). Por cable su coche no lee, pero Android Auto sí dio imagen.
+            {"18.0", "2026-11"},
     };
 
     /** Lo que se sabe de fuera (Open Headunit) de las series sin probar aquí; solo para el log. */

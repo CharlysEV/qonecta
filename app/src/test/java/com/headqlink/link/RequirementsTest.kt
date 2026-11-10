@@ -457,7 +457,7 @@ class RequirementsTest {
         assertEquals(Status.OK, item(eval { aaVersion = "17.9.664044-release" }, Id.AA_VERSION).status)
 
         // 17.8 y 18: sin probar todavía (consejo), nunca cuenta ni bloquea Conectar.
-        for (v in listOf("17.8.661234-release", "18.0.5")) {
+        for (v in listOf("17.8.661234-release", "18.1.5")) {
             val items = eval { aaVersion = v }
             val row = item(items, Id.AA_VERSION)
             assertEquals(v, Importance.INFO, row.importance)

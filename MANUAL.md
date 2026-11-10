@@ -274,6 +274,7 @@ se ha probado:
 |---|---|
 | 17.7.x | **Probada** con Qonecta+ (octubre de 2026) |
 | 17.9.x | **Probada** con Qonecta+ (octubre de 2026): decenas de viajes por Wi-Fi Direct y por cable sin problemas |
+| 18.0.x | **Probada** con Qonecta+ (noviembre de 2026): 20 sesiones por Wi-Fi Direct sin problemas |
 | 17.8, 18 y posteriores | **Sin probar todavía.** Otros proyectos (Open Headunit) cuentan que con la 17.8 la conexión se corta a los 1-2 s |
 
 La «Comprobación» lo dice en la fila «Android Auto 17.x» (probada / sin probar todavía), y el log lo apunta al arrancar
