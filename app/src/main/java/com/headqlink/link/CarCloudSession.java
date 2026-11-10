@@ -405,6 +405,49 @@ final class CarCloudSession {
         }
     }
 
+    /** El plan de carga guardado en el coche (límite y ventana), o null si no tiene ninguno. Solo lee; sin PIN. */
+    static synchronized ChargePlan readChargePlan(Context ctx) throws IOException, GeneralSecurityException {
+        CarCloudStore st = store(ctx);
+        ensure(st);
+        if (saved.vin.isEmpty()) throw new NotConfiguredException("sin coche elegido");
+        int v0 = api.sessionVersion();
+        try {
+            JSONObject raw = api.savedPlan(saved.vin);
+            ChargePlan p = ChargePlan.parse(raw);
+            // Los nombres de los campos que manda la nube (no los valores): un plan solo con hora de inicio no trae todos.
+            L.i("nube Leapmotor: plan de carga leído: " + (p == null ? "ninguno" : p) + " · campos "
+                    + (raw.names() == null ? "[]" : raw.names()));
+            return p;
+        } catch (LeapApi.SessionExpiredException e) {
+            throw closed(st, e);
+        } finally {
+            if (api != null && api.sessionVersion() != v0) persist(st);
+        }
+    }
+
+    /**
+     * Manda el plan de carga al coche (orden 190, con el PIN guardado): sustituye el plan entero. true si el coche lo
+     * confirma; false si no contesta a tiempo (puede aplicarse igualmente).
+     */
+    static synchronized boolean sendChargePlan(Context ctx, ChargePlan plan) throws IOException, GeneralSecurityException {
+        CarCloudStore st = store(ctx);
+        ensure(st);
+        if (saved.vin.isEmpty()) throw new NotConfiguredException("sin coche elegido");
+        String pin = st.pin();
+        if (pin == null || pin.isEmpty()) throw new NotConfiguredException("sin PIN del coche");
+        int v0 = api.sessionVersion();
+        try {
+            boolean ok = api.remote(saved.vin, LeapApi.CMD_CHARGE_PLAN, plan.content(), pin);
+            L.i("nube Leapmotor: plan de carga mandado: " + plan + (ok ? " (confirmado por el coche)" : " (sin confirmar)")
+                    + (api.lastRemoteRetries > 0 ? " tras " + api.lastRemoteRetries + " reintentos sin red" : ""));
+            return ok;
+        } catch (LeapApi.SessionExpiredException e) {
+            throw closed(st, e);
+        } finally {
+            if (api != null && api.sessionVersion() != v0) persist(st);
+        }
+    }
+
     /** Dónde está el coche, para «Localizar»: la posición y la hora del dato (ms de pared; 0 si no se sabe). */
     static final class Found {
         final LeapStatus.Position position;

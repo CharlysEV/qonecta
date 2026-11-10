@@ -60,9 +60,16 @@ final class LeapApi {
     /** Los km de una ventana (milisegundos, firmados) y los de cada día (leapmotor-api). */
     static final String PATH_MILEAGE = "/carownerservice/oversea/drivingRecord/v1/mileage/energy/detail";
 
+    /**
+     * El plan de carga guardado en el coche (10-11, «Carga barata»): con cmdId 190 devuelve el límite y la ventana. Solo
+     * lee y no pide el PIN (leapmotor-api, get_charge_schedule).
+     */
+    static final String PATH_APPOINTMENT = "/carownerservice/oversea/vehicle/v1/app/remote/ctl/getAppointment";
+
     /** Las únicas rutas que se piden. Todas leen; ninguna manda nada al coche. */
     static final List<String> ALLOWED_PATHS = Collections.unmodifiableList(java.util.Arrays.asList(
-            PATH_LOGIN, PATH_REFRESH, PATH_VEHICLES, PATH_STATUS, PATH_TRIPS, PATH_WEEKLY_EC, PATH_ENERGY_SPLIT, PATH_MILEAGE));
+            PATH_LOGIN, PATH_REFRESH, PATH_VEHICLES, PATH_STATUS, PATH_TRIPS, PATH_WEEKLY_EC, PATH_ENERGY_SPLIT, PATH_MILEAGE,
+            PATH_APPOINTMENT));
 
     // Órdenes (opcionales, con el PIN del coche): sincronizar el certificado, comprobar el PIN, la orden y su resultado.
     static final String PATH_CERT_SYNC = "/carownerservice/oversea/vehicle/v1/cert/sync";
@@ -81,15 +88,17 @@ final class LeapApi {
      * leapmotor-ha (MIT). El T03 no la tiene.
      */
     static final String CMD_CHARGE_CABLE = "192";
+    /** El plan de carga: el límite y la ventana, en una sola orden que sustituye el plan entero (ChargePlan). */
+    static final String CMD_CHARGE_PLAN = "190";
     /** Las únicas órdenes que se mandan. */
     static final List<String> COMMANDS = Collections.unmodifiableList(java.util.Arrays.asList(
-            CMD_LOCK, CMD_FIND, CMD_TRUNK, CMD_CLIMATE, CMD_CHARGE_CABLE));
+            CMD_LOCK, CMD_FIND, CMD_TRUNK, CMD_CLIMATE, CMD_CHARGE_CABLE, CMD_CHARGE_PLAN));
 
     /** true si la ruta es una de las de lectura (el estado, con el modelo detrás: /status/get/c10). */
     static boolean allowed(String path) {
         if (path == null) return false;
         if (path.equals(PATH_LOGIN) || path.equals(PATH_REFRESH) || path.equals(PATH_VEHICLES) || path.equals(PATH_TRIPS)
-                || path.equals(PATH_WEEKLY_EC) || path.equals(PATH_ENERGY_SPLIT) || path.equals(PATH_MILEAGE)) {
+                || path.equals(PATH_APPOINTMENT) || path.equals(PATH_WEEKLY_EC) || path.equals(PATH_ENERGY_SPLIT) || path.equals(PATH_MILEAGE)) {
             return true;
         }
         return path.startsWith(PATH_STATUS) && path.substring(PATH_STATUS.length()).matches("[a-z0-9_-]{1,24}");
@@ -479,6 +488,32 @@ final class LeapApi {
             JSONObject res = parse(call(accountIdentity, PATH_MILEAGE, h, body), "mileage");
             JSONObject d = res.optJSONObject("data");
             return d != null ? d : new JSONObject();
+        });
+    }
+
+    /**
+     * El plan de carga guardado en el coche (getAppointment, cmdId 190): un objeto plano con los nombres de la orden, o
+     * vacío si no hay plan. «data» llega como texto con el JSON dentro. No pide el PIN.
+     */
+    JSONObject savedPlan(String vin) throws IOException {
+        return withTokenRetry(() -> {
+            Session s = requireSession();
+            Map<String, String> params = new LinkedHashMap<>();
+            params.put("cmdId", CMD_CHARGE_PLAN);
+            Map<String, String> h = signedHeaders(vin, params);
+            h.putAll(authHeaders(s));
+            JSONObject res = parse(call(accountIdentity, PATH_APPOINTMENT, h,
+                    "vin=" + LeapCrypto.encodeComponent(vin) + "&cmdId=" + CMD_CHARGE_PLAN), "charge plan");
+            Object d = res.opt("data");
+            if (d instanceof JSONObject) return (JSONObject) d;
+            if (d instanceof String && !((String) d).isEmpty()) {
+                try {
+                    return new JSONObject((String) d);
+                } catch (JSONException e) {
+                    throw new ApiException(200, -1, "charge plan: el plan no es JSON");
+                }
+            }
+            return new JSONObject();
         });
     }
 

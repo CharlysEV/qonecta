@@ -244,10 +244,11 @@ class LeapApiTest {
         // 28-10: «Consumo» y «Registros de carga» de «Mi coche» (también de lectura).
         assertTrue(LeapApi.allowed(LeapApi.PATH_ENERGY_SPLIT))
         assertTrue(LeapApi.allowed(LeapApi.PATH_MILEAGE))
+        // 10-11: el plan de carga guardado en el coche («Carga barata»): solo lee, sin PIN.
+        assertTrue(LeapApi.allowed(LeapApi.PATH_APPOINTMENT))
         for (p in listOf(
             "/carownerservice/oversea/vehicle/v1/app/remote/ctl",
             "/carownerservice/oversea/vehicle/v1/app/remote/ctl/result/query",
-            "/carownerservice/oversea/vehicle/v1/app/remote/ctl/getAppointment",
             "/carownerservice/oversea/vehicle/v1/operPwd/verify",
             "/carownerservice/oversea/vehicle/v1/cert/sync",
             "/carownerservice/oversea/message/v1/list",

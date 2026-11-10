@@ -98,7 +98,7 @@ class CarCommandTest {
 
     @Test
     fun onlyTheseCommandsCanBeSent() {
-        assertEquals(listOf("110", "120", "130", "170", "192"), LeapApi.COMMANDS)
+        assertEquals(listOf("110", "120", "130", "170", "192", "190"), LeapApi.COMMANDS)
     }
 
     @Test

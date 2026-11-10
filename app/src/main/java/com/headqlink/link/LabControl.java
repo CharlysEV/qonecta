@@ -267,6 +267,32 @@ final class LabControl {
                 done = (front ? "CAR_APP_FOREGROUND" : "CAR_APP_BACKGROUND") + " mandado a S" + port.getId();
                 break;
             }
+            case "plan": {
+                // «Carga barata» (10-11): «plan» lee el plan de carga del coche; «plan reenviar» lo lee, manda el mismo sin
+                // cambiar nada (para ver si la nube acepta la orden 190) y lo vuelve a leer. Con red: en un hilo aparte, el
+                // resultado va al log.
+                boolean resend = a.equals("reenviar");
+                if (!a.isEmpty() && !resend) return "plan · plan reenviar";
+                Context app = ctx.getApplicationContext();
+                new Thread(() -> {
+                    try {
+                        ChargePlan p = CarCloudSession.readChargePlan(app);
+                        if (!resend) return;
+                        if (p == null) {
+                            L.i("pruebas: plan de carga: el coche no tiene plan; no se manda nada");
+                            return;
+                        }
+                        boolean ok = CarCloudSession.sendChargePlan(app, p);
+                        ChargePlan after = CarCloudSession.readChargePlan(app);
+                        L.i("pruebas: plan de carga reenviado sin cambios: " + (ok ? "confirmado" : "sin confirmar")
+                                + "; después " + (p.same(after) ? "sigue igual" : "ha CAMBIADO"));
+                    } catch (Exception e) {
+                        L.w("pruebas: plan de carga: " + Http.safeError(e));
+                    }
+                }, "lab-plan").start();
+                done = resend ? "leo el plan de carga y lo reenvío igual (resultado en el log)" : "leo el plan de carga (resultado en el log)";
+                break;
+            }
             case "reconectar":
                 done = "reconecto (unos segundos sin imagen)";
                 reconnect(ctx);
