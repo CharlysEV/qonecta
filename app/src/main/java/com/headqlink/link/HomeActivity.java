@@ -293,7 +293,12 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         if (LinkState.running && !LinkState.usbOverride && !LinkState.activeLinkMode.isEmpty() && !LinkState.activeLinkMode.equals(cfg.linkMode())) {
             link = Str.get(R.string.hql_link_pending, link, Ui.linkTitle(cfg.linkMode()));
         }
-        modeView.setText(Ui.modeTitle(mode) + " · " + link);
+        // El modo y, debajo y más pequeña, la conexión: en una sola línea a 24 sp ocupaba cinco con la letra grande.
+        android.text.SpannableString title = new android.text.SpannableString(Ui.modeTitle(mode) + "\n" + link);
+        int from = title.length() - link.length();
+        title.setSpan(new android.text.style.RelativeSizeSpan(0.66f), from, title.length(), 0);
+        title.setSpan(new android.text.style.ForegroundColorSpan(PhoneCharts.DIM), from, title.length(), 0);
+        modeView.setText(title);
         if (Config.MODE_APP.equals(mode)) {
             String label = Ui.appLabel(this, cfg.targetPackage());
             modeDetail.setText(label != null ? Str.get(R.string.hql_home_opens_app, label) : Str.get(R.string.hql_home_no_app));
