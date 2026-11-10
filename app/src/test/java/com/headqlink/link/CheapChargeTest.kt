@@ -652,6 +652,45 @@ class CheapChargeTest {
         assertEquals(CheapCharge.HOLD, state().phase)
     }
 
+    // ------------------------------------------------------------------ la tarjeta y el laboratorio
+
+    @Test
+    fun thePriceBarsMarkTheWindowAndTheEstimatedHours() {
+        val table = PvpcPrices.parse(pvpcAnswer(day("2026-11-10", pvpc)))
+        val bars = PhoneCar.PriceBars(ctx)
+        assertTrue(bars.set(table, at("2026-11-10 19:20"), at("2026-11-11 02:51"), at("2026-11-11 06:30"), tz))
+        // Desde la hora de ahora (las 19): cinco horas de hoy, publicadas; las de mañana, estimadas con las de hoy.
+        assertEquals(0.3264, bars.price[0], 1e-9)
+        assertFalse(bars.estimated[4])
+        assertTrue(bars.estimated[5])
+        assertEquals(0.18188, bars.price[5], 1e-9)
+        assertTrue(bars.anyEstimated)
+        // La ventana de 02:51 a 06:30 toca las horas de las 2 a las 6.
+        assertFalse(bars.chosen[6])
+        for (i in 7..11) assertTrue("hora ${i - 5}", bars.chosen[i])
+        assertFalse(bars.chosen[12])
+        assertEquals(0.14665, bars.min, 1e-9)
+        assertEquals(0.32727, bars.max, 1e-9)
+        // Sin ventana, ninguna resaltada; sin precios, no hay barrita.
+        assertTrue(bars.set(table, at("2026-11-10 19:20"), 0, 0, tz))
+        assertFalse(bars.chosen.any { it })
+        assertFalse(bars.set(PvpcPrices.Table.EMPTY, at("2026-11-10 19:20"), 0, 0, tz))
+    }
+
+    @Test
+    fun theLabOrderTellsTheStateWithoutSendingAnything() {
+        check("2026-11-10 22:00", 50)
+        val reads = car.planReads
+        val text = CheapCharge.lab(ctx)
+        assertTrue(text, text.startsWith("activada · tarifa bands · salida 07:30 · objetivo 80 % · 7.4 kW · casa guardada"))
+        assertTrue(text, text.contains("fase planned"))
+        assertTrue(text, text.contains("ventana 00:00–03:45"))
+        // Ni una orden ni una lectura más, y nada de dónde está la casa ni el coche.
+        assertEquals(1, car.sent.size)
+        assertEquals(reads, car.planReads)
+        assertFalse(text.contains("61.5"))
+    }
+
     @Test
     fun theDefaultsAreTheAgreedOnes() {
         val fresh = Config(ctx)

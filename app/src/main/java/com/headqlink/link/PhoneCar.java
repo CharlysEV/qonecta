@@ -92,6 +92,13 @@ final class PhoneCar {
     private LinearLayout chargeBody;
     private TextView odoText;
     private LinearLayout usageBody;
+    /** «Carga barata»: el estado, el detalle (coste y ahorro), «Cargar ya» y, con el PVPC, los precios por hora. */
+    private TextView cheapLine;
+    private TextView cheapDetail;
+    private MaterialButton cheapNow;
+    private PriceBars cheapBars;
+    private TextView cheapCaption;
+    private boolean cheapBusy;
     private final Runnable ticker = new Runnable() {
         @Override
         public void run() {
@@ -155,6 +162,7 @@ final class PhoneCar {
         chargeBody = null;
         odoText = null;
         usageBody = null;
+        cheapLine = null;
         col.addView(PhoneUi.title(act, Str.get(R.string.hql_car_tab), 12));
         // Sin cuenta (qué es y «Conectar la cuenta»), con la sesión cerrada («Volver a entrar») o esperando el primer dato.
         PhoneUi.Cloud gap = PhoneUi.cloud(act, snap);
@@ -169,6 +177,7 @@ final class PhoneCar {
         col.addView(hero());
         col.addView(orders());
         col.addView(chargeCard());
+        col.addView(cheapCard());
         col.addView(usageCard());
         if (loadedAt > 0) {
             paintRecords();
@@ -503,6 +512,7 @@ final class PhoneCar {
         ageText.setText(Str.get(R.string.hql_cloud_car_data) + " · " + CarCloud.ago(snap.ageMs(now)));
         push3d();
         paintChargeNow(s, now);
+        paintCheap(now);
         if (odoText != null) {
             odoText.setVisibility(Double.isNaN(s.odometerKm) ? View.GONE : View.VISIBLE);
             odoText.setText(Str.get(R.string.hql_car_use_odo, CarStatusTab.odometer(s.odometerKm), CarSpec.current().name));
@@ -634,6 +644,12 @@ final class PhoneCar {
                 c = ChargeLog.load(a);
             } catch (RuntimeException e) {
                 c = new ArrayList<>();
+            }
+            // «Carga barata» con el PVPC: los precios por hora para la barrita (Red Eléctrica, como mucho cada media hora).
+            Config cfg = new Config(a);
+            if (cfg.cheapCharge() && Tariff.PVPC.equals(cfg.cheapTariff()) && !DemoMode.active()) {
+                long t0 = System.currentTimeMillis();
+                PvpcPrices.get(a, t0, t0 + 24 * CheapWindow.HOUR_MS);
             }
             List<CloudHistory.Trip> fh = h;
             Map<String, MonthlyReport.Summary> fm = m;
@@ -783,6 +799,198 @@ final class PhoneCar {
                     num(kwh, 1), PhoneInsights.duration(min), peak > 0 ? num(peak, 0) : "—")));
         }
         chargeBody.addView(link(Str.get(R.string.hql_car_charge_all)));
+    }
+
+    // ------------------------------------------------------------------ «Carga barata»
+
+    /**
+     * «Carga barata» (CheapCharge): qué está haciendo (apagada, esperando a que se enchufe en casa, programada de tal a
+     * tal hora con su coste y su ahorro, cargando, plan devuelto, o por qué no se pudo), «Cargar ya» mientras hay una
+     * ventana puesta y, con el PVPC, los precios por hora de las próximas 24 con la ventana resaltada.
+     */
+    private View cheapCard() {
+        MaterialCardView card = card();
+        LinearLayout in = new LinearLayout(act);
+        in.setOrientation(LinearLayout.VERTICAL);
+        in.setPadding(dp(18), dp(16), dp(18), dp(12));
+        in.addView(text(Str.get(R.string.hql_cb_title), com.google.android.material.R.style.TextAppearance_Material3_TitleMedium,
+                PhoneCharts.TEXT));
+        cheapLine = text("", com.google.android.material.R.style.TextAppearance_Material3_BodyLarge, PhoneCharts.DIM);
+        cheapLine.setPadding(0, dp(6), 0, 0);
+        in.addView(cheapLine);
+        cheapDetail = text("", com.google.android.material.R.style.TextAppearance_Material3_BodySmall, PhoneCharts.FAINT);
+        cheapDetail.setPadding(0, dp(2), 0, 0);
+        in.addView(cheapDetail);
+        cheapNow = new MaterialButton(act, null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        cheapNow.setText(Str.get(R.string.hql_cb_charge_now));
+        cheapNow.setTextColor(PhoneCharts.TEXT);
+        cheapNow.setVisibility(View.GONE);
+        cheapNow.setOnClickListener(v -> chargeNow());
+        LinearLayout.LayoutParams nlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        nlp.topMargin = dp(8);
+        in.addView(cheapNow, nlp);
+        cheapCaption = text("", com.google.android.material.R.style.TextAppearance_Material3_LabelMedium, PhoneCharts.FAINT);
+        cheapCaption.setPadding(0, dp(12), 0, dp(4));
+        cheapCaption.setVisibility(View.GONE);
+        in.addView(cheapCaption);
+        cheapBars = new PriceBars(act);
+        cheapBars.setVisibility(View.GONE);
+        in.addView(cheapBars, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(76)));
+        TextView settings = text(Str.get(R.string.hql_settings) + " ›", com.google.android.material.R.style.TextAppearance_Material3_LabelLarge,
+                PhoneCharts.ACCENT);
+        settings.setPadding(0, dp(10), dp(12), dp(4));
+        settings.setClickable(true);
+        settings.setBackgroundResource(android.R.drawable.list_selector_background);
+        settings.setOnClickListener(v -> act.startActivity(new Intent(act, SettingsActivity.class)));
+        LinearLayout.LayoutParams slp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        slp.topMargin = dp(4);
+        in.addView(settings, slp);
+        card.addView(in);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(10);
+        card.setLayoutParams(lp);
+        return card;
+    }
+
+    /** Con cada dato: el estado de «Carga barata» y, con el PVPC, la barrita de precios. */
+    private void paintCheap(long now) {
+        if (cheapLine == null) return;
+        Config cfg = new Config(act);
+        CheapCharge.Status st = CheapCharge.status(act, snap, now, new CarCloudStore(act).hasPin(),
+                snap.state == CarCloud.State.EXPIRED);
+        cheapLine.setText(st.line);
+        cheapLine.setTextColor(st.level == 1 ? PhoneCharts.ACCENT_2 : st.level == 2 ? PhoneCharts.WARN : PhoneCharts.DIM);
+        cheapDetail.setText(st.detail);
+        cheapDetail.setVisibility(st.detail.isEmpty() ? View.GONE : View.VISIBLE);
+        cheapNow.setVisibility(st.canChargeNow ? View.VISIBLE : View.GONE);
+        cheapNow.setEnabled(!cheapBusy);
+        // Los precios por hora: solo con el PVPC y la función encendida (o con una ventana puesta).
+        boolean planned = CheapCharge.PLANNED.equals(st.state.phase);
+        PvpcPrices.Table table = Tariff.PVPC.equals(cfg.cheapTariff()) && (cfg.cheapCharge() || planned) ? PvpcPrices.cached(act)
+                : PvpcPrices.Table.EMPTY;
+        boolean some = cheapBars.set(table.times(Money.rate()), now, planned ? st.state.startMs : 0, planned ? st.state.endMs : 0,
+                TimeZone.getDefault());
+        cheapBars.setVisibility(some ? View.VISIBLE : View.GONE);
+        cheapCaption.setVisibility(some ? View.VISIBLE : View.GONE);
+        if (some) {
+            String t = Str.get(R.string.hql_cb_prices_title) + " · " + Money.format(cheapBars.min) + "–" + Money.per(cheapBars.max, "kWh");
+            if (cheapBars.anyEstimated) t += " · " + Str.get(R.string.hql_cb_prices_est);
+            cheapCaption.setText(t);
+        }
+    }
+
+    /** «Cargar ya»: devuelve el plan del coche (sin ventana) en otro hilo y dice cómo ha ido. */
+    private void chargeNow() {
+        if (cheapBusy) return;
+        cheapBusy = true;
+        cheapNow.setEnabled(false);
+        android.content.Context app = act.getApplicationContext();
+        new Thread(() -> {
+            boolean ok;
+            try {
+                ok = CheapCharge.chargeNow(app, CheapCharge.cloud(app));
+            } catch (RuntimeException e) {
+                L.w("carga barata: «Cargar ya» fallido (" + e.getClass().getSimpleName() + ")");
+                ok = false;
+            }
+            boolean done = ok;
+            main.post(() -> {
+                cheapBusy = false;
+                android.widget.Toast.makeText(app, Str.get(done ? R.string.hql_cb_now_sent : R.string.hql_cb_now_failed),
+                        android.widget.Toast.LENGTH_LONG).show();
+                if (visible) paintCheap(System.currentTimeMillis());
+            });
+        }, "hql-cheap-now").start();
+    }
+
+    /**
+     * Los precios por hora de las próximas 24 (PVPC): una barra por hora, más alta cuanto más cara; las de la ventana
+     * elegida, en el color del acento; las estimadas (mañana, antes de publicarse), más pálidas. Debajo, la hora cada tres.
+     */
+    static final class PriceBars extends View {
+        static final int HOURS = 24;
+        private final android.graphics.Paint p = new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+        private final android.graphics.RectF r = new android.graphics.RectF();
+        final double[] price = new double[HOURS];
+        final boolean[] estimated = new boolean[HOURS];
+        final boolean[] chosen = new boolean[HOURS];
+        private final int[] hourOfDay = new int[HOURS];
+        private String key = "";
+        double min;
+        double max;
+        boolean anyEstimated;
+
+        PriceBars(android.content.Context c) {
+            super(c);
+        }
+
+        /** Los precios desde la hora de ahora; false si no hay ninguno que enseñar. */
+        boolean set(PvpcPrices.Table table, long now, long windowStart, long windowEnd, TimeZone tz) {
+            CheapWindow.Prices est = table.withEstimates();
+            long first = CheapWindow.hourStart(now, tz);
+            java.util.Calendar c = java.util.Calendar.getInstance(tz);
+            int known = 0;
+            double lo = Double.MAX_VALUE;
+            double hi = 0;
+            boolean anyEst = false;
+            StringBuilder k = new StringBuilder();
+            for (int i = 0; i < HOURS; i++) {
+                long h = first + i * CheapWindow.HOUR_MS;
+                double real = table.at(h);
+                price[i] = Double.isNaN(real) ? est.at(h) : real;
+                estimated[i] = Double.isNaN(real) && !Double.isNaN(price[i]);
+                chosen[i] = windowEnd > windowStart && h < windowEnd && h + CheapWindow.HOUR_MS > windowStart;
+                c.setTimeInMillis(h);
+                hourOfDay[i] = c.get(java.util.Calendar.HOUR_OF_DAY);
+                if (!Double.isNaN(price[i])) {
+                    known++;
+                    lo = Math.min(lo, price[i]);
+                    hi = Math.max(hi, price[i]);
+                    anyEst |= estimated[i];
+                }
+                k.append(Double.isNaN(price[i]) ? "-" : String.valueOf(Math.round(price[i] * 10000))).append(estimated[i] ? "e" : "")
+                        .append(chosen[i] ? "w" : "").append(',');
+            }
+            if (known == 0) return false;
+            min = lo;
+            max = hi;
+            anyEstimated = anyEst;
+            k.append(first);
+            if (!k.toString().equals(key)) {
+                key = k.toString();
+                invalidate();
+            }
+            return true;
+        }
+
+        @Override
+        protected void onDraw(android.graphics.Canvas cv) {
+            float d = getResources().getDisplayMetrics().density;
+            float w = getWidth();
+            float labels = 14 * d;
+            float top = 2 * d;
+            float base = getHeight() - labels;
+            float slot = w / HOURS;
+            float gap = Math.max(1, slot * 0.18f);
+            // La más barata no se queda sin barra: la altura va del 18 % al 100 %.
+            double span = Math.max(1e-9, max - min);
+            p.setStyle(android.graphics.Paint.Style.FILL);
+            for (int i = 0; i < HOURS; i++) {
+                if (Double.isNaN(price[i])) continue;
+                float frac = (float) (0.18 + 0.82 * (price[i] - min) / span);
+                int color = chosen[i] ? PhoneCharts.ACCENT : 0xFF4A5E73;
+                p.setColor(estimated[i] ? (color & 0x00FFFFFF) | 0x73000000 : color);
+                r.set(i * slot + gap / 2, base - (base - top) * frac, (i + 1) * slot - gap / 2, base);
+                cv.drawRoundRect(r, 2 * d, 2 * d, p);
+            }
+            p.setColor(PhoneCharts.FAINT);
+            p.setTextSize(10 * d);
+            p.setTextAlign(android.graphics.Paint.Align.CENTER);
+            for (int i = 0; i < HOURS; i++) {
+                if (hourOfDay[i] % 3 != 0) continue;
+                cv.drawText(String.format(Locale.ROOT, "%02d", hourOfDay[i]), (i + 0.5f) * slot, getHeight() - 2 * d, p);
+            }
+        }
     }
 
     /** «Consumo», como el de la app de Leapmotor: los km del coche, Semana / Mes / Año, las cifras y los últimos viajes. */
