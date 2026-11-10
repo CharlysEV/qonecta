@@ -28,7 +28,7 @@
     <string name="hql_pr_calculating">A calcular a rota, o tempo e os carregadores…</string>
     <string name="hql_pr_failed">Não foi possível calcular a rota (%1$s). Tente de novo dentro de momentos.</string>
     <string name="hql_pr_no_network">sem ligação à internet</string>
-    <string name="hql_pr_no_dest">Escolha primeiro um destino.</string>
+    <string name="hql_pr_no_dest">Escreva o destino e toque num dos resultados.</string>
     <string name="hql_pr_no_origin">Não sei de onde parte: ative a localização ou guarde Casa no separador Rota do carro.</string>
     <string name="hql_pr_summary">%1$.0f km · %2$s a conduzir · %3$s a carregar</string>
     <string name="hql_pr_summary_nostop">%1$.0f km · %2$s a conduzir · sem paragens</string>
@@ -59,4 +59,8 @@
     <string name="hql_planned_changed">Ao planear: %1$s; agora: %2$s.</string>
     <string name="hql_planned_changed_yesterday">Ontem: %1$s; hoje: %2$s.</string>
     <string name="hql_planned_other_stops">Agora para em %1$s.</string>
+    <string name="hql_pr_pick_result">Há vários locais correspondentes. Toque no certo e volte a tocar em Calcular rota.</string>
+    <string name="hql_waiting_gps_perm">A aguardar o GPS do telemóvel: o Qonecta+ não tem permissão de localização precisa. Conceda-a em Definições > Aplicações > Qonecta+ > Autorizações > Localização ("Utilizar localização precisa").</string>
+    <string name="hql_waiting_gps_off">A aguardar o GPS do telemóvel: a localização está desligada no telemóvel. Ligue-a nas definições rápidas.</string>
+    <string name="hql_waiting_gps_always">A aguardar o GPS do telemóvel: com o telemóvel bloqueado, o Android corta a localização à aplicação. Permita a localização "sempre" em Definições > Aplicações > Qonecta+ > Autorizações > Localização.</string>
 </resources>

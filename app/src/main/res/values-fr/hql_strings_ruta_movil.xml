@@ -28,7 +28,7 @@
     <string name="hql_pr_calculating">Calcul de l\'itinéraire, de la météo et des bornes…</string>
     <string name="hql_pr_failed">Impossible de calculer l\'itinéraire (%1$s). Réessaie dans un instant.</string>
     <string name="hql_pr_no_network">pas de connexion internet</string>
-    <string name="hql_pr_no_dest">Choisis d\'abord une destination.</string>
+    <string name="hql_pr_no_dest">Écris la destination et touche l\'un des résultats.</string>
     <string name="hql_pr_no_origin">Je ne sais pas d\'où tu pars : active la localisation ou enregistre Maison dans l\'onglet Itinéraire de la voiture.</string>
     <string name="hql_pr_summary">%1$.0f km · %2$s de conduite · %3$s de recharge</string>
     <string name="hql_pr_summary_nostop">%1$.0f km · %2$s de conduite · sans arrêt</string>
@@ -59,4 +59,8 @@
     <string name="hql_planned_changed">À la planification : %1$s ; maintenant : %2$s.</string>
     <string name="hql_planned_changed_yesterday">Hier : %1$s ; aujourd\'hui : %2$s.</string>
     <string name="hql_planned_other_stops">Maintenant, il s\'arrête à %1$s.</string>
+    <string name="hql_pr_pick_result">Plusieurs lieux correspondent. Touche le bon, puis appuie de nouveau sur Calculer l\'itinéraire.</string>
+    <string name="hql_waiting_gps_perm">En attente du GPS du téléphone : Qonecta+ n\'a pas l\'autorisation de localisation précise. Accorde-la dans Réglages > Applications > Qonecta+ > Autorisations > Localisation (« Utiliser la position exacte »).</string>
+    <string name="hql_waiting_gps_off">En attente du GPS du téléphone : la localisation est désactivée sur le téléphone. Active-la dans les réglages rapides.</string>
+    <string name="hql_waiting_gps_always">En attente du GPS du téléphone : téléphone verrouillé, Android coupe la localisation à l\'appli. Autorise la localisation « tout le temps » dans Réglages > Applications > Qonecta+ > Autorisations > Localisation.</string>
 </resources>

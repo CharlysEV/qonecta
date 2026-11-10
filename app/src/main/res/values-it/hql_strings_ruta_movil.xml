@@ -28,7 +28,7 @@
     <string name="hql_pr_calculating">Calcolo del percorso, del meteo e delle colonnine…</string>
     <string name="hql_pr_failed">Impossibile calcolare il percorso (%1$s). Riprova tra un momento.</string>
     <string name="hql_pr_no_network">nessuna connessione a internet</string>
-    <string name="hql_pr_no_dest">Scegli prima una destinazione.</string>
+    <string name="hql_pr_no_dest">Scrivi la destinazione e tocca uno dei risultati.</string>
     <string name="hql_pr_no_origin">Non so da dove parti: attiva la posizione o salva Casa nella scheda Percorso dell\'auto.</string>
     <string name="hql_pr_summary">%1$.0f km · %2$s di guida · %3$s di ricarica</string>
     <string name="hql_pr_summary_nostop">%1$.0f km · %2$s di guida · senza soste</string>
@@ -59,4 +59,8 @@
     <string name="hql_planned_changed">Quando l\'hai pianificato: %1$s; adesso: %2$s.</string>
     <string name="hql_planned_changed_yesterday">Ieri: %1$s; oggi: %2$s.</string>
     <string name="hql_planned_other_stops">Adesso si ferma a %1$s.</string>
+    <string name="hql_pr_pick_result">Ci sono più luoghi che corrispondono. Tocca quello giusto e poi premi di nuovo Calcola percorso.</string>
+    <string name="hql_waiting_gps_perm">In attesa del GPS del telefono: Qonecta+ non ha il permesso di posizione precisa. Concedilo in Impostazioni > App > Qonecta+ > Autorizzazioni > Posizione («Usa posizione precisa»).</string>
+    <string name="hql_waiting_gps_off">In attesa del GPS del telefono: la posizione è disattivata sul telefono. Attivala dalle impostazioni rapide.</string>
+    <string name="hql_waiting_gps_always">In attesa del GPS del telefono: con il telefono bloccato, Android toglie la posizione all\'app. Consenti la posizione «sempre» in Impostazioni > App > Qonecta+ > Autorizzazioni > Posizione.</string>
 </resources>

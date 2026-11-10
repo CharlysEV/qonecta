@@ -28,7 +28,7 @@
     <string name="hql_pr_calculating">Calculando la ruta, el tiempo y los cargadores…</string>
     <string name="hql_pr_failed">No se pudo calcular la ruta (%1$s). Prueba otra vez dentro de un momento.</string>
     <string name="hql_pr_no_network">sin conexión a internet</string>
-    <string name="hql_pr_no_dest">Elige antes un destino.</string>
+    <string name="hql_pr_no_dest">Escribe el destino y toca uno de los resultados.</string>
     <string name="hql_pr_no_origin">No sé desde dónde sales: activa la ubicación o guarda Casa en la pestaña Ruta del coche.</string>
     <string name="hql_pr_summary">%1$.0f km · %2$s conduciendo · %3$s cargando</string>
     <string name="hql_pr_summary_nostop">%1$.0f km · %2$s conduciendo · sin paradas</string>
@@ -59,4 +59,8 @@
     <string name="hql_planned_changed">Al planificarla: %1$s; ahora: %2$s.</string>
     <string name="hql_planned_changed_yesterday">Ayer: %1$s; hoy: %2$s.</string>
     <string name="hql_planned_other_stops">Ahora para en %1$s.</string>
+    <string name="hql_pr_pick_result">Hay varios sitios que coinciden. Toca el que quieres y vuelve a pulsar Calcular ruta.</string>
+    <string name="hql_waiting_gps_perm">Esperando el GPS del móvil: Qonecta+ no tiene el permiso de ubicación precisa. Concédelo en Ajustes > Aplicaciones > Qonecta+ > Permisos > Ubicación («Usar ubicación precisa»).</string>
+    <string name="hql_waiting_gps_off">Esperando el GPS del móvil: la ubicación está apagada en el móvil. Actívala en los ajustes rápidos.</string>
+    <string name="hql_waiting_gps_always">Esperando el GPS del móvil: con el móvil bloqueado, Android corta la ubicación a la app. Permite la ubicación «todo el tiempo» en Ajustes > Aplicaciones > Qonecta+ > Permisos > Ubicación.</string>
 </resources>

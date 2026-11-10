@@ -25,6 +25,19 @@ final class LocationAccess {
         return c.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
+    /** ¿Está encendida la ubicación del sistema (el interruptor de los ajustes rápidos)? Sin saber, sí. */
+    static boolean systemOn(Context c) {
+        try {
+            android.location.LocationManager lm = c.getSystemService(android.location.LocationManager.class);
+            if (lm == null) return true;
+            if (Build.VERSION.SDK_INT >= 28) return lm.isLocationEnabled();
+            return lm.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)
+                    || lm.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER);
+        } catch (RuntimeException e) {
+            return true;
+        }
+    }
+
     /** «Permitir todo el tiempo» (antes de Android 10 no existe: con la ubicación basta). */
     static boolean background(Context c) {
         if (!fine(c)) return false;

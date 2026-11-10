@@ -760,7 +760,7 @@ final class RouteTab implements CarScreen {
         item.setOnClickListener(v -> {
             double[] pos = planner.position();
             if (Double.isNaN(pos[0])) {
-                flash(Str.get(R.string.hql_waiting_gps));
+                flash(RoutePlanner.waitingGpsText(ctx));
                 return;
             }
             RoutePlanner.Place pl = new RoutePlanner.Place();
@@ -1106,7 +1106,7 @@ final class RouteTab implements CarScreen {
     private void saveHere(Runnable rebuild) {
         double[] pos = planner.position();
         if (Double.isNaN(pos[0])) {
-            flash(Str.get(R.string.hql_waiting_gps));
+            flash(RoutePlanner.waitingGpsText(ctx));
             return;
         }
         double lat = pos[0];
@@ -1182,7 +1182,7 @@ final class RouteTab implements CarScreen {
         here.setOnClickListener(v -> {
             double[] pos = planner.position();
             if (Double.isNaN(pos[0])) {
-                flash(Str.get(R.string.hql_waiting_gps));
+                flash(RoutePlanner.waitingGpsText(ctx));
                 return;
             }
             if (!Boolean.TRUE.equals(here.getTag())) {

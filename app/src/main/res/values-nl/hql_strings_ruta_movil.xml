@@ -28,7 +28,7 @@
     <string name="hql_pr_calculating">Route, weer en laadpalen worden berekend…</string>
     <string name="hql_pr_failed">De route kon niet worden berekend (%1$s). Probeer het zo meteen opnieuw.</string>
     <string name="hql_pr_no_network">geen internetverbinding</string>
-    <string name="hql_pr_no_dest">Kies eerst een bestemming.</string>
+    <string name="hql_pr_no_dest">Typ de bestemming en tik op een van de resultaten.</string>
     <string name="hql_pr_no_origin">Ik weet niet waar je vertrekt: zet de locatie aan of sla Thuis op in het tabblad Route van de auto.</string>
     <string name="hql_pr_summary">%1$.0f km · %2$s rijden · %3$s laden</string>
     <string name="hql_pr_summary_nostop">%1$.0f km · %2$s rijden · zonder stops</string>
@@ -58,4 +58,8 @@
     <string name="hql_planned_changed">Bij het plannen: %1$s; nu: %2$s.</string>
     <string name="hql_planned_changed_yesterday">Gisteren: %1$s; vandaag: %2$s.</string>
     <string name="hql_planned_other_stops">Nu stopt hij bij %1$s.</string>
+    <string name="hql_pr_pick_result">Er zijn meerdere plaatsen die passen. Tik op de juiste en tik daarna opnieuw op Route berekenen.</string>
+    <string name="hql_waiting_gps_perm">Wachten op de gps van de telefoon: Qonecta+ heeft geen toestemming voor de precieze locatie. Geef die in Instellingen > Apps > Qonecta+ > Machtigingen > Locatie ("Precieze locatie gebruiken").</string>
+    <string name="hql_waiting_gps_off">Wachten op de gps van de telefoon: locatie staat uit op de telefoon. Zet Locatie aan in de snelle instellingen.</string>
+    <string name="hql_waiting_gps_always">Wachten op de gps van de telefoon: bij een vergrendelde telefoon sluit Android de locatie voor de app af. Sta Locatie "altijd" toe in Instellingen > Apps > Qonecta+ > Machtigingen > Locatie.</string>
 </resources>

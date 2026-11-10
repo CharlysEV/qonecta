@@ -28,7 +28,7 @@
     <string name="hql_pr_calculating">正在计算路线、天气和充电桩…</string>
     <string name="hql_pr_failed">无法计算路线（%1$s）。请稍后再试。</string>
     <string name="hql_pr_no_network">没有网络连接</string>
-    <string name="hql_pr_no_dest">请先选择目的地。</string>
+    <string name="hql_pr_no_dest">请输入目的地，然后点按其中一个搜索结果。</string>
     <string name="hql_pr_no_origin">不知道你从哪里出发：请打开定位，或在车机的路线标签页保存「家」。</string>
     <string name="hql_pr_summary">%1$.0f km · 驾驶 %2$s · 充电 %3$s</string>
     <string name="hql_pr_summary_nostop">%1$.0f km · 驾驶 %2$s · 无需停靠</string>
@@ -57,4 +57,8 @@
     <string name="hql_planned_changed">规划时：%1$s；现在：%2$s。</string>
     <string name="hql_planned_changed_yesterday">昨天：%1$s；今天：%2$s。</string>
     <string name="hql_planned_other_stops">现在改在 %1$s 停靠。</string>
+    <string name="hql_pr_pick_result">有多个匹配的地点。请点按你要去的那个，然后再点“计算路线”。</string>
+    <string name="hql_waiting_gps_perm">正在等待手机的 GPS：Qonecta+ 没有精确位置权限。请在“设置 > 应用 > Qonecta+ > 权限 > 位置信息”中允许“使用精确位置”。</string>
+    <string name="hql_waiting_gps_off">正在等待手机的 GPS：手机上的位置信息已关闭。请在快捷设置中打开“位置信息”。</string>
+    <string name="hql_waiting_gps_always">正在等待手机的 GPS：手机锁屏时，Android 会切断应用的位置信息。请在“设置 > 应用 > Qonecta+ > 权限 > 位置信息”中选择“始终允许”。</string>
 </resources>

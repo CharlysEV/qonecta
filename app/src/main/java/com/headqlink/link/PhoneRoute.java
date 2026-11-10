@@ -376,6 +376,64 @@ final class PhoneRoute {
         }, "hql-phone-search").start();
     }
 
+    private String typedText() {
+        return field == null || field.getText() == null ? "" : field.getText().toString().trim();
+    }
+
+    /**
+     * «Calcular ruta» con el destino escrito y sin elegir: busca y, si el primer resultado es el claro (pickClear), lo
+     * elige y calcula; si no, enseña los resultados con «toca uno». Con una parada intermedia en curso no se toca nada.
+     */
+    private void searchThenCalculate(String q) {
+        hideKeyboard();
+        busy = true;
+        error = null;
+        paintDepart();
+        paintResult();
+        searching = true;
+        results = null;
+        searchNote = null;
+        paintWhere();
+        double[] me = RoutePlanner.lastKnown(act);
+        new Thread(() -> {
+            List<RoutePlanner.Place> found = PlaceSearch.search(act, q, me == null ? Double.NaN : me[0], me == null ? Double.NaN : me[1]);
+            main.post(() -> {
+                busy = false;
+                searching = false;
+                RoutePlanner.Place clear = pickClear(q, found);
+                if (clear != null) {
+                    choose(clear);
+                    calculate();
+                    return;
+                }
+                results = found;
+                searchNote = found.isEmpty() ? Str.get(R.string.hql_pr_no_results) : null;
+                error = found.isEmpty() ? null : Str.get(R.string.hql_pr_pick_result);
+                paintWhere();
+                paintDepart();
+                paintResult();
+            });
+        }, "hql-phone-search").start();
+    }
+
+    /**
+     * Puro: el resultado que se puede usar sin preguntar, o null. Uno solo; o el primero si su nombre empieza por lo
+     * escrito (sin mayúsculas) y ningún otro se llama igual (dos «Valencia» distintos sí se preguntan).
+     */
+    static RoutePlanner.Place pickClear(String q, List<RoutePlanner.Place> found) {
+        if (found == null || found.isEmpty()) return null;
+        if (found.size() == 1) return found.get(0);
+        RoutePlanner.Place first = found.get(0);
+        String typed = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
+        String name = first.name == null ? "" : first.name.trim().toLowerCase(Locale.ROOT);
+        if (typed.isEmpty() || !name.startsWith(typed)) return null;
+        for (int i = 1; i < found.size(); i++) {
+            String other = found.get(i).name == null ? "" : found.get(i).name.trim().toLowerCase(Locale.ROOT);
+            if (other.equals(name)) return null;
+        }
+        return first;
+    }
+
     /** Un reciente que es un sitio guardado: a menos de SavedPlaces.SAME_M, o con su mismo nombre. */
     static boolean isSaved(List<SavedPlaces.Saved> saved, RoutePlanner.Place p) {
         for (SavedPlaces.Saved s : saved) {
@@ -586,6 +644,12 @@ final class PhoneRoute {
     private void calculate() {
         if (busy) return;
         if (dest == null) {
+            // Escribió el destino pero no tocó ningún resultado (foro, #384): se busca lo escrito y, si hay uno claro, se usa.
+            String q = typedText();
+            if (PlaceSearch.worthTyping(q)) {
+                searchThenCalculate(q);
+                return;
+            }
             error = Str.get(R.string.hql_pr_no_dest);
             paintResult();
             return;

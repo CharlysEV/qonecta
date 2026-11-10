@@ -44,6 +44,26 @@ final class GpsWatch {
     private GpsWatch() {
     }
 
+    /** Por qué el móvil aún no da posición (para decirlo en el coche en vez de un «esperando» sin más). */
+    enum WaitWhy {
+        /** Sin causa conocida: primer fix lento, interior, túnel. */
+        NONE,
+        /** Sin permiso de ubicación precisa (solo la aproximada, o ninguna). */
+        NO_PERMISSION,
+        /** La ubicación del sistema está apagada. */
+        LOCATION_OFF,
+        /** Móvil bloqueado y ubicación solo «mientras se usa»: Android corta el GPS a la app. */
+        NEEDS_ALWAYS
+    }
+
+    /** Puro: la causa más probable de no tener posición, en este orden (lo primero que hay que arreglar). */
+    static WaitWhy waitReason(boolean fine, boolean locationOn, boolean locked, boolean background) {
+        if (!fine) return WaitWhy.NO_PERMISSION;
+        if (!locationOn) return WaitWhy.LOCATION_OFF;
+        if (locked && !background) return WaitWhy.NEEDS_ALWAYS;
+        return WaitWhy.NONE;
+    }
+
     /**
      * everFix: ha llegado alguna posición; ageMs: desde la última (negativo si ninguna); locked: móvil bloqueado;
      * background: la app tiene la ubicación «todo el tiempo».

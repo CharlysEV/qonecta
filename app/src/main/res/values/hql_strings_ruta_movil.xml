@@ -28,7 +28,7 @@
     <string name="hql_pr_calculating">Calculating the route, the weather and the chargers…</string>
     <string name="hql_pr_failed">Could not calculate the route (%1$s). Try again in a moment.</string>
     <string name="hql_pr_no_network">no internet connection</string>
-    <string name="hql_pr_no_dest">Choose a destination first.</string>
+    <string name="hql_pr_no_dest">Type the destination and tap one of the results.</string>
     <string name="hql_pr_no_origin">I don\'t know where you are leaving from: turn on location, or save Home in the car\'s Route tab.</string>
     <string name="hql_pr_summary">%1$.0f km · %2$s driving · %3$s charging</string>
     <string name="hql_pr_summary_nostop">%1$.0f km · %2$s driving · no stops</string>
@@ -58,4 +58,8 @@
     <string name="hql_planned_changed">When you planned it: %1$s; now: %2$s.</string>
     <string name="hql_planned_changed_yesterday">Yesterday: %1$s; today: %2$s.</string>
     <string name="hql_planned_other_stops">Now it stops at %1$s.</string>
+    <string name="hql_pr_pick_result">Several places match. Tap the one you mean, then tap Calculate route.</string>
+    <string name="hql_waiting_gps_perm">Waiting for the phone\'s GPS: Qonecta+ has no precise location permission. Allow it in Settings > Apps > Qonecta+ > Permissions > Location ("Use precise location").</string>
+    <string name="hql_waiting_gps_off">Waiting for the phone\'s GPS: location is switched off on the phone. Turn on Location in the quick settings.</string>
+    <string name="hql_waiting_gps_always">Waiting for the phone\'s GPS: with the phone locked, Android cuts location to the app. Allow Location "all the time" in Settings > Apps > Qonecta+ > Permissions > Location.</string>
 </resources>

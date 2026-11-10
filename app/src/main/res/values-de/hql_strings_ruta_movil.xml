@@ -28,7 +28,7 @@
     <string name="hql_pr_calculating">Route, Wetter und Ladesäulen werden berechnet…</string>
     <string name="hql_pr_failed">Die Route konnte nicht berechnet werden (%1$s). Versuche es gleich noch einmal.</string>
     <string name="hql_pr_no_network">keine Internetverbindung</string>
-    <string name="hql_pr_no_dest">Wähle zuerst ein Ziel.</string>
+    <string name="hql_pr_no_dest">Gib das Ziel ein und tippe auf eines der Ergebnisse.</string>
     <string name="hql_pr_no_origin">Ich weiß nicht, wo du losfährst: Schalte den Standort ein oder speichere „Zuhause“ im Tab „Route“ im Auto.</string>
     <string name="hql_pr_summary">%1$.0f km · %2$s Fahrt · %3$s Laden</string>
     <string name="hql_pr_summary_nostop">%1$.0f km · %2$s Fahrt · ohne Ladestopp</string>
@@ -58,4 +58,8 @@
     <string name="hql_planned_changed">Bei der Planung: %1$s; jetzt: %2$s.</string>
     <string name="hql_planned_changed_yesterday">Gestern: %1$s; heute: %2$s.</string>
     <string name="hql_planned_other_stops">Jetzt wird bei %1$s geladen.</string>
+    <string name="hql_pr_pick_result">Mehrere Orte passen. Tippe auf den richtigen und dann erneut auf «Route berechnen».</string>
+    <string name="hql_waiting_gps_perm">Warte auf das GPS des Handys: Qonecta+ hat keine Berechtigung für den genauen Standort. Erlaube sie unter Einstellungen > Apps > Qonecta+ > Berechtigungen > Standort («Genauen Standort verwenden»).</string>
+    <string name="hql_waiting_gps_off">Warte auf das GPS des Handys: Der Standort ist am Handy ausgeschaltet. Schalte ihn in den Schnelleinstellungen ein.</string>
+    <string name="hql_waiting_gps_always">Warte auf das GPS des Handys: Bei gesperrtem Handy schneidet Android der App den Standort ab. Erlaube den Standort «Immer» unter Einstellungen > Apps > Qonecta+ > Berechtigungen > Standort.</string>
 </resources>

@@ -139,4 +139,15 @@ class GpsWatchTest {
         // Llega una: con el móvil bloqueado sí llegan.
         assertEquals(LockProbe.Result.ARRIVES, p.tick(61_000, true, 60_500))
     }
+
+    @Test
+    fun waitingForGpsSaysWhatToFixInTheRightOrder() {
+        // (permiso preciso, ubicación del sistema, móvil bloqueado, «todo el tiempo»)
+        assertEquals(GpsWatch.WaitWhy.NO_PERMISSION, GpsWatch.waitReason(false, false, true, false))
+        assertEquals(GpsWatch.WaitWhy.LOCATION_OFF, GpsWatch.waitReason(true, false, true, false))
+        assertEquals(GpsWatch.WaitWhy.NEEDS_ALWAYS, GpsWatch.waitReason(true, true, true, false))
+        // Bloqueado pero con «todo el tiempo», o desbloqueado: es un primer fix lento, sin culpa que señalar.
+        assertEquals(GpsWatch.WaitWhy.NONE, GpsWatch.waitReason(true, true, true, true))
+        assertEquals(GpsWatch.WaitWhy.NONE, GpsWatch.waitReason(true, true, false, false))
+    }
 }

@@ -917,7 +917,7 @@ final class RoutePlanner {
                 waitingGpsFor = dest;
                 L.i("ruta: espero a la posición GPS para calcular (el móvil no sabe dónde está)");
             }
-            status = Str.get(R.string.hql_waiting_gps);
+            status = waitingGpsText(ctx);
             return;
         }
         long now = SystemClock.elapsedRealtime();
@@ -1054,6 +1054,29 @@ final class RoutePlanner {
             return new double[]{best.getLatitude(), best.getLongitude(), Math.max(0, age) / 60_000.0};
         } catch (RuntimeException e) {
             return null;
+        }
+    }
+
+    /**
+     * «Esperando el GPS del móvil…» con la causa si se conoce (sin permiso de ubicación precisa, ubicación del sistema
+     * apagada, móvil bloqueado sin «todo el tiempo»): quien lo lee sabe qué arreglar (foro LPMFF, #384).
+     */
+    static String waitingGpsText(Context c) {
+        boolean locked = false;
+        try {
+            android.app.KeyguardManager km = c.getSystemService(android.app.KeyguardManager.class);
+            locked = km != null && km.isKeyguardLocked();
+        } catch (RuntimeException ignored) {
+        }
+        switch (GpsWatch.waitReason(LocationAccess.fine(c), LocationAccess.systemOn(c), locked, LocationAccess.background(c))) {
+            case NO_PERMISSION:
+                return Str.get(R.string.hql_waiting_gps_perm);
+            case LOCATION_OFF:
+                return Str.get(R.string.hql_waiting_gps_off);
+            case NEEDS_ALWAYS:
+                return Str.get(R.string.hql_waiting_gps_always);
+            default:
+                return Str.get(R.string.hql_waiting_gps);
         }
     }
 
