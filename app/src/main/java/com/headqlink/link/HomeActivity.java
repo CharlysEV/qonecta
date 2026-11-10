@@ -654,9 +654,40 @@ public class HomeActivity extends Activity implements LinkState.Listener {
             int want = keyboard ? View.GONE : View.VISIBLE;
             if (bar.getVisibility() != want) bar.setVisibility(want);
         });
+        fitTabLabels(bar);
         setContentView(shell);
         tab = getSharedPreferences("hql_home", MODE_PRIVATE).getInt("tab", 0);
         applyTab();
+    }
+
+    /**
+     * Las cinco etiquetas de la barra, enteras: con la letra grande del móvil, las más largas («Connessione», «O meu
+     * carro») no caben en un quinto del ancho y salían con «…». Si alguna no cabe, todas encogen lo justo (hasta 9 sp).
+     */
+    private void fitTabLabels(com.google.android.material.bottomnavigation.BottomNavigationView bar) {
+        bar.post(() -> {
+            float d = getResources().getDisplayMetrics().density;
+            float room = bar.getWidth() / (float) bar.getMenu().size() - 8 * d;
+            java.util.List<TextView> labels = new java.util.ArrayList<>();
+            collectLabels(bar, labels);
+            float widest = 0;
+            float size = 0;
+            for (TextView t : labels) {
+                widest = Math.max(widest, t.getPaint().measureText(t.getText().toString()));
+                size = Math.max(size, t.getTextSize());
+            }
+            if (room <= 0 || widest <= room) return;
+            float px = Math.max(size * room / widest, 9 * getResources().getDisplayMetrics().scaledDensity);
+            for (TextView t : labels) t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, px);
+        });
+    }
+
+    private static void collectLabels(View v, java.util.List<TextView> out) {
+        if (v instanceof TextView) out.add((TextView) v);
+        else if (v instanceof android.view.ViewGroup) {
+            android.view.ViewGroup g = (android.view.ViewGroup) v;
+            for (int i = 0; i < g.getChildCount(); i++) collectLabels(g.getChildAt(i), out);
+        }
     }
 
     /** Lleva a una pestaña (0 Conexión, 1 Viajes, 2 Home Assistant, 3 Mi coche, 4 Ruta): los enlaces «Todos los viajes ›». */
