@@ -400,15 +400,15 @@ final class PhoneRoute {
             main.post(() -> {
                 busy = false;
                 searching = false;
-                RoutePlanner.Place clear = pickClear(q, found);
+                RoutePlanner.Place clear = pickClear(q, found, me);
                 if (clear != null) {
                     choose(clear);
                     calculate();
                     return;
                 }
                 results = found;
-                searchNote = found.isEmpty() ? Str.get(R.string.hql_pr_no_results) : null;
-                error = found.isEmpty() ? null : Str.get(R.string.hql_pr_pick_result);
+                // El aviso va encima de los resultados, donde se mira; abajo, junto al botón, no se veía (probado en el móvil).
+                searchNote = Str.get(found.isEmpty() ? R.string.hql_pr_no_results : R.string.hql_pr_pick_result);
                 paintWhere();
                 paintDepart();
                 paintResult();
@@ -416,20 +416,33 @@ final class PhoneRoute {
         }, "hql-phone-search").start();
     }
 
+    /** Dos resultados con el mismo nombre a menos de esto son el mismo sitio (la ciudad y su provincia, p. ej.). */
+    static final double SAME_PLACE_M = 30_000;
+
+    /** Otro sitio con el mismo nombre no hace dudar si está al menos este tanto más lejos de ti que el primero. */
+    static final double FAR_RATIO = 3;
+
     /**
      * Puro: el resultado que se puede usar sin preguntar, o null. Uno solo; o el primero si su nombre empieza por lo
-     * escrito (sin mayúsculas) y ningún otro se llama igual (dos «Valencia» distintos sí se preguntan).
+     * escrito (sin mayúsculas) y ningún otro se llama igual, salvo que sea el mismo sitio (a menos de SAME_PLACE_M) o
+     * esté mucho más lejos de ti (FAR_RATIO veces): «Zaragoza» desde España no pregunta por la de México, pero dos
+     * «Valencia» a distancias parecidas sí se preguntan. me: la posición del móvil, o null.
      */
-    static RoutePlanner.Place pickClear(String q, List<RoutePlanner.Place> found) {
+    static RoutePlanner.Place pickClear(String q, List<RoutePlanner.Place> found, double[] me) {
         if (found == null || found.isEmpty()) return null;
         if (found.size() == 1) return found.get(0);
         RoutePlanner.Place first = found.get(0);
         String typed = q == null ? "" : q.trim().toLowerCase(Locale.ROOT);
         String name = first.name == null ? "" : first.name.trim().toLowerCase(Locale.ROOT);
         if (typed.isEmpty() || !name.startsWith(typed)) return null;
+        double firstFromMe = me == null ? Double.NaN : RoadInfo.dist(me[0], me[1], first.lat, first.lon);
         for (int i = 1; i < found.size(); i++) {
-            String other = found.get(i).name == null ? "" : found.get(i).name.trim().toLowerCase(Locale.ROOT);
-            if (other.equals(name)) return null;
+            RoutePlanner.Place o = found.get(i);
+            String other = o.name == null ? "" : o.name.trim().toLowerCase(Locale.ROOT);
+            if (!other.equals(name)) continue;
+            if (RoadInfo.dist(first.lat, first.lon, o.lat, o.lon) < SAME_PLACE_M) continue;
+            if (!Double.isNaN(firstFromMe) && RoadInfo.dist(me[0], me[1], o.lat, o.lon) >= FAR_RATIO * Math.max(firstFromMe, SAME_PLACE_M)) continue;
+            return null;
         }
         return first;
     }
@@ -626,6 +639,8 @@ final class PhoneRoute {
         if (cs.hasData() && !Double.isNaN(cs.status.socBest())) {
             return Str.get(R.string.hql_pr_battery_cloud, CarCloud.ago(cs.ageMs(now)), cs.status.socBest());
         }
+        // Con la sesión cerrada la lectura no llega nunca: se dice (no «Leyendo…» para siempre, visto en el móvil).
+        if (cs.state == CarCloud.State.EXPIRED) return Str.get(R.string.hql_pr_battery_closed);
         if (cloudHeld) return Str.get(R.string.hql_pr_battery_cloud_wait);
         double set = new Config(act).socPct();
         return Double.isNaN(set) ? Str.get(R.string.hql_pr_battery_none) : Str.get(R.string.hql_pr_battery_manual, set);

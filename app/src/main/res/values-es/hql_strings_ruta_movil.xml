@@ -78,4 +78,5 @@
     <string name="hql_add_stop_remove">Quitar</string>
     <string name="hql_add_stop_mine">Añadida por ti</string>
     <string name="hql_add_stop_unreachable">No se llega a «%1$s» (km %2$.0f): queda fuera del plan. Añade un cargador antes o sal con más batería.</string>
+    <string name="hql_pr_battery_closed">Sesión de Leapmotor cerrada: vuelve a entrar en ⚙ › «Datos del coche (cuenta Leapmotor)». Mientras, elige con cuánta batería sales.</string>
 </resources>
