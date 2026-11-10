@@ -115,6 +115,41 @@ final class RadioLibrary {
         RadioPlayer.play(c, l, i);
     }
 
+    /**
+     * La búsqueda de Android Auto (onSearch) o de voz (onPlayFromSearch): entre las favoritas y las recientes (las únicas
+     * que ve Android Auto), por nombre o grupo, sin mayúsculas ni acentos. Las listas importadas son solo del panel del coche.
+     */
+    static List<MediaBrowserCompat.MediaItem> search(Context c, String query, boolean mayList) {
+        if (!mayList) return new ArrayList<>();
+        List<MediaBrowserCompat.MediaItem> out = items(FAVS, RadioFilter.apply(favorites(c), RadioFilter.AZ, query));
+        out.addAll(items(RECENT, notIn(RadioFilter.apply(recents(c), RadioFilter.AZ, query), favorites(c))));
+        return out;
+    }
+
+    /** «Pon X» por voz: suena la primera favorita (o, si no, reciente) que encaja; sin texto o sin coincidencia, nada. */
+    static void playFromSearch(Context c, String query) {
+        List<RadioPlayer.Station> favs = RadioFilter.apply(favorites(c), RadioFilter.AZ, query);
+        List<RadioPlayer.Station> recents = RadioFilter.apply(recents(c), RadioFilter.AZ, query);
+        if (RadioFilter.words(query).length == 0 || favs.isEmpty() && recents.isEmpty()) {
+            L.i("radio: Android Auto busca «" + query + "»: nada que poner");
+            return;
+        }
+        List<RadioPlayer.Station> l = favs.isEmpty() ? recents : favs;
+        L.i("radio: por búsqueda, «" + l.get(0).name + "»");
+        RadioPlayer.play(c, l, 0);
+    }
+
+    /** Puro: las de stations cuya URL no está en other. */
+    static List<RadioPlayer.Station> notIn(List<RadioPlayer.Station> stations, List<RadioPlayer.Station> other) {
+        Set<String> urls = new HashSet<>();
+        for (RadioPlayer.Station s : other) urls.add(s.url);
+        List<RadioPlayer.Station> out = new ArrayList<>();
+        for (RadioPlayer.Station s : stations) {
+            if (!urls.contains(s.url)) out.add(s);
+        }
+        return out;
+    }
+
     // ---------------------------------------------------------------- puro
 
     /** Puro: quien se conecta ve las listas (Qonecta+, el sistema o uno de TRUSTED). */
@@ -137,10 +172,10 @@ final class RadioLibrary {
         return false;
     }
 
-    /** Puro: en filas (sin logos: Android Auto solo abre imágenes content://) y sin búsqueda. */
+    /** Puro: en filas (sin logos: Android Auto solo abre imágenes content://) y con búsqueda (favoritas y recientes). */
     static Bundle rootExtras() {
         Bundle b = new Bundle();
-        b.putBoolean(MediaConstants.BROWSER_SERVICE_EXTRAS_KEY_SEARCH_SUPPORTED, false);
+        b.putBoolean(MediaConstants.BROWSER_SERVICE_EXTRAS_KEY_SEARCH_SUPPORTED, true);
         b.putInt(MediaConstants.DESCRIPTION_EXTRAS_KEY_CONTENT_STYLE_BROWSABLE,
                 MediaConstants.DESCRIPTION_EXTRAS_VALUE_CONTENT_STYLE_LIST_ITEM);
         b.putInt(MediaConstants.DESCRIPTION_EXTRAS_KEY_CONTENT_STYLE_PLAYABLE,

@@ -60,6 +60,11 @@ public final class RadioBrowserService extends MediaBrowserServiceCompat {
         result.sendResult(RadioLibrary.children(this, parentId, may));
     }
 
+    @Override
+    public void onSearch(@NonNull String query, Bundle extras, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+        result.sendResult(RadioLibrary.search(this, query, callerMayList()));
+    }
+
     /** Quien pide ahora (getCurrentBrowserInfo) puede ver las listas; si no se sabe quién es, no. */
     private boolean callerMayList() {
         try {

@@ -986,6 +986,17 @@ final class Config {
         return v == null ? "" : v;
     }
 
+    /** Cómo se ven las emisoras de las listas del coche (RadioFilter.ORIGINAL, AZ o GROUPED); el mismo para todas. */
+    static final String RADIO_SORT = "radio_sort";
+
+    int radioSort() {
+        return RadioFilter.clampMode(sp.getInt(RADIO_SORT, RadioFilter.ORIGINAL));
+    }
+
+    void setRadioSort(int mode) {
+        sp.edit().putInt(RADIO_SORT, RadioFilter.clampMode(mode)).apply();
+    }
+
     void setRadioCountry(String iso) {
         sp.edit().putString(RADIO_COUNTRY, iso == null ? "" : iso.toUpperCase(java.util.Locale.US)).apply();
     }

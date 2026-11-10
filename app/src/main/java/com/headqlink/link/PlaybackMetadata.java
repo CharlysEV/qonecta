@@ -92,7 +92,7 @@ final class PlaybackMetadata implements AutoCloseable {
         ownsSession = false;
         canPrevious = true;
         canNext = true;
-        extraActions = PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID;
+        extraActions = PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID | PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH;
         listener = listen(player);
         updateState();
     }

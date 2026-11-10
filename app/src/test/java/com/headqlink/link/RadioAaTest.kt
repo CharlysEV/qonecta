@@ -119,7 +119,7 @@ class RadioAaTest {
         }
         assertEquals(0L, PlaybackMetadata.actions(false, false) and PlaybackStateCompat.ACTION_SKIP_TO_NEXT)
         // Parada: elegir emisora siempre; «▶» solo con una parada a mano.
-        assertEquals(PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID, RadioSession.idleActions(false))
+        assertEquals(PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH, RadioSession.idleActions(false))
         assertTrue(RadioSession.idleActions(true) and PlaybackStateCompat.ACTION_PLAY != 0L)
     }
 
@@ -166,7 +166,7 @@ class RadioAaTest {
         assertTrue(RadioLibrary.mayList(legacy, -1, 10_100, null, 27))
         assertFalse(RadioLibrary.mayList(legacy, -1, 10_100, null, 28))
         val extras = RadioLibrary.rootExtras()
-        assertFalse(extras.getBoolean("android.media.browse.SEARCH_SUPPORTED", true))
+        assertTrue(extras.getBoolean("android.media.browse.SEARCH_SUPPORTED", false))
     }
 
     @Test
@@ -240,7 +240,7 @@ class RadioAaTest {
         assertTrue(RadioSession.isToken(session.sessionToken.token))
         val st = publishedState(session)
         assertEquals(PlaybackStateCompat.STATE_NONE, st.state)
-        assertEquals(PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID, st.actions)
+        assertEquals(PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH, st.actions)
         // Android Auto al conectar: preparar, ▶ y ⏭ sin emisora no ponen nada.
         val orders = sessionField(session, "mCallback") as MediaSessionCompat.Callback
         orders.onPrepare()

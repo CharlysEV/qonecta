@@ -519,7 +519,7 @@ public final class RadioSession {
 
     /** Puro: las órdenes de la radio parada: elegir emisora siempre; «▶» solo si hay una parada a mano que volver a poner. */
     static long idleActions(boolean resumable) {
-        long a = PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID;
+        long a = PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID | PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH;
         if (resumable) a |= PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE;
         return a;
     }
@@ -586,6 +586,11 @@ public final class RadioSession {
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
             RadioLibrary.play(app, mediaId);
+        }
+
+        @Override
+        public void onPlayFromSearch(String query, Bundle extras) {
+            RadioLibrary.playFromSearch(app, query);
         }
 
         @Override
