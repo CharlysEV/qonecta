@@ -170,6 +170,24 @@ class RadioAaTest {
     }
 
     @Test
+    fun androidAutoSearchesFavoritesAndRecents() {
+        val favs = JSONArray().put(Favorites.item("Café del Mar", "https://a.example/s", "", "chill", null))
+        Favorites.save(Config(app), Favorites.RADIO, favs)
+        RadioLibrary.addRecent(app, station("Cadena Cafetera", "https://b.example/s"))
+        RadioLibrary.addRecent(app, station("Café del Mar", "https://a.example/s"))
+        val found = RadioLibrary.search(app, "CAFE", true)
+        // Cada una una vez: la favorita con su id de favoritos y la reciente que no es favorita.
+        assertEquals(listOf("Café del Mar", "Cadena Cafetera"), found.map { it.description.title.toString() })
+        assertTrue(found[0].mediaId!!.startsWith("fav:") && found[1].mediaId!!.startsWith("recent:"))
+        assertTrue(RadioLibrary.search(app, "cafe", false).isEmpty())
+        assertTrue(RadioLibrary.search(app, "zzz", true).isEmpty())
+        // Por voz: sin texto o sin coincidencia no suena nada.
+        RadioLibrary.playFromSearch(app, "")
+        RadioLibrary.playFromSearch(app, "zzz")
+        assertNull(RadioPlayer.current())
+    }
+
+    @Test
     fun recentsGoFirstWithoutRepeats() {
         val old = JSONArray()
         for (i in 1..4) old.put(Favorites.item("Radio $i", "https://r$i.example/s", "", "", null))

@@ -499,6 +499,22 @@ final class RadioScreen implements CarScreen {
     }
 
     private void showGrid(Context c) {
+        // Buscar y ordenar (no en «Mi música»): se parte de la lista entera, con el orden guardado y sin búsqueda.
+        final boolean searchable = currentSource != MUSIC;
+        if (searchable) {
+            base = new ArrayList<>(shown);
+            index = null;
+            query.setLength(0);
+            sortMode = new Config(c).radioSort();
+            hasGroups = false;
+            for (RadioPlayer.Station st : base) {
+                if (st.group != null && !st.group.trim().isEmpty()) {
+                    hasGroups = true;
+                    break;
+                }
+            }
+            if (!hasGroups && sortMode == RadioFilter.GROUPED) sortMode = RadioFilter.ORIGINAL;
+        }
         RecyclerView rv = new RecyclerView(c);
         rv.setPadding(18, 6, 18, 6);
         // En una pantalla pequeña (T03), menos columnas: celdas más anchas para el texto más grande.
@@ -533,6 +549,10 @@ final class RadioScreen implements CarScreen {
                 LinearLayout item = (LinearLayout) vh.itemView;
                 ImageView logo = (ImageView) item.getChildAt(0);
                 String name = Favorites.contains(favs, RadioLibrary.storedUrl(s)) ? "★ " + s.name : s.name;
+                // Por grupos, el grupo debajo del nombre.
+                if (searchable && sortMode == RadioFilter.GROUPED && s.group != null && !s.group.trim().isEmpty()) {
+                    name = name + "\n" + s.group.trim();
+                }
                 // Una canción: el título y, debajo, el artista y la duración.
                 ((TextView) item.getChildAt(1)).setText(s.local ? name + "\n" + MusicLibrary.line(s) : name);
                 int icon = s.local ? R.drawable.hql_ic_music : R.drawable.hql_ic_radio;
@@ -570,6 +590,152 @@ final class RadioScreen implements CarScreen {
         };
         rv.setAdapter(adapter);
         listArea.removeAllViews();
-        listArea.addView(rv, CarStyle.match());
+        listArea.addView(searchable ? searchColumn(c, rv) : rv, CarStyle.match());
+        if (searchable && sortMode != RadioFilter.ORIGINAL) refresh();
+    }
+
+    // ---------------------------------------------------------------- buscar y ordenar
+
+    /** La lista entera de la pestaña (shown es lo que se ve: filtrada y ordenada). */
+    private List<RadioPlayer.Station> base = new ArrayList<>();
+    private RadioFilter.Index index;
+    private List<RadioPlayer.Station> indexBase;
+    private final StringBuilder query = new StringBuilder();
+    private int sortMode;
+    private boolean hasGroups;
+    /** Sube con cada cambio: el resultado de uno viejo (lista grande, en otro hilo) no pisa el nuevo. */
+    private int viewSeq;
+    private TextView queryBox;
+    private TextView clearPill;
+    private TextView sortPill;
+    private TextView countLine;
+    private CarKeyboard keyboard;
+
+    /** Encima de la cuadrícula, la caja de búsqueda, «Borrar» y el orden; debajo, el teclado del panel (oculto hasta tocar la caja). */
+    private View searchColumn(Context c, RecyclerView rv) {
+        LinearLayout col = new LinearLayout(c);
+        col.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout bar = new LinearLayout(c);
+        bar.setGravity(Gravity.CENTER_VERTICAL);
+        bar.setPadding(24, 4, 24, 4);
+        queryBox = CarStyle.text(c, "", 24, CarStyle.TEXT);
+        queryBox.setHint(Str.get(R.string.hql_radio_search_hint));
+        queryBox.setHintTextColor(CarStyle.TEXT_DIM);
+        queryBox.setSingleLine(true);
+        queryBox.setEllipsize(android.text.TextUtils.TruncateAt.START);
+        queryBox.setGravity(Gravity.CENTER_VERTICAL);
+        queryBox.setPadding(26, 14, 26, 14);
+        queryBox.setBackground(CarStyle.round(CarStyle.ITEM_BG, 28));
+        CarStyle.minTouch(queryBox);
+        LinearLayout.LayoutParams qlp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        qlp.rightMargin = 10;
+        bar.addView(queryBox, qlp);
+        clearPill = CarStyle.pill(c, "✕ " + Str.get(R.string.hql_radio_search_clear));
+        clearPill.setVisibility(View.GONE);
+        bar.addView(clearPill);
+        sortPill = CarStyle.pill(c, sortLabel());
+        bar.addView(sortPill);
+        col.addView(bar);
+        countLine = CarStyle.text(c, "", 20, CarStyle.TEXT_DIM);
+        countLine.setSingleLine(true);
+        countLine.setPadding(30, 2, 24, 2);
+        countLine.setVisibility(View.GONE);
+        col.addView(countLine);
+        col.addView(rv, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        CarKeyboard kb = new CarKeyboard(c, new CarKeyboard.Listener() {
+            @Override
+            public void onText(String t) {
+                query.append(t);
+                queryChanged();
+            }
+
+            @Override
+            public void onBackspace() {
+                if (query.length() > 0) query.setLength(query.length() - 1);
+                queryChanged();
+            }
+
+            @Override
+            public void onEnter() {
+                // «Ir»: ya se filtra al escribir; solo se quita el teclado para ver más emisoras.
+                keyboard.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onHide() {
+                keyboard.setVisibility(View.GONE);
+            }
+        });
+        keyboard = kb;
+        kb.setVisibility(View.GONE);
+        col.addView(kb);
+        queryBox.setOnClickListener(v -> {
+            kb.setVisibility(View.VISIBLE);
+            kb.showText(query, Str.get(R.string.hql_radio_search_hint));
+        });
+        clearPill.setOnClickListener(v -> {
+            query.setLength(0);
+            queryChanged();
+        });
+        sortPill.setOnClickListener(v -> {
+            sortMode = RadioFilter.next(sortMode, hasGroups);
+            new Config(c).setRadioSort(sortMode);
+            sortPill.setText(sortLabel());
+            refresh();
+        });
+        return col;
+    }
+
+    private String sortLabel() {
+        return Str.get(sortMode == RadioFilter.AZ ? R.string.hql_radio_sort_az
+                : sortMode == RadioFilter.GROUPED ? R.string.hql_radio_sort_group : R.string.hql_radio_sort_original);
+    }
+
+    /** Cambió lo escrito: se ve en la caja y sobre el teclado, y se filtra ya (a cada letra). */
+    private void queryChanged() {
+        if (queryBox == null) return;
+        queryBox.setText(query);
+        clearPill.setVisibility(query.length() > 0 ? View.VISIBLE : View.GONE);
+        if (keyboard != null) keyboard.showText(query, Str.get(R.string.hql_radio_search_hint));
+        refresh();
+    }
+
+    /**
+     * Pone en shown las emisoras que encajan con la búsqueda, en el orden elegido. Las listas grandes (miles de emisoras)
+     * se preparan y filtran en otro hilo; las pequeñas, al momento.
+     */
+    private void refresh() {
+        int seq = ++viewSeq;
+        int mode = sortMode;
+        String q = query.toString();
+        List<RadioPlayer.Station> src = base;
+        if (src.size() < 1000) {
+            applyView(seq, ensureIndex(src).view(mode, q), q);
+            return;
+        }
+        new Thread(() -> {
+            List<RadioPlayer.Station> v = ensureIndex(src).view(mode, q);
+            host.post(() -> applyView(seq, v, q));
+        }, "radio-filter").start();
+    }
+
+    private synchronized RadioFilter.Index ensureIndex(List<RadioPlayer.Station> src) {
+        if (index == null || indexBase != src) {
+            index = new RadioFilter.Index(src);
+            indexBase = src;
+        }
+        return index;
+    }
+
+    private void applyView(int seq, List<RadioPlayer.Station> v, String q) {
+        if (destroyed || seq != viewSeq || adapter == null) return;
+        shown.clear();
+        shown.addAll(v);
+        adapter.notifyDataSetChanged();
+        if (countLine == null) return;
+        boolean filtering = RadioFilter.words(q).length > 0;
+        if (filtering && v.isEmpty()) countLine.setText(Str.get(R.string.hql_radio_search_none, q.trim()));
+        else countLine.setText(Str.get(R.string.hql_radio_search_count, v.size(), base.size()));
+        countLine.setVisibility(filtering ? View.VISIBLE : View.GONE);
     }
 }

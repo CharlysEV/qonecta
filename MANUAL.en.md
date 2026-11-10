@@ -831,6 +831,7 @@ tap **"Add list"**: it appears at the top with a ✓. If you close with the URL 
 anyway. You can also tap "Choose file". Without a radio list, the car shows the popular stations: the most listened
 to in your country (the phone's region or, if it has none, the mobile network's country). In the car, Radio ›
 "Popular" › "Change country" picks another one, and "Automatic" goes back to yours.
+In a long list, the car's "Search stations…" box filters as you type with the panel keyboard (by name or group, ignoring case and accents), "✕ Clear" empties it, and "Order" switches between the list order, A–Z and by group (remembered). In Android Auto, search and voice "play X" find among your favorites and recent stations.
 
 ### "My music" (Radio, "Auto extended")
 

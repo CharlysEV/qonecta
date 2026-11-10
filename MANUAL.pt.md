@@ -856,6 +856,7 @@ toque em **«Adicionar lista»**: aparece em cima com um ✓. Se fechar com o UR
 mesma. Também pode tocar em «Escolher ficheiro». Sem lista de rádio, o carro mostra as estações populares: as mais
 ouvidas do seu país (o da região do telemóvel ou, se não a indicar, o da rede móvel). No carro, Rádio › «Populares» ›
 «Mudar de país» escolhe outro, e «Automático» volta ao seu.
+Numa lista comprida, a caixa «Procurar estações…» do carro filtra enquanto escreve com o teclado do painel (por nome ou grupo, sem distinguir maiúsculas nem acentos), «✕ Limpar» esvazia-a e «Ordem» alterna entre a ordem da lista, A–Z e por grupo (fica guardado). No Android Auto, a pesquisa e o «põe X» por voz encontram entre os favoritos e os recentes.
 
 ### «A minha música» (Rádio, «Auto estendido»)
 

@@ -916,6 +916,7 @@ Schließt du mit eingefügter URL, ohne darauf zu tippen, wird sie trotzdem hinz
 tippen. Wenn du keine Radioliste angibst, erscheinen im Fahrzeug die beliebtesten Sender: die meistgehörten deines
 Landes (die Region des Handys oder, wenn sie keine angibt, das Land des Mobilfunknetzes). Im Fahrzeug wählst du unter
 Radio › „Beliebt“ › „Land ändern“ ein anderes, und „Automatisch“ kehrt zu deinem zurück.
+In einer langen Liste filtert das Feld „Sender suchen …“ im Fahrzeug schon beim Tippen mit der Tastatur des Panels (nach Name oder Gruppe, ohne Groß-/Kleinschreibung und Akzente), „✕ Löschen“ leert es, und „Reihenfolge“ wechselt zwischen Listenreihenfolge, A–Z und nach Gruppen (wird gemerkt). In Android Auto finden die Suche und „Spiele X“ per Sprache unter deinen Favoriten und zuletzt gehörten Sendern.
 
 ### „Meine Musik“ (Radio, „Auto erweitert“)
 

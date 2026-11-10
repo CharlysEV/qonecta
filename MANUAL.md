@@ -849,6 +849,7 @@ y pulsa **«Añadir lista»**: aparece arriba con un ✓. Si cierras con la URL 
 puedes pulsar «Elegir archivo». Si no pones lista de radio, en el coche salen las emisoras populares: las más
 escuchadas de tu país (el de la región del móvil o, si no la dice, el de la red móvil). En el coche, Radio ›
 «Populares» › «Cambiar país» elige otro, y «Automático» vuelve al tuyo.
+En una lista larga, la caja «Buscar emisoras…» del coche filtra mientras escribes con el teclado del panel (por nombre o grupo, sin importar mayúsculas ni acentos), «✕ Borrar» la vacía y «Orden» cambia entre el orden de la lista, A–Z y por grupos (se recuerda). En Android Auto, la búsqueda y «pon X» por voz encuentran entre tus favoritas y recientes.
 
 ### «Mi música» (Radio, «Auto extendido»)
 

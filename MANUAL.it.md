@@ -858,6 +858,7 @@ Incolla l'URL di una lista M3U (per la TV, anche la lista JSON di TDTChannels:
 incollato senza toccarlo, viene aggiunta lo stesso. Puoi anche toccare «Scegli file». Senza una lista radio, l'auto
 mostra le stazioni popolari: le più ascoltate del tuo paese (quello della regione del telefono o, se non la indica,
 quello della rete mobile). In auto, Radio › «Popolari» › «Cambia paese» ne sceglie un altro, e «Automatico» torna al tuo.
+In una lista lunga, la casella «Cerca una stazione…» dell'auto filtra mentre scrivi con la tastiera del pannello (per nome o gruppo, senza distinguere maiuscole e accenti), «✕ Cancella» la svuota e «Ordine» passa tra l'ordine della lista, A–Z e per gruppo (viene ricordato). In Android Auto, la ricerca e «metti X» a voce trovano tra i preferiti e le recenti.
 
 ### «La mia musica» (Radio, «Auto esteso»)
 
