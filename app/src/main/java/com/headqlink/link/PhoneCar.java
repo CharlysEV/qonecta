@@ -645,12 +645,6 @@ final class PhoneCar {
             } catch (RuntimeException e) {
                 c = new ArrayList<>();
             }
-            // «Carga barata» con el PVPC: los precios por hora para la barrita (Red Eléctrica, como mucho cada media hora).
-            Config cfg = new Config(a);
-            if (cfg.cheapCharge() && Tariff.PVPC.equals(cfg.cheapTariff()) && !DemoMode.active()) {
-                long t0 = System.currentTimeMillis();
-                PvpcPrices.get(a, t0, t0 + 24 * CheapWindow.HOUR_MS);
-            }
             List<CloudHistory.Trip> fh = h;
             Map<String, MonthlyReport.Summary> fm = m;
             List<ChargeSession> fc = c;
@@ -666,6 +660,13 @@ final class PhoneCar {
             });
             // Con la cuenta de Leapmotor, lo del coche para el periodo que se ve (km y reparto). Si no trae nada nuevo (lo
             // guardado aún vale, falla, tope diario), CarCloud.usage devuelve lo mismo que había: nada que repintar.
+            // «Carga barata» con el PVPC: los precios por hora para la barrita (Red Eléctrica, como mucho cada media hora);
+            // la tarjeta los pinta sola en su siguiente repintado.
+            Config cfg = new Config(a);
+            if (cfg.cheapCharge() && Tariff.PVPC.equals(cfg.cheapTariff()) && !DemoMode.active()) {
+                long t0 = System.currentTimeMillis();
+                PvpcPrices.get(a, t0, t0 + 24 * CheapWindow.HOUR_MS);
+            }
             boolean news = false;
             if (account) {
                 String key = CarUsage.key(p);

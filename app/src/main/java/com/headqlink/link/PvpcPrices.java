@@ -122,6 +122,8 @@ final class PvpcPrices {
     private static Table memo;
     private static long triedAtMs;
     private static boolean loaded;
+    /** Hay una consulta en marcha (otro hilo): no se lanza otra a la vez. */
+    private static boolean fetching;
 
     private PvpcPrices() {
     }
@@ -223,21 +225,32 @@ final class PvpcPrices {
      * Los precios de aquí a untilMs: los guardados y, si faltan y toca (due), una consulta a Red Eléctrica. Con red: fuera
      * del hilo principal. Si falla, lo que hubiera.
      */
-    static synchronized Table get(Context ctx, long nowMs, long untilMs) {
-        Table t = cached(ctx);
-        if (!due(t, nowMs, untilMs, triedAtMs)) return t;
-        triedAtMs = nowMs;
+    static Table get(Context ctx, long nowMs, long untilMs) {
+        synchronized (PvpcPrices.class) {
+            Table t = cached(ctx);
+            if (fetching || !due(t, nowMs, untilMs, triedAtMs)) return t;
+            fetching = true;
+            triedAtMs = nowMs;
+        }
+        // La consulta, sin el cerrojo: la tarjeta de «Mi coche» lee lo guardado (cached) desde el hilo principal.
+        Table fresh = null;
         try {
-            Table fresh = parse(Http.get(url(nowMs)));
-            t = t.merged(fresh, nowMs - KEEP_MS);
-            memo = t;
-            L.i("carga barata: precios del PVPC leídos (" + fresh.size() + " horas"
-                    + (t.covers(nowMs, untilMs) ? "" : "; los de mañana aún no están") + ")");
+            fresh = parse(Http.get(url(nowMs)));
         } catch (Exception e) {
             L.w("carga barata: precios del PVPC no disponibles (" + Http.safeError(e) + ")");
         }
-        save(ctx, t);
-        return t;
+        synchronized (PvpcPrices.class) {
+            fetching = false;
+            Table t = cached(ctx);
+            if (fresh != null) {
+                t = t.merged(fresh, nowMs - KEEP_MS);
+                memo = t;
+                L.i("carga barata: precios del PVPC leídos (" + fresh.size() + " horas"
+                        + (t.covers(nowMs, untilMs) ? "" : "; los de mañana aún no están") + ")");
+            }
+            save(ctx, t);
+            return t;
+        }
     }
 
     private static void save(Context ctx, Table t) {
@@ -253,5 +266,6 @@ final class PvpcPrices {
         memo = null;
         triedAtMs = 0;
         loaded = false;
+        fetching = false;
     }
 }
