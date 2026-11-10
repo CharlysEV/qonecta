@@ -416,8 +416,11 @@ final class PhoneRoute {
         }, "hql-phone-search").start();
     }
 
-    /** Dos resultados con el mismo nombre a menos de esto son el mismo sitio (la ciudad y su provincia, p. ej.). */
-    static final double SAME_PLACE_M = 30_000;
+    /**
+     * Dos resultados con el mismo nombre a menos de esto son el mismo sitio: la ciudad, su municipio y su provincia
+     * (con «Zaragoza», el centro de la provincia sale a 32 km de la ciudad).
+     */
+    static final double SAME_PLACE_M = 60_000;
 
     /** Otro sitio con el mismo nombre no hace dudar si está al menos este tanto más lejos de ti que el primero. */
     static final double FAR_RATIO = 3;

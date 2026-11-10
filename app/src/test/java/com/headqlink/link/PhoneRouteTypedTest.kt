@@ -46,11 +46,14 @@ class PhoneRouteTypedTest {
         assertNull(PhoneRoute.pickClear("bahnhof", listOf(place("Hauptbahnhof"), place("Bahnhof Mitte")), null))
     }
 
-    /** Probado en el móvil: «Zaragoza» daba la ciudad y su provincia (el mismo sitio) y las de Colombia y México. */
+    /**
+     * Probado en el móvil: «Zaragoza» daba la ciudad, su municipio, su provincia (centro a 32 km) y las de Colombia y
+     * México (coordenadas reales del buscador).
+     */
     @Test
     fun theSamePlaceTwiceAndFarAwayNamesakesDoNotAsk() {
-        val city = place("Zaragoza", 41.6488, -0.8891)
-        val province = place("Zaragoza", 41.65, -0.88)
+        val city = place("Zaragoza", 41.6521, -0.8809)
+        val province = place("Zaragoza", 41.62, -1.26)
         val colombia = place("Zaragoza", 7.49, -74.87)
         val mexico = place("Zaragoza", 19.43, -99.13)
         assertSame(city, PhoneRoute.pickClear("Zaragoza", listOf(city, province, colombia, mexico), madrid))
