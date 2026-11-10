@@ -89,7 +89,7 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         modeDetail = findViewById(R.id.hql_home_mode_detail);
         hint = findViewById(R.id.hql_home_hint);
         toggle = findViewById(R.id.hql_home_toggle);
-        // La versión y, debajo, de quién es la app; al tocar, «Acerca de y créditos».
+        // Bajo el nombre, la versión y de quién es la app en una línea; al tocar, «Acerca de y créditos».
         TextView version = findViewById(R.id.hql_home_version);
         version.setText(About.versionByline(this));
         About.fitByline(version);
@@ -626,7 +626,8 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         android.view.Menu menu = bar.getMenu();
         menu.add(0, 0, 0, Str.get(R.string.hql_tab_connection)).setIcon(R.drawable.hql_ic_aa);
         menu.add(0, 1, 1, Str.get(R.string.hql_tab_trips)).setIcon(R.drawable.hql_ic_efficiency);
-        menu.add(0, 2, 2, Str.get(R.string.hql_ha_title)).setIcon(R.drawable.hql_ic_home);
+        // «Casa» y no «Home Assistant» (10-11: con cinco pestañas y la letra grande salía «Home Assi…»); dentro, el nombre entero.
+        menu.add(0, 2, 2, Str.get(R.string.hql_tab_home)).setIcon(R.drawable.hql_ic_home);
         menu.add(0, 3, 3, Str.get(R.string.hql_car_tab)).setIcon(R.drawable.hql_ln_car);
         menu.add(0, 4, 4, Str.get(R.string.hql_tab_route)).setIcon(R.drawable.hql_ic_route);
         int[][] states = {{android.R.attr.state_checked}, {}};
@@ -642,6 +643,15 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         });
         navBar = bar;
         shell.addView(bar, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        // Con el teclado abierto (el buscador de Ruta) la barra se esconde: antes se subía encima del teclado y le quitaba
+        // sitio a lo que se escribe (10-11). El hueco del teclado lo sigue dejando la ventana (adjustResize). Se mira en
+        // los márgenes de la ventana entera a cada recolocación: a las vistas, en Android 11, les llegan ya sin el teclado.
+        shell.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            androidx.core.view.WindowInsetsCompat insets = androidx.core.view.ViewCompat.getRootWindowInsets(shell);
+            boolean keyboard = insets != null && insets.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime());
+            int want = keyboard ? View.GONE : View.VISIBLE;
+            if (bar.getVisibility() != want) bar.setVisibility(want);
+        });
         setContentView(shell);
         tab = getSharedPreferences("hql_home", MODE_PRIVATE).getInt("tab", 0);
         applyTab();

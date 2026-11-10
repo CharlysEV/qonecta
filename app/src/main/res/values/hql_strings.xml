@@ -886,6 +886,7 @@
     <string name="hql_maps_read_on">Read the Google Maps route ✓</string>
     <string name="hql_maps_read_help">Turn on Qonecta+: it reads the Google Maps navigation notification (route length and arrival time) so the plan follows the same route. It only reads Google Maps.</string>
     <string name="hql_tab_connection">Connection</string>
+    <string name="hql_tab_home">Home</string>
     <string name="hql_ins_car">Your car now</string>
     <string name="hql_ins_range">Range</string>
     <string name="hql_ins_odo">Odometer</string>

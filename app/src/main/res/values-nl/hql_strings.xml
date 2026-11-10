@@ -886,6 +886,7 @@
     <string name="hql_maps_read_on">Google Maps-route lezen ✓</string>
     <string name="hql_maps_read_help">Zet Qonecta+ aan: het leest de navigatiemelding van Google Maps (lengte van de route en aankomsttijd) zodat het plan dezelfde route volgt. Het leest alleen die van Google Maps.</string>
     <string name="hql_tab_connection">Verbinding</string>
+    <string name="hql_tab_home">Thuis</string>
     <string name="hql_ins_car">Je auto nu</string>
     <string name="hql_ins_range">Bereik</string>
     <string name="hql_ins_odo">Kilometerstand</string>

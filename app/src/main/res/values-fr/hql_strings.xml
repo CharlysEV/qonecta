@@ -887,6 +887,7 @@
     <string name="hql_maps_read_on">Lire l’itinéraire Google Maps ✓</string>
     <string name="hql_maps_read_help">Activez Qonecta+ : il lit la notification de navigation de Google Maps (km de l’itinéraire et heure d’arrivée) pour que le plan suive le même itinéraire. Il ne lit que celle de Google Maps.</string>
     <string name="hql_tab_connection">Connexion</string>
+    <string name="hql_tab_home">Maison</string>
     <string name="hql_ins_car">Votre voiture</string>
     <string name="hql_ins_range">Autonomie</string>
     <string name="hql_ins_odo">Compteur</string>

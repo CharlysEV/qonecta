@@ -555,6 +555,7 @@
             android:exported="true"
             android:label="Qonecta+"
             android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.HeadQLink">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

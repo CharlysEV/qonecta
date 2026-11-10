@@ -887,6 +887,7 @@
     <string name="hql_maps_read_on">Ler a rota do Google Maps ✓</string>
     <string name="hql_maps_read_help">Ative o Qonecta+: lê a notificação de navegação do Google Maps (km da rota e hora de chegada) para o plano seguir a mesma rota. Só lê a do Google Maps.</string>
     <string name="hql_tab_connection">Ligação</string>
+    <string name="hql_tab_home">Casa</string>
     <string name="hql_ins_car">O seu carro agora</string>
     <string name="hql_ins_range">Autonomia</string>
     <string name="hql_ins_odo">Conta-quilómetros</string>

@@ -887,6 +887,7 @@
     <string name="hql_maps_read_on">Leggi il percorso di Google Maps ✓</string>
     <string name="hql_maps_read_help">Attiva Qonecta+: legge la notifica di navigazione di Google Maps (km del percorso e ora di arrivo) perché il piano segua lo stesso percorso. Legge solo quella di Google Maps.</string>
     <string name="hql_tab_connection">Connessione</string>
+    <string name="hql_tab_home">Casa</string>
     <string name="hql_ins_car">La tua auto ora</string>
     <string name="hql_ins_range">Autonomia</string>
     <string name="hql_ins_odo">Contachilometri</string>

@@ -885,6 +885,7 @@
     <string name="hql_maps_read_on">读取 Google Maps 路线 ✓</string>
     <string name="hql_maps_read_help">开启 Qonecta+：它会读取 Google Maps 的导航通知（路线长度和到达时间），让计划沿用同一路线。它只读取 Google Maps。</string>
     <string name="hql_tab_connection">连接</string>
+    <string name="hql_tab_home">家居</string>
     <string name="hql_ins_car">你的车辆现状</string>
     <string name="hql_ins_range">续航</string>
     <string name="hql_ins_odo">总里程</string>

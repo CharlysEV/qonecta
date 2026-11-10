@@ -50,17 +50,14 @@ class AboutTest {
                 "Open-Meteo.com", "DGT", "Bundesnetzagentur", "radio-browser.info", "HaGeZi", "Wikipedia", "LRCLIB", "three.js", "vinishows-1753d1", "Leaflet", "Nestopia")) {
             assertTrue(who, t.any { it.contains(who) })
         }
-        assertTrue(About.versionByline(ctx).toString().endsWith("\npor CharlysEV"))
     }
 
     @Test
-    fun theBylineNeverSplitsTheName() {
-        val s = "v0.3.2\npor CharlysEV"
-        val p = android.text.TextPaint().apply { textSize = 40f }
-        fun lay(w: Int) = android.text.StaticLayout.Builder.obtain(s, 0, s.length, p, w).build()
-        // Con sitio, palabras enteras; tan estrecho que «CharlysEV» no cabe, se parte y se nota.
-        assertTrue(About.wholeWords(lay(2000), s))
-        org.junit.Assert.assertFalse(About.wholeWords(lay(p.measureText("Charl").toInt() + 2), s))
+    fun theBylineIsOneLine() {
+        // «v0.3.2 · por CharlysEV» en una sola línea (10-11): en dos, con la letra grande, se partía el nombre.
+        val s = About.versionByline(ctx).toString()
+        assertTrue(s, s.endsWith(" · por CharlysEV"))
+        org.junit.Assert.assertFalse(s, s.contains("\n"))
     }
 
     @Test

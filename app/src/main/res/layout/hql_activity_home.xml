@@ -11,9 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="20dp"
+        android:paddingStart="16dp"
         android:paddingTop="12dp"
-        android:paddingEnd="20dp"
+        android:paddingEnd="16dp"
         android:paddingBottom="22dp">
 
         <!-- Cabecera -->
@@ -29,23 +29,36 @@
                 android:importantForAccessibility="no"
                 android:src="@drawable/hql_logo" />
 
-            <TextView
-                style="@style/HQL.Text.Brand"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:text="Qonecta+" />
-
-            <!-- headqlink: la versión instalada, al lado del nombre -->
-            <TextView
-                android:id="@+id/hql_home_version"
+            <!-- headqlink: el nombre y, debajo, la versión y «por CharlysEV» en una sola línea (10-11: al lado del nombre,
+                 con la letra grande del móvil, se partía en «por Charl / ysEV»). Si no cabe, encoge y, al final, «…». -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:fontFamily="sans-serif-condensed"
-                android:textColor="@color/hql_text_dim"
-                android:textSize="13sp" />
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/HQL.Text.Brand"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Qonecta+" />
+
+                <TextView
+                    android:id="@+id/hql_home_version"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center_vertical"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-condensed"
+                    android:maxLines="1"
+                    android:textColor="@color/hql_text_dim"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
             <!-- headqlink: el coche virtual, sin entrar en el menú (18-10) -->
             <ImageButton

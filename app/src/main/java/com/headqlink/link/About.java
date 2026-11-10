@@ -44,10 +44,10 @@ final class About {
     private About() {
     }
 
-    /** Bajo el nombre de la pantalla principal: «v0.3.2» y, debajo, «por CharlysEV» en el color de la app. */
+    /** Bajo el nombre de la pantalla principal, en una línea: «v0.3.2 · por CharlysEV» (el autor, en el color de la app). */
     static CharSequence versionByline(Context c) {
         SpannableStringBuilder b = new SpannableStringBuilder(Ui.appVersionLabel(c));
-        b.append('\n');
+        b.append(" · ");
         int from = b.length();
         b.append(Str.get(R.string.hql_about_by, AUTHOR));
         b.setSpan(new ForegroundColorSpan(ContextCompat.getColor(c, R.color.hql_accent)), from, b.length(), 0);
@@ -56,32 +56,20 @@ final class About {
     }
 
     /**
-     * La versión y «por CharlysEV» en la cabecera, sin partir ninguna palabra: con el móvil en vertical la columna es
-     * estrecha y «CharlysEV» se partía («Charl / ysEV»). Se busca la letra más grande (de 13 a 9 sp) con la que no se
-     * parte ninguna, aunque «por» y el nombre queden en líneas distintas.
+     * La versión y «por CharlysEV» en su línea de la cabecera, enteros: con la letra grande del móvil la columna es
+     * estrecha (antes, al lado del nombre, «CharlysEV» se partía en «Charl / ysEV»). Se busca la letra más grande (de 12
+     * a 9 sp) con la que cabe; si ni así, se queda en 9 sp con «…» al final (nunca en dos líneas).
      */
     static void fitByline(TextView t) {
         t.post(() -> {
-            int w = t.getWidth();
+            // El sitio es el de su columna (el texto mide lo que ocupa), menos la taza que lleva al final.
+            int w = ((View) t.getParent()).getWidth() - t.getTotalPaddingLeft() - t.getTotalPaddingRight();
             if (w <= 0) return;
-            for (float sp = 13f; sp >= 9f; sp -= 0.5f) {
+            for (float sp = 12f; sp >= 9f; sp -= 0.5f) {
                 t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
-                t.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY),
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                if (t.getLayout() != null && wholeWords(t.getLayout(), t.getText())) return;
+                if (android.text.Layout.getDesiredWidth(t.getText(), t.getPaint()) <= w) return;
             }
         });
-    }
-
-    /** Puro: ¿ninguna línea corta una palabra por la mitad (letra justo antes y justo después del corte)? */
-    static boolean wholeWords(android.text.Layout l, CharSequence s) {
-        for (int i = 0; i < l.getLineCount() - 1; i++) {
-            int end = l.getLineEnd(i);
-            if (end > 0 && end < s.length() && Character.isLetterOrDigit(s.charAt(end - 1)) && Character.isLetterOrDigit(s.charAt(end))) {
-                return false;
-            }
-        }
-        return true;
     }
 
     static void show(Activity a) {
