@@ -21,7 +21,9 @@ import java.util.Locale;
  * (el SDK de Anthropic con una clave falsa; «hola»: una pregunta de verdad con la clave guardada) · radioaa
  * [fuente si|no · enlace normal|apartado] (la radio en Android Auto: Qonecta+ app de música de Android Auto o no, desde su
  * próxima sesión; la sesión del enlace con Android Auto apartada solo mientras la radio tiene la música o siempre; sin
- * nada, cómo está) · frente · fondo (CAR_APP_FOREGROUND o CAR_APP_BACKGROUND al coche: ¿vuelve a QDLink si se le pide?).
+ * nada, cómo está) · frente · fondo (CAR_APP_FOREGROUND o CAR_APP_BACKGROUND al coche: ¿vuelve a QDLink si se le pide?) ·
+ * plan [reenviar] (el plan de carga del coche) · barata («Carga barata»: el estado y el cálculo que haría ahora, sin
+ * mandar nada).
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
@@ -293,6 +295,20 @@ final class LabControl {
                 done = resend ? "leo el plan de carga y lo reenvío igual (resultado en el log)" : "leo el plan de carga (resultado en el log)";
                 break;
             }
+            case "barata": {
+                // «Carga barata»: el estado guardado y el cálculo que haría ahora con la última lectura del coche. No manda
+                // nada al coche ni pregunta su posición; con el PVPC puede pedir los precios (red): en otro hilo, al log.
+                Context app = ctx.getApplicationContext();
+                new Thread(() -> {
+                    try {
+                        L.i("pruebas: carga barata: " + CheapCharge.lab(app));
+                    } catch (RuntimeException e) {
+                        L.w("pruebas: carga barata: " + e.getClass().getSimpleName());
+                    }
+                }, "lab-barata").start();
+                done = "carga barata: estado y cálculo de ahora, sin mandar nada (resultado en el log)";
+                break;
+            }
             case "reconectar":
                 done = "reconecto (unos segundos sin imagen)";
                 reconnect(ctx);
@@ -308,7 +324,7 @@ final class LabControl {
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, precios, carga, ffmpeg, ia, radioaa, boost, termica, noche, hud, perfil, frente, fondo, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, precios, carga, plan, barata, ffmpeg, ia, radioaa, boost, termica, noche, hud, perfil, frente, fondo, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);
