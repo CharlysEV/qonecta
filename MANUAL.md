@@ -836,6 +836,8 @@ comprueba al momento.
 radar; y si a 400 metros o menos vas por encima del límite, «Vas a 95, límite 80». Los radares salen de
 OpenStreetMap, así que puede faltar alguno.
 
+«Volumen de los avisos de voz» (de 50 a 150 %, 100 de serie, en Ajustes > Viaje, junto a los avisos de radar): vale para radares, plan de carga, guía del camino y avisos del cable; por encima del 100 % se sube el volumen multimedia del móvil mientras habla y se devuelve después (en el coche cuenta también el volumen del propio coche).
+
 ### «Idioma»
 
 «Idioma» (Android 13 o superior): «Idioma del sistema», «Español», «English», «Português (Portugal)», «Português

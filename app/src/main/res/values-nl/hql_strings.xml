@@ -1391,6 +1391,9 @@
     <string name="hql_trip_energy_battery">Accu: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km in totaal (om te vergelijken met elektrische ritten)</string>
     <string name="hql_radar_voice_help">Standaard uit in Duitsland en Zwitserland, waar de wet flitserwaarschuwingen voor de bestuurder verbiedt. Zet je ze daar aan, dan is dat op eigen verantwoordelijkheid.</string>
+    <string name="hql_voice_volume">Volume van spraakmeldingen</string>
+    <string name="hql_voice_volume_help">Flitsmeldingen, laadplan en de andere gesproken meldingen. Onder 100 % klinkt de stem zachter; boven 100 % gaat het mediavolume van de telefoon omhoog terwijl er gesproken wordt en daarna weer terug. In de auto telt ook het volume van de auto zelf.</string>
+    <string name="hql_voice_volume_test">Zo luid klinken de spraakmeldingen.</string>
     <string name="hql_web_yt_quality">YouTube-kwaliteit: %1$s</string>
     <string name="hql_web_yt_auto">automatisch</string>
     <string name="hql_live_now_title">Nu aan het laden</string>

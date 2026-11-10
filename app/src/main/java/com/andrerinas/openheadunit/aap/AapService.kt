@@ -1037,8 +1037,13 @@ class AapService : Service() {
             AppLog.i("AapService: claimed the microphone foreground-service type for this capture")
             true
         } catch (e: Exception) {
+            // Con el móvil bloqueado y sin que la app haya estado a la vista, Android 14+ lo rechaza y el asistente
+            // de Android Auto se corta al instante (foro, 10-11). Se anota el estado que lo explica.
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
             AppLog.e("AapService: could not claim the microphone foreground-service type " +
-                "(${e.message}); declining the phone's request rather than capturing without it", e)
+                "(${e.message}); screen interactive=${pm.isInteractive}, battery-optimization exempt=" +
+                "${pm.isIgnoringBatteryOptimizations(packageName)}; declining the phone's request rather " +
+                "than capturing without it", e)
             false
         }
     }

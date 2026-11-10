@@ -261,6 +261,9 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
             cfg.putBool(Config.RADAR_VOICE, on);
             L.i("avisos de radar por voz: " + (on ? "sí" : "no"));
         });
+        row(Str.get(R.string.hql_voice_volume), () -> cfg.voiceVolume() + " %")
+                .setOnClickListener(v -> voiceVolumeDialog());
+        note(Str.get(R.string.hql_voice_volume_help));
         switchRow(Str.get(R.string.hql_float_card), () -> Str.get(R.string.hql_float_card_help), cfg::floatCard, on -> {
             cfg.putBool(Config.FLOAT_CARD, on);
             L.i("tarjeta flotante: " + (on ? "sí" : "no"));
@@ -901,6 +904,47 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
         }
         target.addView(r);
         return r;
+    }
+
+    /** Control deslizante del volumen de los avisos de voz (50 a 150 %, de 10 en 10); al aceptar dice una frase de prueba con él. */
+    private void voiceVolumeDialog() {
+        android.widget.SeekBar bar = new android.widget.SeekBar(this);
+        bar.setMax((VoiceVolume.MAX - VoiceVolume.MIN) / VoiceVolume.STEP);
+        bar.setProgress((cfg.voiceVolume() - VoiceVolume.MIN) / VoiceVolume.STEP);
+        TextView value = new TextView(this);
+        value.setTextColor(TEXT);
+        value.setGravity(Gravity.CENTER);
+        value.setText(cfg.voiceVolume() + " %");
+        bar.setOnSeekBarChangeListener(new android.widget.SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(android.widget.SeekBar s, int p, boolean user) {
+                value.setText((VoiceVolume.MIN + p * VoiceVolume.STEP) + " %");
+            }
+
+            @Override
+            public void onStartTrackingTouch(android.widget.SeekBar s) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(android.widget.SeekBar s) {
+            }
+        });
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setPadding(dp(24), dp(16), dp(24), 0);
+        box.addView(value);
+        box.addView(bar);
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(Str.get(R.string.hql_voice_volume))
+                .setView(box)
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    cfg.setVoiceVolume(VoiceVolume.MIN + bar.getProgress() * VoiceVolume.STEP);
+                    L.i("volumen de los avisos de voz: " + cfg.voiceVolume() + " %");
+                    refreshAll();
+                    VoiceAlert.say(this, Str.get(R.string.hql_voice_volume_test));
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     /** Fila con interruptor: se toca la fila entera o el interruptor; el cambio se guarda en el acto. */

@@ -1397,6 +1397,9 @@
     <string name="hql_trip_energy_battery">Batería: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km en total (para comparar con los viajes en eléctrico)</string>
     <string name="hql_radar_voice_help">De serie, apagados en Alemania y Suiza, donde la ley prohíbe al conductor usar avisadores de radar. Si los enciendes allí, es bajo tu responsabilidad.</string>
+    <string name="hql_voice_volume">Volumen de los avisos de voz</string>
+    <string name="hql_voice_volume_help">Avisos de radar, plan de carga y el resto de avisos hablados. Por debajo del 100 %, la voz suena más baja; por encima, se sube el volumen multimedia del móvil mientras habla y se devuelve después. En el coche cuenta además el volumen del propio coche.</string>
+    <string name="hql_voice_volume_test">Así sonarán los avisos de voz.</string>
     <string name="hql_web_yt_quality">Calidad de YouTube: %1$s</string>
     <string name="hql_web_yt_auto">automática</string>
     <string name="hql_live_now_title">Cargando ahora</string>

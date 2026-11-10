@@ -1391,6 +1391,9 @@
     <string name="hql_trip_energy_battery">Akku: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km insgesamt (zum Vergleich mit elektrischen Fahrten)</string>
     <string name="hql_radar_voice_help">In Deutschland und der Schweiz standardmäßig aus: Dort verbietet das Gesetz dem Fahrer Blitzerwarner. Schaltest du sie dort ein, geschieht das auf eigene Verantwortung.</string>
+    <string name="hql_voice_volume">Lautstärke der Sprachansagen</string>
+    <string name="hql_voice_volume_help">Blitzerwarnungen, Ladeplan und die übrigen gesprochenen Hinweise. Unter 100 % wird die Stimme leiser; über 100 % wird die Medienlautstärke des Handys während der Ansage angehoben und danach zurückgesetzt. Im Auto zählt zusätzlich die Lautstärke des Fahrzeugs.</string>
+    <string name="hql_voice_volume_test">So laut klingen die Sprachansagen.</string>
     <string name="hql_web_yt_quality">YouTube-Qualität: %1$s</string>
     <string name="hql_web_yt_auto">automatisch</string>
     <string name="hql_live_now_title">Lädt gerade</string>

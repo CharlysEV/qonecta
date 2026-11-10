@@ -845,6 +845,8 @@ sue novità. Nel menu ⚙, «Cerca nuova versione» controlla subito.
 volta per autovelox; e se a 400 metri o meno vai oltre il limite, «Vai a 95, limite 80». Gli autovelox vengono da
 OpenStreetMap, quindi qualcuno può mancare.
 
+«Volume degli avvisi vocali» (da 50 a 150 %, 100 di default, in Impostazioni > Viaggio accanto agli avvisi autovelox): vale per autovelox, piano di ricarica, guida del percorso e avvisi del cavo; sopra il 100 % il volume multimediale del telefono viene alzato mentre parla e poi ripristinato (in auto conta anche il volume dell'auto).
+
 ### «Lingua»
 
 «Lingua» (Android 13 o successivo): «Lingua del sistema», «Español», «English», «Português (Portugal)», «Português

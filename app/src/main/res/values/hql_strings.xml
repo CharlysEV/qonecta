@@ -1396,6 +1396,9 @@
     <string name="hql_trip_energy_battery">Battery: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km in total (to compare with electric trips)</string>
     <string name="hql_radar_voice_help">Off by default in Germany and Switzerland, where the law forbids the driver from using speed camera warnings. If you turn them on there, it\'s your responsibility.</string>
+    <string name="hql_voice_volume">Voice alert volume</string>
+    <string name="hql_voice_volume_help">Radar warnings, charging plan and the other spoken alerts. Below 100 %, the voice is quieter; above 100 %, the phone\'s media volume is raised while it speaks and put back afterwards. In the car, the car\'s own volume still counts.</string>
+    <string name="hql_voice_volume_test">This is how loud the voice alerts will sound.</string>
     <string name="hql_web_yt_quality">YouTube quality: %1$s</string>
     <string name="hql_web_yt_auto">automatic</string>
     <string name="hql_live_now_title">Charging now</string>

@@ -818,6 +818,8 @@ version starts, its news is shown. In the ⚙ menu, "Check for new version" chec
 once per camera; and if at 400 meters or less you are over the limit, "You are doing 95, limit 80". Cameras come
 from OpenStreetMap, so some may be missing.
 
+"Voice alert volume" (50 to 150 %, 100 by default, in Settings > Trip next to the speed camera alerts): it covers cameras, the charging plan, the road guide and the cable notices; above 100 % the phone's media volume is raised while it speaks and put back afterwards (in the car, the car's own volume also counts).
+
 ### "Language"
 
 "Language" (Android 13 or later): "System language", "Español", "English", "Português (Portugal)", "Português

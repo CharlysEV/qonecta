@@ -1392,6 +1392,9 @@
     <string name="hql_trip_energy_battery">Batteria: %1$.2f kWh · %2$.1f kWh/100 km</string>
     <string name="hql_trip_energy_total">≈ %1$.1f kWh/100 km in totale (per il confronto con i viaggi in elettrico)</string>
     <string name="hql_radar_voice_help">Spenti di serie in Germania e in Svizzera, dove la legge vieta al conducente gli avvisi degli autovelox. Se li accendi lì, è sotto la tua responsabilità.</string>
+    <string name="hql_voice_volume">Volume degli avvisi vocali</string>
+    <string name="hql_voice_volume_help">Avvisi degli autovelox, piano di ricarica e altri avvisi parlati. Sotto il 100 % la voce è più bassa; sopra, il volume multimediale del telefono viene alzato mentre parla e poi ripristinato. In auto conta anche il volume dell\'auto.</string>
+    <string name="hql_voice_volume_test">Così suoneranno gli avvisi vocali.</string>
     <string name="hql_web_yt_quality">Qualità di YouTube: %1$s</string>
     <string name="hql_web_yt_auto">automatica</string>
     <string name="hql_live_now_title">In carica ora</string>

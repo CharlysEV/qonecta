@@ -897,6 +897,8 @@ werden ihre Neuerungen angezeigt. Im Menü ⚙ prüft „Nach neuer Version such
 einmal pro Blitzer; und wenn du 400 Meter davor oder näher schneller fährst als erlaubt, „Du fährst 95, Limit 80“. Die
 Blitzer stammen aus OpenStreetMap, es kann also einer fehlen.
 
+„Lautstärke der Sprachansagen“ (50 bis 150 %, standardmäßig 100, unter Einstellungen > Fahrt neben den Blitzer-Sprachwarnungen): gilt für Blitzer, Ladeplan, Wegbegleiter und Kabelhinweise; über 100 % wird die Medienlautstärke des Handys während der Ansage angehoben und danach zurückgesetzt (im Auto zählt zusätzlich die Lautstärke des Fahrzeugs).
+
 > [!CAUTION]
 > In **Deutschland** ist es dem Fahrer verboten, während der Fahrt Blitzerwarner zu nutzen, auch als App auf dem
 > Handy (§ 23 Abs. 1c StVO); in der **Schweiz** ebenso. Deshalb schaltet Qonecta+ die „Blitzer-Sprachwarnungen“ dort

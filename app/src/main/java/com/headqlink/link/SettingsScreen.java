@@ -499,7 +499,9 @@ final class SettingsScreen implements CarScreen {
             refreshSummaries();
         }));
         alerts.addView(divider(c));
-        alerts.addView(toggle(c, Str.get(R.string.hql_float_card), Str.get(R.string.hql_float_card_help), cfg.floatCard(), on -> {
+        alerts.addView(voiceVolumeRow(c));
+        alerts.addView(divider(c));
+        alerts.addView(toggle(c, Str.get(R.string.hql_float_card),Str.get(R.string.hql_float_card_help), cfg.floatCard(), on -> {
             cfg.putBool(Config.FLOAT_CARD, on);
             CarUi.applyFloatCard();
         }));
@@ -987,6 +989,44 @@ final class SettingsScreen implements CarScreen {
         sw.addView(thumb, tlp);
         sw.setContentDescription(Str.get(on ? R.string.hql_on_yes : R.string.hql_on_no));
         return sw;
+    }
+
+    /** «Volumen de los avisos de voz»: − y + de 10 en 10 entre 50 y 150 %, guardado en el acto. */
+    private View voiceVolumeRow(Context c) {
+        LinearLayout r = new LinearLayout(c);
+        r.setOrientation(LinearLayout.HORIZONTAL);
+        r.setGravity(Gravity.CENTER_VERTICAL);
+        r.setPadding(0, 18, 0, 18);
+        LinearLayout texts = new LinearLayout(c);
+        texts.setOrientation(LinearLayout.VERTICAL);
+        texts.addView(CarStyle.text(c, Str.get(R.string.hql_voice_volume), 24, CarStyle.TEXT));
+        TextView h = CarStyle.text(c, Str.get(R.string.hql_voice_volume_help), 20, CarStyle.TEXT_DIM);
+        h.setPadding(0, 4, 0, 0);
+        texts.addView(h);
+        LinearLayout.LayoutParams tlp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        tlp.rightMargin = 24;
+        r.addView(texts, tlp);
+        TextView value = CarStyle.text(c, cfg.voiceVolume() + " %", 24, CarStyle.TEXT);
+        value.setGravity(Gravity.CENTER);
+        TextView minus = CarStyle.pill(c, "−");
+        TextView plus = CarStyle.pill(c, "+");
+        for (TextView b : new TextView[]{minus, plus}) {
+            b.setGravity(Gravity.CENTER);
+            b.setPadding(28, 18, 28, 18);
+        }
+        View.OnClickListener step = v -> {
+            int now = cfg.voiceVolume() + (v == plus ? VoiceVolume.STEP : -VoiceVolume.STEP);
+            cfg.setVoiceVolume(now);
+            value.setText(cfg.voiceVolume() + " %");
+            L.i("volumen de los avisos de voz: " + cfg.voiceVolume() + " % (desde el coche)");
+        };
+        minus.setOnClickListener(step);
+        plus.setOnClickListener(step);
+        r.addView(minus);
+        LinearLayout.LayoutParams vlp = new LinearLayout.LayoutParams(110, ViewGroup.LayoutParams.WRAP_CONTENT);
+        r.addView(value, vlp);
+        r.addView(plus);
+        return r;
     }
 
     /** Fila con texto (y una línea de ayuda) y un interruptor; se toca la fila entera. */

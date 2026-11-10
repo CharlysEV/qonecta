@@ -966,6 +966,17 @@ final class Config {
         return !sp.contains(RADAR_VOICE) && Country.radarWarningsForbidden(Country.current(app));
     }
 
+    /** Volumen de los avisos de voz, en % (VoiceVolume): 50 a 150, 100 de serie. */
+    static final String VOICE_VOLUME = "voice_volume";
+
+    int voiceVolume() {
+        return VoiceVolume.clamp(sp.getInt(VOICE_VOLUME, VoiceVolume.DEFAULT));
+    }
+
+    void setVoiceVolume(int pct) {
+        putInt(VOICE_VOLUME, VoiceVolume.clamp(pct));
+    }
+
     /** Tarjeta flotante con la próxima parada sobre Android Auto (CarUi/FloatCard). */
     /**
      * «Seguir con la radio al conectar» (por defecto, sí): si la radio o «Mi música» sonaba al cerrarse la interfaz propia

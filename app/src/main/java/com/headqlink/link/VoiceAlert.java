@@ -20,6 +20,9 @@ final class VoiceAlert {
     private static String pending;
     private static AudioFocusRequest focus;
     private static int seq;
+    /** Volumen multimedia de antes de subirlo para un aviso (-1 si no se tocó), y con qué contexto devolverlo. */
+    private static int boosted = -1;
+    private static Context appCtx;
     /** Quién mandó lo que se dice o se va a decir («» los avisos del plan; RoadGuide.VOICE, la guía). */
     private static String owner = "";
     /** Lo que se está diciendo (id), desde speak hasta que acaba, falla o se corta; null si nada. */
@@ -148,23 +151,58 @@ final class VoiceAlert {
                 am.requestAudioFocus(null, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK);
             }
         }
+        int pct = new Config(app).voiceVolume();
+        boost(app, am, pct);
         String id = "hql-" + (++seq);
         activeId = id;
         activeSince = android.os.SystemClock.elapsedRealtime();
         if (Build.VERSION.SDK_INT >= 21) {
-            tts.speak(text, TextToSpeech.QUEUE_FLUSH, new Bundle(), id);
+            Bundle b = new Bundle();
+            b.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, VoiceVolume.ttsGain(pct));
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, b, id);
         } else {
             java.util.HashMap<String, String> p = new java.util.HashMap<>();
             p.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, id);
+            p.put(TextToSpeech.Engine.KEY_PARAM_VOLUME, String.valueOf(VoiceVolume.ttsGain(pct)));
             tts.speak(text, TextToSpeech.QUEUE_FLUSH, p);
         }
         L.i("voz: aviso dicho (" + text.length() + " caracteres)");
+    }
+
+    /**
+     * Por encima de 100 % sube el volumen multimedia (por donde sale el aviso) mientras habla; el original se guarda para
+     * devolverlo en release. Si ya estaba subido por un aviso anterior no se vuelve a guardar.
+     */
+    private static void boost(Context app, AudioManager am, int pct) {
+        if (am == null || pct <= VoiceVolume.DEFAULT) return;
+        try {
+            int cur = am.getStreamVolume(AudioManager.STREAM_MUSIC);
+            int to = VoiceVolume.boostedIndex(pct, cur, am.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+            if (to <= cur) return;
+            if (boosted < 0) boosted = cur;
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, to, 0);
+            appCtx = app;
+            L.i("voz: volumen multimedia " + cur + " -> " + to + " mientras habla");
+        } catch (RuntimeException e) {
+            L.w("voz: no se pudo subir el volumen: " + e.getMessage());
+        }
+    }
+
+    private static void unboost(AudioManager am) {
+        if (boosted < 0 || am == null) return;
+        int back = boosted;
+        boosted = -1;
+        try {
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, back, 0);
+        } catch (RuntimeException ignored) {
+        }
     }
 
     /** Terminó de hablar: la música vuelve a su volumen. */
     private static synchronized void release(Context app) {
         AudioManager am = (AudioManager) app.getSystemService(Context.AUDIO_SERVICE);
         if (am == null) return;
+        unboost(am);
         if (Build.VERSION.SDK_INT >= 26) {
             if (focus != null) am.abandonAudioFocusRequest(focus);
         } else {
@@ -174,6 +212,7 @@ final class VoiceAlert {
 
     /** Al cerrar el modo ampliado. */
     static synchronized void shutdown() {
+        if (appCtx != null) unboost((AudioManager) appCtx.getSystemService(Context.AUDIO_SERVICE));
         if (tts != null) {
             try {
                 tts.shutdown();
