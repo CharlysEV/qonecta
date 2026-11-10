@@ -115,7 +115,7 @@ final class PhoneRoute {
         root.setBackgroundColor(0x00000000);
         col = new LinearLayout(act);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(dp(16), dp(16), dp(16), dp(28));
+        PhoneUi.pad(col);
         root.addView(col);
         build();
     }
@@ -187,10 +187,7 @@ final class PhoneRoute {
     // ------------------------------------------------------------------ pantalla
 
     private void build() {
-        TextView title = text(Str.get(R.string.hql_pr_title), com.google.android.material.R.style.TextAppearance_Material3_HeadlineSmall,
-                PhoneCharts.TEXT);
-        title.setPadding(dp(4), 0, 0, dp(4));
-        col.addView(title);
+        col.addView(PhoneUi.title(act, Str.get(R.string.hql_pr_title), 4));
         TextView intro = text(Str.get(R.string.hql_pr_intro), com.google.android.material.R.style.TextAppearance_Material3_BodyMedium,
                 PhoneCharts.DIM);
         intro.setPadding(dp(4), 0, dp(4), dp(12));
@@ -295,7 +292,7 @@ final class PhoneRoute {
         }
         // Los atajos (Casa, Trabajo, guardados y recientes) con la caja vacía y sin resultados.
         if (results == null && !searching) {
-            ChipGroup chips = new ChipGroup(act);
+            ChipGroup chips = chipRow();
             chips.setPadding(0, dp(8), 0, 0);
             Config c = new Config(act);
             List<SavedPlaces.Saved> saved = SavedPlaces.parse(c.savedPlaces());
@@ -516,7 +513,7 @@ final class PhoneRoute {
         SavedPlaces.Saved home = SavedPlaces.tagged(SavedPlaces.parse(new Config(act).savedPlaces()), SavedPlaces.HOME);
         if (home == null) fromHome = false;
         if (home != null) {
-            ChipGroup from = new ChipGroup(act);
+            ChipGroup from = chipRow();
             from.setSingleSelection(true);
             from.addView(choice(Str.get(R.string.hql_pr_from_here), !fromHome, () -> setFromHome(false)));
             from.addView(choice(Str.get(R.string.hql_pr_from_home), fromHome, () -> setFromHome(true)));
@@ -527,7 +524,7 @@ final class PhoneRoute {
         double proposed = proposedSoc();
         departShown = proposedLine();
         departBody.addView(small(departShown));
-        ChipGroup socs = new ChipGroup(act);
+        ChipGroup socs = chipRow();
         socs.setSingleSelection(true);
         double now = socNow();
         if (!Double.isNaN(proposed)) {
@@ -546,7 +543,7 @@ final class PhoneRoute {
         departBody.addView(socs);
         // Cuándo.
         departBody.addView(subhead(Str.get(R.string.hql_pr_when)));
-        ChipGroup when = new ChipGroup(act);
+        ChipGroup when = chipRow();
         when.setSingleSelection(true);
         boolean tomorrow = departAt > 0 && !sameDay(departAt, System.currentTimeMillis());
         when.addView(choice(Str.get(R.string.hql_pr_now), departAt == 0, () -> {
@@ -1295,19 +1292,40 @@ final class PhoneRoute {
         if (imm != null && field != null) imm.hideSoftInputFromWindow(field.getWindowToken(), 0);
     }
 
-    private Chip chip(String label, Runnable tap) {
+    /**
+     * Una fila de fichas que fluye: varias por fila cuando caben, con poco hueco entre ellas (10-11: con la letra grande
+     * del móvil salían casi una por fila). Cada ficha ya guarda sus 48 dp de alto para el dedo: sin más hueco entre filas.
+     */
+    private ChipGroup chipRow() {
+        ChipGroup g = new ChipGroup(act);
+        g.setChipSpacingHorizontal(dp(6));
+        g.setChipSpacingVertical(0);
+        return g;
+    }
+
+    /** Ficha con menos relleno a los lados que la de serie, para que quepan más por fila. */
+    private Chip slim(String label) {
         Chip c = new Chip(act, null, com.google.android.material.R.attr.chipStyle);
         c.setText(label);
+        c.setTextStartPadding(dp(5));
+        c.setTextEndPadding(dp(5));
+        return c;
+    }
+
+    /** Un atajo (Casa, un guardado, un reciente): el nombre recortado a media fila, para que siempre quepan dos. */
+    private Chip chip(String label, Runnable tap) {
+        Chip c = slim(label);
         c.setEllipsize(android.text.TextUtils.TruncateAt.END);
-        c.setMaxWidth(dp(220));
+        // El ancho de la tarjeta: la pantalla menos el margen de la página y el relleno de la tarjeta (18 dp por lado).
+        int row = act.getResources().getDisplayMetrics().widthPixels - 2 * dp(PhoneUi.SIDE) - 2 * dp(18);
+        c.setMaxWidth(Math.min(dp(220), (row - dp(6)) / 2));
         c.setOnClickListener(v -> tap.run());
         return c;
     }
 
     /** Una opción de una fila de opciones (la elegida, marcada). */
     private Chip choice(String label, boolean on, Runnable tap) {
-        Chip c = new Chip(act, null, com.google.android.material.R.attr.chipStyle);
-        c.setText(label);
+        Chip c = slim(label);
         c.setCheckable(true);
         c.setChecked(on);
         c.setOnClickListener(v -> tap.run());
