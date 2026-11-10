@@ -1488,4 +1488,11 @@ Dafür brauchst du einen eigenen API-Schlüssel von Anthropic (console.anthropic
     <string name="hql_radio_fav_rename">Umbenennen</string>
     <string name="hql_radio_fav_rename_help">Leer lassen, um den ursprünglichen Namen „%1$s“ wiederherzustellen.</string>
     <string name="hql_radio_fav_remove_q">„%1$s“ aus den Favoriten entfernen?</string>
+    <string name="hql_radio_search_hint">Sender suchen …</string>
+    <string name="hql_radio_sort_original">Reihenfolge: Liste</string>
+    <string name="hql_radio_sort_az">Reihenfolge: A–Z</string>
+    <string name="hql_radio_sort_group">Reihenfolge: nach Gruppen</string>
+    <string name="hql_radio_search_none">Kein Sender passt zu „%1$s“.</string>
+    <string name="hql_radio_search_clear">Löschen</string>
+    <string name="hql_radio_search_count">%1$d von %2$d Sendern</string>
 </resources>

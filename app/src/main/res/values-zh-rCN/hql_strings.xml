@@ -1490,4 +1490,11 @@
     <string name="hql_radio_fav_rename">重命名</string>
     <string name="hql_radio_fav_rename_help">留空则恢复为“%1$s”。</string>
     <string name="hql_radio_fav_remove_q">从收藏中移除“%1$s”？</string>
+    <string name="hql_radio_search_hint">搜索电台…</string>
+    <string name="hql_radio_sort_original">顺序：列表</string>
+    <string name="hql_radio_sort_az">顺序：A–Z</string>
+    <string name="hql_radio_sort_group">顺序：按分组</string>
+    <string name="hql_radio_search_none">没有与“%1$s”匹配的电台。</string>
+    <string name="hql_radio_search_clear">清除</string>
+    <string name="hql_radio_search_count">%1$d / %2$d 个电台</string>
 </resources>

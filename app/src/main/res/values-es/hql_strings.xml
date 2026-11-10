@@ -1494,4 +1494,11 @@ Necesita tu propia clave de API de Anthropic (console.anthropic.com › API Keys
     <string name="hql_radio_fav_rename">Cambiar el nombre</string>
     <string name="hql_radio_fav_rename_help">Vacío, vuelve a «%1$s».</string>
     <string name="hql_radio_fav_remove_q">¿Quitar «%1$s» de favoritos?</string>
+    <string name="hql_radio_search_hint">Buscar emisoras…</string>
+    <string name="hql_radio_sort_original">Orden: de la lista</string>
+    <string name="hql_radio_sort_az">Orden: A–Z</string>
+    <string name="hql_radio_sort_group">Orden: por grupos</string>
+    <string name="hql_radio_search_none">Ninguna emisora encaja con «%1$s».</string>
+    <string name="hql_radio_search_clear">Borrar</string>
+    <string name="hql_radio_search_count">%1$d de %2$d emisoras</string>
 </resources>

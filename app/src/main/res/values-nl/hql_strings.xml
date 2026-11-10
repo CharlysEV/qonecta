@@ -1488,4 +1488,11 @@ Hiervoor heb je een eigen API-sleutel van Anthropic nodig (console.anthropic.com
     <string name="hql_radio_fav_rename">Hernoemen</string>
     <string name="hql_radio_fav_rename_help">Laat leeg om terug te gaan naar ‘%1$s’.</string>
     <string name="hql_radio_fav_remove_q">‘%1$s’ uit favorieten verwijderen?</string>
+    <string name="hql_radio_search_hint">Zoek een zender…</string>
+    <string name="hql_radio_sort_original">Volgorde: lijst</string>
+    <string name="hql_radio_sort_az">Volgorde: A–Z</string>
+    <string name="hql_radio_sort_group">Volgorde: per groep</string>
+    <string name="hql_radio_search_none">Geen zender past bij ‘%1$s’.</string>
+    <string name="hql_radio_search_clear">Wissen</string>
+    <string name="hql_radio_search_count">%1$d van %2$d zenders</string>
 </resources>
