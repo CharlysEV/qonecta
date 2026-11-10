@@ -2680,6 +2680,7 @@ final class RouteTab implements CarScreen {
             if (cp.speedCap > 0) addSpeedAdvice(null);
             addReplanNote(cp);
             addLegs(p, cp);
+            addAddStop(cp);
             addDestChargers(p, cp);
             return;
         }
@@ -2689,6 +2690,7 @@ final class RouteTab implements CarScreen {
             chargers.addView(t);
             // Si yendo más despacio sí se llega, se dice aquí (es para lo que está el consejo de rescate).
             addSpeedAdvice(cp.speed);
+            addAddStop(cp);
             addDestChargers(p, cp);
             return;
         }
@@ -2753,9 +2755,22 @@ final class RouteTab implements CarScreen {
             item.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             // Las ya hechas (o en la que se está) no se cambian.
             if (st.km > cp.fromKm + ChargePlanner.HERE_KM) {
-                TextView change = CarKit.pill(ctx, Str.get(R.string.hql_plan_change), false);
-                change.setOnClickListener(v -> openStopChange(idx));
-                actions.addView(change);
+                if (planner.isAdded(st.charger)) {
+                    // Añadida a mano: no se «cambia», se quita (y el plan vuelve a elegir).
+                    TextView mine = CarStyle.text(ctx, Str.get(R.string.hql_add_stop_mine), 19, CarKit.ACCENT);
+                    actions.addView(mine);
+                    TextView drop = CarKit.pill(ctx, Str.get(R.string.hql_add_stop_remove), false);
+                    drop.setOnClickListener(v -> {
+                        planner.unpin(st.charger);
+                        shownChargersFor = -1;
+                        tick();
+                    });
+                    actions.addView(drop, spaced());
+                } else {
+                    TextView change = CarKit.pill(ctx, Str.get(R.string.hql_plan_change), false);
+                    change.setOnClickListener(v -> openStopChange(idx));
+                    actions.addView(change);
+                }
             }
             actions.addView(markPill(st.charger), spaced());
             TextView go = CarKit.pill(ctx, Str.get(R.string.hql_go), false);
@@ -2765,6 +2780,7 @@ final class RouteTab implements CarScreen {
             if (idx == 0) firstStopView = block;
         }
         addLowVoltsNote(p, cp);
+        addAddStop(cp);
         addDestChargers(p, cp);
         TextView all = CarKit.pill(ctx, Str.get(R.string.hql_plan_go), true);
         all.setOnClickListener(v -> RoutePlanner.navigateWithStops(ctx, p, cp));
@@ -2777,6 +2793,190 @@ final class RouteTab implements CarScreen {
         other.setLetterSpacing(0.1f);
         other.setPadding(0, 8, 0, 0);
         chargers.addView(other);
+    }
+
+    /** Las añadidas a las que no se llega (lo dice el plan) y el botón «Añadir parada de carga». */
+    private void addAddStop(ChargePlanner.Result cp) {
+        for (RoutePlanner.Charger u : cp.unreachable) {
+            TextView w = hint(Str.get(R.string.hql_add_stop_unreachable, u.name, cp.kmMark(u.kmAlong)));
+            w.setTextColor(CarKit.AMBER);
+            chargers.addView(w);
+            TextView drop = CarKit.pill(ctx, Str.get(R.string.hql_add_stop_remove), false);
+            drop.setOnClickListener(v -> {
+                planner.unpin(u);
+                shownChargersFor = -1;
+                tick();
+            });
+            LinearLayout.LayoutParams dlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dlp.topMargin = 6;
+            chargers.addView(drop, dlp);
+        }
+        TextView add = CarKit.pill(ctx, "+ " + Str.get(R.string.hql_add_stop), false);
+        add.setOnClickListener(v -> openAddStop());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = 10;
+        lp.bottomMargin = 4;
+        chargers.addView(add, lp);
+    }
+
+    /**
+     * «Añadir parada de carga» (foro LPMFF, #369): un cargador que el conductor conoce, aunque el plan no lo necesite. Con el
+     * teclado del coche se filtra por nombre, red o sitio entre todos los de la ruta (con km, potencia, distancia a la ruta y
+     * con cuánto se llega); «Buscar el sitio» pide el sitio al buscador y deja los que caen cerca de la ruta. «Añadir» lo
+     * fija (RoutePlanner.addStop) y el plan se rehace antes y después.
+     */
+    private void openAddStop() {
+        ChargePlanner.Result cp = chargePlan;
+        RoutePlanner.Plan p = planner.plan();
+        if (cp == null || p == null) return;
+        LinearLayout panel = new LinearLayout(ctx);
+        panel.setOrientation(LinearLayout.VERTICAL);
+        panel.setBackgroundColor(CarKit.BG);
+        panel.setClickable(true);
+        panel.setPadding(CarKit.PAD, 18, CarKit.PAD, 0);
+        LinearLayout bar = CarKit.row(ctx);
+        bar.setGravity(Gravity.CENTER_VERTICAL);
+        TextView title = CarStyle.text(ctx, Str.get(R.string.hql_add_stop_title), 34, CarKit.TEXT);
+        title.setTypeface(CarKit.MEDIUM);
+        title.setSingleLine(true);
+        bar.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        TextView done = CarKit.pill(ctx, Str.get(R.string.hql_close), true);
+        done.setOnClickListener(v -> root.removeView(panel));
+        bar.addView(done);
+        panel.addView(bar);
+        StringBuilder buf = new StringBuilder();
+        TextView box = CarStyle.text(ctx, "", 28, CarKit.TEXT);
+        box.setHint(Str.get(R.string.hql_add_stop_search_hint));
+        box.setHintTextColor(CarKit.FAINT);
+        box.setSingleLine(true);
+        box.setEllipsize(android.text.TextUtils.TruncateAt.START);
+        box.setPadding(26, 12, 26, 12);
+        box.setBackground(CarKit.outlined(CarKit.SURFACE_HI, CarKit.ACCENT, 28));
+        LinearLayout searchRow = CarKit.row(ctx);
+        searchRow.setGravity(Gravity.CENTER_VERTICAL);
+        LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
+        blp.rightMargin = 10;
+        searchRow.addView(box, blp);
+        TextView placeBtn = CarKit.pill(ctx, Str.get(R.string.hql_add_stop_place_btn), false);
+        searchRow.addView(placeBtn);
+        LinearLayout.LayoutParams srlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        srlp.topMargin = 8;
+        panel.addView(searchRow, srlp);
+        LinearLayout body = CarKit.col(ctx);
+        ScrollView sv = new ScrollView(ctx);
+        sv.addView(body);
+        LinearLayout.LayoutParams svp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f);
+        svp.topMargin = 6;
+        panel.addView(sv, svp);
+        java.util.List<AddStop.Entry>[] places = new java.util.List[1];
+        Runnable fill = () -> {
+            body.removeAllViews();
+            TextView intro = hint(Str.get(R.string.hql_add_stop_intro));
+            intro.setMaxLines(3);
+            body.addView(intro);
+            if (places[0] != null) {
+                TextView h = hint(Str.get(R.string.hql_add_stop_place_heading));
+                h.setTextColor(CarKit.ACCENT);
+                body.addView(h);
+                if (places[0].isEmpty()) body.addView(hint(Str.get(R.string.hql_add_stop_place_none)));
+                for (AddStop.Entry e : places[0]) body.addView(addStopRow(e, cp, panel), itemParams());
+            }
+            java.util.List<AddStop.Entry> list = AddStop.entries(planner.allChargers(), buf.toString(), cp.fromKm, planner::offRouteKm);
+            TextView h2 = hint(Str.get(R.string.hql_add_stop_list_heading));
+            h2.setTextColor(CarKit.ACCENT);
+            body.addView(h2);
+            if (list.isEmpty()) body.addView(hint(Str.get(R.string.hql_add_stop_none)));
+            for (AddStop.Entry e : list) body.addView(addStopRow(e, cp, panel), itemParams());
+        };
+        placeBtn.setOnClickListener(v -> {
+            String q = buf.toString().trim();
+            if (!PlaceSearch.worthTyping(q)) return;
+            double[] pos = planner.position();
+            new Thread(() -> {
+                java.util.List<RoutePlanner.Place> found = PlaceSearch.search(ctx, q, pos[0], pos[1]);
+                java.util.List<AddStop.Entry> near = new java.util.ArrayList<>();
+                for (RoutePlanner.Place pl : found) {
+                    RoutePlanner.Charger c = RoutePlanner.chargerAt(p, pl.name, pl.lat, pl.lon);
+                    double off = planner.offRouteKm(c);
+                    if (off <= AddStop.PLACE_MAX_OFF_KM && c.kmAlong > cp.fromKm + ChargePlanner.HERE_KM) near.add(new AddStop.Entry(c, off));
+                }
+                root.post(() -> {
+                    places[0] = near;
+                    fill.run();
+                });
+            }, "hql-add-stop-search").start();
+        });
+        CarKeyboard[] kbRef = new CarKeyboard[1];
+        CarKeyboard kb = new CarKeyboard(ctx, new CarKeyboard.Listener() {
+            @Override
+            public void onText(String t) {
+                buf.append(t);
+                box.setText(buf);
+                kbRef[0].showText(buf, Str.get(R.string.hql_add_stop_search_hint));
+                fill.run();
+            }
+
+            @Override
+            public void onBackspace() {
+                if (buf.length() > 0) buf.setLength(buf.length() - 1);
+                box.setText(buf);
+                kbRef[0].showText(buf, Str.get(R.string.hql_add_stop_search_hint));
+                fill.run();
+            }
+
+            @Override
+            public void onEnter() {
+                kbRef[0].setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onHide() {
+                kbRef[0].setVisibility(View.GONE);
+            }
+        });
+        kbRef[0] = kb;
+        box.setOnClickListener(v -> kb.setVisibility(View.VISIBLE));
+        panel.addView(kb);
+        kb.showText(buf, Str.get(R.string.hql_add_stop_search_hint));
+        fill.run();
+        root.addView(panel, CarStyle.match());
+    }
+
+    /** Una fila de «Añadir parada de carga»: punto de red, nombre, km · potencia · a cuánto de la ruta · con cuánto llegas. */
+    private View addStopRow(AddStop.Entry e, ChargePlanner.Result cp, LinearLayout panel) {
+        RoutePlanner.Charger c = e.charger;
+        double arrive = AddStop.arrivalAt(cp, c);
+        LinearLayout item = CarKit.row(ctx);
+        item.setGravity(Gravity.CENTER_VERTICAL);
+        item.setPadding(18, 10, 18, 10);
+        item.setBackground(CarKit.outlined(CarKit.SURFACE, CarKit.OUTLINE, 18));
+        item.addView(new ChargerDot(ctx, c.maxKw, c.network), new LinearLayout.LayoutParams(52, 52));
+        LinearLayout txt = CarKit.col(ctx);
+        txt.setPadding(16, 0, 10, 0);
+        TextView name = CarStyle.text(ctx, c.name, 24, CarKit.TEXT);
+        name.setTypeface(CarKit.MEDIUM);
+        name.setSingleLine(true);
+        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        txt.addView(name);
+        TextView line = CarStyle.text(ctx, Str.get(R.string.hql_add_stop_line, cp.kmMark(c.kmAlong), kwText(c), e.offKm, Math.max(0, arrive)), 20,
+                arrive < ChargePlanner.PIN_MIN_PCT ? CarKit.AMBER : CarKit.DIM);
+        line.setMaxLines(2);
+        txt.addView(line);
+        if (arrive < ChargePlanner.PIN_MIN_PCT) {
+            TextView far = CarStyle.text(ctx, Str.get(R.string.hql_add_stop_far), 19, CarKit.AMBER);
+            far.setMaxLines(2);
+            txt.addView(far);
+        }
+        item.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        TextView use = CarKit.pill(ctx, Str.get(R.string.hql_add_stop_use), true);
+        use.setOnClickListener(v -> {
+            planner.addStop(c);
+            root.removeView(panel);
+            shownChargersFor = -1;
+            tick();
+        });
+        item.addView(use);
+        return item;
     }
 
     /**

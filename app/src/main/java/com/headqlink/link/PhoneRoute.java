@@ -936,7 +936,10 @@ final class PhoneRoute {
                 in.addView(t);
             }
         }
-        if (cp.stops.isEmpty()) return;
+        if (cp.stops.isEmpty()) {
+            addStopControls(in, cp);
+            return;
+        }
         in.addView(subhead(Str.get(R.string.hql_plan_title)));
         int n = 1;
         for (ChargePlanner.Stop st : cp.stops) {
@@ -963,15 +966,175 @@ final class PhoneRoute {
             }
             LinearLayout btns = new LinearLayout(act);
             btns.setGravity(Gravity.END);
-            MaterialButton change = M3.button(act, Str.get(R.string.hql_plan_change), false);
-            change.setOnClickListener(v -> openStopChange(idx));
-            btns.addView(change);
+            if (draft != null && draft.isAdded(st.charger)) {
+                // Una parada añadida a mano no se «cambia»: se quita (y el plan vuelve a elegir).
+                block.addView(text(Str.get(R.string.hql_add_stop_mine), com.google.android.material.R.style.TextAppearance_Material3_LabelMedium,
+                        PhoneCharts.ACCENT));
+                MaterialButton drop = M3.button(act, Str.get(R.string.hql_add_stop_remove), false);
+                drop.setOnClickListener(v -> {
+                    draft.unpin(st.charger);
+                    refreshCharge();
+                });
+                btns.addView(drop);
+            } else {
+                MaterialButton change = M3.button(act, Str.get(R.string.hql_plan_change), false);
+                change.setOnClickListener(v -> openStopChange(idx));
+                btns.addView(change);
+            }
             MaterialButton go = M3.button(act, Str.get(R.string.hql_go), false);
             go.setOnClickListener(v -> NavApps.go(act, st.charger.lat, st.charger.lon));
             btns.addView(go);
             block.addView(btns);
             in.addView(block);
         }
+        addStopControls(in, cp);
+    }
+
+    /** Las añadidas a las que no se llega (lo dice el plan) y el botón «Añadir parada de carga». */
+    private void addStopControls(LinearLayout in, ChargePlanner.Result cp) {
+        for (RoutePlanner.Charger u : cp.unreachable) {
+            in.addView(warn(Str.get(R.string.hql_add_stop_unreachable, RoutePlanner.chargerName(u), cp.kmMark(u.kmAlong)), PhoneCharts.WARN));
+            in.addView(textButton(Str.get(R.string.hql_add_stop_remove), () -> {
+                if (draft != null) draft.unpin(u);
+                refreshCharge();
+            }));
+        }
+        MaterialButton add = M3.button(act, "+ " + Str.get(R.string.hql_add_stop), false);
+        add.setOnClickListener(v -> openAddStop());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(10);
+        in.addView(add, lp);
+    }
+
+    /**
+     * «Añadir parada de carga» (foro LPMFF, #369): un cargador que el conductor conoce, aunque el plan no lo necesite. Se busca
+     * por nombre entre los cargadores de la ruta (y, con el botón, por sitio cerca de ella) o se elige de la lista de todos,
+     * con su km, potencia y distancia a la ruta; «Añadir» lo fija y el plan se rehace antes y después. Viaja con la ruta.
+     */
+    private void openAddStop() {
+        RoutePlanner d = draft;
+        ChargePlanner.Result cp = charge;
+        if (d == null || cp == null) return;
+        LinearLayout body = new LinearLayout(act);
+        body.setOrientation(LinearLayout.VERTICAL);
+        body.setPadding(dp(22), dp(4), dp(22), dp(8));
+        body.addView(small(Str.get(R.string.hql_add_stop_intro)));
+        TextInputEditText q = M3.field(act);
+        q.setHint(Str.get(R.string.hql_add_stop_search_hint));
+        q.setSingleLine(true);
+        q.setInputType(InputType.TYPE_CLASS_TEXT);
+        q.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        LinearLayout.LayoutParams qlp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        qlp.topMargin = dp(8);
+        body.addView(M3.outlined(q), qlp);
+        LinearLayout rows = new LinearLayout(act);
+        rows.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout placeBox = new LinearLayout(act);
+        placeBox.setOrientation(LinearLayout.VERTICAL);
+        androidx.appcompat.app.AlertDialog[] dlg = new androidx.appcompat.app.AlertDialog[1];
+        List<AddStop.Entry>[] places = newEntryList();
+        Runnable use = () -> {
+            if (dlg[0] != null) dlg[0].dismiss();
+            refreshCharge();
+        };
+        Runnable fill = () -> {
+            String text = q.getText() == null ? "" : q.getText().toString();
+            rows.removeAllViews();
+            List<AddStop.Entry> list = AddStop.entries(d.allChargers(), text, cp.fromKm, d::offRouteKm);
+            rows.addView(subhead(Str.get(R.string.hql_add_stop_list_heading)));
+            if (list.isEmpty()) rows.addView(small(Str.get(R.string.hql_add_stop_none)));
+            for (AddStop.Entry e : list) rows.addView(addStopRow(e, cp, () -> {
+                d.addStop(e.charger);
+                use.run();
+            }));
+            placeBox.removeAllViews();
+            if (places[0] != null) {
+                placeBox.addView(subhead(Str.get(R.string.hql_add_stop_place_heading)));
+                if (places[0].isEmpty()) placeBox.addView(small(Str.get(R.string.hql_add_stop_place_none)));
+                for (AddStop.Entry e : places[0]) placeBox.addView(addStopRow(e, cp, () -> {
+                    d.addStop(e.charger);
+                    use.run();
+                }));
+            }
+        };
+        q.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int a, int b, int c) {
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable e) {
+                fill.run();
+            }
+        });
+        MaterialButton place = M3.button(act, Str.get(R.string.hql_add_stop_place_btn), false);
+        place.setOnClickListener(v -> {
+            String text = q.getText() == null ? "" : q.getText().toString().trim();
+            if (!PlaceSearch.worthTyping(text)) return;
+            place.setEnabled(false);
+            double[] me = RoutePlanner.lastKnown(act);
+            new Thread(() -> {
+                List<RoutePlanner.Place> found = PlaceSearch.search(act, text, me == null ? Double.NaN : me[0], me == null ? Double.NaN : me[1]);
+                List<AddStop.Entry> near = nearRoute(d, cp, found);
+                main.post(() -> {
+                    place.setEnabled(true);
+                    places[0] = near;
+                    fill.run();
+                });
+            }, "hql-add-stop-search").start();
+        });
+        body.addView(place);
+        body.addView(placeBox);
+        body.addView(rows);
+        fill.run();
+        ScrollView sv = new ScrollView(act);
+        sv.addView(body);
+        dlg[0] = new MaterialAlertDialogBuilder(act)
+                .setTitle(Str.get(R.string.hql_add_stop_title))
+                .setView(sv)
+                .setNegativeButton(Str.get(R.string.hql_close), null)
+                .show();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<AddStop.Entry>[] newEntryList() {
+        return (List<AddStop.Entry>[]) new List[1];
+    }
+
+    /** De los sitios buscados, los que caen cerca de la ruta y por delante del coche, puestos en ella como cargadores. */
+    private static List<AddStop.Entry> nearRoute(RoutePlanner d, ChargePlanner.Result cp, List<RoutePlanner.Place> found) {
+        List<AddStop.Entry> out = new ArrayList<>();
+        RoutePlanner.Plan p = d.plan();
+        if (p == null) return out;
+        for (RoutePlanner.Place pl : found) {
+            RoutePlanner.Charger c = RoutePlanner.chargerAt(p, pl.name, pl.lat, pl.lon);
+            double off = d.offRouteKm(c);
+            if (!(off <= AddStop.PLACE_MAX_OFF_KM) || c.kmAlong <= cp.fromKm + ChargePlanner.HERE_KM) continue;
+            out.add(new AddStop.Entry(c, off));
+        }
+        return out;
+    }
+
+    /** Una fila de «Añadir parada de carga»: nombre, km · potencia · distancia a la ruta · con cuánto llegas, y «Añadir». */
+    private View addStopRow(AddStop.Entry e, ChargePlanner.Result cp, Runnable add) {
+        RoutePlanner.Charger c = e.charger;
+        double arrive = AddStop.arrivalAt(cp, c);
+        LinearLayout item = new LinearLayout(act);
+        item.setOrientation(LinearLayout.VERTICAL);
+        item.setPadding(0, dp(10), 0, dp(4));
+        item.addView(text(RoutePlanner.chargerName(c), com.google.android.material.R.style.TextAppearance_Material3_TitleSmall, PhoneCharts.TEXT));
+        item.addView(text(Str.get(R.string.hql_add_stop_line, cp.kmMark(c.kmAlong), RouteTab.kwText(c), e.offKm, Math.max(0, arrive)),
+                com.google.android.material.R.style.TextAppearance_Material3_BodySmall, PhoneCharts.DIM));
+        if (arrive < ChargePlanner.PIN_MIN_PCT) {
+            item.addView(text(Str.get(R.string.hql_add_stop_far), com.google.android.material.R.style.TextAppearance_Material3_BodySmall,
+                    PhoneCharts.WARN));
+        }
+        item.addView(textButton(Str.get(R.string.hql_add_stop_use), add));
+        return item;
     }
 
     /** La velocidad máxima del borrador (0: quitarla): el plan de carga se rehace con ella. */

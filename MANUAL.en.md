@@ -437,6 +437,13 @@ version). That tells us whether the C10 supports it.
       **for this trip** (📌) and the plan is redone from it; if consumption changes and you can no longer reach it, it
       picks another and tells you. "Remove my choice" goes back to the plan's one. It is forgotten when you change
       destination; to always prefer a charger, mark it with ★.
+    - **Add a charging stop:** below the stops, **"Add charging stop"**: you pick a charger you know (for example, to eat
+      while you charge) even if the plan does not need it. Search it by name, network or place ("Search the place near
+      the route" lists what is within 8 km of the route) or pick it from the list of all chargers along the route, with
+      its km, power, distance from the route and what you arrive with. The plan charges there (📌 "Added by you", with
+      what you arrive with and how far you charge) and redoes the stops before and after it. If you cannot reach it even
+      with a stop before, the plan says so ("... is out of reach") and leaves it out. "Remove" undoes it. It travels to
+      the car with **"Use on the next trip"** and is forgotten when you change destination.
     - **800 V (81.9 kWh C10):** the big battery is 800 V and charges on 400–500 V chargers, but at half power. The plan
       stops at 800 V ones (or 150 kW and up, which almost always are, even if the registry does not say so) and keeps
       the 400–500 V ones in reserve: the list marks them in amber ("470 V: your 800 V car charges here at half power")

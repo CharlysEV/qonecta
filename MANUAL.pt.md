@@ -458,6 +458,13 @@ admite.
       **para esta viagem** (📌) e o plano refaz-se a partir dela; se o consumo mudar e já não chegar, escolhe outro e
       avisa. «Retirar a minha escolha» volta à do plano. Ao mudar de destino esquece-se; para preferir sempre um
       carregador, marque-o com ★.
+    - **Adicionar uma paragem de carregamento:** por baixo das paragens, **«Adicionar paragem de carregamento»**: escolhe
+      um carregador que conhece (por exemplo, para comer enquanto carrega) mesmo que o plano não precise dele. Procura-o
+      por nome, rede ou local («Procurar o local perto da rota» mostra o que fica a menos de 8 km da rota) ou escolhe-o
+      da lista de todos os carregadores ao longo da rota, com km, potência, distância à rota e com quanto chega. O plano
+      carrega aí (📌 «Adicionada por si», com quanto chega e até quanto carrega) e refaz as paragens de antes e de depois.
+      Se não chegar lá nem com uma paragem antes, o plano di-lo («… está fora de alcance») e deixa-a de fora. «Remover»
+      desfaz. Viaja com **«Usar na próxima viagem»** para o carro e esquece-se ao mudar de destino.
     - **800 V (C10 de 81,9 kWh):** a bateria grande é de 800 V e nos carregadores de 400–500 V carrega, mas a metade
       da potência. O plano para nos de 800 V (ou de 150 kW ou mais, que quase sempre o são mesmo que o registo não o
       diga) e deixa os de 400–500 V de reserva: a lista marca-os a âmbar («470 V: o seu carro de 800 V carrega aqui a

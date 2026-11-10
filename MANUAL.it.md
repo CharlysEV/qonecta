@@ -449,6 +449,13 @@ supporta.
       questo viaggio** (📌) e il piano si ricalcola da lì; se i consumi cambiano e non ci arrivi più, ne sceglie un'altra
       e ti avvisa. «Togli la mia scelta» torna a quella del piano. Cambiando destinazione si dimentica; per preferire
       sempre una colonnina, segnala con ★.
+    - **Aggiungere una sosta di ricarica:** sotto le soste, **«Aggiungi una sosta di ricarica»**: scegli una colonnina
+      che conosci (per esempio per mangiare mentre ricarichi) anche se il piano non ne ha bisogno. La cerchi per nome,
+      rete o luogo («Cerca il luogo vicino al percorso» mostra ciò che sta a meno di 8 km dal percorso) o la scegli
+      dall'elenco di tutte le colonnine lungo il percorso, con km, potenza, distanza dal percorso e con quanto arrivi. Il
+      piano ricarica lì (📌 «Aggiunta da te», con quanto arrivi e fino a quanto ricarichi) e rifà le soste prima e dopo.
+      Se non ci arrivi nemmeno con una sosta prima, il piano lo dice («… è fuori portata») e la lascia fuori. «Rimuovi»
+      la annulla. Viaggia con **«Usa nel prossimo viaggio»** fino all'auto e si dimentica cambiando destinazione.
     - **800 V (C10 da 81,9 kWh):** la batteria grande è a 800 V e sulle colonnine a 400–500 V ricarica, ma a metà
       potenza. Il piano si ferma a quelle a 800 V (o da 150 kW in su, che quasi sempre lo sono anche se il registro non
       lo dice) e tiene di riserva quelle a 400–500 V: l'elenco le segna in ambra («470 V: la tua auto a 800 V qui

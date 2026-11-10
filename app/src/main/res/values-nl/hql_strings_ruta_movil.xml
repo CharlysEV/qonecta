@@ -62,4 +62,19 @@
     <string name="hql_waiting_gps_perm">Wachten op de gps van de telefoon: Qonecta+ heeft geen toestemming voor de precieze locatie. Geef die in Instellingen > Apps > Qonecta+ > Machtigingen > Locatie ("Precieze locatie gebruiken").</string>
     <string name="hql_waiting_gps_off">Wachten op de gps van de telefoon: locatie staat uit op de telefoon. Zet Locatie aan in de snelle instellingen.</string>
     <string name="hql_waiting_gps_always">Wachten op de gps van de telefoon: bij een vergrendelde telefoon sluit Android de locatie voor de app af. Sta Locatie "altijd" toe in Instellingen > Apps > Qonecta+ > Machtigingen > Locatie.</string>
+    <string name="hql_add_stop">Laadstop toevoegen</string>
+    <string name="hql_add_stop_title">Een laadstop toevoegen</string>
+    <string name="hql_add_stop_intro">Kies een lader die je kent, bijvoorbeeld om te eten terwijl je laadt. Het plan laadt daar ook als het niet nodig is en past de stops ervoor en erna aan.</string>
+    <string name="hql_add_stop_search_hint">Naam van de lader, netwerk of plaats</string>
+    <string name="hql_add_stop_place_btn">Plaats zoeken dicht bij de route</string>
+    <string name="hql_add_stop_place_heading">Plaatsen dicht bij de route</string>
+    <string name="hql_add_stop_list_heading">Laders langs de route</string>
+    <string name="hql_add_stop_none">Geen lader gevonden. Probeer het zoeken van een plaats.</string>
+    <string name="hql_add_stop_place_none">Geen plaats met die naam dicht bij de route.</string>
+    <string name="hql_add_stop_line">km %1$.0f · %2$s · %3$.1f km van de route · je komt aan met %4$.0f %%</string>
+    <string name="hql_add_stop_far">Met de huidige accu kom je er niet: het plan probeert eerder te stoppen.</string>
+    <string name="hql_add_stop_use">Toevoegen</string>
+    <string name="hql_add_stop_remove">Verwijderen</string>
+    <string name="hql_add_stop_mine">Door jou toegevoegd</string>
+    <string name="hql_add_stop_unreachable">"%1$s" (km %2$.0f) is niet te bereiken en blijft daarom buiten het plan. Voeg ervoor een lader toe of vertrek met meer accu.</string>
 </resources>

@@ -63,4 +63,19 @@
     <string name="hql_waiting_gps_perm">A aguardar o GPS do telemóvel: o Qonecta+ não tem permissão de localização precisa. Conceda-a em Definições > Aplicações > Qonecta+ > Autorizações > Localização ("Utilizar localização precisa").</string>
     <string name="hql_waiting_gps_off">A aguardar o GPS do telemóvel: a localização está desligada no telemóvel. Ligue-a nas definições rápidas.</string>
     <string name="hql_waiting_gps_always">A aguardar o GPS do telemóvel: com o telemóvel bloqueado, o Android corta a localização à aplicação. Permita a localização "sempre" em Definições > Aplicações > Qonecta+ > Autorizações > Localização.</string>
+    <string name="hql_add_stop">Adicionar paragem de carregamento</string>
+    <string name="hql_add_stop_title">Adicionar uma paragem de carregamento</string>
+    <string name="hql_add_stop_intro">Escolha um carregador que conheça, por exemplo para comer enquanto carrega. O plano carrega aí mesmo sem necessidade e refaz as paragens de antes e de depois.</string>
+    <string name="hql_add_stop_search_hint">Nome do carregador, rede ou local</string>
+    <string name="hql_add_stop_place_btn">Procurar o local perto da rota</string>
+    <string name="hql_add_stop_place_heading">Locais perto da rota</string>
+    <string name="hql_add_stop_list_heading">Carregadores ao longo da rota</string>
+    <string name="hql_add_stop_none">Nenhum carregador corresponde. Experimente a procura de local.</string>
+    <string name="hql_add_stop_place_none">Nenhum local com esse nome perto da rota.</string>
+    <string name="hql_add_stop_line">km %1$.0f · %2$s · a %3$.1f km da rota · chega com %4$.0f %%</string>
+    <string name="hql_add_stop_far">Com a bateria de agora não chega lá: o plano vai tentar parar antes.</string>
+    <string name="hql_add_stop_use">Adicionar</string>
+    <string name="hql_add_stop_remove">Remover</string>
+    <string name="hql_add_stop_mine">Adicionada por si</string>
+    <string name="hql_add_stop_unreachable">"%1$s" (km %2$.0f) está fora de alcance e fica fora do plano. Adicione um carregador antes ou saia com mais bateria.</string>
 </resources>

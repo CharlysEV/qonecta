@@ -2282,6 +2282,7 @@ final class RoutePlanner {
             s.favorites = ChargerMarks.favorites(list, ChargerMarks.parse(marks));
             if (food) s.food = withFood(list);
             s.pinned = pinnedIn(list);
+            s.extra = extrasIn(pl);
             lastList = list;
             lastSettings = s;
             // Con los mismos ajustes, las paradas elegidas se mantienen mientras se lleguen (que el plan no baile).
@@ -2372,6 +2373,7 @@ final class RoutePlanner {
         if (pins.isEmpty()) return java.util.Collections.emptyList();
         List<Charger> out = new ArrayList<>();
         for (ChargerMarks.Mark m : pins) {
+            if (m.extra) continue;
             List<ChargerMarks.Mark> one = java.util.Collections.singletonList(m);
             for (Charger c : list) {
                 if (ChargerMarks.find(one, c) != null) {
@@ -2381,6 +2383,94 @@ final class RoutePlanner {
             }
         }
         return out;
+    }
+
+    /**
+     * Las paradas añadidas a mano («Añadir parada de carga») sobre el plan p: el cargador de la ruta si está (aunque el
+     * filtro lo deje fuera: lo ha elegido el conductor) o, si no, uno hecho con la marca y puesto en la ruta (chargerAt).
+     * Con chargeLock.
+     */
+    private List<Charger> extrasIn(Plan p) {
+        List<Charger> out = new ArrayList<>();
+        for (ChargerMarks.Mark m : pins) {
+            if (!m.extra) continue;
+            Charger found = null;
+            List<ChargerMarks.Mark> one = java.util.Collections.singletonList(m);
+            for (Charger c : p.chargers) {
+                if (ChargerMarks.find(one, c) != null) {
+                    found = c;
+                    break;
+                }
+            }
+            if (found == null && !Double.isNaN(m.lat)) found = chargerAt(p, m.name, m.lat, m.lon);
+            if (found != null) out.add(found);
+        }
+        return out;
+    }
+
+    /** Un cargador en (lat, lon) puesto sobre la ruta p (su km es el del punto del trazado más cercano). */
+    static Charger chargerAt(Plan p, String name, double lat, double lon) {
+        int idx = nearest(p, lat, lon, -1);
+        Charger c = new Charger();
+        c.name = name == null || name.isEmpty() ? String.format(Locale.US, "%.4f, %.4f", lat, lon) : name;
+        c.detail = "";
+        c.lat = lat;
+        c.lon = lon;
+        c.kmAlong = p.km[idx];
+        c.maxKw = 0;
+        c.kwSource = ChargerFilter.KW_UNKNOWN;
+        return c;
+    }
+
+    /** Distancia (km) de un cargador a la ruta del plan de ahora (NaN sin ruta). */
+    double offRouteKm(Charger c) {
+        Plan p = plan();
+        if (p == null || p.n < 2) return Double.NaN;
+        return distToRouteKm(p.lat, p.lon, nearest(p, c.lat, c.lon, -1), c.lat, c.lon);
+    }
+
+    /** Todos los cargadores a lo largo de la ruta de ahora, sin el filtro del usuario (para «Añadir parada de carga»). */
+    List<Charger> allChargers() {
+        Plan p = plan();
+        return p == null || p.chargers == null ? new ArrayList<>() : new ArrayList<>(p.chargers);
+    }
+
+    /** ¿Es una parada añadida a mano? */
+    boolean isAdded(Charger c) {
+        synchronized (chargeLock) {
+            ChargerMarks.Mark m = ChargerMarks.find(pins, c);
+            return m != null && m.extra;
+        }
+    }
+
+    /** Las paradas añadidas a mano de este viaje, puestas sobre la ruta de ahora. */
+    List<Charger> addedStops() {
+        synchronized (chargeLock) {
+            Plan p = plan();
+            return p == null || p.chargers == null ? new ArrayList<>() : extrasIn(p);
+        }
+    }
+
+    /**
+     * «Añadir parada de carga»: el conductor fija chosen como parada de este viaje, aunque el plan no la necesite; el plan
+     * se rehace antes y después sin avisar de cambio.
+     */
+    void addStop(Charger chosen) {
+        synchronized (chargeLock) {
+            ChargerMarks.Mark dup = ChargerMarks.find(pins, chosen);
+            if (dup != null) pins.remove(dup);
+            ChargerMarks.Mark m = new ChargerMarks.Mark();
+            m.id = ChargerMarks.key(chosen);
+            m.name = chosen.name == null ? "" : chosen.name;
+            m.lat = chosen.lat;
+            m.lon = chosen.lon;
+            m.kind = ChargerMarks.FAV;
+            m.extra = true;
+            pins.add(m);
+            pinsVersion++;
+            chargeKey = "";
+        }
+        L.i(String.format(Locale.US, "ruta: parada de carga añadida a mano en el km %.0f", chosen.kmAlong));
     }
 
     /** ¿La eligió el conductor a mano? */
@@ -2614,6 +2704,7 @@ final class RoutePlanner {
         set.favorites = ChargerMarks.favorites(all, ChargerMarks.parse(c.chargerMarks()));
         synchronized (chargeLock) {
             set.pinned = pinnedIn(all);
+            set.extra = extrasIn(p);
         }
         List<Charger> list = new ArrayList<>();
         for (Charger ch : all) if (Math.abs(ch.kmAlong - here) > ChargePlanner.HERE_KM) list.add(ch);

@@ -62,4 +62,19 @@
     <string name="hql_waiting_gps_perm">Waiting for the phone\'s GPS: Qonecta+ has no precise location permission. Allow it in Settings > Apps > Qonecta+ > Permissions > Location ("Use precise location").</string>
     <string name="hql_waiting_gps_off">Waiting for the phone\'s GPS: location is switched off on the phone. Turn on Location in the quick settings.</string>
     <string name="hql_waiting_gps_always">Waiting for the phone\'s GPS: with the phone locked, Android cuts location to the app. Allow Location "all the time" in Settings > Apps > Qonecta+ > Permissions > Location.</string>
+    <string name="hql_add_stop">Add charging stop</string>
+    <string name="hql_add_stop_title">Add a charging stop</string>
+    <string name="hql_add_stop_intro">Pick a charger you know, for example to eat while you charge. The plan charges there even if it is not needed, and redoes the stops before and after it.</string>
+    <string name="hql_add_stop_search_hint">Charger name, network or place</string>
+    <string name="hql_add_stop_place_btn">Search the place near the route</string>
+    <string name="hql_add_stop_place_heading">Places near the route</string>
+    <string name="hql_add_stop_list_heading">Chargers along the route</string>
+    <string name="hql_add_stop_none">No charger matches. Try the place search.</string>
+    <string name="hql_add_stop_place_none">No place with that name near the route.</string>
+    <string name="hql_add_stop_line">km %1$.0f · %2$s · %3$.1f km from the route · you arrive with %4$.0f %%</string>
+    <string name="hql_add_stop_far">With the battery you have now you would not get there: the plan will try to stop before it.</string>
+    <string name="hql_add_stop_use">Add</string>
+    <string name="hql_add_stop_remove">Remove</string>
+    <string name="hql_add_stop_mine">Added by you</string>
+    <string name="hql_add_stop_unreachable">"%1$s" (km %2$.0f) is out of reach, so it is left out of the plan. Add a charger before it or leave with more battery.</string>
 </resources>

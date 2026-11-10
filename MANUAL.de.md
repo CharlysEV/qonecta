@@ -474,6 +474,14 @@ Kabel meldet (`USB_STATE`), ob das Fahrzeug das Handy in den Zubehörmodus gesch
       Verbrauch und du kommst nicht mehr hin, wählt er eine andere und sagt es dir. „Meine Wahl entfernen“ geht zurück
       zum Stopp des Plans. Bei einem anderen Ziel wird sie vergessen; um eine Ladestation immer zu bevorzugen, markiere
       sie mit ★.
+    - **Einen Ladestopp hinzufügen:** unter den Stopps **„Ladestopp hinzufügen“**: Du wählst einen Lader, den du kennst
+      (zum Beispiel zum Essen während des Ladens), auch wenn der Plan ihn nicht braucht. Du suchst ihn nach Name, Netz
+      oder Ort („Ort in der Nähe der Route suchen“ zeigt, was weniger als 8 km von der Route entfernt liegt) oder wählst
+      ihn aus der Liste aller Lader entlang der Route, mit km, Leistung, Abstand zur Route und Ankunft mit wie viel. Der
+      Plan lädt dort (📌 „Von dir hinzugefügt“, mit Ankunft und bis wie viel geladen wird) und plant die Stopps davor und
+      danach neu. Erreichst du ihn nicht einmal mit einem Stopp davor, sagt der Plan es („… ist nicht erreichbar“) und
+      lässt ihn weg. „Entfernen“ macht es rückgängig. Mit **„Für die nächste Fahrt verwenden“** reist er ins Auto und
+      wird bei einem anderen Ziel vergessen.
     - **800 V (C10 mit 81,9 kWh):** Der große Akku arbeitet mit 800 V und lädt an 400–500-V-Ladestationen zwar, aber
       nur mit halber Leistung. Der Plan hält an 800-V-Stationen (oder an solchen mit 150 kW oder mehr, die das fast
       immer sind, auch wenn das Register es nicht angibt) und lässt die 400–500-V-Stationen als Reserve: Die Liste

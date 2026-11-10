@@ -451,6 +451,13 @@ admite.
       fija **para este viaje** (📌) y el plan se rehace desde ella; si el consumo cambia y ya no llegas, elige otra y te
       avisa. «Quitar mi elección» vuelve a la del plan. Al cambiar de destino se olvida; para preferir siempre un
       cargador, márcalo con ★.
+    - **Añadir una parada de carga:** debajo de las paradas, **«Añadir parada de carga»**: eliges un cargador que
+      conoces (por ejemplo, para comer mientras cargas) aunque el plan no lo necesite. Lo buscas por nombre, red o sitio
+      (con «Buscar el sitio cerca de la ruta» sale lo que cae a menos de 8 km de la ruta) o lo eliges de la lista de todos
+      los cargadores a lo largo de la ruta, con su km, potencia, a cuánto queda de la ruta y con cuánto llegas. El plan
+      carga ahí (📌 «Añadida por ti», con cuánto llegas y hasta cuánto cargas) y rehace las paradas de antes y de después.
+      Si no llegas a ella ni con una parada antes, el plan lo dice («No se llega a …») y la deja fuera. «Quitar» la
+      deshace. Viaja con **«Usar en el próximo viaje»** al coche, y se olvida al cambiar de destino.
     - **800 V (C10 de 81,9 kWh):** la batería grande es de 800 V y en los cargadores de 400–500 V carga, pero a la
       mitad. El plan para en los de 800 V (o de 150 kW o más, que casi siempre lo son aunque el registro no lo diga) y
       deja los de 400–500 V de reserva: la lista los marca en ámbar («470 V: tu coche de 800 V carga aquí a la mitad»)

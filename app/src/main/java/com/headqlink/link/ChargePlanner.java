@@ -43,6 +43,12 @@ final class ChargePlanner {
          * con al menos PIN_MIN_PCT; si no, el plan elige otra.
          */
         List<RoutePlanner.Charger> pinned = Collections.emptyList();
+        /**
+         * Paradas de carga añadidas a mano («Añadir parada de carga», foro LPMFF #369): se carga en ellas aunque el plan no
+         * las necesite (para comer, por ejemplo), y las demás paradas se rehacen antes y después. Si no se llega a una ni
+         * con una parada intermedia, queda fuera y Result.unreachable lo dice.
+         */
+        List<RoutePlanner.Charger> extra = Collections.emptyList();
 
         /** Una copia (para probar otra parada sin tocar los ajustes del plan). */
         Settings copy() {
@@ -58,6 +64,7 @@ final class ChargePlanner {
             s.curve = curve;
             s.lowVoltsFactor = lowVoltsFactor;
             s.pinned = pinned;
+            s.extra = extra;
             return s;
         }
     }
@@ -138,6 +145,8 @@ final class ChargePlanner {
          */
         double nearRatio = Double.NaN;
         double nearUntilKm = Double.NaN;
+        /** Paradas añadidas a mano (Settings.extra) a las que no se llega: quedan fuera del plan. */
+        List<RoutePlanner.Charger> unreachable = Collections.emptyList();
 
         Result(Outcome outcome, List<Stop> stops, double arrivalPct, double[] km, double[] kwhCum, double fromKm, double socNow,
                double capacityKwh) {
@@ -431,26 +440,58 @@ final class ChargePlanner {
         double soc = socNow;
         List<Stop> stops = new ArrayList<>();
         List<RoutePlanner.Charger> preferred = preferred(chargers, s);
+        List<RoutePlanner.Charger> skipped = new ArrayList<>();
         for (int k = 0; k <= MAX_STOPS; k++) {
             double toEnd = (kwhAt(km, kwhCum, end) - kwhAt(km, kwhCum, cur)) / cap * 100;
-            if (soc - toEnd >= s.arriveMinPct - 1e-9) {
-                return new Result(stops.isEmpty() ? Outcome.NO_STOPS : Outcome.PLANNED, stops, soc - toEnd, km, kwhCum, fromKm, socNow, cap);
+            // La siguiente parada añadida a mano por delante: no se puede saltar aunque el destino ya se alcance.
+            RoutePlanner.Charger ex = extraNext(cur, end, s, skipped);
+            if (ex == null && soc - toEnd >= s.arriveMinPct - 1e-9) {
+                return done(new Result(stops.isEmpty() ? Outcome.NO_STOPS : Outcome.PLANNED, stops, soc - toEnd, km, kwhCum, fromKm, socNow, cap), skipped);
             }
             if (k == MAX_STOPS) break;
+            // Mientras quede una añadida por delante, las demás paradas solo pueden estar antes de ella.
+            List<RoutePlanner.Charger> pool = chargers;
+            List<RoutePlanner.Charger> prefPool = preferred;
+            if (ex != null) {
+                pool = before(chargers, ex.kmAlong);
+                prefPool = preferred == chargers ? pool : before(preferred, ex.kmAlong);
+            }
+            boolean forced = false;
+            RoutePlanner.Charger best = null;
+            if (ex != null && soc - (kwhAt(km, kwhCum, ex.kmAlong) - kwhAt(km, kwhCum, cur)) / cap * 100 >= PIN_MIN_PCT) {
+                best = ex;
+                forced = true;
+            }
             // La parada elegida a mano, si se llega; si no, la que se mantiene del plan anterior o la mejor.
-            RoutePlanner.Charger best = pinnedNext(km, kwhCum, cur, soc, end, s);
-            if (best == null) best = kept(km, kwhCum, cur, soc, end, keep, s);
-            if (best == null && preferred != chargers) best = pick(km, kwhCum, cur, soc, end, preferred, s, s.stopMinPct);
-            if (best == null) best = pick(km, kwhCum, cur, soc, end, chargers, s, s.stopMinPct);
+            RoutePlanner.Charger pn = pinnedNext(km, kwhCum, cur, soc, end, s);
+            if (pn != null && (best == null || pn.kmAlong < best.kmAlong) && (ex == null || pn.kmAlong < ex.kmAlong)) {
+                best = pn;
+                forced = false;
+            }
+            if (best == null) best = kept(km, kwhCum, cur, soc, end, keep, s, ex);
+            if (best == null && prefPool != pool) best = pick(km, kwhCum, cur, soc, end, prefPool, s, s.stopMinPct);
+            if (best == null) best = pick(km, kwhCum, cur, soc, end, pool, s, s.stopMinPct);
             // Ya justo de batería: el que se alcance aunque se llegue con menos del mínimo.
-            if (best == null && preferred != chargers) best = pick(km, kwhCum, cur, soc, end, preferred, s, 3);
-            if (best == null) best = pick(km, kwhCum, cur, soc, end, chargers, s, 3);
-            if (best == null) return new Result(Outcome.NO_CHARGER, stops, soc - toEnd, km, kwhCum, fromKm, socNow, cap);
+            if (best == null && prefPool != pool) best = pick(km, kwhCum, cur, soc, end, prefPool, s, 3);
+            if (best == null) best = pick(km, kwhCum, cur, soc, end, pool, s, 3);
+            if (best == null && ex != null) {
+                // Ni a la añadida ni a ninguna antes de ella: queda fuera y el plan sigue sin ella.
+                skipped.add(ex);
+                k--;
+                continue;
+            }
+            if (best == null) return done(new Result(Outcome.NO_CHARGER, stops, soc - toEnd, km, kwhCum, fromKm, socNow, cap), skipped);
             double arrive = soc - (kwhAt(km, kwhCum, best.kmAlong) - kwhAt(km, kwhCum, cur)) / cap * 100;
             double need = (kwhAt(km, kwhCum, end) - kwhAt(km, kwhCum, best.kmAlong)) / cap * 100 + s.arriveMinPct + 2;
+            // Si aún queda una añadida más allá, cargar lo que hace falta para llegar a ella (y no solo al destino).
+            if (ex != null && best != ex) {
+                need = Math.max(need, (kwhAt(km, kwhCum, ex.kmAlong) - kwhAt(km, kwhCum, best.kmAlong)) / cap * 100 + PIN_MIN_PCT + 2);
+            }
             double top = s.maxChargePct;
             if (need > top && need <= Math.min(100, top + FINAL_EXTRA_PCT)) top = need;
             double target = Math.min(top, Math.max(arrive, need));
+            // En una añadida a mano, aunque no haga falta se carga algo con sentido (EXTRA_STOP_PCT, hasta el máximo).
+            if (forced) target = Math.min(top, Math.max(target, arrive + EXTRA_STOP_PCT));
             if (target <= arrive + 0.5) target = Math.min(100, arrive + 5); // por si acaso: que la parada sirva de algo
             double min = chargeMinutes(arrive, target, best, s) + STOP_OVERHEAD_MIN;
             stops.add(new Stop(best, best.kmAlong, arrive, target, min, (target - arrive) / 100 * cap));
@@ -458,7 +499,32 @@ final class ChargePlanner {
             soc = target;
         }
         double toEnd = (kwhAt(km, kwhCum, end) - kwhAt(km, kwhCum, cur)) / cap * 100;
-        return new Result(Outcome.NO_CHARGER, stops, soc - toEnd, km, kwhCum, fromKm, socNow, cap);
+        return done(new Result(Outcome.NO_CHARGER, stops, soc - toEnd, km, kwhCum, fromKm, socNow, cap), skipped);
+    }
+
+    /** Lo que se carga de más en una parada añadida a mano que el plan no necesita (% de batería, hasta el máximo). */
+    static final double EXTRA_STOP_PCT = 20;
+
+    private static Result done(Result r, List<RoutePlanner.Charger> skipped) {
+        if (!skipped.isEmpty()) r.unreachable = skipped;
+        return r;
+    }
+
+    /** La siguiente parada añadida a mano por delante de cur (y antes del destino), sin las que no se alcanzan; null si no hay. */
+    private static RoutePlanner.Charger extraNext(double cur, double end, Settings s, List<RoutePlanner.Charger> skipped) {
+        RoutePlanner.Charger next = null;
+        for (RoutePlanner.Charger c : s.extra) {
+            if (c.kmAlong <= cur + 0.5 || c.kmAlong >= end - 1 || skipped.contains(c)) continue;
+            if (next == null || c.kmAlong < next.kmAlong) next = c;
+        }
+        return next;
+    }
+
+    /** Los cargadores de la lista antes del km x. */
+    private static List<RoutePlanner.Charger> before(List<RoutePlanner.Charger> list, double x) {
+        List<RoutePlanner.Charger> out = new ArrayList<>();
+        for (RoutePlanner.Charger c : list) if (c.kmAlong < x - 0.5) out.add(c);
+        return out;
     }
 
     /**
@@ -604,10 +670,11 @@ final class ChargePlanner {
 
     /** La siguiente parada del plan anterior, si se sigue alcanzando (con un poco de holgura); null si no. */
     private static RoutePlanner.Charger kept(double[] km, double[] kwhCum, double cur, double soc, double end,
-                                             List<RoutePlanner.Charger> keep, Settings s) {
+                                             List<RoutePlanner.Charger> keep, Settings s, RoutePlanner.Charger ex) {
         RoutePlanner.Charger next = null;
         for (RoutePlanner.Charger c : keep) {
             if (c.kmAlong <= cur + 0.5 || c.kmAlong >= end - 1) continue;
+            if (ex != null && c.kmAlong >= ex.kmAlong - 0.5) continue; // no se pasa de una añadida a mano
             if (next == null || c.kmAlong < next.kmAlong) next = c;
         }
         if (next == null) return null;

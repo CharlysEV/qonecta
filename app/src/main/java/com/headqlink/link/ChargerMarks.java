@@ -32,6 +32,11 @@ final class ChargerMarks {
         double lat;
         double lon;
         int kind;
+        /**
+         * Solo en las paradas fijadas del viaje (RoutePlanner.pins): «Añadir parada de carga», una parada que el plan no
+         * habría hecho y se carga en ella igualmente (ChargePlanner.Settings.extra). Json «x»: 1.
+         */
+        boolean extra;
     }
 
     private ChargerMarks() {
@@ -58,6 +63,7 @@ final class ChargerMarks {
                 m.lat = o.optDouble("la", Double.NaN);
                 m.lon = o.optDouble("lo", Double.NaN);
                 m.kind = o.optInt("k", NONE) > 0 ? FAV : o.optInt("k", NONE) < 0 ? BAN : NONE;
+                m.extra = o.optInt("x", 0) != 0;
                 if (m.kind == NONE || (m.id.isEmpty() && Double.isNaN(m.lat))) continue;
                 out.add(m);
             }
@@ -73,6 +79,7 @@ final class ChargerMarks {
             for (Mark m : list) {
                 JSONObject o = new JSONObject().put("i", m.id).put("n", m.name).put("k", m.kind);
                 if (!Double.isNaN(m.lat) && !Double.isNaN(m.lon)) o.put("la", m.lat).put("lo", m.lon);
+                if (m.extra) o.put("x", 1);
                 a.put(o);
             }
         } catch (JSONException ignored) {

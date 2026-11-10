@@ -63,4 +63,19 @@
     <string name="hql_waiting_gps_perm">En attente du GPS du téléphone : Qonecta+ n\'a pas l\'autorisation de localisation précise. Accorde-la dans Réglages > Applications > Qonecta+ > Autorisations > Localisation (« Utiliser la position exacte »).</string>
     <string name="hql_waiting_gps_off">En attente du GPS du téléphone : la localisation est désactivée sur le téléphone. Active-la dans les réglages rapides.</string>
     <string name="hql_waiting_gps_always">En attente du GPS du téléphone : téléphone verrouillé, Android coupe la localisation à l\'appli. Autorise la localisation « tout le temps » dans Réglages > Applications > Qonecta+ > Autorisations > Localisation.</string>
+    <string name="hql_add_stop">Ajouter un arrêt de recharge</string>
+    <string name="hql_add_stop_title">Ajouter un arrêt de recharge</string>
+    <string name="hql_add_stop_intro">Choisis une borne que tu connais, par exemple pour manger pendant la recharge. Le plan recharge là même si ce n\'est pas nécessaire et refait les arrêts d\'avant et d\'après.</string>
+    <string name="hql_add_stop_search_hint">Nom de la borne, réseau ou lieu</string>
+    <string name="hql_add_stop_place_btn">Chercher le lieu près de l\'itinéraire</string>
+    <string name="hql_add_stop_place_heading">Lieux près de l\'itinéraire</string>
+    <string name="hql_add_stop_list_heading">Bornes le long de l\'itinéraire</string>
+    <string name="hql_add_stop_none">Aucune borne ne correspond. Essaie la recherche de lieu.</string>
+    <string name="hql_add_stop_place_none">Aucun lieu de ce nom près de l\'itinéraire.</string>
+    <string name="hql_add_stop_line">km %1$.0f · %2$s · à %3$.1f km de l\'itinéraire · tu arrives avec %4$.0f %%</string>
+    <string name="hql_add_stop_far">Avec la batterie actuelle tu n\'y arrives pas : le plan essaiera de s\'arrêter avant.</string>
+    <string name="hql_add_stop_use">Ajouter</string>
+    <string name="hql_add_stop_remove">Retirer</string>
+    <string name="hql_add_stop_mine">Ajouté par toi</string>
+    <string name="hql_add_stop_unreachable">« %1$s » (km %2$.0f) est hors d\'atteinte, donc laissé en dehors du plan. Ajoute une borne avant ou pars avec plus de batterie.</string>
 </resources>

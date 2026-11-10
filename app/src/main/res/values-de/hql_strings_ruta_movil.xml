@@ -62,4 +62,19 @@
     <string name="hql_waiting_gps_perm">Warte auf das GPS des Handys: Qonecta+ hat keine Berechtigung für den genauen Standort. Erlaube sie unter Einstellungen > Apps > Qonecta+ > Berechtigungen > Standort («Genauen Standort verwenden»).</string>
     <string name="hql_waiting_gps_off">Warte auf das GPS des Handys: Der Standort ist am Handy ausgeschaltet. Schalte ihn in den Schnelleinstellungen ein.</string>
     <string name="hql_waiting_gps_always">Warte auf das GPS des Handys: Bei gesperrtem Handy schneidet Android der App den Standort ab. Erlaube den Standort «Immer» unter Einstellungen > Apps > Qonecta+ > Berechtigungen > Standort.</string>
+    <string name="hql_add_stop">Ladestopp hinzufügen</string>
+    <string name="hql_add_stop_title">Ladestopp hinzufügen</string>
+    <string name="hql_add_stop_intro">Wähle einen Lader, den du kennst, zum Beispiel zum Essen während des Ladens. Der Plan lädt dort, auch wenn es nicht nötig wäre, und plant die Stopps davor und danach neu.</string>
+    <string name="hql_add_stop_search_hint">Name des Laders, Netz oder Ort</string>
+    <string name="hql_add_stop_place_btn">Ort in der Nähe der Route suchen</string>
+    <string name="hql_add_stop_place_heading">Orte nahe der Route</string>
+    <string name="hql_add_stop_list_heading">Lader entlang der Route</string>
+    <string name="hql_add_stop_none">Kein Lader passt. Versuche die Ortssuche.</string>
+    <string name="hql_add_stop_place_none">Kein Ort mit diesem Namen nahe der Route.</string>
+    <string name="hql_add_stop_line">km %1$.0f · %2$s · %3$.1f km von der Route · Ankunft mit %4$.0f %%</string>
+    <string name="hql_add_stop_far">Mit dem aktuellen Akkustand kommst du nicht hin: Der Plan versucht, vorher zu halten.</string>
+    <string name="hql_add_stop_use">Hinzufügen</string>
+    <string name="hql_add_stop_remove">Entfernen</string>
+    <string name="hql_add_stop_mine">Von dir hinzugefügt</string>
+    <string name="hql_add_stop_unreachable">«%1$s» (km %2$.0f) ist nicht erreichbar und bleibt deshalb aus dem Plan. Füge davor einen Lader hinzu oder fahre mit mehr Akku los.</string>
 </resources>

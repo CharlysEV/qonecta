@@ -63,4 +63,19 @@
     <string name="hql_waiting_gps_perm">Esperando el GPS del móvil: Qonecta+ no tiene el permiso de ubicación precisa. Concédelo en Ajustes > Aplicaciones > Qonecta+ > Permisos > Ubicación («Usar ubicación precisa»).</string>
     <string name="hql_waiting_gps_off">Esperando el GPS del móvil: la ubicación está apagada en el móvil. Actívala en los ajustes rápidos.</string>
     <string name="hql_waiting_gps_always">Esperando el GPS del móvil: con el móvil bloqueado, Android corta la ubicación a la app. Permite la ubicación «todo el tiempo» en Ajustes > Aplicaciones > Qonecta+ > Permisos > Ubicación.</string>
+    <string name="hql_add_stop">Añadir parada de carga</string>
+    <string name="hql_add_stop_title">Añadir una parada de carga</string>
+    <string name="hql_add_stop_intro">Elige un cargador que conozcas, por ejemplo para comer mientras cargas. El plan carga ahí aunque no haga falta y rehace las paradas de antes y de después.</string>
+    <string name="hql_add_stop_search_hint">Nombre del cargador, red o sitio</string>
+    <string name="hql_add_stop_place_btn">Buscar el sitio cerca de la ruta</string>
+    <string name="hql_add_stop_place_heading">Sitios cerca de la ruta</string>
+    <string name="hql_add_stop_list_heading">Cargadores a lo largo de la ruta</string>
+    <string name="hql_add_stop_none">Ningún cargador coincide. Prueba la búsqueda de sitio.</string>
+    <string name="hql_add_stop_place_none">No hay ningún sitio con ese nombre cerca de la ruta.</string>
+    <string name="hql_add_stop_line">km %1$.0f · %2$s · a %3$.1f km de la ruta · llegas con %4$.0f %%</string>
+    <string name="hql_add_stop_far">Con la batería de ahora no llegas: el plan intentará parar antes.</string>
+    <string name="hql_add_stop_use">Añadir</string>
+    <string name="hql_add_stop_remove">Quitar</string>
+    <string name="hql_add_stop_mine">Añadida por ti</string>
+    <string name="hql_add_stop_unreachable">No se llega a «%1$s» (km %2$.0f): queda fuera del plan. Añade un cargador antes o sal con más batería.</string>
 </resources>

@@ -63,4 +63,19 @@
     <string name="hql_waiting_gps_perm">In attesa del GPS del telefono: Qonecta+ non ha il permesso di posizione precisa. Concedilo in Impostazioni > App > Qonecta+ > Autorizzazioni > Posizione («Usa posizione precisa»).</string>
     <string name="hql_waiting_gps_off">In attesa del GPS del telefono: la posizione è disattivata sul telefono. Attivala dalle impostazioni rapide.</string>
     <string name="hql_waiting_gps_always">In attesa del GPS del telefono: con il telefono bloccato, Android toglie la posizione all\'app. Consenti la posizione «sempre» in Impostazioni > App > Qonecta+ > Autorizzazioni > Posizione.</string>
+    <string name="hql_add_stop">Aggiungi una sosta di ricarica</string>
+    <string name="hql_add_stop_title">Aggiungi una sosta di ricarica</string>
+    <string name="hql_add_stop_intro">Scegli una colonnina che conosci, per esempio per mangiare mentre ricarichi. Il piano ricarica lì anche se non serve e rifà le soste prima e dopo.</string>
+    <string name="hql_add_stop_search_hint">Nome della colonnina, rete o luogo</string>
+    <string name="hql_add_stop_place_btn">Cerca il luogo vicino al percorso</string>
+    <string name="hql_add_stop_place_heading">Luoghi vicino al percorso</string>
+    <string name="hql_add_stop_list_heading">Colonnine lungo il percorso</string>
+    <string name="hql_add_stop_none">Nessuna colonnina corrisponde. Prova la ricerca del luogo.</string>
+    <string name="hql_add_stop_place_none">Nessun luogo con questo nome vicino al percorso.</string>
+    <string name="hql_add_stop_line">km %1$.0f · %2$s · a %3$.1f km dal percorso · arrivi con %4$.0f %%</string>
+    <string name="hql_add_stop_far">Con la batteria di adesso non ci arrivi: il piano proverà a fermarsi prima.</string>
+    <string name="hql_add_stop_use">Aggiungi</string>
+    <string name="hql_add_stop_remove">Rimuovi</string>
+    <string name="hql_add_stop_mine">Aggiunta da te</string>
+    <string name="hql_add_stop_unreachable">«%1$s» (km %2$.0f) è fuori portata e resta fuori dal piano. Aggiungi una colonnina prima o parti con più batteria.</string>
 </resources>

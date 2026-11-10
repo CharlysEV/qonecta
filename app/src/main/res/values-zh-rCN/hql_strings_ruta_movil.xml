@@ -61,4 +61,19 @@
     <string name="hql_waiting_gps_perm">正在等待手机的 GPS：Qonecta+ 没有精确位置权限。请在“设置 > 应用 > Qonecta+ > 权限 > 位置信息”中允许“使用精确位置”。</string>
     <string name="hql_waiting_gps_off">正在等待手机的 GPS：手机上的位置信息已关闭。请在快捷设置中打开“位置信息”。</string>
     <string name="hql_waiting_gps_always">正在等待手机的 GPS：手机锁屏时，Android 会切断应用的位置信息。请在“设置 > 应用 > Qonecta+ > 权限 > 位置信息”中选择“始终允许”。</string>
+    <string name="hql_add_stop">添加充电停靠点</string>
+    <string name="hql_add_stop_title">添加充电停靠点</string>
+    <string name="hql_add_stop_intro">选择一个你熟悉的充电桩，比如想边吃饭边充电。即使并非必要，计划也会在那里充电，并重新安排它前后的停靠点。</string>
+    <string name="hql_add_stop_search_hint">充电桩名称、运营商或地点</string>
+    <string name="hql_add_stop_place_btn">搜索路线附近的地点</string>
+    <string name="hql_add_stop_place_heading">路线附近的地点</string>
+    <string name="hql_add_stop_list_heading">沿途充电桩</string>
+    <string name="hql_add_stop_none">没有匹配的充电桩。试试搜索地点。</string>
+    <string name="hql_add_stop_place_none">路线附近没有该名称的地点。</string>
+    <string name="hql_add_stop_line">第 %1$.0f 公里 · %2$s · 距路线 %3$.1f 公里 · 到达时电量 %4$.0f %%</string>
+    <string name="hql_add_stop_far">以目前的电量到不了那里：计划会尝试先在前面停靠。</string>
+    <string name="hql_add_stop_use">添加</string>
+    <string name="hql_add_stop_remove">移除</string>
+    <string name="hql_add_stop_mine">由你添加</string>
+    <string name="hql_add_stop_unreachable">无法到达“%1$s”（第 %2$.0f 公里），因此未纳入计划。请在它之前添加一个充电桩，或以更高电量出发。</string>
 </resources>
