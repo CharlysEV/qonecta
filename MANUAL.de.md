@@ -1106,10 +1106,29 @@ Minute zurück, passiert nichts) und prüft das Auto in der Leapmotor-Cloud:
   und auch nicht ohne verlässliche Daten: Die Cloud antwortet nicht, die Sitzung ist abgelaufen oder die Daten stammen
   von vor dem Weggehen („Ich konnte das Auto nicht prüfen: Es ist vielleicht noch offen“). Es verriegelt nie blind.
 
-Dafür müssen das Leapmotor-Konto verbunden und die PIN des Autos gespeichert sein (es ist der einzige Befehl ohne
+Dafür müssen das Leapmotor-Konto verbunden und die PIN des Autos gespeichert sein (der Befehl geht, wie der Plan von „Günstig laden“, falls eingeschaltet, ohne
 Rückfrage, und er verriegelt nur). Es läuft über die Cloud: Es dauert ein paar Sekunden, das Auto braucht
 Mobilfunkempfang (in einer Tiefgarage ohne Empfang kommt meist die Meldung, dass es nicht prüfen konnte) und das Handy
 eine Verbindung. Nur einmal pro Weggehen, mit einer Abfrage aus dem Tageslimit (zwei, wenn es das Verriegeln prüfen muss).
+
+**Günstig laden** (im Test, optional und standardmäßig aus; unter ⚙ › „Günstig laden“). Steckst du das Auto **zu
+Hause** an, wählt Qonecta+ den günstigsten zusammenhängenden Zeitraum vor deiner Abfahrtszeit und setzt das
+Ladezeitfenster des Autos über die Leapmotor-Cloud.
+
+- **Tarif:** „PVPC (Spanien, Stundenpreise)“, gelesen von Red Eléctrica (die Preise für morgen kommen am Abend; bis
+  dahin ist das Fenster vorläufig und wird von selbst neu berechnet); „Drei Tarifzeiten (Nebenzeit, Normalzeit,
+  Spitzenzeit)“ mit deinen Preisen und Stunden; oder „Einheitstarif“, bei dem es keine günstige Stunde gibt und das
+  Auto beim Anstecken lädt.
+- **Einstellungen:** „Abfahrtszeit“, „Batterieziel“ (50–100 %) und „Leistung der Wallbox zu Hause“.
+- **Benachrichtigung** mit Zeitfenster, Kosten und Ersparnis und dem Knopf **„Jetzt laden“** (entfernt das Fenster,
+  das Auto lädt). Am Morgen eine weitere mit den Kosten. In „Mein Auto“ gibt es eine Karte mit dem Zustand und, mit
+  PVPC, den Stundenpreisen.
+- **Dein Plan wird beim Abstecken wieder so, wie er war** (oder mit „Jetzt laden“ oder beim Ausschalten der
+  Funktion). Hattest du im Auto schon selbst ein Zeitfenster gesetzt, wird es respektiert und nichts angefasst.
+
+Nötig sind das verbundene Leapmotor-Konto, die gespeicherte Fahrzeug-PIN und „Zuhause“ im Reiter Route (das Auto muss
+weniger als 300 m entfernt sein). Nur beim AC-Laden. Das Anstecken wird von der Hintergrundprüfung erkannt (alle 15
+Minuten oder seltener), das Fenster kann also ein paar Minuten auf sich warten lassen; das Auto lädt so lange.
 
 **Datenschutz und Sicherheit.**
 

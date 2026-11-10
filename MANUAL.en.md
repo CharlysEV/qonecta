@@ -999,10 +999,28 @@ and checks the car in the Leapmotor cloud:
   reliable reading: the cloud doesn't answer, the session has expired or the reading is from before you walked away ("I
   couldn't check the car: it may still be unlocked"). It never locks blindly.
 
-It needs the Leapmotor account connected and the car PIN saved (it's the only command sent without asking, and it only
+It needs the Leapmotor account connected and the car PIN saved (it is sent without asking, like the "Cheap charging" plan if you turn that on, and it only
 locks). It goes through the cloud: it takes a few seconds, the car needs mobile coverage (in a garage without coverage
 you'll most likely get the "couldn't check" warning) and the phone needs a connection. Once per walk-away, with one
 reading of the daily cap (two if it has to check the lock).
+
+**Cheap charging** (experimental, optional and off by default; in ⚙ › "Cheap charging"). When you plug the car in **at
+home**, Qonecta+ picks the cheapest continuous period before your departure time and sets the car's charging window
+through the Leapmotor cloud.
+
+- **Tariff:** "PVPC (Spain, hourly prices)", read from Red Eléctrica (tomorrow's prices come out in the evening; until
+  then the window is provisional and is recalculated by itself); "Three bands (off-peak, mid-peak, peak)", with your
+  prices and hours; or "Flat rate", where there is no cheap hour and the car charges when plugged in.
+- **Settings:** "Departure time", "Battery target" (50–100 %) and "Home charger power".
+- **Notification** with the window, the cost and the saving, and a **"Charge now"** button (removes the window and the
+  car charges). In the morning, another one with what it cost. "My car" has a card with the state and, with PVPC, the
+  hourly prices.
+- **Your plan goes back to how it was when you unplug** (or with "Charge now", or when you turn the feature off). If
+  you already had a window set in the car yourself, it is respected and nothing is touched.
+
+It needs the Leapmotor account connected, the car PIN saved and "Home" saved in the Route tab (the car must be within
+300 m). AC charging only. Plugging in is detected by the background check (every 15 minutes or more), so the window may
+take a few minutes to be set; the car charges meanwhile.
 
 **Privacy and security.**
 

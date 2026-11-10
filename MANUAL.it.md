@@ -1029,10 +1029,28 @@ non fa nulla) e controlla l'auto nel cloud Leapmotor:
   dato affidabile: il cloud non risponde, la sessione è scaduta o il dato è di prima che ti allontanassi («Non ho
   potuto controllare l'auto: potrebbe essere ancora aperta»). Non chiude mai alla cieca.
 
-Servono l'account Leapmotor collegato e il PIN dell'auto salvato (è l'unico comando inviato senza conferma, e chiude
+Servono l'account Leapmotor collegato e il PIN dell'auto salvato (è inviato senza conferma, come il piano di «Ricarica economica» se la attivi, e chiude
 soltanto). Passa dal cloud: ci mette qualche secondo, l'auto deve avere copertura (in un garage senza copertura arriverà
 quasi sempre l'avviso che non ha potuto controllarla) e il telefono una connessione. Una sola volta per allontanamento,
 con una lettura del limite giornaliero (due se deve verificare la chiusura).
+
+**Ricarica economica** (in prova, facoltativa e spenta di serie; in ⚙ › «Ricarica economica»). Quando colleghi l'auto
+**a casa**, Qonecta+ sceglie il periodo continuo più economico prima dell'ora di partenza e imposta la finestra di
+ricarica dell'auto tramite il cloud Leapmotor.
+
+- **Tariffa:** «PVPC (Spagna, prezzi orari)», letti da Red Eléctrica (quelli di domani escono la sera; fino ad allora
+  la finestra è provvisoria e viene ricalcolata da sola); «Tre fasce (bassa, media, alta)», con i tuoi prezzi e le tue
+  ore; oppure «Tariffa fissa», con cui non c'è un'ora economica e l'auto ricarica appena collegata.
+- **Impostazioni:** «Ora di partenza», «Obiettivo della batteria» (50–100 %) e «Potenza del caricatore di casa».
+- **Avviso** con la finestra, il costo e il risparmio, e il pulsante **«Ricarica ora»** (toglie la finestra e l'auto
+  ricarica). Al mattino, un altro con quanto è costato. In «La mia auto» c'è una scheda con lo stato e, con PVPC, i
+  prezzi orari.
+- **Il tuo piano torna com'era quando scolleghi** (o con «Ricarica ora», o spegnendo la funzione). Se avevi già
+  impostato tu una finestra nell'auto, viene rispettata e non si tocca nulla.
+
+Servono l'account Leapmotor collegato, il PIN dell'auto salvato e «Casa» salvata nella scheda Percorso (l'auto deve
+essere a meno di 300 m). Solo con ricarica in CA. Il collegamento viene rilevato dal controllo in background (ogni 15
+minuti o più), quindi la finestra può arrivare dopo qualche minuto; nel frattempo l'auto ricarica.
 
 **Privacy e sicurezza.**
 

@@ -1022,10 +1022,27 @@ faz nada) e verifica o carro na nuvem da Leapmotor:
   conseguir um dado fiável: a nuvem não responde, a sessão expirou ou o dado é de antes de te afastares («Não consegui
   verificar o carro: pode continuar aberto»). Nunca tranca às cegas.
 
-Precisa da conta Leapmotor ligada e do PIN do carro guardado (é a única ordem enviada sem confirmação, e só tranca). Vai
+Precisa da conta Leapmotor ligada e do PIN do carro guardado (é enviada sem confirmação, como o plano de «Carregamento barato» se o ativares, e só tranca). Vai
 pela nuvem: demora uns segundos, o carro precisa de rede (numa garagem sem rede, o normal é o aviso de que não conseguiu
 verificar) e o telemóvel, ligação. Uma só vez por afastamento, com uma leitura do limite diário (duas se tiver de
 confirmar o trancamento).
+
+**Carregamento barato** (em testes, opcional e desligado de origem; em ⚙ › «Carregamento barato»). Ao ligares o carro
+**em casa**, o Qonecta+ escolhe o período seguido mais barato antes da tua hora de saída e define a janela de
+carregamento do carro pela cloud da Leapmotor.
+
+- **Tarifa:** «PVPC (Espanha, preços por hora)», lidos da Red Eléctrica (os de amanhã saem ao fim da tarde; até lá a
+  janela é provisória e recalcula-se sozinha); «Três períodos (vazio, cheias, ponta)», com os teus preços e as tuas
+  horas; ou «Tarifa simples», em que não há hora barata e o carro carrega ao ligar.
+- **Definições:** «Hora de saída», «Objetivo da bateria» (50–100 %) e «Potência do carregador de casa».
+- **Aviso** com a janela, o custo e a poupança, e o botão **«Carregar já»** (tira a janela e o carro carrega). De
+  manhã, outro com o que custou. Em «O meu carro» há um cartão com o estado e, com PVPC, os preços por hora.
+- **O teu plano volta a ficar como estava ao desligares o cabo** (ou com «Carregar já», ou ao desligar a função). Se
+  já tinhas uma janela definida por ti no carro, é respeitada e não se mexe em nada.
+
+Precisa da conta Leapmotor ligada, do PIN do carro guardado e de «Casa» guardada no separador Rota (o carro tem de
+estar a menos de 300 m). Só com carregamento lento (CA). A ligação do cabo é detetada pela verificação em segundo
+plano (de 15 em 15 minutos ou mais), por isso a janela pode demorar uns minutos; entretanto o carro carrega.
 
 **Privacidade e segurança.**
 

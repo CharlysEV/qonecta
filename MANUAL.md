@@ -1015,10 +1015,28 @@ coche en la nube de Leapmotor:
   dato fiable: la nube no contesta, la sesión ha caducado o el dato es de antes de alejarte («No he podido comprobar el
   coche: puede seguir abierto»). Nunca cierra a ciegas.
 
-Necesita la cuenta de Leapmotor conectada y el PIN del coche guardado (es la única orden que se manda sin confirmar, y
+Necesita la cuenta de Leapmotor conectada y el PIN del coche guardado (se manda sin confirmar, como el plan de «Carga barata» si la activas, y
 solo cierra). Va por la nube: tarda unos segundos, el coche necesita cobertura (en un garaje sin cobertura, lo normal
 es el aviso de que no ha podido comprobarlo) y el móvil, red. Una sola vez por alejamiento, con una lectura del tope
 diario (dos si hay que comprobar el cierre).
+
+**Carga barata** (en pruebas, opcional y apagada de serie; en ⚙ › «Carga barata»). Al enchufar el coche **en casa**,
+Qonecta+ elige el tramo seguido más barato antes de tu hora de salida y programa la ventana de carga del coche por la
+nube de Leapmotor.
+
+- **Tarifa:** «PVPC (España, precios por hora)», leídos de Red Eléctrica (los de mañana salen por la tarde; hasta
+  entonces la ventana es provisional y se recalcula sola); «Tres tramos (valle, llano y punta)», con tus precios y tus
+  horas; o «Tarifa plana», con la que no hay hora barata y el coche carga al enchufar.
+- **Ajustes:** «Hora de salida», «Objetivo de batería» (50–100 %) y «Potencia del cargador de casa».
+- **Aviso** con la ventana, el coste y lo que ahorras, y el botón **«Cargar ya»** (quita la ventana y el coche carga).
+  Por la mañana, otro con lo que ha costado. En «Mi coche» hay una tarjeta con el estado y, con PVPC, los precios por
+  hora.
+- **Tu plan vuelve a como estaba al desenchufar** (o con «Cargar ya», o al apagar la función). Si ya tenías una ventana
+  puesta por ti en el coche, se respeta y no se toca nada.
+
+Necesita la cuenta de Leapmotor conectada, el PIN del coche guardado y «Casa» guardada en la pestaña Ruta (el coche
+tiene que estar a menos de 300 m). Solo con carga lenta (CA). El enchufado se detecta con la comprobación de fondo
+(cada 15 minutos o más), así que la ventana puede tardar unos minutos en ponerse; el coche carga mientras tanto.
 
 **Privacidad y seguridad.**
 
