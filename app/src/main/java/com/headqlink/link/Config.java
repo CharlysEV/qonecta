@@ -614,9 +614,10 @@ final class Config {
         return sp.getString("price_currency", "EUR");
     }
 
-    private static final String[] PRICE_KEYS = {"price_kwh", "price_fast_kwh", "price_fuel", "price_diesel"};
+    private static final String[] PRICE_KEYS = {"price_kwh", "price_fast_kwh", "price_fuel", "price_diesel", "cheap_p0", "cheap_p1",
+            "cheap_p2"};
     private static final double[] PRICE_MAX_EUR = {SettingsRows.PRICE_HOME_MAX, SettingsRows.PRICE_FAST_MAX, Config.FUEL_PRICE_MAX,
-            Config.FUEL_PRICE_MAX};
+            Config.FUEL_PRICE_MAX, SettingsRows.PRICE_HOME_MAX, SettingsRows.PRICE_HOME_MAX, SettingsRows.PRICE_HOME_MAX};
 
     /** Pasa los precios guardados de una moneda a otra con el cambio aproximado (dentro de los topes de la nueva). */
     void convertPrices(String from, String to) {
@@ -642,6 +643,109 @@ final class Config {
     /** Precio por kWh para el coste de los viajes (Ajustes del coche), entre 0 y el tope (1 € en euros). */
     void setElectricityPrice(double perKwh) {
         sp.edit().putFloat("price_kwh", (float) clampPrice(perKwh, SettingsRows.PRICE_HOME_MAX * Money.rate())).apply();
+    }
+
+    // ------------------------------------------------------------------ «Carga barata» (CheapCharge)
+
+    /** «Carga barata»: al enchufar en casa, programar la ventana de carga más barata del coche. Apagada de serie. */
+    static final String CHEAP_ON = "cheap_on";
+    /** Las potencias del cargador de casa que se pueden elegir (kW). */
+    static final double[] CHEAP_KW = {2.3, 3.7, 7.4, 11};
+    static final int CHEAP_DEPART_DEFAULT = 7 * 60 + 30;
+
+    boolean cheapCharge() {
+        return sp.getBoolean(CHEAP_ON, false);
+    }
+
+    void setCheapCharge(boolean on) {
+        sp.edit().putBoolean(CHEAP_ON, on).apply();
+    }
+
+    /**
+     * La tarifa de casa: Tariff.PVPC, BANDS o FLAT. Sin elegir, PVPC con una SIM (o un móvil) de España y los tres
+     * tramos en el resto.
+     */
+    String cheapTariff() {
+        String v = sp.getString("cheap_tariff", "");
+        if (!v.isEmpty()) return Tariff.mode(v, Tariff.BANDS);
+        String iso = "";
+        try {
+            android.telephony.TelephonyManager tm = app.getSystemService(android.telephony.TelephonyManager.class);
+            if (tm != null && tm.getSimCountryIso() != null) iso = tm.getSimCountryIso();
+        } catch (RuntimeException ignored) {
+            // Sin telefonía: la región del móvil.
+        }
+        if (iso.isEmpty()) iso = java.util.Locale.getDefault().getCountry();
+        return "es".equalsIgnoreCase(iso) ? Tariff.PVPC : Tariff.BANDS;
+    }
+
+    void setCheapTariff(String mode) {
+        sp.edit().putString("cheap_tariff", Tariff.mode(mode, Tariff.BANDS)).apply();
+    }
+
+    /** La hora de salida, en minutos del día (de serie, las 07:30). */
+    int cheapDepartMin() {
+        return Math.max(0, Math.min(24 * 60 - 1, sp.getInt("cheap_depart", CHEAP_DEPART_DEFAULT)));
+    }
+
+    void setCheapDepartMin(int minuteOfDay) {
+        sp.edit().putInt("cheap_depart", Math.max(0, Math.min(24 * 60 - 1, minuteOfDay))).apply();
+    }
+
+    /** El objetivo de batería, en % (de serie 80; entre 50 y 100, como el límite del coche). */
+    int cheapTarget() {
+        return Math.max(ChargePlan.SOC_MIN, Math.min(ChargePlan.SOC_MAX, sp.getInt("cheap_target", 80)));
+    }
+
+    void setCheapTarget(int pct) {
+        sp.edit().putInt("cheap_target", Math.max(ChargePlan.SOC_MIN, Math.min(ChargePlan.SOC_MAX, pct))).apply();
+    }
+
+    /** La potencia del cargador de casa en kW (de serie 7,4). */
+    double cheapKw() {
+        float v = sp.getFloat("cheap_kw", 7.4f);
+        for (double k : CHEAP_KW) if (Math.abs(k - v) < 0.05) return k;
+        return 7.4;
+    }
+
+    void setCheapKw(double kw) {
+        sp.edit().putFloat("cheap_kw", (float) kw).apply();
+    }
+
+    /** El tramo de cada hora del día (24 cifras: 0 valle, 1 llano, 2 punta); de serie, los de la 2.0TD. */
+    String cheapBandHours() {
+        return Tariff.hoursString(Tariff.parseHours(sp.getString("cheap_hours", Tariff.DEFAULT_HOURS)));
+    }
+
+    void setCheapBandHours(String hours) {
+        sp.edit().putString("cheap_hours", Tariff.hoursString(Tariff.parseHours(hours))).apply();
+    }
+
+    /** El precio por kWh de un tramo (Tariff.VALLEY, MID o PEAK), en la moneda de la app. */
+    double cheapBandPrice(int band) {
+        int b = Math.max(Tariff.VALLEY, Math.min(Tariff.PEAK, band));
+        return price("cheap_p" + b, Tariff.DEFAULT_PRICES_EUR[b]);
+    }
+
+    void setCheapBandPrice(int band, double perKwh) {
+        int b = Math.max(Tariff.VALLEY, Math.min(Tariff.PEAK, band));
+        sp.edit().putFloat("cheap_p" + b, (float) clampPrice(perKwh, SettingsRows.PRICE_HOME_MAX * Money.rate())).apply();
+    }
+
+    /** Sábados y domingos, todo el día en valle (de serie, sí: como la 2.0TD). */
+    boolean cheapWeekendValley() {
+        return sp.getBoolean("cheap_weekend", true);
+    }
+
+    void setCheapWeekendValley(boolean on) {
+        sp.edit().putBoolean("cheap_weekend", on).apply();
+    }
+
+    /** La tarifa de casa tal como está en los ajustes. */
+    Tariff tariff() {
+        return new Tariff(cheapTariff(), Tariff.parseHours(cheapBandHours()),
+                new double[]{cheapBandPrice(Tariff.VALLEY), cheapBandPrice(Tariff.MID), cheapBandPrice(Tariff.PEAK)},
+                cheapWeekendValley(), electricityPrice());
     }
 
     /** Precio por kWh en los cargadores rápidos, para lo que cuesta el plan de carga (tope: 1,5 € en euros). */

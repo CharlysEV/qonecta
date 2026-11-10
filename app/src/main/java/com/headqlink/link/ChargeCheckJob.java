@@ -80,7 +80,11 @@ public class ChargeCheckJob extends JobService {
         // La sesión de Leapmotor, renovada antes de caducar (si no, tras horas sin leer el coche pedía la contraseña).
         CarCloudSession.keepAlive(ctx);
         ChargeWatch.restore(ctx);
-        if (ChargeWatch.serviceRunning) return;
+        if (ChargeWatch.serviceRunning) {
+            // El servicio de la carga rápida ya lee el coche: «Carga barata», con su última lectura (devolver el plan).
+            CheapCharge.background(ctx, CarCloud.car());
+            return;
+        }
         boolean already = CarCloud.running();
         long before = CarCloud.snapshot().fetchedAtMs;
         CarCloud.acquire(ctx, OWNER);
@@ -94,6 +98,8 @@ public class ChargeCheckJob extends JobService {
                 }
             }
             ChargeWatch.background(ctx, CarCloud.car());
+            // «Carga barata»: programar la ventana al verlo enchufado en casa, o devolver el plan del coche.
+            CheapCharge.background(ctx, CarCloud.car());
         } finally {
             CarCloud.release(OWNER);
         }

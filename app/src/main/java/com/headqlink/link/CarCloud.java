@@ -401,6 +401,7 @@ final class CarCloud {
             WidgetUpdater.poke(); // el widget: «¿llego a Casa?» con el % nuevo
             long dataTime = snap.dataTimeMs();
             LastCharge.observe(app, s, dataTime); // «km desde la última carga» en «Mi coche»
+            CheapCharge.onReading(app, snap); // «Carga barata»: en otro hilo, si hay algo que hacer
             staleReads = dataTime > 0 && dataTime == lastDataTime ? staleReads + 1 : 0;
             lastDataTime = dataTime;
             L.i("nube Leapmotor: " + s.logLine() + " · dato del coche de hace " + agoLog(snap.ageMs(wall)) + " · " + lat + " ms"

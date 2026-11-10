@@ -42,7 +42,8 @@ class TranslationsTest {
     private fun specs(s: String) = spec.findAll(s).map { it.value }.sorted().toList()
 
     private fun strings(dir: String): Map<String, String> =
-        listOf("hql_strings.xml", "hql_cloud_strings.xml", "hql_strings_i18n.xml", "hql_strings_ruta_movil.xml")
+        listOf("hql_strings.xml", "hql_cloud_strings.xml", "hql_strings_i18n.xml", "hql_strings_ruta_movil.xml",
+            "hql_strings_carga_barata.xml")
             .flatMap { elements(dir, it, "string") }.associate { it.getAttribute("name") to it.textContent }
 
     /** nombre → (cantidad → texto) */
