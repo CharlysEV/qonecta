@@ -13,8 +13,11 @@ import java.util.Locale;
 final class ChargePlan {
     static final int SOC_MIN = 50;
     static final int SOC_MAX = 100;
-    /** Lo que pone leapmotor-api cuando la nube no manda un campo (un plan solo con hora de inicio no trae el resto). */
-    static final String ALL_DAYS = "1,2,3,4,5,6,7";
+    /**
+     * Los días, si la nube no los manda (un plan solo con hora de inicio no trae el resto): una marca por día de la
+     * semana, como los dio un C10 real el 10-11 («1,1,1,1,1,1,1» con todos los días).
+     */
+    static final String ALL_DAYS = "1,1,1,1,1,1,1";
     static final String DEFAULT_START = "00:00";
     static final String DEFAULT_END = "08:00";
 
@@ -25,7 +28,7 @@ final class ChargePlan {
     /** «HH:MM», hora local del coche. */
     final String start;
     final String end;
-    /** Días («1,2,3,4,5,6,7»). */
+    /** Días: una marca por día («1,1,1,1,1,1,1»). */
     final String cycles;
     /** Repetir (0 una vez, 1 cada semana; un C10 real tenía 2): se devuelve como se leyó. */
     final int circulation;

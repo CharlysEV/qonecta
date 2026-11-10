@@ -18,14 +18,14 @@ import org.robolectric.annotation.ConscryptMode
 @Config(sdk = [35], application = Application::class)
 class ChargePlanTest {
     private val full = JSONObject(
-        """{"chargeEnable":1,"chargesoc":80,"circulation":2,"cycles":"1,2,3,4,5","endtime":"07:00","recharge":1,"starttime":"23:30"}"""
+        """{"chargeEnable":1,"chargesoc":80,"circulation":2,"cycles":"1,1,1,1,1,0,0","endtime":"07:00","recharge":1,"starttime":"23:30"}"""
     )
 
     @Test
     fun aFullPlanGoesBackExactlyAsItCame() {
         val p = ChargePlan.parse(full)!!
         assertEquals(
-            """{"chargeEnable":1,"chargesoc":80,"circulation":2,"cycles":"1,2,3,4,5","endtime":"07:00","recharge":1,"starttime":"23:30"}""",
+            """{"chargeEnable":1,"chargesoc":80,"circulation":2,"cycles":"1,1,1,1,1,0,0","endtime":"07:00","recharge":1,"starttime":"23:30"}""",
             p.content()
         )
         assertTrue(p.same(ChargePlan.parse(JSONObject(p.content()))))
@@ -46,7 +46,7 @@ class ChargePlanTest {
         assertTrue(p.enabled)
         assertEquals("02:15", p.start)
         assertEquals("08:00", p.end)
-        assertEquals("1,2,3,4,5,6,7", p.cycles)
+        assertEquals("1,1,1,1,1,1,1", p.cycles)
         assertEquals(0, p.recharge)
     }
 
@@ -54,7 +54,7 @@ class ChargePlanTest {
     fun aNewWindowKeepsTheDaysAndTheRest() {
         val p = ChargePlan.parse(full)!!.window("02:00", "05:30", 85)
         assertEquals(
-            """{"chargeEnable":1,"chargesoc":85,"circulation":2,"cycles":"1,2,3,4,5","endtime":"05:30","recharge":1,"starttime":"02:00"}""",
+            """{"chargeEnable":1,"chargesoc":85,"circulation":2,"cycles":"1,1,1,1,1,0,0","endtime":"05:30","recharge":1,"starttime":"02:00"}""",
             p.content()
         )
         val off = p.disabled()
@@ -74,7 +74,7 @@ class ChargePlanTest {
         val p = ChargePlan(true, 80, "25:00", "x", "lunes", 0, 0)
         assertEquals("00:00", p.start)
         assertEquals("08:00", p.end)
-        assertEquals("1,2,3,4,5,6,7", p.cycles)
+        assertEquals("1,1,1,1,1,1,1", p.cycles)
         assertEquals("07:05", ChargePlan.time("7:05:00", "x"))
     }
 }
