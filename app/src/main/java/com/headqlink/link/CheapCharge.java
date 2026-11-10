@@ -123,6 +123,12 @@ final class CheapCharge {
         boolean atHome;
         /** Las ventanas mandadas en este enchufado («HH:MM-HH:MM;…»): otra distinta en el coche la puso el usuario. */
         String windows = "";
+        /**
+         * La carga acabó (objetivo alcanzado o pasó la hora de salida) con el coche aún enchufado: ya se avisó, y la
+         * ventana se queda puesta hasta desenchufar. Devolver antes un plan sin ventana y con el límite al 100 % haría que
+         * el coche siguiera cargando por encima del objetivo.
+         */
+        boolean done;
 
         static State load(Context ctx) {
             SharedPreferences sp = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
@@ -150,6 +156,7 @@ final class CheapCharge {
             s.positionTries = sp.getInt("position_tries", 0);
             s.atHome = sp.getBoolean("at_home", false);
             s.windows = sp.getString("windows", "");
+            s.done = sp.getBoolean("done", false);
             return s;
         }
 
@@ -161,7 +168,7 @@ final class CheapCharge {
                     .putFloat("cost", (float) cost).putFloat("cost_now", (float) costNow).putFloat("start_soc", (float) startSoc)
                     .putInt("target", target).putBoolean("provisional", provisional).putBoolean("recalc", recalc)
                     .putBoolean("confirmed", confirmed).putInt("tries", tries).putInt("position_tries", positionTries)
-                    .putBoolean("at_home", atHome).putString("windows", windows)
+                    .putBoolean("at_home", atHome).putString("windows", windows).putBoolean("done", done)
                     // commit: lo siguiente puede ser una orden al coche, y el proceso puede morir.
                     .commit();
         }
@@ -178,6 +185,7 @@ final class CheapCharge {
             provisional = false;
             recalc = false;
             confirmed = false;
+            done = false;
         }
 
         /** Lo que se ahorra frente a cargar al enchufar (0 si no se sabe). */
@@ -315,6 +323,20 @@ final class CheapCharge {
         if (PLANNED.equals(st.phase)) {
             String why = !on ? WHY_OFF : unplugged ? WHY_UNPLUGGED : now >= st.departMs ? WHY_DEPART
                     : !Double.isNaN(soc) && soc >= st.target - TARGET_SLACK ? WHY_TARGET : null;
+            if (WHY_TARGET.equals(why) || WHY_DEPART.equals(why)) {
+                // Acabó, pero sigue enchufado: se avisa una vez y la ventana (con su límite) se queda hasta desenchufar.
+                if (!st.done) {
+                    st.done = true;
+                    st.recalc = false;
+                    st.provisional = false;
+                    st.save(ctx);
+                    boolean charged = !Double.isNaN(soc) && !Double.isNaN(st.startSoc) && soc > st.startSoc + 0.5;
+                    if (charged && st.confirmed) noticeDone(ctx, st, soc);
+                    else cancelNotice(ctx);
+                    L.i("carga barata: carga terminada (" + whyLog(why) + "); el plan del coche se devuelve al desenchufar");
+                }
+                return;
+            }
             if (why != null) {
                 st.phase = RESTORE;
                 st.why = why;
@@ -647,7 +669,9 @@ final class CheapCharge {
         }
         boolean charged = !Double.isNaN(soc) && !Double.isNaN(st.startSoc) && soc > st.startSoc + 0.5;
         boolean finished = WHY_TARGET.equals(why) || WHY_DEPART.equals(why) || WHY_UNPLUGGED.equals(why);
-        if (finished && charged && st.confirmed) noticeDone(ctx, st, soc);
+        if (st.done) {
+            // Ya se avisó al acabar la carga: el aviso se deja como está.
+        } else if (finished && charged && st.confirmed) noticeDone(ctx, st, soc);
         else if (WHY_NOW.equals(why) || WHY_NO_FIT.equals(why)) noticeNow(ctx, st, TimeZone.getDefault());
         else cancelNotice(ctx);
         st.restoredAtMs = now;
@@ -873,6 +897,12 @@ final class CheapCharge {
             if (st.provisional) detail += (detail.isEmpty() ? "" : "\n") + Str.get(R.string.hql_cb_provisional);
             String a = CheapWindow.hhmm(st.startMs, tz);
             String b = CheapWindow.hhmm(st.endMs, tz);
+            if (st.done) {
+                boolean atTarget = s != null && !Double.isNaN(s.socBest()) && s.socBest() >= st.target - TARGET_SLACK;
+                String line = atTarget ? Str.get(R.string.hql_cb_st_at_target, st.target)
+                        : Str.get(R.string.hql_cb_st_planned, a, b, st.target);
+                return new Status(line, detail, atTarget ? 0 : 1, !atTarget, st);
+            }
             if (!st.confirmed) return new Status(Str.get(R.string.hql_cb_st_sending, a, b), detail, 0, true, st);
             boolean charging = s != null && s.charging() && now >= st.startMs;
             return new Status(Str.get(charging ? R.string.hql_cb_st_charging : R.string.hql_cb_st_planned, a, b, st.target), detail, 1,

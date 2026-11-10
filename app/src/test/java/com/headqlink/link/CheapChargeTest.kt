@@ -321,35 +321,48 @@ class CheapChargeTest {
     }
 
     @Test
-    fun atTheTargetThePlanGoesBackAndTheMorningNoticeSaysWhatItCost() {
+    fun atTheTargetTheMorningNoticeSaysWhatItCostAndThePlanGoesBackOnlyWhenUnplugged() {
         check("2026-11-10 22:00", 50)
         check("2026-11-11 02:00", 68)
         assertEquals(1, car.sent.size)
         check("2026-11-11 03:15", 80)
-        assertEquals(2, car.sent.size)
-        assertEquals(real.content(), car.sent[1].content())
-        assertEquals(CheapCharge.HOLD, state().phase)
+        // Enchufado todavía: la ventana (con su límite) se queda; devolver un plan sin límite seguiría cargando.
+        assertEquals(1, car.sent.size)
+        assertEquals(CheapCharge.PLANNED, state().phase)
+        assertTrue(state().done)
         assertEquals("Cheap charging", noticeTitle())
         assertEquals("Charged to 80 %. It cost about €2.33, €0.74 less than charging when plugged in.", notice())
-        // Enchufado todavía: no se planifica otra vez; al desenchufar, a esperar el siguiente.
+        val card = CheapCharge.status(ctx, snap(at("2026-11-11 03:30"), 80, true), at("2026-11-11 03:30"), true, false)
+        assertEquals("The battery is already at the target (80 %).", card.line)
+        assertFalse(card.canChargeNow)
         check("2026-11-11 03:30", 80)
-        check("2026-11-11 06:00", 80)
-        assertEquals(2, car.sent.size)
+        check("2026-11-11 08:00", 80)
+        assertEquals(1, car.sent.size)
+        // Al desenchufar, el plan vuelve a como estaba y el aviso de la mañana sigue ahí.
         check("2026-11-11 08:10", 79, ac = false)
-        assertEquals(CheapCharge.IDLE, state().phase)
         assertEquals(2, car.sent.size)
+        assertEquals(real.content(), car.sent[1].content())
+        assertEquals(CheapCharge.IDLE, state().phase)
+        assertFalse(state().done)
+        assertEquals("Charged to 80 %. It cost about €2.33, €0.74 less than charging when plugged in.", notice())
     }
 
     @Test
-    fun pastTheDepartureThePlanGoesBackEvenIfTheTargetWasNotReached() {
+    fun pastTheDepartureTheNoticeComesEvenIfTheTargetWasNotReachedAndThePlanWaitsForTheUnplug() {
         check("2026-11-10 22:00", 50)
         // El coche dormido: el dato sigue siendo el de las 3 (al 71 %), pero ya son las 07:31.
         check("2026-11-11 07:31", 71, dataAt = "2026-11-11 03:00")
-        assertEquals(2, car.sent.size)
-        assertEquals(real.content(), car.sent[1].content())
-        assertEquals(CheapCharge.HOLD, state().phase)
+        assertEquals(1, car.sent.size)
+        assertEquals(CheapCharge.PLANNED, state().phase)
         // Cargó 21 de los 30 puntos previstos: el coste y el ahorro, en proporción.
         assertEquals("Charged to 71 %. It cost about €1.63, €0.52 less than charging when plugged in.", notice())
+        // Sigue enchufado y sin llegar: «Cargar ya» sigue a mano.
+        val card = CheapCharge.status(ctx, snap(at("2026-11-11 07:40"), 71, true), at("2026-11-11 07:40"), true, false)
+        assertTrue(card.canChargeNow)
+        check("2026-11-11 08:30", 71, ac = false)
+        assertEquals(2, car.sent.size)
+        assertEquals(real.content(), car.sent[1].content())
+        assertEquals(CheapCharge.IDLE, state().phase)
     }
 
     @Test
@@ -591,6 +604,8 @@ class CheapChargeTest {
         assertEquals(2, car.sent.size)
         // Al acabar se devuelve el original, no la ventana provisional.
         check("2026-11-11 07:35", 80)
+        assertEquals(2, car.sent.size)
+        check("2026-11-11 07:50", 80, ac = false)
         assertEquals(real.content(), car.sent[2].content())
     }
 
