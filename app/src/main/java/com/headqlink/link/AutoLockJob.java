@@ -114,7 +114,10 @@ public class AutoLockJob extends JobService {
 
         @Override
         public boolean lock() throws Exception {
-            return CarCloudSession.command(c, new CarCommand(CarCommand.Kind.LOCK));
+            boolean ok = CarCloudSession.command(c, new CarCommand(CarCommand.Kind.LOCK));
+            // El botón de abrir/cerrar del widget y de «Mi coche»: cerrado ya, sin esperar a la nube.
+            if (ok) CarOrders.noteLock(c, true, System.currentTimeMillis());
+            return ok;
         }
 
         @Override

@@ -139,6 +139,8 @@ final class LinkGlance {
         String home = "";
         /** El cable de carga enchufado (CarOrders.cableShown): en el 4x3, «Cable» en lugar de «Localizar». */
         boolean cable;
+        /** El botón de abrir/cerrar de la fila de órdenes (CarOrders.lockButton): uno solo con el cierre conocido. */
+        CarOrders.LockButton lock = CarOrders.LockButton.UNKNOWN;
     }
 
     final Look look;
@@ -160,6 +162,8 @@ final class LinkGlance {
     final String home;
     /** «Cable» (desbloquear el cable de carga) en lugar de «Localizar» en la fila de órdenes. */
     final boolean cable;
+    /** El botón de abrir/cerrar de la fila de órdenes: «Abrir» (coche cerrado), «Cerrar» (abierto) o los dos. */
+    final CarOrders.LockButton lock;
 
     private LinkGlance(Look look, Action action, Status status, Detail detail, String text, float fps, float mbps,
                        Input in) {
@@ -177,6 +181,7 @@ final class LinkGlance {
         this.locale = in.locale == null ? "" : in.locale;
         this.home = in.home == null ? "" : in.home;
         this.cable = in.cable;
+        this.lock = in.lock == null ? CarOrders.LockButton.UNKNOWN : in.lock;
     }
 
     private static LinkGlance make(Look look, Action action, Status status, Detail detail, String text, Input in) {
@@ -267,7 +272,7 @@ final class LinkGlance {
     /** Lo que se ve salvo las cifras del vídeo (cambia con el estado, la conexión, el modo o el idioma). */
     String stateKey() {
         return look + "|" + action + "|" + status + "|" + detail + "|" + text + "|" + linkMode + "|" + transport + "|"
-                + mode + "|" + locale + "|" + home + (cable ? "|cable" : "");
+                + mode + "|" + locale + "|" + home + (cable ? "|cable" : "") + (lock.key().isEmpty() ? "" : "|" + lock.key());
     }
 
     /**

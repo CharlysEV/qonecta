@@ -37,7 +37,7 @@ import java.util.TimeZone;
  * Pestaña «Mi coche» de la app del móvil (28-10, pedida en el foro LPMFF por dominik): lo de la app de Leapmotor, a
  * nuestra manera. Arriba la autonomía, la batería y el cierre; en medio nuestro C10 en 3D (assets/car3d.html, el mismo
  * de la pestaña Estado del coche: se gira con el dedo, con las puertas y el maletero abiertos); debajo, la fila de
- * órdenes del widget «Coche» (abrir, cerrar, maletero, clima, localizar: CarControlActivity, con su confirmación y su
+ * órdenes del widget «Coche» (abrir o cerrar, maletero, clima, localizar: CarControlActivity, con su confirmación y su
  * PIN) y dos tarjetas que se despliegan: «Clima» (la última orden) y «Salud» (presiones, puertas, temperaturas). Todo
  * sale de la nube de Leapmotor (CarCloud): sin cuenta, explica qué es y lleva a configurarla. Solo se lee mientras se
  * ve (CarCloud.acquire/release).
@@ -63,6 +63,8 @@ final class PhoneCar {
     private View socBar;
     private FrameLayout socTrack;
     private TextView lockText;
+    /** La fila de órdenes: se repinta con cada dato (el botón de abrir/cerrar sigue al cierre del coche). */
+    private PhoneCarOrders ordersRow;
     private TextView ageText;
     private TextView stateText;
     /** Los cinco colores de Leapmotor España del C10 (los mismos que assets/car3d.html), o los tres del T03. */
@@ -397,28 +399,16 @@ final class PhoneCar {
 
     // ------------------------------------------------------------------ órdenes
 
-    /** La fila de la app de Leapmotor: Abrir · Cerrar · Maletero · Clima · Localizar, cada una por CarControlActivity. */
+    /**
+     * La fila de la app de Leapmotor (PhoneCarOrders): Abrir/Cerrar (un solo botón si se sabe cómo está el coche) ·
+     * Maletero · Clima · Localizar, cada una por CarControlActivity.
+     */
     private View orders() {
-        LinearLayout row = new LinearLayout(act);
-        row.setGravity(Gravity.CENTER);
-        row.setPadding(0, dp(14), 0, dp(4));
-        int[][] items = {
-                {R.drawable.hql_ic_cw_unlock, R.string.hql_cw_unlock},
-                {R.drawable.hql_ic_cw_lock, R.string.hql_cw_lock},
-                {R.drawable.hql_ic_cw_trunk, R.string.hql_cw_trunk},
-                {R.drawable.hql_ic_cw_climate, R.string.hql_cw_climate},
-                {R.drawable.hql_ic_cw_find, R.string.hql_cw_find},
-        };
-        String[] what = {"unlock", "lock", "trunk", "climate", "find"};
         boolean on = CarOrders.enabled(act);
-        for (int i = 0; i < items.length; i++) {
-            String w = what[i];
-            row.addView(orderButton(items[i][0], Str.get(items[i][1]), on, v -> order(w)),
-                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-        }
+        ordersRow = new PhoneCarOrders(act);
         LinearLayout box = new LinearLayout(act);
         box.setOrientation(LinearLayout.VERTICAL);
-        box.addView(row);
+        box.addView(ordersRow.view());
         if (!on) {
             TextView hint = text(Str.get(R.string.hql_cw_off), com.google.android.material.R.style.TextAppearance_Material3_BodySmall,
                     PhoneCharts.WARN);
@@ -437,39 +427,6 @@ final class PhoneCar {
             box.addView(tip);
         }
         return box;
-    }
-
-    /** Un botón redondo con su icono y el nombre debajo, como los de la app de Leapmotor. */
-    private View orderButton(int icon, String label, boolean on, View.OnClickListener tap) {
-        LinearLayout v = new LinearLayout(act);
-        v.setOrientation(LinearLayout.VERTICAL);
-        v.setGravity(Gravity.CENTER_HORIZONTAL);
-        v.setPadding(0, dp(4), 0, dp(4));
-        MaterialCardView circle = new MaterialCardView(act);
-        circle.setRadius(dp(30));
-        circle.setCardElevation(0);
-        circle.setCardBackgroundColor(on ? 0xFF16202B : 0xFF111821);
-        circle.setStrokeColor(on ? 0xFF2A3A4C : 0xFF1C2631);
-        circle.setStrokeWidth(dp(1));
-        circle.setRippleColor(ColorStateList.valueOf(0x3300E5C7));
-        circle.setClickable(true);
-        circle.setOnClickListener(tap);
-        ImageView img = new ImageView(act);
-        img.setImageResource(icon);
-        img.setImageTintList(ColorStateList.valueOf(on ? PhoneCharts.TEXT : PhoneCharts.FAINT));
-        int pad = dp(16);
-        img.setPadding(pad, pad, pad, pad);
-        circle.addView(img, new FrameLayout.LayoutParams(dp(60), dp(60)));
-        v.addView(circle, new LinearLayout.LayoutParams(dp(60), dp(60)));
-        TextView t = text(label, com.google.android.material.R.style.TextAppearance_Material3_LabelMedium, on ? PhoneCharts.DIM : PhoneCharts.FAINT);
-        t.setGravity(Gravity.CENTER);
-        t.setPadding(0, dp(6), 0, 0);
-        t.setSingleLine(true);
-        // «Localizar» y «Maletero» no caben a 12 sp en 1/5 del ancho: un poco más pequeño y, si aun así no cabe, encoge.
-        t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 11);
-        t.setAutoSizeTextTypeUniformWithConfiguration(8, 11, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
-        v.addView(t);
-        return v;
     }
 
     /** Una orden: la ventanita del widget (confirma lo que abre, pide el clima, enseña el resultado). */
@@ -536,7 +493,9 @@ final class PhoneCar {
         FrameLayout.LayoutParams blp = (FrameLayout.LayoutParams) socBar.getLayoutParams();
         blp.width = (int) Math.round(dp(150) * pct / 100.0);
         socBar.setLayoutParams(blp);
-        Boolean locked = s.locked;
+        // El cierre: el de la nube o el de la última orden confirmada, si la nube aún no la ha visto (como el botón).
+        Boolean locked = snap.demo ? s.locked : CarOrders.locked(act, s.locked);
+        if (ordersRow != null) ordersRow.refresh();
         lockText.setText(locked == null ? "—" : (locked ? "🔒 " : "🔓 ")
                 + Str.get(locked ? R.string.hql_cloud_locked : R.string.hql_cloud_unlocked));
         lockText.setTextColor(locked == null ? PhoneCharts.FAINT : locked ? PhoneCharts.ACCENT_2 : PhoneCharts.WARN);

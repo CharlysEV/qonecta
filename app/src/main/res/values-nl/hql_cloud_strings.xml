@@ -239,6 +239,8 @@
     <string name="hql_autolock_no_answer">geen antwoord</string>
     <string name="hql_autolock_retry">Opnieuw proberen</string>
     <string name="hql_cw_voice_short">Stem</string>
+    <string name="hql_cw_cd_unlock">Auto vergrendeld. Openen</string>
+    <string name="hql_cw_cd_lock">Auto ontgrendeld. Vergrendelen</string>
     <string name="hql_cc_find_title">Je auto</string>
     <string name="hql_cc_find_searching">Zoeken waar de auto staat…</string>
     <string name="hql_cc_find_where">Op %1$s van je · positie van %2$s</string>

@@ -22,7 +22,7 @@ import java.util.Locale;
 
 /**
  * La ventanita de las órdenes al coche del widget de Qonecta+ sobre la pantalla de inicio: escucha (voz de Android, sin micrófono propio), entiende
- * la frase (CarCommand.parse), confirma lo que abre el coche y manda la orden (CarCloudSession.command), con su
+ * la frase (CarCommand.parse), confirma lo que abre el coche y manda la orden (CarOrders.send), con su
  * resultado. Transparente, en su propia tarea y fuera de recientes.
  */
 public final class CarControlActivity extends AppCompatActivity {
@@ -337,7 +337,7 @@ public final class CarControlActivity extends AppCompatActivity {
             String result;
             boolean good;
             try {
-                good = CarCloudSession.command(this, c);
+                good = CarOrders.send(this, c);
                 result = Str.get(good ? R.string.hql_cc_done : R.string.hql_cc_sent, c.label());
                 if (c.kind == CarCommand.Kind.CLIMATE_ON || c.kind == CarCommand.Kind.CLIMATE_OFF || c.kind == CarCommand.Kind.DEFROST) {
                     CarOrders.noteClimate(this, c);

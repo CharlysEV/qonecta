@@ -539,6 +539,7 @@ final class CarCloudSession {
         saved = s;
         persist(st);
         CarOrders.sessionRestored(ctx);
+        CarOrders.forgetLock(ctx);
         L.i("nube Leapmotor: sesión iniciada (" + CarCloudStore.maskEmail(email) + "), " + cars.size() + " coche(s)"
                 + (cars.size() == 1 ? ", modelo " + cars.get(0).carType : ""));
         CarCloud.settingsChanged();
@@ -565,6 +566,7 @@ final class CarCloudSession {
         saved.vin = v.vin;
         saved.carType = v.carType;
         persist(st);
+        CarOrders.forgetLock(ctx);
         L.i("nube Leapmotor: coche elegido, modelo " + v.carType);
         CarCloud.settingsChanged();
     }
@@ -593,6 +595,7 @@ final class CarCloudSession {
     /** Cierra la sesión: fuera tokens, coche y correo. El certificado se queda. */
     static synchronized void logout(Context ctx) {
         store(ctx).deleteSession();
+        CarOrders.forgetLock(ctx);
         api = null;
         saved = null;
         disarm();
@@ -603,6 +606,7 @@ final class CarCloudSession {
     /** «Cerrar sesión y borrar datos»: todo, también el certificado y la clave del Keystore. */
     static synchronized void wipe(Context ctx) {
         store(ctx).wipeAll();
+        CarOrders.forgetLock(ctx);
         api = null;
         saved = null;
         disarm();

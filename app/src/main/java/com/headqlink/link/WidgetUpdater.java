@@ -172,6 +172,8 @@ public final class WidgetUpdater implements LinkState.Listener, SharedPreference
         in.home = HomeReach.line(c);
         // Con el cable de carga enchufado (la última lectura de la nube), «Cable» en lugar de «Localizar».
         in.cable = CarOrders.cableShown(c);
+        // Con el cierre conocido (la nube o la última orden confirmada), «Cerrar» y «Abrir» son un solo botón.
+        in.lock = CarOrders.lockButton(c);
         return LinkGlance.of(in);
     }
 

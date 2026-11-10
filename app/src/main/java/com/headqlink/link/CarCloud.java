@@ -397,6 +397,7 @@ final class CarCloud {
             long wall = System.currentTimeMillis();
             Snapshot snap = new Snapshot(State.OK, s, wall, lat, st.capacityKwh(), st.carType(), 0, false);
             current = snap;
+            CarOrders.observeLock(app, snap); // el botón de abrir/cerrar: cómo está el cierre
             WidgetUpdater.poke(); // el widget: «¿llego a Casa?» con el % nuevo
             long dataTime = snap.dataTimeMs();
             LastCharge.observe(app, s, dataTime); // «km desde la última carga» en «Mi coche»
@@ -534,6 +535,7 @@ final class CarCloud {
     static void publish(Context ctx, LeapStatus s, long latencyMs) {
         CarCloudStore st = new CarCloudStore(ctx);
         current = new Snapshot(State.OK, s, System.currentTimeMillis(), latencyMs, st.capacityKwh(), st.carType(), 0, false);
+        CarOrders.observeLock(ctx.getApplicationContext() != null ? ctx.getApplicationContext() : ctx, current);
         WidgetUpdater.poke();
     }
 

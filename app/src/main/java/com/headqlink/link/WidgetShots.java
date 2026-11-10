@@ -145,11 +145,15 @@ final class WidgetShots {
 
     /** Dibuja una captura a la densidad de ctx: el widget aplicado como lo haría el launcher, con su margen. */
     static Bitmap render(Context ctx, Shot s) {
+        return render(ctx, LinkWidgetViews.build(ctx, glance(ctx, s.state), s.size), s.widthDp, s.heightDp);
+    }
+
+    /** Lo mismo con unas vistas ya hechas (otra foto: la fila de órdenes con el coche cerrado o abierto). */
+    static Bitmap render(Context ctx, RemoteViews rv, int widthDp, int heightDp) {
         float d = ctx.getResources().getDisplayMetrics().density;
-        int w = Math.round(s.widthDp * d);
-        int h = Math.round(s.heightDp * d);
+        int w = Math.round(widthDp * d);
+        int h = Math.round(heightDp * d);
         int m = Math.round(MARGIN * d);
-        RemoteViews rv = LinkWidgetViews.build(ctx, glance(ctx, s.state), s.size);
         FrameLayout parent = new FrameLayout(ctx);
         View v = rv.apply(ctx, parent);
         v.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY),

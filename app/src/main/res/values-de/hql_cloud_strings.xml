@@ -239,6 +239,8 @@
     <string name="hql_autolock_no_answer">keine Antwort</string>
     <string name="hql_autolock_retry">Erneut versuchen</string>
     <string name="hql_cw_voice_short">Sprache</string>
+    <string name="hql_cw_cd_unlock">Auto verriegelt. Entriegeln</string>
+    <string name="hql_cw_cd_lock">Auto entriegelt. Verriegeln</string>
     <string name="hql_cc_find_title">Dein Auto</string>
     <string name="hql_cc_find_searching">Suche das Auto…</string>
     <string name="hql_cc_find_where">%1$s von dir · Position von %2$s</string>

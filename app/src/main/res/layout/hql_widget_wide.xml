@@ -175,7 +175,11 @@
             style="@style/HQL.Widget.Segment"
             android:text="@string/hql_w_link_usb" />
     </LinearLayout>
-    <!-- Órdenes al coche (versión 4x3): la última y los botones; sin «Órdenes desde el widget» en Datos del coche, atenuados. -->
+    <!--
+        Órdenes al coche (versión 4x3): la última y los botones; sin «Órdenes desde el widget» en Datos del coche, atenuados.
+        Con el cierre del coche conocido, «Cerrar» y «Abrir» son un solo botón (el primero; el otro se esconde), con el
+        color del estado: lo pone LinkWidgetViews.
+    -->
     <LinearLayout
         android:id="@+id/hql_w_car"
         android:layout_width="match_parent"
@@ -213,13 +217,24 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:id="@+id/hql_w_car_lock_icon"
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:importantForAccessibility="no"
                     android:src="@drawable/hql_ic_cw_lock"
                     android:tint="@color/hql_text" />
 
+                <!-- Mientras se manda la orden, en lugar del icono. -->
+                <ProgressBar
+                    android:id="@+id/hql_w_car_lock_busy"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:indeterminate="true"
+                    android:indeterminateTint="@color/hql_text"
+                    android:visibility="gone" />
+
                 <TextView
+                    android:id="@+id/hql_w_car_lock_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
@@ -242,11 +257,20 @@
                 android:orientation="vertical">
 
                 <ImageView
+                    android:id="@+id/hql_w_car_unlock_icon"
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:importantForAccessibility="no"
                     android:src="@drawable/hql_ic_cw_unlock"
                     android:tint="@color/hql_text" />
+
+                <ProgressBar
+                    android:id="@+id/hql_w_car_unlock_busy"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:indeterminate="true"
+                    android:indeterminateTint="@color/hql_text"
+                    android:visibility="gone" />
 
                 <TextView
                     android:layout_width="wrap_content"

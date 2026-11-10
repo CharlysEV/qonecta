@@ -239,6 +239,8 @@
     <string name="hql_autolock_no_answer">无响应</string>
     <string name="hql_autolock_retry">重试</string>
     <string name="hql_cw_voice_short">语音</string>
+    <string name="hql_cw_cd_unlock">车辆已上锁。解锁</string>
+    <string name="hql_cw_cd_lock">车辆未上锁。上锁</string>
     <string name="hql_cc_find_title">你的车</string>
     <string name="hql_cc_find_searching">正在查找车辆位置…</string>
     <string name="hql_cc_find_where">距你 %1$s · 位置时间 %2$s</string>

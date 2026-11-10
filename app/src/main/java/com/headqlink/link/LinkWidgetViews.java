@@ -98,7 +98,7 @@ final class LinkWidgetViews {
             option(c, rv, LINK_IDS[i], name, name, LINKS[i].equals(g.linkMode),
                     broadcast(c, RC_LINK + i, LinkWidget.ACTION_LINK, LINKS[i]));
         }
-        car(c, rv, size == LinkGlance.Size.WIDE_CAR, g.cable);
+        car(c, rv, size == LinkGlance.Size.WIDE_CAR, g.cable, g.lock);
         return rv;
     }
 
@@ -106,8 +106,9 @@ final class LinkWidgetViews {
      * 4x3: la fila de las órdenes al coche (cerrar, abrir, maletero, clima, localizar y la voz) y la última orden. Sin
      * las órdenes activadas, la misma fila atenuada y «Toca para activar las órdenes»: tocarla abre el aviso de
      * CarControlActivity, que lleva a Datos del coche (20-10: sin ella, el 4x4 de un compañero salía con un hueco).
+     * «Cerrar» y «Abrir» son un solo botón cuando se sabe cómo está el coche ({@link #lockButtons}).
      */
-    private static void car(Context c, RemoteViews rv, boolean show, boolean cable) {
+    private static void car(Context c, RemoteViews rv, boolean show, boolean cable, CarOrders.LockButton lock) {
         rv.setViewVisibility(R.id.hql_w_car, show ? View.VISIBLE : View.GONE);
         if (!show) return;
         boolean on = CarOrders.enabled(c);
@@ -120,8 +121,7 @@ final class LinkWidgetViews {
                 : last != null && !last.isEmpty() ? last : c.getString(R.string.hql_cw_ready)));
         rv.setFloat(R.id.hql_w_car_row, "setAlpha", on && !closed ? 1f : OFF_ALPHA);
         if (!on || closed) rv.setOnClickPendingIntent(R.id.hql_w_car_status, CarOrders.tap(c, "setup", 7));
-        rv.setOnClickPendingIntent(R.id.hql_w_car_lock, CarOrders.tap(c, "lock", 1));
-        rv.setOnClickPendingIntent(R.id.hql_w_car_unlock, CarOrders.tap(c, "unlock", 2));
+        lockButtons(c, rv, lock);
         rv.setOnClickPendingIntent(R.id.hql_w_car_trunk, CarOrders.tap(c, "trunk", 3));
         rv.setOnClickPendingIntent(R.id.hql_w_car_climate, CarOrders.tap(c, "climate", 4));
         // El clima encendido desde el widget: azul (frío), rojo (calor) o amarillo (auto), con el modo debajo.
@@ -141,6 +141,35 @@ final class LinkWidgetViews {
         rv.setTextViewText(R.id.hql_w_car_find_label, c.getString(cable ? R.string.hql_cw_cable : R.string.hql_cw_find));
         rv.setOnClickPendingIntent(R.id.hql_w_car_find, cable ? CarOrders.tap(c, "cable", 8) : CarOrders.tap(c, "find", 5));
         rv.setOnClickPendingIntent(R.id.hql_w_car_voice, CarOrders.tap(c, CarControlActivity.VOICE, 6));
+    }
+
+    /**
+     * Cerrar y abrir. Con el cierre conocido, un solo botón (el primero; el de «Abrir» se esconde) con la orden contraria
+     * y el color del estado: coche cerrado, «Abrir» con el candado cerrado en verde tenue; abierto, «Cerrar» con el
+     * candado abierto en rojo tenue. Sin saberlo, los dos de siempre. Mientras se manda la orden, su botón enseña el
+     * progreso en lugar del icono (el toque sigue puesto: si el proceso muere a medias, el botón no se queda muerto).
+     */
+    private static void lockButtons(Context c, RemoteViews rv, CarOrders.LockButton lock) {
+        boolean one = lock.single();
+        int text = ContextCompat.getColor(c, R.color.hql_text);
+        int color = one ? lock.color() : text;
+        rv.setViewVisibility(R.id.hql_w_car_unlock, one ? View.GONE : View.VISIBLE);
+        rv.setInt(R.id.hql_w_car_lock, "setBackgroundResource", one ? lock.widgetBackground() : R.drawable.hql_w_seg_off);
+        rv.setImageViewResource(R.id.hql_w_car_lock_icon, one ? lock.icon() : R.drawable.hql_ic_cw_lock);
+        rv.setInt(R.id.hql_w_car_lock_icon, "setColorFilter", color);
+        rv.setTextViewText(R.id.hql_w_car_lock_label, c.getString(one ? lock.label() : R.string.hql_cw_lock));
+        rv.setTextColor(R.id.hql_w_car_lock_label, color);
+        rv.setContentDescription(R.id.hql_w_car_lock, c.getString(one ? lock.description() : R.string.hql_cw_lock));
+        rv.setContentDescription(R.id.hql_w_car_unlock, c.getString(R.string.hql_cw_unlock));
+        boolean busyLock = lock.busy("lock");
+        boolean busyUnlock = !one && lock.busy("unlock");
+        rv.setViewVisibility(R.id.hql_w_car_lock_icon, busyLock ? View.GONE : View.VISIBLE);
+        rv.setViewVisibility(R.id.hql_w_car_lock_busy, busyLock ? View.VISIBLE : View.GONE);
+        rv.setViewVisibility(R.id.hql_w_car_unlock_icon, busyUnlock ? View.GONE : View.VISIBLE);
+        rv.setViewVisibility(R.id.hql_w_car_unlock_busy, busyUnlock ? View.VISIBLE : View.GONE);
+        boolean unlocks = one && "unlock".equals(lock.what());
+        rv.setOnClickPendingIntent(R.id.hql_w_car_lock, unlocks ? CarOrders.tap(c, "unlock", 2) : CarOrders.tap(c, "lock", 1));
+        rv.setOnClickPendingIntent(R.id.hql_w_car_unlock, CarOrders.tap(c, "unlock", 2));
     }
 
     /**

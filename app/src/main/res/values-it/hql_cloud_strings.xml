@@ -239,6 +239,8 @@
     <string name="hql_autolock_no_answer">nessuna risposta</string>
     <string name="hql_autolock_retry">Riprova</string>
     <string name="hql_cw_voice_short">Voce</string>
+    <string name="hql_cw_cd_unlock">Auto chiusa. Apri</string>
+    <string name="hql_cw_cd_lock">Auto aperta. Chiudi</string>
     <string name="hql_cc_find_title">La tua auto</string>
     <string name="hql_cc_find_searching">Cerco dov\'è l\'auto…</string>
     <string name="hql_cc_find_where">A %1$s da te · posizione di %2$s</string>
