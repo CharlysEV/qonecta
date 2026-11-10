@@ -4,4 +4,10 @@
     <string name="hql_cable_wifi_switch_sum">Als de USB-poort van de auto halverwege de rit vastloopt, gaat Qonecta+ tot het einde van de rit verder via Wi-Fi Direct. De gekozen verbinding verandert niet: de volgende rit gebruikt weer de kabel.</string>
     <string name="hql_cable_wifi_title">De kabel is uitgevallen: ik ga verder via Wi-Fi Direct</string>
     <string name="hql_cable_wifi_text">De USB-poort van de auto is vastgelopen. Qonecta+ gaat tot het einde van de rit verder via Wi-Fi Direct en gebruikt bij de volgende rit weer de kabel. Wil je nu terug naar de kabel, kies dan „USB-kabel” in de widget of bij „Wijzigen”.</string>
+    <string name="hql_cable_memory_title">De kabel werkt niet met deze auto: Qonecta+ gebruikt Wi-Fi Direct</string>
+    <string name="hql_cable_memory_text">Wil je de kabel opnieuw proberen, kies hem dan bij „Wijzigen”.</string>
+    <string name="hql_cable_back_title">De kabel reageert niet: terug naar je wifi-verbinding</string>
+    <string name="hql_cable_back_text">De USB-poort van de auto is vastgelopen. Qonecta+ gaat tot het einde van de rit verder via de verbinding die je hebt gekozen. Wil je de kabel gebruiken, kies dan „USB-kabel” in de widget of bij „Wijzigen”.</string>
+    <string name="hql_cable_wifi_off_title">De kabel reageert niet en wifi staat uit</string>
+    <string name="hql_cable_wifi_off_text">Zet de wifi van de telefoon aan, dan gaat Qonecta+ verder via Wi-Fi Direct.</string>
 </resources>

@@ -80,6 +80,8 @@ public final class LinkWidget extends AppWidgetProvider {
         String target = Config.resolveLinkMode(value, true);
         String before = cfg.linkMode();
         if (!target.equals(before)) cfg.setLinkMode(target);
+        // «Cable USB» a mano: se vuelve a probar aunque no funcionara con este coche (CableMemory).
+        if (Config.LINK_USB.equals(target)) LinkService.cableChosenByHand(c, "widget");
         boolean apply = LinkState.running && (!target.equals(before) || !target.equals(LinkState.activeLinkMode));
         L.i("widget: conexión " + Ui.linkTitle(before) + " → " + Ui.linkTitle(target)
                 + (apply ? " (enlace en marcha: se aplica ya)" : LinkState.running ? "" : " (para el próximo Conectar)"));

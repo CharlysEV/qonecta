@@ -4,4 +4,10 @@
     <string name="hql_cable_wifi_switch_sum">Si el puerto USB del coche se cuelga a mitad de viaje, Qonecta+ sigue por Wi-Fi Direct hasta el final del viaje. La conexión elegida no cambia: el viaje siguiente vuelve al cable.</string>
     <string name="hql_cable_wifi_title">El cable se ha caído: sigo por Wi-Fi Direct</string>
     <string name="hql_cable_wifi_text">El puerto USB del coche se ha quedado colgado. Qonecta+ sigue por Wi-Fi Direct hasta el final del viaje y en el siguiente vuelve al cable. Para volver ya al cable, elige «Cable USB» en el widget o en «Cambiar».</string>
+    <string name="hql_cable_memory_title">El cable no funciona con este coche: Qonecta+ usa Wi-Fi Direct</string>
+    <string name="hql_cable_memory_text">Para volver a probar el cable, elígelo en «Cambiar».</string>
+    <string name="hql_cable_back_title">El cable no responde: vuelvo a tu conexión Wi-Fi</string>
+    <string name="hql_cable_back_text">El puerto USB del coche se ha quedado colgado. Qonecta+ sigue por la conexión que elegiste hasta el final del viaje. Para usar el cable, elige «Cable USB» en el widget o en «Cambiar».</string>
+    <string name="hql_cable_wifi_off_title">El cable no responde y el Wi-Fi está apagado</string>
+    <string name="hql_cable_wifi_off_text">Enciende el Wi-Fi del móvil y Qonecta+ seguirá por Wi-Fi Direct.</string>
 </resources>

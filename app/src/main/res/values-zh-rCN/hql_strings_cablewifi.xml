@@ -4,4 +4,10 @@
     <string name="hql_cable_wifi_switch_sum">如果行程中车辆的 USB 接口卡死，Qonecta+ 会改用 Wi-Fi Direct 直到本次行程结束。所选的连接方式不变：下次行程会重新使用数据线。</string>
     <string name="hql_cable_wifi_title">数据线已断开：改用 Wi-Fi Direct 继续</string>
     <string name="hql_cable_wifi_text">车辆的 USB 接口已卡死。Qonecta+ 会用 Wi-Fi Direct 继续到本次行程结束，下次行程再用数据线。如需立即改回数据线，请在小组件或“更改”中选择“USB 数据线”。</string>
+    <string name="hql_cable_memory_title">数据线在这辆车上无法使用：Qonecta+ 改用 Wi-Fi Direct</string>
+    <string name="hql_cable_memory_text">如需重新尝试数据线，请在“更改”中选择它。</string>
+    <string name="hql_cable_back_title">数据线无响应：改回您选择的 Wi-Fi 连接</string>
+    <string name="hql_cable_back_text">车辆的 USB 接口已卡死。Qonecta+ 会用您选择的连接继续到本次行程结束。如需使用数据线，请在小组件或“更改”中选择“USB 数据线”。</string>
+    <string name="hql_cable_wifi_off_title">数据线无响应，且 Wi-Fi 已关闭</string>
+    <string name="hql_cable_wifi_off_text">请打开手机的 Wi-Fi，Qonecta+ 将改用 Wi-Fi Direct 继续。</string>
 </resources>

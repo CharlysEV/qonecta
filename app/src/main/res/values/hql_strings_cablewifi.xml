@@ -5,4 +5,10 @@
     <string name="hql_cable_wifi_switch_sum">If the car\'s USB port hangs mid-trip, Qonecta+ carries on over Wi-Fi Direct until the end of the trip. Your chosen connection doesn\'t change: the next trip uses the cable again.</string>
     <string name="hql_cable_wifi_title">The cable dropped: carrying on over Wi-Fi Direct</string>
     <string name="hql_cable_wifi_text">The car\'s USB port has hung. Qonecta+ carries on over Wi-Fi Direct until the end of the trip and uses the cable again on the next one. To go back to the cable now, choose “USB cable” in the widget or under “Change”.</string>
+    <string name="hql_cable_memory_title">The cable doesn\'t work with this car: Qonecta+ uses Wi-Fi Direct</string>
+    <string name="hql_cable_memory_text">To try the cable again, choose it under “Change”.</string>
+    <string name="hql_cable_back_title">The cable isn\'t responding: back to your Wi-Fi connection</string>
+    <string name="hql_cable_back_text">The car\'s USB port has hung. Qonecta+ carries on over the connection you chose until the end of the trip. To use the cable, choose “USB cable” in the widget or under “Change”.</string>
+    <string name="hql_cable_wifi_off_title">The cable isn\'t responding and Wi-Fi is off</string>
+    <string name="hql_cable_wifi_off_text">Turn on the phone\'s Wi-Fi and Qonecta+ will carry on over Wi-Fi Direct.</string>
 </resources>

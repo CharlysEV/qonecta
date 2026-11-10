@@ -156,6 +156,7 @@ public class SetupActivity extends Activity {
                 }
                 saveMode();
                 cfg.setLinkMode(linkMode);
+                cableByHand();
                 warnIfPending();
             }
             show(step + 1);
@@ -189,6 +190,7 @@ public class SetupActivity extends Activity {
         if (responsibilityAccepted) cfg.putBool("responsibility_accepted", true);
         saveMode();
         cfg.setLinkMode(linkMode);
+        cableByHand();
         warnIfPending();
         cfg.setSetupDone(true);
         startActivity(new Intent(this, HomeActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -206,6 +208,11 @@ public class SetupActivity extends Activity {
         warnedPending = true;
         L.i("conexión: " + linkMode + " (se aplica al volver a conectar; ahora " + LinkState.activeLinkMode + ")");
         android.widget.Toast.makeText(this, Str.get(R.string.hql_applies_on_reconnect), android.widget.Toast.LENGTH_LONG).show();
+    }
+
+    /** «Cable USB» tocado aquí: se vuelve a probar el cable aunque no funcionara con este coche (CableMemory). */
+    private void cableByHand() {
+        if (linkPicked && Config.LINK_USB.equals(linkMode)) LinkService.cableChosenByHand(this, "Cambiar");
     }
 
     /**

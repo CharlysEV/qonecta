@@ -284,6 +284,8 @@ internal class QdSessionBridge(
             L.w("coche: no se pudo adoptar el perfil por CarType: $e")
         }
         if (host.isUsb) UsbDiagnosis.carInfo(ctx)
+        // Qué coche es, para la memoria del cable (una huella: el CarUUID y el ProjectID no salen de aquí).
+        LinkService.carIdentity(CableMemory.carKey(info.carUuid, info.projectId))
     }
 
     override fun onVideoArgs(args: VideoArgs, message: ControlMessage) {

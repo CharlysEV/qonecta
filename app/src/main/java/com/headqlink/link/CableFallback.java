@@ -14,20 +14,35 @@ import java.util.Locale;
  * (widget) conectó en ~4 s.
  *
  * Se pasa a Wi-Fi Direct, durante el resto del viaje, solo si:
- * - la conexión elegida es el cable y el enlace va por él, y en este viaje ya hubo vídeo (CAR_INFO);
+ * - el enlace va por el cable;
  * - se abrió un atasco del cable ({@link #hung}): una sesión acabó con el coche callado y el cable puesto (WATCHDOG o
  *   WRITE_STALL) o con un atasco «el coche no lee» de al menos STALL_MIN_MS al cerrarse (aunque luego el coche cortara
- *   el puerto: EIO/ENODEV), o una sesión sin CAR_INFO acabó con el cable puesto. Quitar el cable a propósito no lo abre
- *   (el corte es inmediato, sin atasco antes): se sigue esperando como siempre;
- * - después, (a) el accesorio no vuelve en ACCESSORY_BACK_MS, o (b) los FAILED_ATTEMPTS intentos siguientes por el
- *   cable fallan: mudos (sin CAR_INFO) o atascados otra vez antes de RECOVERED_MS (el QDLink colgado puede contestar al
- *   saludo y no leer el vídeo, como la S2 del 01-11);
- * - el Bluetooth del coche sigue conectado (el coche sigue encendido) y el ajuste está puesto.
+ *   el puerto: EIO/ENODEV), o, ya con vídeo en el viaje, una sesión sin CAR_INFO acabó con el cable puesto. Quitar el
+ *   cable a propósito no lo abre (el corte es inmediato, sin atasco antes): se sigue esperando como siempre;
+ * - después, (a) el accesorio no vuelve en ACCESSORY_BACK_MS, o (b) los intentos siguientes por el cable fallan
+ *   ({@link #needed}): mudos (sin CAR_INFO) o atascados otra vez antes de RECOVERED_MS (el QDLink colgado puede contestar
+ *   al saludo y no leer el vídeo, como la S2 del 01-11). Un intento que a los MUTE_ATTEMPT_MS no ha traído ni un mensaje
+ *   del coche cuenta ya como mudo, sin esperar a su watchdog;
+ * - el Bluetooth del coche sigue conectado (el coche sigue encendido), el Wi-Fi del móvil está encendido y el ajuste
+ *   está puesto. Si lo impide el Bluetooth o el Wi-Fi, se dice una vez y se vuelve a mirar cada RECHECK_MS: en cuanto
+ *   se puede, se pasa (antes solo se miraba al acabar cada intento, cada vez más espaciados).
+ *
+ * Cuántos intentos: en el coche en el que el cable aguantó en este viaje (una sesión de RECOVERED_MS con vídeo, el C10
+ * del 30-10 y el 01-11), FAILED_ATTEMPTS, como siempre: su QDLink a veces vuelve solo. Si en este viaje hubo vídeo por
+ * el cable pero ninguna sesión duró (un T03, del 06-11 al 10-11: más de cien sesiones, todas de 10-11 s), basta
+ * FAST_ATTEMPTS. Sin vídeo en el viaje también se abre el atasco (antes no, y el cable se quedaba en bucle sin una línea
+ * en el log: viajes que empezaban con el QDLink del coche ya colgado), pero con FAILED_ATTEMPTS: al empezar, el coche a
+ * veces tarda en contestar por el cable.
+ *
+ * Con una Wi-Fi elegida y el cable por delante (el accesorio del coche presente), lo mismo, pero se vuelve a la Wi-Fi
+ * elegida ({@link Decision#toChosen}), sin mirar el Bluetooth: antes el cable se quedaba en bucle hasta quitarlo («la
+ * conexión elegida no es el cable», 18 sesiones seguidas el 07-11).
  * Mientras se confirma, sin el aviso «la app del coche se ha colgado» ({@link #handlesHang}: por voz pedía desenchufar
  * el cable, justo antes de pasar solo a Wi-Fi Direct).
  *
  * Es temporal: la conexión elegida no cambia. Se vuelve al cable en el viaje siguiente (cada arranque del servicio
- * empieza de cero: {@link #startTrip}) o al elegirlo a mano; tras una elección a mano con el cable caído ya no se cambia
+ * empieza de cero: {@link #startTrip}; salvo que el cable no funcione con este coche, {@link CableMemory}: entonces el
+ * viaje ya empieza por Wi-Fi Direct) o al elegirlo a mano; tras una elección a mano con el cable caído ya no se cambia
  * solo en ese viaje ({@link #onManualChoice}): manda lo que elige el usuario. Una sesión con CAR_INFO de al menos
  * RECOVERED_MS sin atascarse olvida el atasco.
  *
@@ -38,6 +53,12 @@ final class CableFallback {
     static final long ACCESSORY_BACK_MS = 10_000;
     /** Intentos por el cable que fallan tras el atasco (mudos o atascados otra vez) para pasar a Wi-Fi Direct. */
     static final int FAILED_ATTEMPTS = 2;
+    /** Los que bastan si en este viaje hubo vídeo por el cable y ninguna sesión llegó a durar RECOVERED_MS. */
+    static final int FAST_ATTEMPTS = 1;
+    /** Un intento tras el atasco sin un solo mensaje del coche en esto: mudo ya (con el coche bien, CAR_INFO llega en ~0,1 s). */
+    static final long MUTE_ATTEMPT_MS = 5_000;
+    /** Con el paso decidido pero sin poder darlo (Bluetooth del coche o Wi-Fi del móvil), cada cuánto se vuelve a mirar. */
+    static final long RECHECK_MS = 5_000;
     /** Un atasco «el coche no lee» al cerrarse la sesión cuenta desde esto (quitar el cable corta en el acto). */
     static final long STALL_MIN_MS = 3_000;
     /** Una sesión con CAR_INFO que dura esto sin atascarse: el cable se ha recuperado y el atasco se olvida. */
@@ -94,24 +115,46 @@ final class CableFallback {
     static final class Env {
         /** El ajuste «Pasar a Wi-Fi Direct si el cable se cae» (Config.CABLE_WIFI_FALLBACK). */
         final boolean enabled;
-        /** La conexión elegida es el cable y el enlace va por él (no el cable por delante de una Wi-Fi elegida). */
+        /** La conexión elegida es el cable (si no, el cable va por delante de una Wi-Fi elegida, a la que se vuelve). */
         final boolean cableChosen;
         final Bt bt;
+        /** La Wi-Fi a la que se pasaría puede arrancar: con Wi-Fi Direct, el Wi-Fi del móvil encendido. */
+        final boolean wifiReady;
+        /** La sesión por cable en curso lleva esto sin un solo mensaje del coche (-1: no hay sesión, o ya ha dicho algo). */
+        final long muteMs;
 
         Env(boolean enabled, boolean cableChosen, Bt bt) {
+            this(enabled, cableChosen, bt, true, -1);
+        }
+
+        Env(boolean enabled, boolean cableChosen, Bt bt, boolean wifiReady, long muteMs) {
             this.enabled = enabled;
             this.cableChosen = cableChosen;
             this.bt = bt == null ? Bt.UNKNOWN : bt;
+            this.wifiReady = wifiReady;
+            this.muteMs = muteMs;
         }
     }
 
     /** Si hay que pasar ya a Wi-Fi Direct, y los motivos para el log. El temporizador, en {@link #timerAtMs()}. */
     static final class Decision {
         private boolean toWifi;
+        private boolean toChosen;
+        private boolean wifiOff;
         private final List<String> reasons = new ArrayList<>();
 
         boolean toWifi() {
             return toWifi;
+        }
+
+        /** Con {@link #toWifi}: a la Wi-Fi elegida (el cable iba por delante de ella), no a Wi-Fi Direct en lugar del cable. */
+        boolean toChosen() {
+            return toChosen;
+        }
+
+        /** El paso está decidido y lo impide el Wi-Fi del móvil apagado: aviso en el móvil (una vez por atasco). */
+        boolean wifiOff() {
+            return wifiOff;
         }
 
         List<String> reasons() {
@@ -131,6 +174,17 @@ final class CableFallback {
 
     /** Hubo vídeo (CAR_INFO) en este viaje. */
     private boolean video;
+    /** En este viaje, una sesión por cable con vídeo duró al menos RECOVERED_MS: en este coche el cable aguanta. */
+    private boolean lasted;
+    /** Hay una sesión por cable abierta, y si ya se contó como intento mudo (a los MUTE_ATTEMPT_MS, sin esperar a su fin). */
+    private boolean open;
+    private boolean counted;
+    /** Paso decidido que algo impide por ahora (Bluetooth del coche, Wi-Fi apagado): su motivo y lo último dicho en el log. */
+    private boolean pending;
+    private String pendingWhy = "";
+    private String lastBlocker;
+    /** El cable iba por delante de una Wi-Fi elegida y se ha vuelto a ella hasta el final del viaje. */
+    private boolean yielded;
     /** Atasco del cable abierto desde este instante (-1: ninguno) e intentos fallidos desde entonces. */
     private long hungAt = -1;
     private int failed;
@@ -147,14 +201,33 @@ final class CableFallback {
 
     /** Arranque del servicio (viaje nuevo): de cero, y el enlace vuelve a ser la conexión elegida. */
     void startTrip() {
+        startTrip(false, false);
+    }
+
+    /**
+     * Viaje nuevo en un coche con el que el cable no funciona ({@link CableMemory}): el accesorio retenido desde el
+     * principio (hold) y, con el cable elegido, Wi-Fi Direct en su lugar (wifiDirect). Como tras el paso: hasta el final
+     * del viaje o hasta elegir el cable a mano.
+     */
+    void startTrip(boolean wifiDirect, boolean hold) {
         video = false;
+        lasted = false;
+        open = false;
+        counted = false;
+        yielded = false;
         hungAt = -1;
         failed = 0;
         goneAt = -1;
         timerAt = -1;
-        active = false;
+        active = wifiDirect;
         manual = false;
-        holdUsb = false;
+        holdUsb = hold;
+        clearPending();
+    }
+
+    /** Intentos fallidos tras el atasco que hacen falta ahora (ver la cabecera). */
+    int needed() {
+        return video && !lasted ? FAST_ATTEMPTS : FAILED_ATTEMPTS;
     }
 
     /** Se sigue por Wi-Fi Direct en lugar del cable (hasta el final del viaje o una elección a mano). */
@@ -211,21 +284,34 @@ final class CableFallback {
      * del coche se ha colgado» (UsbDiagnosis, que por voz dice que se desenchufe el cable) sobra.
      */
     boolean handlesHang(long now, Env env) {
-        return !active && cableHung(now) && blocker(env) == null;
+        return !active && !yielded && cableHung(now) && blocker(env) == null;
     }
 
     /** Fin de una sesión por cable con el cable como enlace. */
     Decision onSessionEnd(long now, End e, Env env) {
         Decision d = new Decision();
+        session(now, e, env, d);
+        // El paso sigue pendiente y nada lo va a volver a mirar (el temporizador era el de esta sesión): se vuelve a armar.
+        if (pending && timerAt < 0 && retriable(env)) timerAt = now + RECHECK_MS;
+        return d;
+    }
+
+    private void session(long now, End e, Env env, Decision d) {
+        boolean wasCounted = counted;
+        // Con el accesorio puesto, el temporizador era el de esta sesión (¿sigue muda?) o el de un paso pendiente.
+        if (goneAt < 0) timerAt = -1;
+        open = false;
+        counted = false;
         if (e.carInfo) video = true;
-        if (active) return d;
+        if (e.carInfo && e.livedMs >= RECOVERED_MS) lasted = true;
+        if (active || yielded) return;
         expire(now, d);
         boolean hung = hung(e);
         if (hungAt < 0) {
-            // Sin atasco abierto: lo abre una sesión atascada o una muda con el cable puesto (un fin normal o un cable quitado,
-            // no); y sin vídeo en el viaje, aún no (al empezar, el coche a veces tarda en contestar por el cable).
-            if (video && (hung || (!e.carInfo && !e.gone))) open(now, e, d);
-            return d;
+            // Sin atasco abierto: lo abre una sesión atascada (también sin vídeo en el viaje: el QDLink del coche ya venía
+            // colgado) o, ya con vídeo, una muda con el cable puesto (un fin normal o un cable quitado, no).
+            if (hung || (video && !e.carInfo && !e.gone)) open(now, e, d);
+            return;
         }
         if (e.carInfo && e.livedMs >= RECOVERED_MS) {
             if (hung) {
@@ -235,14 +321,20 @@ final class CableFallback {
                 close();
                 d.why(e + ": el cable se ha recuperado; olvido el atasco");
             }
-            return d;
+            return;
         }
-        if (e.carInfo && !hung) return d.why(e + ": con vídeo, pero corta; sigo vigilando el cable");
+        if (e.carInfo && !hung) {
+            d.why(e + ": con vídeo, pero corta; sigo vigilando el cable");
+            return;
+        }
+        if (wasCounted) {
+            // Ya contó como intento mudo a los MUTE_ATTEMPT_MS; si el paso sigue pendiente, se vuelve a mirar ahora.
+            if (pending) decide(now, env, d, pendingWhy);
+            return;
+        }
         failed++;
-        d.why(e + ": intento " + failed + " de " + FAILED_ATTEMPTS + " fallido tras el atasco ("
-                + (e.carInfo ? "se atascó otra vez" : "mudo") + ")");
-        if (failed >= FAILED_ATTEMPTS) decide(env, d, failed + " intentos fallidos por el cable tras el atasco");
-        return d;
+        d.why(e + ": " + attempt() + " (" + (e.carInfo ? "se atascó otra vez" : "mudo") + ")");
+        if (failed >= needed()) decide(now, env, d, failedWhy());
     }
 
     /** El accesorio del coche se ha ido (cable quitado, sin corriente o EIO/ENODEV). */
@@ -252,6 +344,8 @@ final class CableFallback {
         if (active) return d;
         expire(now, d);
         if (hungAt < 0) return d;
+        // Con el paso ya pendiente (lo impide el Bluetooth o el Wi-Fi), sigue su temporizador.
+        if (pending) return d;
         timerAt = goneAt + ACCESSORY_BACK_MS;
         return d.why("accesorio fuera tras el atasco: si no vuelve en " + secs(ACCESSORY_BACK_MS) + ", sigo por Wi-Fi Direct");
     }
@@ -260,24 +354,59 @@ final class CableFallback {
     Decision onAccessoryBack(long now) {
         Decision d = new Decision();
         long was = goneAt;
+        boolean waiting = timerAt >= 0 && !pending;
         goneAt = -1;
-        if (timerAt < 0) return d;
-        timerAt = -1;
-        if (!active && hungAt >= 0 && was >= 0) {
-            d.why("el accesorio ha vuelto en " + secs(now - was) + ": ahora cuentan los intentos (" + FAILED_ATTEMPTS
-                    + " fallidos: Wi-Fi Direct)");
+        open = true;
+        counted = false;
+        if (active || yielded || hungAt < 0) {
+            timerAt = -1;
+            return d;
+        }
+        // Un intento tras el atasco: si a los MUTE_ATTEMPT_MS el coche no ha dicho nada, cuenta ya como mudo.
+        timerAt = now + MUTE_ATTEMPT_MS;
+        if (waiting && was >= 0) {
+            d.why("el accesorio ha vuelto en " + secs(now - was) + ": ahora cuentan los intentos (" + needed()
+                    + (needed() == 1 ? " fallido" : " fallidos") + ": Wi-Fi Direct)");
         }
         return d;
     }
 
-    /** Vencimiento del temporizador ({@link #timerAtMs()}): el accesorio sigue fuera tras el atasco. */
+    /**
+     * Vencimiento del temporizador ({@link #timerAtMs()}): el accesorio sigue fuera tras el atasco, el intento en curso
+     * sigue mudo, o toca volver a mirar lo que impedía el paso.
+     */
     Decision timer(long now, Env env) {
         Decision d = new Decision();
         if (timerAt < 0 || now < timerAt) return d;
         timerAt = -1;
-        if (active) return d;
+        if (active || yielded) return d;
         expire(now, d);
-        if (hungAt >= 0 && goneAt >= 0) decide(env, d, "el accesorio no ha vuelto en " + secs(now - goneAt) + " tras el atasco");
+        if (hungAt < 0) return d;
+        if (goneAt >= 0) {
+            if (pending) {
+                decide(now, env, d, pendingWhy);
+            } else if (now - goneAt < ACCESSORY_BACK_MS) {
+                timerAt = goneAt + ACCESSORY_BACK_MS;
+            } else {
+                decide(now, env, d, "el accesorio no ha vuelto en " + secs(now - goneAt) + " tras el atasco");
+            }
+            return d;
+        }
+        if (open && !counted) {
+            if (env.muteMs >= MUTE_ATTEMPT_MS) {
+                counted = true;
+                failed++;
+                d.why("la sesión en curso lleva " + secs(env.muteMs) + " sin un mensaje del coche: " + attempt() + " (mudo)");
+                if (failed >= needed()) decide(now, env, d, failedWhy());
+            } else if (env.muteMs >= 0) {
+                // Aún no lleva lo bastante (el temporizador se adelantó a la sesión): se mira otra vez cuando lo lleve.
+                timerAt = now + Math.max(500, MUTE_ATTEMPT_MS - env.muteMs);
+            }
+            // Con algún mensaje del coche, el intento sigue: lo dirá su final.
+            return d;
+        }
+        // Entre intentos, con el paso pendiente: ¿ya se puede?
+        if (pending && !open) decide(now, env, d, pendingWhy);
         return d;
     }
 
@@ -289,9 +418,10 @@ final class CableFallback {
      */
     boolean onManualChoice(long now, boolean toUsb) {
         if (toUsb) holdUsb = false;
-        if (!active && !cableHung(now)) return false;
+        if (!active && !yielded && !cableHung(now)) return false;
         manual = true;
         active = false;
+        yielded = false;
         close();
         if (!toUsb) holdUsb = true;
         return true;
@@ -311,14 +441,35 @@ final class CableFallback {
         failed = 0;
         // El coche ya cortó el puerto antes de cerrarse la sesión: los 10 s, desde entonces.
         if (goneAt >= 0) timerAt = goneAt + ACCESSORY_BACK_MS;
+        clearPending();
+        int n = needed();
         d.why(e + ": atasco del cable con el cable puesto (el coche no lee o no contesta); si el accesorio no vuelve en "
-                + secs(ACCESSORY_BACK_MS) + " o fallan los " + FAILED_ATTEMPTS + " intentos siguientes, sigo por Wi-Fi Direct");
+                + secs(ACCESSORY_BACK_MS) + " o " + (n == 1 ? "falla el intento siguiente" : "fallan los " + n
+                + " intentos siguientes") + ", sigo por Wi-Fi Direct");
     }
 
     private void close() {
         hungAt = -1;
         failed = 0;
         timerAt = -1;
+        clearPending();
+    }
+
+    private void clearPending() {
+        pending = false;
+        pendingWhy = "";
+        lastBlocker = null;
+    }
+
+    /** «intento 1 de 1 fallido tras el atasco»; pasados los que hacían falta (el paso está pendiente), sin «3 de 2». */
+    private String attempt() {
+        int n = needed();
+        return failed <= n ? "intento " + failed + " de " + n + " fallido tras el atasco"
+                : "otro intento fallido tras el atasco (van " + failed + "; el paso sigue pendiente)";
+    }
+
+    private String failedWhy() {
+        return failed == 1 ? "1 intento fallido por el cable tras el atasco" : failed + " intentos fallidos por el cable tras el atasco";
     }
 
     private void expire(long now, Decision d) {
@@ -327,29 +478,52 @@ final class CableFallback {
         d.why("el atasco del cable fue hace más de " + LinkLifecycle.dur(EPISODE_MS) + " sin decidir nada: lo olvido");
     }
 
-    /** Lo que impide pasar a Wi-Fi Direct ahora, o null si nada. */
+    /** Lo que impide pasar a Wi-Fi Direct (o volver a la Wi-Fi elegida) ahora, o null si nada. */
     private String blocker(Env env) {
         return manual ? "la conexión se eligió a mano en este viaje"
                 : !env.enabled ? "el ajuste «Pasar a Wi-Fi Direct si el cable se cae» está apagado"
-                : !env.cableChosen ? "la conexión elegida no es el cable"
-                : !video ? "no hubo vídeo en este viaje"
-                : env.bt == Bt.GONE ? "el Bluetooth del coche ya no está (el coche se ha apagado)"
+                : !env.wifiReady ? "el Wi-Fi del móvil está apagado (hay que encenderlo para seguir por Wi-Fi Direct)"
+                // A la Wi-Fi elegida se vuelve como al quitar el cable: sin mirar el Bluetooth del coche.
+                : !env.cableChosen ? null
+                : env.bt == Bt.GONE ? "el Bluetooth del coche no está conectado (el coche está apagado o aún no lo ha conectado)"
                 : env.bt != Bt.CONNECTED ? "no se sabe si el Bluetooth del coche sigue (Android no lo dice)"
                 : null;
     }
 
-    private void decide(Env env, Decision d, String why) {
+    /** Lo que lo impide puede cambiar solo (Bluetooth, Wi-Fi): se vuelve a mirar. La elección a mano y el ajuste, no. */
+    private boolean retriable(Env env) {
+        return !manual && env.enabled;
+    }
+
+    private void decide(long now, Env env, Decision d, String why) {
         String no = blocker(env);
         if (no != null) {
-            d.why(why + ", pero " + no + ": sigo con el cable");
+            pending = true;
+            pendingWhy = why;
+            boolean retry = retriable(env);
+            // Una vez por motivo, no una por intento (ni «intento 7 de 2»).
+            if (!no.equals(lastBlocker)) {
+                lastBlocker = no;
+                d.why(why + ", pero " + no + ": sigo con el cable" + (retry ? " y lo vuelvo a mirar cada "
+                        + secs(RECHECK_MS) + " (en cuanto se pueda, paso)" : ""));
+                d.wifiOff = retry && !env.wifiReady;
+            }
+            if (retry && (timerAt < 0 || timerAt > now + RECHECK_MS)) timerAt = now + RECHECK_MS;
             return;
         }
-        active = true;
         holdUsb = true;
         close();
         d.toWifi = true;
-        d.why(why + " y el Bluetooth del coche sigue conectado: el cable se ha caído, sigo por Wi-Fi Direct hasta el final"
-                + " del viaje (la conexión elegida sigue siendo el cable: el viaje siguiente vuelve a él)");
+        if (env.cableChosen) {
+            active = true;
+            d.why(why + " y el Bluetooth del coche sigue conectado: el cable se ha caído, sigo por Wi-Fi Direct hasta el final"
+                    + " del viaje (la conexión elegida sigue siendo el cable)");
+        } else {
+            yielded = true;
+            d.toChosen = true;
+            d.why(why + ": el cable no responde y la conexión elegida es una Wi-Fi; vuelvo a ella hasta el final del viaje (el"
+                    + " cable ya no pasa por delante)");
+        }
     }
 
     /** «10 s» o «8,8 s». */

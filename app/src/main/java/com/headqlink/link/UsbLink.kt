@@ -280,6 +280,32 @@ internal class UsbLink(
 
     fun isBusy(): Boolean = session?.isClosed == false
 
+    /**
+     * La sesión por cable en curso lleva esto sin un solo mensaje del coche; -1 si no hay sesión o el coche ya ha dicho
+     * algo. Para contar ya como mudo un intento tras un atasco (CableFallback), sin esperar a su watchdog.
+     */
+    fun muteMs(): Long {
+        val s = session ?: return -1
+        if (s.isClosed) return -1
+        return try {
+            val st = s.stats()
+            if (st.messagesReceived == 0L) st.uptimeMs else -1
+        } catch (_: RuntimeException) {
+            -1
+        }
+    }
+
+    /** Lo que lleva la sesión por cable en curso si el coche mandó su CAR_INFO (hay vídeo); -1 si no. Para CableMemory. */
+    fun videoMs(): Long {
+        val s = session ?: return -1
+        if (s.isClosed || bridges[s.id]?.gotCarInfo != true) return -1
+        return try {
+            s.stats().uptimeMs
+        } catch (_: RuntimeException) {
+            -1
+        }
+    }
+
     fun portFor(id: Int): SessionPort? = bridges[id]?.port
 
     fun describeCurrent(): String = bridges[book.currentId]?.describeLink() ?: ""
@@ -376,7 +402,7 @@ internal class UsbLink(
             if (held) {
                 if (car != null && !heldLogged) {
                     heldLogged = true
-                    UsbProbe.log("accesorio del coche presente (${UsbProbe.shortName(car)}), pero retenido: sigo por Wi-Fi (el cable se cayó en este viaje)")
+                    UsbProbe.log("accesorio del coche presente (${UsbProbe.shortName(car)}), pero retenido: sigo por Wi-Fi (el cable no se usa en este viaje)")
                 }
                 return@submit
             }
