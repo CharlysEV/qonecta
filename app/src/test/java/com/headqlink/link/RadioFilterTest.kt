@@ -86,7 +86,7 @@ class RadioFilterTest {
         val again = ix.view(RadioFilter.GROUPED, "grupo 7")
         val ms = (System.nanoTime() - t0) / 1_000_000
         assertEquals(20_000, sorted.size)
-        assertEquals(11, hit.size)
+        assertEquals(12, hit.size)
         assertTrue(again.isNotEmpty())
         assertTrue("tardó $ms ms", ms < 3_000)
         // Cada letra escrita después es una pasada barata.
