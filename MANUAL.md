@@ -375,6 +375,7 @@ sin un solo corte**, y además el móvil carga. Tras muchos viajes, es la conexi
   el coche (en su pantalla con «Auto extendido», por voz con «Auto»); el viaje siguiente vuelve al cable, y para volver
   antes elige «Cable USB» en el widget o con «Cambiar». Solo con el Bluetooth del coche conectado; se quita en ⚙ ›
   Ajustes › «Conexión» › «Pasar a Wi-Fi Direct si el cable se cae».
+- **Si el cable no funciona con tu coche** (dos viajes seguidos acaba en Wi-Fi Direct sin una sola sesión de más de un minuto), los viajes siguientes empiezan ya por **Wi-Fi Direct**, con el aviso «El cable no funciona con este coche: Qonecta+ usa Wi-Fi Direct» una sola vez; la conexión elegida no cambia, y el cable se vuelve a probar si lo eliges en «Cambiar» o en el widget, a los 7 días o al actualizar la app.
 
 **Si no funciona**, exporta el log ([sección 8](#8-exportar-el-log-para-pedir-ayuda)) justo después de enchufar el
 cable y envíanoslo, con la hora. Buscamos las líneas **`HQL/USB`**: qué dice Android del cable (`USB_STATE`), si el

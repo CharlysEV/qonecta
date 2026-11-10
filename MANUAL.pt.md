@@ -387,6 +387,7 @@ alguns modelos), e depois de muitas viagens é a ligação recomendada para «Au
   (no ecrã dele com «Auto estendido», por voz com «Auto»); a viagem seguinte volta ao cabo, e para voltar antes escolha
   «Cabo USB» no widget ou em «Alterar». Só com o Bluetooth do carro ligado; desativa-se em ⚙ › Definições › «Ligação» ›
   «Passar para Wi-Fi Direct se o cabo falhar».
+- **Se o cabo não funcionar com o seu carro** (duas viagens seguidas acabam em Wi-Fi Direct sem uma única sessão de mais de um minuto), as viagens seguintes começam logo por **Wi-Fi Direct**, com o aviso «O cabo não funciona com este carro: o Qonecta+ usa Wi-Fi Direct» uma só vez; a ligação escolhida não muda, e o cabo volta a ser experimentado se o escolher em «Alterar» ou no widget, ao fim de 7 dias ou ao atualizar a app.
 
 **Se não funcionar**, exporte o registo ([secção 8](#8-exportar-o-registo-para-pedir-ajuda)) logo a seguir a ligar o
 cabo e envie-no-lo, com a hora. Procuramos as linhas **`HQL/USB`**: o que diz o Android do cabo (`USB_STATE`), se o

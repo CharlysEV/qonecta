@@ -375,6 +375,7 @@ solo alcuni modelli), e dopo molti viaggi è la connessione consigliata per «Au
   sul telefono e in auto (sul suo schermo con «Auto esteso», a voce con «Auto»); il viaggio successivo torna al cavo, e
   per tornarci prima scegli «Cavo USB» nel widget o con «Cambia». Solo con il Bluetooth dell'auto collegato; si
   disattiva in ⚙ › Impostazioni › «Connessione» › «Passa a Wi-Fi Direct se il cavo si blocca».
+- **Se il cavo non funziona con la tua auto** (due viaggi di fila finiscono in Wi-Fi Direct senza una sola sessione di più di un minuto), i viaggi successivi partono direttamente in **Wi-Fi Direct**, con l'avviso «Il cavo non funziona con questa auto: Qonecta+ usa Wi-Fi Direct» una sola volta; la connessione scelta non cambia, e il cavo viene riprovato se lo scegli in «Cambia» o nel widget, dopo 7 giorni o dopo un aggiornamento dell'app.
 
 **Se non funziona**, esporta il log ([sezione 8](#8-esportare-il-log-per-chiedere-aiuto)) subito dopo aver collegato il
 cavo e inviacelo, con l'ora. Cerchiamo le righe **`HQL/USB`**: cosa dice Android del cavo (`USB_STATE`), se l'auto ha

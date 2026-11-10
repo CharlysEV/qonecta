@@ -368,6 +368,7 @@ models do), and after many trips it's the recommended connection for "Auto exten
   phone and in the car (on its screen with "Auto extended", spoken with "Auto"); the next trip uses the cable again, and
   to go back sooner choose "USB cable" in the widget or with "Change". Only with the car's Bluetooth connected; turn it
   off in ⚙ › Settings › "Connection" › "Switch to Wi-Fi Direct if the cable drops".
+- **If the cable doesn't work with your car** (two trips in a row end on Wi-Fi Direct without a single session of more than a minute), the following trips start straight on **Wi-Fi Direct**, with the notice "The cable doesn't work with this car: Qonecta+ uses Wi-Fi Direct" shown once; your chosen connection doesn't change, and the cable is tried again if you choose it under "Change" or in the widget, after 7 days or after updating the app.
 
 **If it doesn't work**, export the log ([section 8](#8-exporting-the-log-to-ask-for-help)) right after plugging in the
 cable and send it to us, with the time. We're looking for the **`HQL/USB`** lines: what Android says about the cable
