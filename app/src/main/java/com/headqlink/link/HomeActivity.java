@@ -93,6 +93,8 @@ public class HomeActivity extends Activity implements LinkState.Listener {
         TextView version = findViewById(R.id.hql_home_version);
         version.setText(About.versionByline(this));
         About.fitByline(version);
+        // La taza de al lado es un dibujo: se lee «Invítame a un café» (el texto del botón, sin su emoji).
+        version.setContentDescription(version.getText() + ", " + Str.get(R.string.hql_about_donate).replace("☕", "").trim());
         version.setOnClickListener(v -> About.show(this));
         updateRow = findViewById(R.id.hql_home_update);
         // La novedad estrella (una vez) y, al cerrarla, las novedades de la versión recién instalada (la primera vez que

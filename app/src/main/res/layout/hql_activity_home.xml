@@ -47,12 +47,18 @@
                     android:maxLines="1"
                     android:text="Qonecta+" />
 
+                <!-- La taza (ámbar suave) va pegada al texto: al tocar la línea, «Acerca de y créditos», con «Invítame a
+                     un café» arriba. -->
                 <TextView
                     android:id="@+id/hql_home_version"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp"
+                    android:drawableEnd="@drawable/hql_ic_coffee"
+                    android:drawablePadding="5dp"
+                    android:drawableTint="#FFFFD27A"
                     android:gravity="center_vertical"
+                    android:minHeight="24dp"
                     android:ellipsize="end"
                     android:fontFamily="sans-serif-condensed"
                     android:maxLines="1"

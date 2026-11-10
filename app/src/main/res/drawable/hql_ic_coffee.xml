@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- headqlink: una taza de café (dibujo propio: taza, asa y plato), junto a «por CharlysEV» en la cabecera del móvil.
+     Pequeña (16 dp) para ir en la línea del texto; se tiñe donde se usa. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M4,5h12v7a4,4 0 0 1 -4,4H8a4,4 0 0 1 -4,-4z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M17,6h1.5a3,3 0 0 1 0,6H17v-2h1.5a1,1 0 0 0 0,-2H17z" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M3,18h14v2H3z" />
+</vector>
