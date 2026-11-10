@@ -105,6 +105,7 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
         buildCarScreen();
         buildPhoneScreen();
         buildTrip();
+        buildCheapCharge();
         buildAdvanced(list, b != null && b.getBoolean(STATE_ADVANCED));
         ScrollView sv = new ScrollView(this);
         sv.addView(list);
@@ -306,6 +307,184 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
         row(Str.get(R.string.hql_compare_with), () -> compareLabel(cfg.compareDiesel())).setOnClickListener(v -> pickCompare());
         row(Str.get(R.string.hql_compare_l100), () -> SettingsRows.l100Text(cfg.fuelLitersPer100(), Locale.getDefault()))
                 .setOnClickListener(v -> editL100());
+    }
+
+    // ------------------------------------------------------------------ «Carga barata»
+
+    private static final int[] BAND_NAMES = {R.string.hql_cb_band_valley, R.string.hql_cb_band_mid, R.string.hql_cb_band_peak};
+    private static final int[] BAND_PRICES = {R.string.hql_cb_price_valley, R.string.hql_cb_price_mid, R.string.hql_cb_price_peak};
+    /** Valle, llano y punta en el editor de horas: verde, ámbar y rojo apagados, con el número en claro encima. */
+    private static final int[] BAND_COLORS = {0xFF1F7A54, 0xFF9A6A12, 0xFFA83B48};
+    private static final int[] CHEAP_TARGETS = {50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100};
+
+    /**
+     * «Carga barata» (CheapCharge): el interruptor, la tarifa (PVPC, tres tramos con sus precios y sus horas, o plana), la
+     * hora de salida, el objetivo de batería y la potencia del cargador de casa. Cada cambio vale desde la próxima
+     * comprobación; con una ventana ya puesta en el coche, se recalcula.
+     */
+    private void buildCheapCharge() {
+        section(R.drawable.hql_ic_cw_cable, Str.get(R.string.hql_cb_title));
+        switchRow(Str.get(R.string.hql_cb_set_on), () -> Str.get(R.string.hql_cb_set_on_sum), cfg::cheapCharge, on -> {
+            cfg.setCheapCharge(on);
+            L.i("carga barata: " + (on ? "activada" : "apagada"));
+            CheapCharge.settingsChangedAsync(this);
+            // La comprobación de fondo (con cuenta de Leapmotor), por si aún no estaba programada.
+            if (on) ChargeCheckJob.schedule(getApplicationContext());
+        });
+        row(Str.get(R.string.hql_cb_set_tariff), () -> tariffLabel(cfg.cheapTariff())).setOnClickListener(v -> pickTariff());
+        BooleanSupplier bands = () -> Tariff.BANDS.equals(cfg.cheapTariff());
+        for (int i = Tariff.VALLEY; i <= Tariff.PEAK; i++) {
+            int band = i;
+            View price = row(Str.get(BAND_PRICES[band]), () -> SettingsRows.priceText(cfg.cheapBandPrice(band), Locale.getDefault()));
+            price.setOnClickListener(v -> editPrice(Str.get(BAND_PRICES[band]), null, SettingsRows.PRICE_HOME_MAX,
+                    () -> cfg.cheapBandPrice(band), p -> {
+                        cfg.setCheapBandPrice(band, p);
+                        L.i(String.format(Locale.US, "carga barata: precio del tramo %d: %.2f por kWh", band, cfg.cheapBandPrice(band)));
+                        CheapCharge.settingsChangedAsync(this);
+                    }));
+            visibleWhen(price, bands);
+        }
+        View hours = row(Str.get(R.string.hql_cb_set_hours), this::bandHoursSummary);
+        hours.setOnClickListener(v -> editBandHours());
+        visibleWhen(hours, bands);
+        View weekend = switchRow(Str.get(R.string.hql_cb_set_weekend), null, cfg::cheapWeekendValley, on -> {
+            cfg.setCheapWeekendValley(on);
+            L.i("carga barata: fines de semana todo valle: " + (on ? "sí" : "no"));
+            CheapCharge.settingsChangedAsync(this);
+        });
+        visibleWhen(weekend, bands);
+        row(Str.get(R.string.hql_cb_set_depart), () -> CheapWindow.hhmm(cfg.cheapDepartMin())).setOnClickListener(v -> pickDeparture());
+        row(Str.get(R.string.hql_cb_set_target), () -> Str.get(R.string.hql_aj_percent, cfg.cheapTarget()))
+                .setOnClickListener(v -> pickCheapTarget());
+        row(Str.get(R.string.hql_cb_set_kw), () -> kwLabel(cfg.cheapKw())).setOnClickListener(v -> pickCheapKw());
+        note(Str.get(R.string.hql_cb_set_note));
+    }
+
+    private static String tariffLabel(String mode) {
+        return Str.get(Tariff.PVPC.equals(mode) ? R.string.hql_cb_tariff_pvpc : Tariff.FLAT.equals(mode) ? R.string.hql_cb_tariff_flat
+                : R.string.hql_cb_tariff_bands);
+    }
+
+    /** «7,4 kW», «11 kW». */
+    private static String kwLabel(double kw) {
+        return String.format(Locale.getDefault(), kw == Math.rint(kw) ? "%.0f kW" : "%.1f kW", kw);
+    }
+
+    /** «Valle 8 h · llano 8 h · punta 8 h». */
+    private String bandHoursSummary() {
+        int[] n = new int[3];
+        for (int b : Tariff.parseHours(cfg.cheapBandHours())) n[b]++;
+        return Str.get(R.string.hql_cb_set_hours_sum, n[Tariff.VALLEY], n[Tariff.MID], n[Tariff.PEAK]);
+    }
+
+    private void pickTariff() {
+        String[] modes = {Tariff.PVPC, Tariff.BANDS, Tariff.FLAT};
+        CharSequence[] items = {tariffLabel(Tariff.PVPC), tariffLabel(Tariff.BANDS), tariffLabel(Tariff.FLAT)};
+        choose(Str.get(R.string.hql_cb_set_tariff), items, SettingsRows.indexOf(modes, cfg.cheapTariff(), 1),
+                Str.get(R.string.hql_cb_tariff_help), i -> {
+                    cfg.setCheapTariff(modes[i]);
+                    L.i("carga barata: tarifa " + modes[i]);
+                    CheapCharge.settingsChangedAsync(this);
+                });
+    }
+
+    private void pickDeparture() {
+        int now = cfg.cheapDepartMin();
+        new android.app.TimePickerDialog(this, (view, h, m) -> {
+            cfg.setCheapDepartMin(h * 60 + m);
+            L.i("carga barata: hora de salida " + CheapWindow.hhmm(cfg.cheapDepartMin()));
+            CheapCharge.settingsChangedAsync(this);
+            refreshAll();
+        }, now / 60, now % 60, true).show();
+    }
+
+    private void pickCheapTarget() {
+        CharSequence[] items = new CharSequence[CHEAP_TARGETS.length];
+        for (int i = 0; i < items.length; i++) items[i] = Str.get(R.string.hql_aj_percent, CHEAP_TARGETS[i]);
+        choose(Str.get(R.string.hql_cb_set_target), items, SettingsRows.indexOf(CHEAP_TARGETS, cfg.cheapTarget()), null, i -> {
+            cfg.setCheapTarget(CHEAP_TARGETS[i]);
+            L.i("carga barata: objetivo " + cfg.cheapTarget() + " %");
+            CheapCharge.settingsChangedAsync(this);
+        });
+    }
+
+    private void pickCheapKw() {
+        CharSequence[] items = new CharSequence[Config.CHEAP_KW.length];
+        int sel = -1;
+        for (int i = 0; i < items.length; i++) {
+            items[i] = kwLabel(Config.CHEAP_KW[i]);
+            if (Config.CHEAP_KW[i] == cfg.cheapKw()) sel = i;
+        }
+        choose(Str.get(R.string.hql_cb_set_kw), items, sel, null, i -> {
+            cfg.setCheapKw(Config.CHEAP_KW[i]);
+            L.i("carga barata: cargador de casa de " + cfg.cheapKw() + " kW");
+            CheapCharge.settingsChangedAsync(this);
+        });
+    }
+
+    /**
+     * Las 24 horas del día en una rejilla (cuatro filas de seis): cada una con el color de su tramo; al tocarla pasa de
+     * valle a llano, de llano a punta y de punta a valle. «Guardar» las deja puestas.
+     */
+    private void editBandHours() {
+        int[] hours = Tariff.parseHours(cfg.cheapBandHours());
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setPadding(dp(24), dp(8), dp(24), 0);
+        TextView help = new TextView(this);
+        help.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodyMedium);
+        help.setTextColor(TEXT_DIM);
+        help.setText(Str.get(R.string.hql_cb_set_hours_help));
+        box.addView(help);
+        // La leyenda: un punto del color de cada tramo y su nombre.
+        android.text.SpannableStringBuilder legend = new android.text.SpannableStringBuilder();
+        for (int b = Tariff.VALLEY; b <= Tariff.PEAK; b++) {
+            int at = legend.length();
+            legend.append("● ").append(Str.get(BAND_NAMES[b])).append(b < Tariff.PEAK ? "    " : "");
+            legend.setSpan(new android.text.style.ForegroundColorSpan(BAND_COLORS[b]), at, at + 1, 0);
+        }
+        TextView lg = new TextView(this);
+        lg.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_BodySmall);
+        lg.setTextColor(TEXT);
+        lg.setText(legend);
+        lg.setPadding(0, dp(10), 0, dp(8));
+        box.addView(lg);
+        for (int row = 0; row < 4; row++) {
+            LinearLayout line = new LinearLayout(this);
+            for (int col = 0; col < 6; col++) {
+                int h = row * 6 + col;
+                TextView cell = new TextView(this);
+                cell.setGravity(Gravity.CENTER);
+                cell.setTextColor(TEXT);
+                cell.setTextAppearance(com.google.android.material.R.style.TextAppearance_Material3_LabelLarge);
+                cell.setText(String.format(Locale.ROOT, "%02d", h));
+                android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+                bg.setCornerRadius(dp(8));
+                bg.setColor(BAND_COLORS[hours[h]]);
+                cell.setBackground(bg);
+                cell.setContentDescription(String.format(Locale.ROOT, "%02d:00 · ", h) + Str.get(BAND_NAMES[hours[h]]));
+                cell.setOnClickListener(v -> {
+                    hours[h] = Tariff.next(hours[h]);
+                    bg.setColor(BAND_COLORS[hours[h]]);
+                    cell.setContentDescription(String.format(Locale.ROOT, "%02d:00 · ", h) + Str.get(BAND_NAMES[hours[h]]));
+                });
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, dp(44), 1f);
+                lp.setMargins(dp(2), dp(2), dp(2), dp(2));
+                line.addView(cell, lp);
+            }
+            box.addView(line);
+        }
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(Str.get(R.string.hql_cb_set_hours))
+                .setView(box)
+                .setPositiveButton(Str.get(R.string.hql_save), (d, w) -> {
+                    cfg.setCheapBandHours(Tariff.hoursString(hours));
+                    L.i("carga barata: horas de los tramos " + cfg.cheapBandHours());
+                    CheapCharge.settingsChangedAsync(this);
+                    refreshAll();
+                })
+                .setNegativeButton(Str.get(R.string.hql_cancel), null)
+                .show();
     }
 
     /** «Automática (CHF)» o «CHF · franco suizo». */

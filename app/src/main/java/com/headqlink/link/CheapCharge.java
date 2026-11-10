@@ -270,6 +270,12 @@ final class CheapCharge {
         return h == null ? null : new double[]{h.lat, h.lon};
     }
 
+    /** Desde la pantalla de ajustes: en otro hilo (una comprobación en marcha puede tardar lo que tarda una orden). */
+    static void settingsChangedAsync(Context ctx) {
+        Context app = ctx.getApplicationContext();
+        new Thread(() -> settingsChanged(app), "hql-cheap-settings").start();
+    }
+
     /** Cambió un ajuste de «Carga barata»: lo decidido para este enchufado se vuelve a pensar en la próxima comprobación. */
     static synchronized void settingsChanged(Context ctx) {
         State st = State.load(ctx);
