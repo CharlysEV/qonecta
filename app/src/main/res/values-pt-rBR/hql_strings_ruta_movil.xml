@@ -79,4 +79,5 @@
     <string name="hql_add_stop_mine">Adicionada por você</string>
     <string name="hql_add_stop_unreachable">"%1$s" (km %2$.0f) está fora de alcance e fica fora do plano. Adicione um carregador antes ou saia com mais bateria.</string>
     <string name="hql_pr_battery_closed">Sessão da Leapmotor encerrada: entre de novo em ⚙ › «Dados do carro (conta Leapmotor)». Enquanto isso, escolha a bateria na partida.</string>
+    <string name="hql_add_stop_loading">Os carregadores da rota ainda não chegaram: o serviço de mapas está lento ou não responde. Tente de novo em instantes ou procure o lugar.</string>
 </resources>

@@ -77,4 +77,5 @@
     <string name="hql_add_stop_mine">由你添加</string>
     <string name="hql_add_stop_unreachable">无法到达“%1$s”（第 %2$.0f 公里），因此未纳入计划。请在它之前添加一个充电桩，或以更高电量出发。</string>
     <string name="hql_pr_battery_closed">Leapmotor 登录已失效：请在 ⚙ ›「车辆数据（Leapmotor 账户）」中重新登录。在此之前，请自行选择出发电量。</string>
+    <string name="hql_add_stop_loading">沿途充电站还没加载出来：地图服务较慢或无响应。请稍后再试，或直接搜索地点。</string>
 </resources>

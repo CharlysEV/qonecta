@@ -79,4 +79,5 @@
     <string name="hql_add_stop_mine">Ajouté par toi</string>
     <string name="hql_add_stop_unreachable">« %1$s » (km %2$.0f) est hors d\'atteinte, donc laissé en dehors du plan. Ajoute une borne avant ou pars avec plus de batterie.</string>
     <string name="hql_pr_battery_closed">Session Leapmotor fermée : reconnectez-vous dans ⚙ › « Données de la voiture (compte Leapmotor) ». En attendant, choisissez la batterie au départ.</string>
+    <string name="hql_add_stop_loading">Les bornes le long de l\'itinéraire ne sont pas encore arrivées : le service de cartes est lent ou ne répond pas. Réessayez dans un instant ou cherchez le lieu.</string>
 </resources>

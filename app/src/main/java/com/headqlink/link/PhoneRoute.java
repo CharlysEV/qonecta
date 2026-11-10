@@ -1060,7 +1060,8 @@ final class PhoneRoute {
             rows.removeAllViews();
             List<AddStop.Entry> list = AddStop.entries(d.allChargers(), text, cp.fromKm, d::offRouteKm);
             rows.addView(subhead(Str.get(R.string.hql_add_stop_list_heading)));
-            if (list.isEmpty()) rows.addView(small(Str.get(R.string.hql_add_stop_none)));
+            // Sin ningún cargador de la ruta no es que no coincidan: aún no han llegado (el servicio de mapas tarda o falla).
+            if (list.isEmpty()) rows.addView(small(Str.get(d.allChargers().isEmpty() ? R.string.hql_add_stop_loading : R.string.hql_add_stop_none)));
             for (AddStop.Entry e : list) rows.addView(addStopRow(e, cp, () -> {
                 d.addStop(e.charger);
                 use.run();

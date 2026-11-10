@@ -78,4 +78,5 @@
     <string name="hql_add_stop_mine">Door jou toegevoegd</string>
     <string name="hql_add_stop_unreachable">"%1$s" (km %2$.0f) is niet te bereiken en blijft daarom buiten het plan. Voeg ervoor een lader toe of vertrek met meer accu.</string>
     <string name="hql_pr_battery_closed">Leapmotor-sessie gesloten: log opnieuw in via ⚙ › „Autogegevens (Leapmotor-account)”. Kies intussen zelf de accu bij vertrek.</string>
+    <string name="hql_add_stop_loading">De laadpalen langs de route zijn er nog niet: de kaartdienst is traag of reageert niet. Probeer het zo opnieuw of zoek de plek.</string>
 </resources>

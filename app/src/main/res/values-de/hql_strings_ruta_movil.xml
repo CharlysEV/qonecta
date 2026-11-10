@@ -78,4 +78,5 @@
     <string name="hql_add_stop_mine">Von dir hinzugefügt</string>
     <string name="hql_add_stop_unreachable">«%1$s» (km %2$.0f) ist nicht erreichbar und bleibt deshalb aus dem Plan. Füge davor einen Lader hinzu oder fahre mit mehr Akku los.</string>
     <string name="hql_pr_battery_closed">Leapmotor-Sitzung beendet: melde dich unter ⚙ › „Fahrzeugdaten (Leapmotor-Konto)“ neu an. Bis dahin wähle den Akkustand bei Abfahrt selbst.</string>
+    <string name="hql_add_stop_loading">Die Ladesäulen entlang der Route sind noch nicht da: Der Kartendienst ist langsam oder antwortet nicht. Versuche es gleich noch einmal oder suche den Ort.</string>
 </resources>

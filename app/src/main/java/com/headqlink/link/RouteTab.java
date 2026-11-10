@@ -2885,7 +2885,8 @@ final class RouteTab implements CarScreen {
             TextView h2 = hint(Str.get(R.string.hql_add_stop_list_heading));
             h2.setTextColor(CarKit.ACCENT);
             body.addView(h2);
-            if (list.isEmpty()) body.addView(hint(Str.get(R.string.hql_add_stop_none)));
+            // Sin ningún cargador de la ruta no es que no coincidan: aún no han llegado (el servicio de mapas tarda o falla).
+            if (list.isEmpty()) body.addView(hint(Str.get(planner.allChargers().isEmpty() ? R.string.hql_add_stop_loading : R.string.hql_add_stop_none)));
             for (AddStop.Entry e : list) body.addView(addStopRow(e, cp, panel), itemParams());
         };
         placeBtn.setOnClickListener(v -> {
