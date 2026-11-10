@@ -213,6 +213,10 @@
     <string name="hql_cc_sent">%1$s: sent; the car did not confirm it</string>
     <string name="hql_cc_failed">%1$s: failed (%2$s)</string>
     <string name="hql_cc_session_closed">Leapmotor session closed: open Qonecta+ and sign in again</string>
+    <string name="hql_cloud_closed_title">Leapmotor session closed</string>
+    <string name="hql_cloud_closed_body">Sign in again with your Leapmotor account to see the car data again.</string>
+    <string name="hql_cloud_reenter">Sign in again</string>
+    <string name="hql_cloud_connect">Link the account</string>
     <string name="hql_cc_failed_closed">%1$s: not sent. Leapmotor session closed: open Qonecta+ and sign in again</string>
     <string name="hql_cloud_orders">Car commands from the Qonecta+ widget: lock, unlock, trunk, climate and find, also by voice</string>
     <string name="hql_cloud_add_widget">They show in the Qonecta+ widget when you make it taller (4×3): long-press it and drag it down.</string>

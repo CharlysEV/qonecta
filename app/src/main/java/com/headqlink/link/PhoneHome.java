@@ -55,7 +55,7 @@ final class PhoneHome {
         root.setBackgroundColor(0x00000000);
         col = new LinearLayout(act);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(dp(16), dp(16), dp(16), dp(28));
+        PhoneUi.pad(col);
         root.addView(col);
     }
 
@@ -97,10 +97,7 @@ final class PhoneHome {
 
     private void render() {
         col.removeAllViews();
-        TextView title = text(Str.get(R.string.hql_ha_title), com.google.android.material.R.style.TextAppearance_Material3_HeadlineSmall,
-                PhoneCharts.TEXT);
-        title.setPadding(dp(4), 0, 0, dp(12));
-        col.addView(title);
+        col.addView(PhoneUi.title(act, Str.get(R.string.hql_ha_title), 12));
         if (!ha.configured() || ha.entities().isEmpty()) {
             MaterialCardView card = card();
             LinearLayout in = new LinearLayout(act);

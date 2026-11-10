@@ -106,7 +106,7 @@ final class PhoneCar {
         root.setBackgroundColor(0x00000000);
         col = new LinearLayout(act);
         col.setOrientation(LinearLayout.VERTICAL);
-        col.setPadding(dp(16), dp(16), dp(16), dp(28));
+        PhoneUi.pad(col);
         root.addView(col);
     }
 
@@ -140,8 +140,7 @@ final class PhoneCar {
     }
 
     private String shape() {
-        return (PhoneInsights.hasAccount(act) ? "a" : "-") + (snap.hasData() ? "d" : "-") + (CarOrders.enabled(act) ? "o" : "-")
-                + (AutoLock.enabled(act) ? "l" : "-");
+        return PhoneUi.cloud(act, snap) + (CarOrders.enabled(act) ? "o" : "-") + (AutoLock.enabled(act) ? "l" : "-");
     }
 
     private void build() {
@@ -154,16 +153,15 @@ final class PhoneCar {
         chargeBody = null;
         odoText = null;
         usageBody = null;
-        TextView title = text(Str.get(R.string.hql_car_tab), com.google.android.material.R.style.TextAppearance_Material3_HeadlineSmall,
-                PhoneCharts.TEXT);
-        title.setPadding(dp(4), 0, 0, dp(12));
-        col.addView(title);
-        if (!PhoneInsights.hasAccount(act)) {
-            intro(Str.get(R.string.hql_car_intro), Str.get(R.string.hql_cloud_menu));
-            return;
-        }
-        if (!snap.hasData()) {
-            intro(Str.get(R.string.hql_cloud_waiting_body), null);
+        col.addView(PhoneUi.title(act, Str.get(R.string.hql_car_tab), 12));
+        // Sin cuenta (qué es y «Conectar la cuenta»), con la sesión cerrada («Volver a entrar») o esperando el primer dato.
+        PhoneUi.Cloud gap = PhoneUi.cloud(act, snap);
+        if (gap != PhoneUi.Cloud.DATA) {
+            MaterialCardView card = card();
+            LinearLayout in = PhoneUi.cloudEmpty(act, gap, Str.get(R.string.hql_car_intro));
+            in.setPadding(dp(18), dp(22), dp(18), dp(18));
+            card.addView(in);
+            col.addView(card);
             return;
         }
         col.addView(hero());
@@ -181,25 +179,6 @@ final class PhoneCar {
         note.setPadding(dp(4), dp(14), dp(4), 0);
         col.addView(note);
         repaint();
-    }
-
-    /** Sin cuenta o sin datos: qué es y, si procede, el botón para configurarla. */
-    private void intro(String body, String button) {
-        MaterialCardView card = card();
-        LinearLayout in = new LinearLayout(act);
-        in.setOrientation(LinearLayout.VERTICAL);
-        in.setPadding(dp(18), dp(18), dp(18), dp(18));
-        in.addView(text(body, com.google.android.material.R.style.TextAppearance_Material3_BodyMedium, PhoneCharts.DIM));
-        if (button != null) {
-            MaterialButton go = new MaterialButton(act);
-            go.setText(button);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.topMargin = dp(14);
-            go.setOnClickListener(v -> act.startActivity(new Intent(act, CarCloudActivity.class)));
-            in.addView(go, lp);
-        }
-        card.addView(in);
-        col.addView(card);
     }
 
     // ------------------------------------------------------------------ cabecera con el coche

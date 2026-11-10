@@ -213,6 +213,10 @@
     <string name="hql_cc_sent">%1$s: inviato; l\'auto non l\'ha confermato</string>
     <string name="hql_cc_failed">%1$s: non riuscito (%2$s)</string>
     <string name="hql_cc_session_closed">Sessione Leapmotor chiusa: apri Qonecta+ e accedi di nuovo</string>
+    <string name="hql_cloud_closed_title">Sessione Leapmotor chiusa</string>
+    <string name="hql_cloud_closed_body">Accedi di nuovo con il tuo account Leapmotor per rivedere i dati dell\'auto.</string>
+    <string name="hql_cloud_reenter">Accedi di nuovo</string>
+    <string name="hql_cloud_connect">Collega l\'account</string>
     <string name="hql_cc_failed_closed">%1$s: non inviato. Sessione Leapmotor chiusa: apri Qonecta+ e accedi di nuovo</string>
     <string name="hql_cloud_orders">Comandi all\'auto dal widget di Qonecta+: chiudere, aprire, bagagliaio, clima e trovare, anche a voce</string>
     <string name="hql_cloud_add_widget">Compaiono nel widget di Qonecta+ allungandolo (4×3): tienilo premuto e trascinalo verso il basso.</string>

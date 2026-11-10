@@ -57,8 +57,8 @@ final class PhoneInsights {
         root.setBackgroundColor(0x00000000);
         col = new LinearLayout(act);
         col.setOrientation(LinearLayout.VERTICAL);
-        int pad = dp(20);
-        col.setPadding(pad, dp(16), pad, dp(28));
+        PhoneUi.pad(col);
+        col.addView(PhoneUi.title(act, Str.get(R.string.hql_tab_trips), 12));
         root.addView(col);
     }
 
@@ -107,6 +107,8 @@ final class PhoneInsights {
     static final class Data {
         CarCloud.Snapshot cloud;
         boolean account;
+        /** La sesión guardada pide volver a entrar (CarCloudStore.reloginReason). */
+        boolean relogin;
         List<CloudHistory.Trip> history = new ArrayList<>();
         List<TripLog.Trip> trips = new ArrayList<>();
         List<ChargeSession> charges = new ArrayList<>();
@@ -120,6 +122,7 @@ final class PhoneInsights {
             Data d = new Data();
             d.cloud = CarCloud.car();
             d.account = hasAccount(a);
+            d.relogin = d.account && new CarCloudStore(a).reloginReason() != null;
             d.history = new ArrayList<>(CarCloud.history());
             d.trips = TripLog.recent(a, 120);
             try {
@@ -145,6 +148,7 @@ final class PhoneInsights {
 
     private void build(Data d) {
         col.removeAllViews();
+        col.addView(PhoneUi.title(act, Str.get(R.string.hql_tab_trips), 12));
         liveCard(d);
         carCard(d);
         reportCard();
@@ -175,7 +179,7 @@ final class PhoneInsights {
             }
         }
         if (AppEnergy.daysMeasured(act) == 0 && last == null) {
-            c.addView(note(Str.get(R.string.hql_energy_none)));
+            c.addView(PhoneUi.empty(act, R.drawable.hql_ln_phone, Str.get(R.string.hql_energy_none)));
             addCard(c);
             return;
         }
@@ -218,13 +222,10 @@ final class PhoneInsights {
     private void carCard(Data d) {
         LinearLayout c = card(Str.get(R.string.hql_ins_car));
         CarCloud.Snapshot s = d.cloud;
-        if (!d.account) {
-            c.addView(note(Str.get(R.string.hql_ins_no_cloud)));
-            addCard(c);
-            return;
-        }
-        if (s == null || !s.hasData()) {
-            c.addView(note(Str.get(R.string.hql_ins_cloud_wait)));
+        // Sin cuenta, con la sesión cerrada («Volver a entrar») o esperando el primer dato: se dice cuál, con su botón.
+        PhoneUi.Cloud gap = PhoneUi.cloud(d.account, s, d.relogin);
+        if (gap != PhoneUi.Cloud.DATA) {
+            c.addView(PhoneUi.cloudEmpty(act, gap, Str.get(R.string.hql_ins_no_cloud)));
             addCard(c);
             return;
         }
@@ -346,7 +347,7 @@ final class PhoneInsights {
             }
         }
         if (n == 0) {
-            c.addView(note(Str.get(R.string.hql_ins_no_drives)));
+            c.addView(PhoneUi.empty(act, R.drawable.hql_ic_efficiency, Str.get(R.string.hql_ins_no_drives)));
             addCard(c);
             return;
         }
@@ -388,7 +389,7 @@ final class PhoneInsights {
         double cap = d.cloud != null && d.cloud.capacityKwh > 0 ? d.cloud.capacityKwh : CarSpec.current().usableKwh;
         List<ParkedDrain.Park> parks = ParkedDrain.parks(d.trips, cap);
         if (parks.isEmpty()) {
-            c.addView(note(Str.get(R.string.hql_parked_none)));
+            c.addView(PhoneUi.empty(act, R.drawable.hql_ln_parked, Str.get(R.string.hql_parked_none)));
             addCard(c);
             return;
         }
@@ -512,7 +513,7 @@ final class PhoneInsights {
         LinearLayout c = card(Str.get(R.string.hql_ins_charges));
         List<ChargeSession> list = realCharges(d.charges);
         if (list.isEmpty()) {
-            c.addView(note(Str.get(R.string.hql_ins_no_charges)));
+            c.addView(PhoneUi.empty(act, R.drawable.hql_ic_cw_cable, Str.get(R.string.hql_ins_no_charges)));
             addCard(c);
             return;
         }
@@ -643,7 +644,7 @@ final class PhoneInsights {
         List<TripLog.Trip> list = new ArrayList<>();
         for (TripLog.Trip t : d.trips) if (t.track != null && t.track.length >= 2 && t.km >= 1) list.add(t);
         if (list.isEmpty()) {
-            c.addView(note(Str.get(R.string.hql_ins_no_drives)));
+            c.addView(PhoneUi.empty(act, R.drawable.hql_ic_route, Str.get(R.string.hql_ins_no_drives)));
             if (!d.trips.isEmpty()) exportButton(c, d);
             addCard(c);
             return;
