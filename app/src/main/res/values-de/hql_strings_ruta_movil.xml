@@ -58,10 +58,10 @@
     <string name="hql_planned_changed">Bei der Planung: %1$s; jetzt: %2$s.</string>
     <string name="hql_planned_changed_yesterday">Gestern: %1$s; heute: %2$s.</string>
     <string name="hql_planned_other_stops">Jetzt wird bei %1$s geladen.</string>
-    <string name="hql_pr_pick_result">Mehrere Orte passen. Tippe auf den richtigen und dann erneut auf «Route berechnen».</string>
-    <string name="hql_waiting_gps_perm">Warte auf das GPS des Handys: Qonecta+ hat keine Berechtigung für den genauen Standort. Erlaube sie unter Einstellungen > Apps > Qonecta+ > Berechtigungen > Standort («Genauen Standort verwenden»).</string>
+    <string name="hql_pr_pick_result">Mehrere Orte passen. Tippe auf den richtigen und dann erneut auf „Route berechnen“.</string>
+    <string name="hql_waiting_gps_perm">Warte auf das GPS des Handys: Qonecta+ hat keine Berechtigung für den genauen Standort. Erlaube sie unter Einstellungen > Apps > Qonecta+ > Berechtigungen > Standort („Genauen Standort verwenden“).</string>
     <string name="hql_waiting_gps_off">Warte auf das GPS des Handys: Der Standort ist am Handy ausgeschaltet. Schalte ihn in den Schnelleinstellungen ein.</string>
-    <string name="hql_waiting_gps_always">Warte auf das GPS des Handys: Bei gesperrtem Handy schneidet Android der App den Standort ab. Erlaube den Standort «Immer» unter Einstellungen > Apps > Qonecta+ > Berechtigungen > Standort.</string>
+    <string name="hql_waiting_gps_always">Warte auf das GPS des Handys: Bei gesperrtem Handy schneidet Android der App den Standort ab. Erlaube den Standort „Immer“ unter Einstellungen > Apps > Qonecta+ > Berechtigungen > Standort.</string>
     <string name="hql_add_stop">Ladestopp hinzufügen</string>
     <string name="hql_add_stop_title">Ladestopp hinzufügen</string>
     <string name="hql_add_stop_intro">Wähle einen Lader, den du kennst, zum Beispiel zum Essen während des Ladens. Der Plan lädt dort, auch wenn es nicht nötig wäre, und plant die Stopps davor und danach neu.</string>
@@ -76,7 +76,7 @@
     <string name="hql_add_stop_use">Hinzufügen</string>
     <string name="hql_add_stop_remove">Entfernen</string>
     <string name="hql_add_stop_mine">Von dir hinzugefügt</string>
-    <string name="hql_add_stop_unreachable">«%1$s» (km %2$.0f) ist nicht erreichbar und bleibt deshalb aus dem Plan. Füge davor einen Lader hinzu oder fahre mit mehr Akku los.</string>
+    <string name="hql_add_stop_unreachable">„%1$s“ (km %2$.0f) ist nicht erreichbar und bleibt deshalb aus dem Plan. Füge davor einen Lader hinzu oder fahre mit mehr Akku los.</string>
     <string name="hql_pr_battery_closed">Leapmotor-Sitzung beendet: melde dich unter ⚙ › „Fahrzeugdaten (Leapmotor-Konto)“ neu an. Bis dahin wähle den Akkustand bei Abfahrt selbst.</string>
     <string name="hql_add_stop_loading">Die Ladesäulen entlang der Route sind noch nicht da: Der Kartendienst ist langsam oder antwortet nicht. Versuche es gleich noch einmal oder suche den Ort.</string>
 </resources>
