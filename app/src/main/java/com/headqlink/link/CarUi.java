@@ -2485,7 +2485,7 @@ final class CarUi {
             case "tv": return R.drawable.hql_ic_tv;
             case "radio": return R.drawable.hql_ic_radio;
             case "games": return R.drawable.hql_ic_games;
-            case "home": return R.drawable.hql_ic_home;
+            case "home": return R.drawable.hql_ic_home_assistant;
             case "guide": return R.drawable.hql_ic_guide;
             case "karaoke": return R.drawable.hql_ic_karaoke;
             case "companion": return R.drawable.ic_mic;

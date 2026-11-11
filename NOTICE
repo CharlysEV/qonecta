@@ -98,6 +98,11 @@ Leaflet (maps of routes and trips):
   app/src/main/assets/leaflet is Leaflet 1.9.4 (https://leafletjs.com), Copyright (c) 2010-2023 Volodymyr
   Agafonkin, Copyright (c) 2010-2011 CloudMade, BSD 2-Clause License (app/src/main/assets/leaflet/LICENSE).
 
+Home Assistant icon (side bar button):
+  app/src/main/res/drawable/hql_ic_home_assistant.xml is the «home-assistant» icon of Material Design Icons
+  (Pictogrammers, https://pictogrammers.com, Apache License 2.0). Home Assistant is a trademark of the Open Home
+  Foundation; the icon only marks the button that opens Home Assistant, and Qonecta+ is not affiliated with it.
+
 Super Nintendo emulator (Games > SNES, the user's own ROM files):
   The core is bsnes by byuu and contributors (libretro port, https://github.com/libretro/bsnes, based on
   https://github.com/bsnes-emu/bsnes), copied into app/src/main/cpp/bsnes: bsnes is licensed under the GNU General
