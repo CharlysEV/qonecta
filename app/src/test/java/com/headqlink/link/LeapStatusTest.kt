@@ -35,8 +35,8 @@ class LeapStatusTest {
             "1182": "24", "1186": 1, "1318": 12480, "1319": 0.0, "1349": 25.5,
             "1298": 1, "1277": 0, "1278": "1", "1279": 0, "1280": 0, "1281": true, "1258": "0",
             "6048": 120, "12054": 1,
-            "2646": 240, "2660": "241", "2667": 238, "2653": 205,
-            "2641": 0, "2655": 1, "2662": 0, "2648": 3
+            "2646": 240, "2653": "241", "2660": 238, "2667": 205,
+            "2641": 0, "2648": 1, "2655": 0, "2662": 3
           }
         }
     """.trimIndent()
@@ -93,13 +93,14 @@ class LeapStatusTest {
 
     @Test
     fun tyreSignalsGoToTheRightWheel() {
-        // Delante 2646 (izq.) y 2660 (der.); detrás 2667 (izq.) y 2653 (der.). El estado de cada rueda es su presión - 5.
-        val s = LeapStatus.parse(JSONObject("""{"signal":{"2646":261,"2660":262,"2667":269,"2653":270}}"""))
+        // Delante 2646 (izq.) y 2653 (der.); detrás 2660 (izq.) y 2667 (der.). El estado de cada rueda es su presión - 5.
+        // Visto en un C10 real (11-11) contra la app oficial: 2646 = 2,56 delante izq., 2653 = 2,50 delante der.
+        val s = LeapStatus.parse(JSONObject("""{"signal":{"2646":261,"2653":262,"2660":269,"2667":270}}"""))
         assertEquals(2.61, s.tyreBar(LeapStatus.FL), 1e-9)
         assertEquals(2.62, s.tyreBar(LeapStatus.FR), 1e-9)
         assertEquals(2.69, s.tyreBar(LeapStatus.RL), 1e-9)
         assertEquals(2.70, s.tyreBar(LeapStatus.RR), 1e-9)
-        val st = LeapStatus.parse(JSONObject("""{"signal":{"2641":2,"2655":3,"2662":4,"2648":5}}"""))
+        val st = LeapStatus.parse(JSONObject("""{"signal":{"2641":2,"2648":3,"2655":4,"2662":5}}"""))
         assertEquals(2, st.tyreState(LeapStatus.FL))
         assertEquals(3, st.tyreState(LeapStatus.FR))
         assertEquals(4, st.tyreState(LeapStatus.RL))

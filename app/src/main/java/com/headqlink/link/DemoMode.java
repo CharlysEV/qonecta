@@ -426,10 +426,10 @@ final class DemoMode {
             sig.put("1280", 0);
             sig.put("1281", charging ? 1 : 0);
             sig.put("1258", charging ? 0 : 1);
-            sig.put("2667", 246);
-            sig.put("2653", 247);
+            sig.put("2660", 246);
+            sig.put("2667", 247);
             sig.put("2646", 244);
-            sig.put("2660", 213);
+            sig.put("2653", 213);
             sig.put("2641", 0);
             sig.put("2648", 0);
             sig.put("2655", 0);

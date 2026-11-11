@@ -58,16 +58,17 @@ final class LeapStatus {
         m.put("1258", "bcmKeyPositionOn3");
         m.put("6048", "speedLimit");
         m.put("12054", "speedLimitActive");
-        // Ruedas: LMB10 tenía delante y detrás cambiados (pc1337 #380 y MG1964 #391 en el foro: delante 2,61 y detrás
-        // 2,69 y la app lo mostraba al revés). Cada estado va con su presión (id de presión = id de estado + 5).
+        // Ruedas, de 7 en 7: delantera izq., delantera der., trasera izq., trasera der. (id de presión = id de estado
+        // + 5). LMB10 las tenía cruzadas: el foro (pc1337 #380, MG1964 #391) vio delante y detrás al revés, y el
+        // 11-11 la app oficial en un C10 real dio 2,56/2,50 delante y 2,53/2,53 detrás (2646 = 2,56, 2653 = 2,50).
         m.put("2646", "leftFrontTirePressure");
-        m.put("2660", "rightFrontTirePressure");
-        m.put("2667", "leftRearTirePressure");
-        m.put("2653", "rightRearTirePressure");
+        m.put("2653", "rightFrontTirePressure");
+        m.put("2660", "leftRearTirePressure");
+        m.put("2667", "rightRearTirePressure");
         m.put("2641", "leftFrontTirePressureState");
-        m.put("2655", "rightFrontTirePressureState");
-        m.put("2662", "leftRearTirePressureState");
-        m.put("2648", "rightRearTirePressureState");
+        m.put("2648", "rightFrontTirePressureState");
+        m.put("2655", "leftRearTirePressureState");
+        m.put("2662", "rightRearTirePressureState");
         // Autonomía extendida (C10 REEV): solo las manda un coche con depósito.
         m.put("3235", "fuelLevel");
         m.put("3263", "fuelMl");
