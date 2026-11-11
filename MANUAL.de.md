@@ -1106,8 +1106,8 @@ Minute zurück, passiert nichts) und prüft das Auto in der Leapmotor-Cloud:
   und auch nicht ohne verlässliche Daten: Die Cloud antwortet nicht, die Sitzung ist abgelaufen oder die Daten stammen
   von vor dem Weggehen („Ich konnte das Auto nicht prüfen: Es ist vielleicht noch offen“). Es verriegelt nie blind.
 
-Dafür müssen das Leapmotor-Konto verbunden und die PIN des Autos gespeichert sein (der Befehl geht, wie der Plan von „Günstig laden“, falls eingeschaltet, ohne
-Rückfrage, und er verriegelt nur). Es läuft über die Cloud: Es dauert ein paar Sekunden, das Auto braucht
+Dafür müssen das Leapmotor-Konto verbunden und die PIN des Autos gespeichert sein (der Befehl geht, wie der Plan von „Günstig laden“ und das Vorwärmen von
+„Akku vorwärmen für den Lader“, falls eingeschaltet, ohne Rückfrage, und er verriegelt nur). Es läuft über die Cloud: Es dauert ein paar Sekunden, das Auto braucht
 Mobilfunkempfang (in einer Tiefgarage ohne Empfang kommt meist die Meldung, dass es nicht prüfen konnte) und das Handy
 eine Verbindung. Nur einmal pro Weggehen, mit einer Abfrage aus dem Tageslimit (zwei, wenn es das Verriegeln prüfen muss).
 
@@ -1130,13 +1130,29 @@ Nötig sind das verbundene Leapmotor-Konto, die gespeicherte Fahrzeug-PIN und �
 weniger als 300 m entfernt sein). Nur beim AC-Laden. Das Anstecken wird von der Hintergrundprüfung erkannt (alle 15
 Minuten oder seltener), das Fenster kann also ein paar Minuten auf sich warten lassen; das Auto lädt so lange.
 
+**Akku vorwärmen für den Lader** (im Test, optional und standardmäßig aus; unter ⚙ neben „Günstig laden“ und im Auto
+unter Route › „Filter“ › „Ladeplan“). Hat der Routenplan einen **Schnellladestopp** (DC, 40 kW oder mehr) und ist es
+draußen **unter 15 °C**, bittet Qonecta+ das Auto etwa **25 Minuten vor der Ankunft** über die Leapmotor-Cloud, den Akku
+vorzuwärmen, damit es ab der ersten Minute schnell lädt (mit kaltem Akku ist das Schnellladen viel langsamer). Das
+erscheint auf dem Autobildschirm („Akku wird für den Lader … vorgewärmt · Ankunft in 24 min“) und als Sprachansage (wenn
+„Sprachansage, wenn sich der Plan ändert“ an ist), mit einem Knopf **„Abbrechen“**.
+
+- Nur einmal pro Stopp. Nicht, wenn der Akku schon warm ist oder vorgewärmt wird, wenn du mit weniger als 10 % ankämst
+  (Vorwärmen kostet Akku) oder wenn weniger als 5 Minuten fehlen. Die Temperatur ist die des Wetters im Panel (ohne sie
+  die Vorhersage am Stopp).
+- **Es schaltet sich selbst aus**, wenn sich die Ankunft um 20 Minuten oder mehr verzögert (Stau, anderer Plan), wenn
+  der Stopp aus dem Plan fällt, wenn die Fahrt weit davon endet oder wenn 20 Minuten nach der erwarteten Zeit vergehen,
+  ohne anzukommen. Am Schnelllader angesteckt tut es nichts mehr.
+- Nötig sind das verbundene Leapmotor-Konto und die gespeicherte Fahrzeug-PIN (der Befehl geht ohne Rückfrage). Antwortet
+  das Auto, dass es die Funktion nicht hat (beim T03 möglich), bleibt sie für dieses Auto aus und es wird einmal gesagt.
+
 **Datenschutz und Sicherheit.**
 
 - Nur lesend, mit einer optionalen Ausnahme: die **Befehle des Widgets „Auto“ und des Reiters „Mein Auto“** (verriegeln, entriegeln, Kofferraum,
   Klima, finden und Ladekabel entriegeln), und nur, wenn du die PIN des Fahrzeugs in „Fahrzeugdaten“ → „5 · PIN des Autos“ speicherst und dort
   die Befehle über das Widget einschaltest (es ist die PIN der Leapmotor-App; sie wird verschlüsselt auf dem Handy
   gespeichert und landet nie im Log). Ohne PIN **sendet Qonecta+ nie Befehle an das Fahrzeug**, und andere Befehle gibt
-  es nicht (weder das Ladelimit noch die Ladeplanung). Jeder Befehl wird vor dem Senden bestätigt (außer „Auto beim Weggehen verriegeln“, wenn du es einschaltest – das verriegelt nur); „PIN vergessen“ löscht die PIN.
+  es nicht (weder das Ladelimit noch die Ladeplanung). Jeder Befehl wird vor dem Senden bestätigt (außer, wenn du sie einschaltest, „Auto beim Weggehen verriegeln“ – das verriegelt nur –, der Plan von „Günstig laden“ und das Vorwärmen von „Akku vorwärmen für den Lader“, das mit „Abbrechen“ angekündigt wird); „PIN vergessen“ löscht die PIN.
 - Deine Daten gehen **nur an die Server von Leapmotor**. Die Position des Fahrzeugs wird weder gelesen noch gespeichert.
 - Zertifikat, Sitzung und Fahrtenverlauf werden mit einem Schlüssel aus dem Android Keystore **verschlüsselt**
   gespeichert, außerhalb der Backups. Das Passwort wird nicht gespeichert: Läuft die Sitzung ab, zeigt „Status“ das an,

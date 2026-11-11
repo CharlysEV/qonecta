@@ -999,8 +999,8 @@ and checks the car in the Leapmotor cloud:
   reliable reading: the cloud doesn't answer, the session has expired or the reading is from before you walked away ("I
   couldn't check the car: it may still be unlocked"). It never locks blindly.
 
-It needs the Leapmotor account connected and the car PIN saved (it is sent without asking, like the "Cheap charging" plan if you turn that on, and it only
-locks). It goes through the cloud: it takes a few seconds, the car needs mobile coverage (in a garage without coverage
+It needs the Leapmotor account connected and the car PIN saved (it is sent without asking, like the "Cheap charging" plan and the warming of "Warm
+battery for the charger" if you turn them on, and it only locks). It goes through the cloud: it takes a few seconds, the car needs mobile coverage (in a garage without coverage
 you'll most likely get the "couldn't check" warning) and the phone needs a connection. Once per walk-away, with one
 reading of the daily cap (two if it has to check the lock).
 
@@ -1022,13 +1022,30 @@ It needs the Leapmotor account connected, the car PIN saved and "Home" saved in 
 300 m). AC charging only. Plugging in is detected by the background check (every 15 minutes or more), so the window may
 take a few minutes to be set; the car charges meanwhile.
 
+**Warm battery for the charger** (experimental, optional and off by default; in ⚙, next to "Cheap charging", and in the
+car in Route › "Filter" › "Charging plan"). If the route plan has a **fast-charging stop** (DC, 40 kW or more) and it is
+**below 15 °C** outside, about **25 minutes before arriving** Qonecta+ asks the car through the Leapmotor cloud to warm
+the battery, so it charges fast from the first minute (with a cold battery, fast charging is much slower). It is shown on
+the car screen ("Warming the battery for the charger at … · arriving in 24 min") and said by voice (if "Voice alert if
+the plan changes" is on), with a **"Cancel"** button.
+
+- Once per stop. It is not sent if the battery is already warm or warming, if you would arrive below 10 % (warming uses
+  battery) or if less than 5 minutes are left. The temperature is the weather shown on the panel (without it, the
+  forecast at the stop).
+- **It turns itself off** if the arrival is delayed by 20 minutes or more (a traffic jam, another plan), if the stop
+  leaves the plan, if the trip ends far from it or if 20 minutes pass after the expected time without arriving. Once
+  plugged into fast charging it does nothing more.
+- It needs the Leapmotor account connected and the car PIN saved (it is sent without asking). If the car answers that it
+  does not have the feature (it may happen with the T03), it is turned off for that car and said once.
+
 **Privacy and security.**
 
 - Read-only, with one optional exception: the **commands of the "Car" widget and of the "My car" tab** (lock, unlock, boot, climate, find and unlock the charging cable),
   and only if you save your car PIN in "Car data" → "5 · Car PIN" and turn on the widget commands there (the PIN is
   the one in the Leapmotor app; stored encrypted on the phone and never logged). Without a PIN, Qonecta+ **never sends
   commands to the car**, and no other command exists (no charging or limits). Every command is confirmed before it is
-  sent (except "Lock the car when I walk away", if you turn it on, which only locks); "Forget PIN" deletes it.
+  sent (except, if you turn them on, "Lock the car when I walk away", which only locks, the "Cheap charging" plan and
+  the warming of "Warm battery for the charger", which is announced with "Cancel"); "Forget PIN" deletes it.
 - Your data only goes **to Leapmotor's servers**. The car's location is neither read nor stored.
 - The certificate, the session and the trip history are stored **encrypted** with an Android Keystore key, outside
   backups. The password

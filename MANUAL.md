@@ -1015,8 +1015,8 @@ coche en la nube de Leapmotor:
   dato fiable: la nube no contesta, la sesión ha caducado o el dato es de antes de alejarte («No he podido comprobar el
   coche: puede seguir abierto»). Nunca cierra a ciegas.
 
-Necesita la cuenta de Leapmotor conectada y el PIN del coche guardado (se manda sin confirmar, como el plan de «Carga barata» si la activas, y
-solo cierra). Va por la nube: tarda unos segundos, el coche necesita cobertura (en un garaje sin cobertura, lo normal
+Necesita la cuenta de Leapmotor conectada y el PIN del coche guardado (se manda sin confirmar, como el plan de «Carga barata» y el calentamiento
+de «Batería caliente para el cargador» si los activas, y solo cierra). Va por la nube: tarda unos segundos, el coche necesita cobertura (en un garaje sin cobertura, lo normal
 es el aviso de que no ha podido comprobarlo) y el móvil, red. Una sola vez por alejamiento, con una lectura del tope
 diario (dos si hay que comprobar el cierre).
 
@@ -1038,13 +1038,30 @@ Necesita la cuenta de Leapmotor conectada, el PIN del coche guardado y «Casa» 
 tiene que estar a menos de 300 m). Solo con carga lenta (CA). El enchufado se detecta con la comprobación de fondo
 (cada 15 minutos o más), así que la ventana puede tardar unos minutos en ponerse; el coche carga mientras tanto.
 
+**Batería caliente para el cargador** (en pruebas, opcional y apagada de serie; en ⚙, junto a «Carga barata», y en el
+coche en Ruta › «Filtrar» › «Plan de carga»). Si el plan de la ruta lleva una **parada de carga rápida** (de continua,
+40 kW o más) y fuera hace **menos de 15 °C**, unos **25 minutos antes de llegar** Qonecta+ pide al coche por la nube de
+Leapmotor que caliente la batería, para que cargue rápido desde el primer minuto (con la batería fría, la carga rápida va
+mucho más lenta). Lo avisa en la pantalla del coche («Calentando la batería para el cargador de … · llegas en 24 min»)
+y por voz (si está puesto «Avisar por voz si cambia el plan»), con un botón **«Cancelar»**.
+
+- Una sola vez por parada. No se manda si la batería ya está caliente o calentándose, si llegarías con menos del 10 %
+  (calentar gasta batería) ni si faltan menos de 5 minutos. La temperatura es la del tiempo que se ve en el panel (sin
+  ella, la prevista en la parada).
+- **Se apaga sola** si la llegada se retrasa 20 minutos o más (un atasco, otro plan), si la parada sale del plan, si el
+  viaje acaba lejos de ella o si pasan 20 minutos de la hora prevista sin llegar. Al enchufar a la carga rápida ya no
+  hace nada más.
+- Necesita la cuenta de Leapmotor conectada y el PIN del coche guardado (se manda sin confirmar). Si el coche contesta que
+  no tiene la función (puede pasar con el T03), se apaga para ese coche y lo dice una vez.
+
 **Privacidad y seguridad.**
 
 - Solo lectura, con una excepción opcional: las **órdenes del widget «Coche» y de la pestaña «Mi coche»** (cerrar, abrir, maletero, clima,
   localizar y desbloquear el cable de carga), y solo si guardas el PIN del coche en «Datos del coche» → «5 · PIN del coche» y activas allí las órdenes
   desde el widget (el PIN es el de la app de Leapmotor; se guarda cifrado en el móvil y nunca va al log). Sin PIN,
   Qonecta+ **nunca manda órdenes al coche**, y no existe ninguna otra (ni el límite ni la programación de la carga). Cada orden se confirma
-  antes de mandarla (salvo «Cerrar el coche al alejarme», si lo activas, que solo cierra); «Olvidar PIN» lo borra.
+  antes de mandarla (salvo, si los activas, «Cerrar el coche al alejarme», que solo cierra, el plan de «Carga barata» y
+  el calentamiento de «Batería caliente para el cargador», que se avisa con «Cancelar»); «Olvidar PIN» lo borra.
 - Tus datos van **solo a los servidores de Leapmotor**. No se lee ni se guarda la posición del coche.
 - El certificado, la sesión y el historial de viajes se guardan **cifrados** con una clave del Android Keystore, fuera
   de las copias de seguridad. La contraseña no se guarda: si la sesión caduca, «Estado» lo dice y se vuelve a entrar en el móvil.

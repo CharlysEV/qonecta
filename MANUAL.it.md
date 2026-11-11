@@ -1029,8 +1029,8 @@ non fa nulla) e controlla l'auto nel cloud Leapmotor:
   dato affidabile: il cloud non risponde, la sessione è scaduta o il dato è di prima che ti allontanassi («Non ho
   potuto controllare l'auto: potrebbe essere ancora aperta»). Non chiude mai alla cieca.
 
-Servono l'account Leapmotor collegato e il PIN dell'auto salvato (è inviato senza conferma, come il piano di «Ricarica economica» se la attivi, e chiude
-soltanto). Passa dal cloud: ci mette qualche secondo, l'auto deve avere copertura (in un garage senza copertura arriverà
+Servono l'account Leapmotor collegato e il PIN dell'auto salvato (è inviato senza conferma, come il piano di «Ricarica economica» e il riscaldamento
+di «Batteria calda per il caricatore» se li attivi, e chiude soltanto). Passa dal cloud: ci mette qualche secondo, l'auto deve avere copertura (in un garage senza copertura arriverà
 quasi sempre l'avviso che non ha potuto controllarla) e il telefono una connessione. Una sola volta per allontanamento,
 con una lettura del limite giornaliero (due se deve verificare la chiusura).
 
@@ -1052,13 +1052,29 @@ Servono l'account Leapmotor collegato, il PIN dell'auto salvato e «Casa» salva
 essere a meno di 300 m). Solo con ricarica in CA. Il collegamento viene rilevato dal controllo in background (ogni 15
 minuti o più), quindi la finestra può arrivare dopo qualche minuto; nel frattempo l'auto ricarica.
 
+**Batteria calda per il caricatore** (in prova, facoltativa e spenta di serie; in ⚙, accanto a «Ricarica economica», e
+nell'auto in Percorso › «Filtra» › «Piano di ricarica»). Se il piano del percorso ha una **sosta di ricarica rapida**
+(in CC, 40 kW o più) e fuori ci sono **meno di 15 °C**, circa **25 minuti prima dell'arrivo** Qonecta+ chiede all'auto,
+tramite il cloud Leapmotor, di riscaldare la batteria, così ricarica veloce dal primo minuto (con la batteria fredda la
+ricarica rapida è molto più lenta). Lo mostra sullo schermo dell'auto («Riscaldo la batteria per il caricatore … ·
+arrivi tra 24 min») e a voce (se «Avviso vocale se il piano cambia» è attivo), con un pulsante **«Annulla»**.
+
+- Una sola volta per sosta. Non viene inviato se la batteria è già calda o si sta scaldando, se arriveresti con meno del
+  10 % (riscaldare consuma batteria) o se mancano meno di 5 minuti. La temperatura è quella del meteo mostrato nel
+  pannello (senza, la previsione alla sosta).
+- **Si spegne da solo** se l'arrivo ritarda di 20 minuti o più (un ingorgo, un altro piano), se la sosta esce dal piano,
+  se il viaggio finisce lontano da lì o se passano 20 minuti dall'ora prevista senza arrivare. Una volta collegata alla
+  ricarica rapida non fa più nulla.
+- Servono l'account Leapmotor collegato e il PIN dell'auto salvato (è inviato senza conferma). Se l'auto risponde che non
+  ha la funzione (può succedere con la T03), si spegne per quell'auto e lo dice una volta.
+
 **Privacy e sicurezza.**
 
 - Sola lettura, con un'eccezione facoltativa: i **comandi del widget «Auto» e della scheda «La mia auto»** (chiudere, aprire, bagagliaio, clima e
   localizzare e sbloccare il cavo di ricarica), e solo se salvi il PIN dell'auto in «Dati dell'auto» → «5 · PIN dell'auto» e lì attivi i comandi dal
   widget (il PIN è quello dell'app Leapmotor; resta cifrato sul telefono e non finisce mai nel registro). Senza PIN,
   Qonecta+ **non invia mai comandi all'auto**, e non esiste nessun altro comando (né il limite né la programmazione della ricarica). Ogni
-  comando va confermato prima dell'invio (tranne «Chiudere l'auto quando mi allontano», se lo attivi, che chiude soltanto); «Dimentica PIN» lo cancella.
+  comando va confermato prima dell'invio (tranne, se li attivi, «Chiudere l'auto quando mi allontano», che chiude soltanto, il piano di «Ricarica economica» e il riscaldamento di «Batteria calda per il caricatore», che si avvisa con «Annulla»); «Dimentica PIN» lo cancella.
 - I tuoi dati vanno **solo ai server di Leapmotor**. La posizione dell'auto non viene né letta né salvata.
 - Il certificato, la sessione e lo storico dei viaggi vengono salvati **cifrati** con una chiave dell'Android Keystore,
   fuori dai backup. La password non viene salvata: se la sessione scade, «Stato» te lo dice e accedi di nuovo dal
