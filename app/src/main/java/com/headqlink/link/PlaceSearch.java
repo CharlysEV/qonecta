@@ -43,6 +43,8 @@ final class PlaceSearch {
 
     /** Busca en los dos a la vez (llamar fuera del hilo principal). Sin resultados, lista vacía. */
     static List<RoutePlanner.Place> search(Context ctx, String q, double lat, double lon) {
+        List<RoutePlanner.Place> at = byCoords(q);
+        if (at != null) return at;
         final List<RoutePlanner.Place>[] got = newLists(2);
         CountDownLatch done = new CountDownLatch(2);
         new Thread(() -> {
@@ -71,6 +73,23 @@ final class PlaceSearch {
         return merge(got[0], got[1], lat, lon, MAX_RESULTS);
     }
 
+    /**
+     * Coordenadas escritas (CoordText): el sitio exacto, sin buscar. Un buscador las tomaba por una dirección y daba
+     * un sitio cualquiera cerca (LPMFF #416). null si el texto no son coordenadas.
+     */
+    static List<RoutePlanner.Place> byCoords(String q) {
+        double[] c = CoordText.parse(q);
+        if (c == null) return null;
+        RoutePlanner.Place p = new RoutePlanner.Place();
+        p.name = CoordText.label(c[0], c[1]);
+        p.detail = "";
+        p.lat = c[0];
+        p.lon = c[1];
+        List<RoutePlanner.Place> out = new ArrayList<>();
+        out.add(p);
+        return out;
+    }
+
     @SuppressWarnings("unchecked")
     private static List<RoutePlanner.Place>[] newLists(int n) {
         List<RoutePlanner.Place>[] a = new List[n];
@@ -81,6 +100,8 @@ final class PlaceSearch {
     /** El de direcciones de Android, primero en unos 110 km alrededor y, si no hay nada, en cualquier sitio. */
     @SuppressWarnings("deprecation")
     static List<RoutePlanner.Place> geocoder(Context ctx, String q, double lat, double lon) throws Exception {
+        List<RoutePlanner.Place> at = byCoords(q);
+        if (at != null) return at;
         List<RoutePlanner.Place> out = new ArrayList<>();
         if (!Geocoder.isPresent()) return out;
         Geocoder g = new Geocoder(ctx, Locale.getDefault());
@@ -117,6 +138,8 @@ final class PlaceSearch {
 
     /** Photon: los más cercanos primero entre los que encajan. */
     static List<RoutePlanner.Place> photon(String q, double lat, double lon) throws Exception {
+        List<RoutePlanner.Place> at = byCoords(q);
+        if (at != null) return at;
         String url = "https://photon.komoot.io/api/?limit=" + MAX_RESULTS + "&q=" + Uri.encode(q);
         if (!Double.isNaN(lat)) url += String.format(Locale.US, "&lat=%.4f&lon=%.4f", lat, lon);
         return parsePhoton(Http.get(url));
