@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- «Batería caliente para el cargador» (BatteryHeat): las mismas claves en los 9 idiomas. -->
+    <string name="hql_bh_title">Batteria calda per il caricatore</string>
+    <string name="hql_bh_card">Riscaldo la batteria per il caricatore %1$s · arrivi tra %2$d min</string>
+    <string name="hql_bh_voice">Riscaldo la batteria per il caricatore %1$s. Arrivi tra %2$d minuti.</string>
+    <string name="hql_bh_off_late">L\'arrivo a %1$s è in ritardo: smetto di riscaldare la batteria.</string>
+    <string name="hql_bh_off_gone">%1$s non è più nel piano: smetto di riscaldare la batteria.</string>
+    <string name="hql_bh_failed">Non è stato possibile riscaldare la batteria per %1$s (nessuna risposta da Leapmotor).</string>
+    <string name="hql_bh_unsupported">La tua auto non permette di riscaldare la batteria a distanza: la funzione resta spenta per lei.</string>
+    <string name="hql_bh_set_on">Batteria calda per il caricatore</string>
+    <string name="hql_bh_set_on_sum">Con una sosta di ricarica rapida nel piano del percorso e meno di %1$d °C fuori, circa %2$d min prima dell\'arrivo l\'app chiede all\'auto di riscaldare la batteria, per caricare veloce dal primo minuto. Lo avvisa sullo schermo dell\'auto e a voce, con «Annulla».</string>
+    <string name="hql_bh_set_needs">Servono l\'account Leapmotor e il PIN dell\'auto salvato in Dati dell\'auto.</string>
+    <string name="hql_bh_set_unsupported">La tua auto ha risposto che non ha questa funzione: resta spenta per lei.</string>
+    <string name="hql_cc_battery_heat_on">Riscalda la batteria</string>
+    <string name="hql_cc_battery_heat_off">Smetti di riscaldare la batteria</string>
+</resources>

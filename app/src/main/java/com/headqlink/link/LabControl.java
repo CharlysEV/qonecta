@@ -23,7 +23,8 @@ import java.util.Locale;
  * próxima sesión; la sesión del enlace con Android Auto apartada solo mientras la radio tiene la música o siempre; sin
  * nada, cómo está) · frente · fondo (CAR_APP_FOREGROUND o CAR_APP_BACKGROUND al coche: ¿vuelve a QDLink si se le pide?) ·
  * plan [reenviar] (el plan de carga del coche) · barata («Carga barata»: el estado y el cálculo que haría ahora, sin
- * mandar nada).
+ * mandar nada) · calentar [on|off] («Batería caliente para el cargador»: on/off mandan ya la orden 160; sin nada, el
+ * estado y lo que haría ahora).
  */
 final class LabControl {
     /** Tope de fps de Claude (0: ninguno). */
@@ -309,6 +310,26 @@ final class LabControl {
                 done = "carga barata: estado y cálculo de ahora, sin mandar nada (resultado en el log)";
                 break;
             }
+            case "calentar": {
+                // «Batería caliente para el cargador» (11-11): «calentar on|off» manda ya la orden 160 (para probarla
+                // aparcado; el resultado, en el log); «calentar» a secas dice el estado y lo que haría ahora, sin mandar.
+                if (a.isEmpty()) return "calentar: " + BatteryHeat.lab(ctx);
+                if (!a.equals("on") && !a.equals("off")) return "calentar · calentar on · calentar off";
+                boolean on = a.equals("on");
+                Context app = ctx.getApplicationContext();
+                new Thread(() -> {
+                    try {
+                        boolean ok = BatteryHeat.cloud(app).send(on);
+                        L.i("pruebas: calentar " + (on ? "on" : "off") + ": " + (ok ? "confirmado por el coche" : "sin confirmar")
+                                + "; la señal 1186 se verá en las próximas lecturas («calentar»)");
+                    } catch (Exception e) {
+                        L.w("pruebas: calentar " + (on ? "on" : "off") + ": "
+                                + (BatteryHeat.unsupported(e) ? "el coche no tiene la función (" : "fallo (") + Http.safeError(e) + ")");
+                    }
+                }, "lab-calentar").start();
+                done = "calentar la batería: mando «" + (on ? "ptcon" : "ptcoff") + "» al coche (resultado en el log)";
+                break;
+            }
             case "reconectar":
                 done = "reconecto (unos segundos sin imagen)";
                 reconnect(ctx);
@@ -324,7 +345,7 @@ final class LabControl {
                 done = "todo como lo deja la app (sin topes de Claude)";
                 break;
             default:
-                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, precios, carga, plan, barata, ffmpeg, ia, radioaa, boost, termica, noche, hud, perfil, frente, fondo, reconectar, auto)";
+                return "no: orden desconocida (estado, msg, fps, kbps, cable, qp, cola, alemania, precios, carga, plan, barata, calentar, ffmpeg, ia, radioaa, boost, termica, noche, hud, perfil, frente, fondo, reconectar, auto)";
         }
         L.i("laboratorio: " + done);
         CarUi.videoInfoText("Claude · " + done);

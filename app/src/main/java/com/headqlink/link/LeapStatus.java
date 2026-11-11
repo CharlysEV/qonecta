@@ -442,6 +442,14 @@ final class LeapStatus {
         return Boolean.TRUE.equals(dcCharge);
     }
 
+    /**
+     * La batería se está calentando (señal 1186, batteryThermalRequest): leapmotor-ha dice que 4 es encendido y la
+     * pestaña Coche usaba 1; sin probar en el coche, cualquier valor distinto de 0 cuenta. null: el coche no lo manda.
+     */
+    Boolean batteryHeating() {
+        return batteryThermalRequest == null ? null : batteryThermalRequest != 0;
+    }
+
     /** Potencia de la batería en kW (tensión × corriente / 1000) tal como la da el coche, o NaN. */
     double powerKw() {
         if (Double.isNaN(batteryVoltage) || Double.isNaN(batteryCurrent)) return Double.NaN;

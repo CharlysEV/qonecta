@@ -358,6 +358,22 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
                 .setOnClickListener(v -> pickCheapTarget());
         row(Str.get(R.string.hql_cb_set_kw), () -> kwLabel(cfg.cheapKw())).setOnClickListener(v -> pickCheapKw());
         note(Str.get(R.string.hql_cb_set_note));
+        buildBatteryHeat();
+    }
+
+    /**
+     * «Batería caliente para el cargador» (BatteryHeat), con «Carga barata» (las dos mandan solas una orden al coche): el
+     * interruptor y, debajo, lo que falta (la cuenta y el PIN) o que el coche no tiene la función.
+     */
+    private void buildBatteryHeat() {
+        switchRow(Str.get(R.string.hql_bh_set_on), () -> {
+            String why = BatteryHeat.missing(this);
+            String sum = Str.get(R.string.hql_bh_set_on_sum, Math.round(BatteryHeat.COLD_C), Math.round(BatteryHeat.LEAD_MIN));
+            return why.isEmpty() ? sum : sum + "\n" + why;
+        }, cfg::batteryHeat, on -> {
+            cfg.setBatteryHeat(on);
+            BatteryHeat.settingChanged(this, on);
+        });
     }
 
     private static String tariffLabel(String mode) {

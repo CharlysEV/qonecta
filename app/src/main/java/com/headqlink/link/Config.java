@@ -661,6 +661,19 @@ final class Config {
         sp.edit().putBoolean(CHEAP_ON, on).apply();
     }
 
+    // ------------------------------------------------------------------ «Batería caliente para el cargador» (BatteryHeat)
+
+    /** Calentar la batería por la nube antes de una parada de carga rápida del plan. Apagada de serie. */
+    static final String BATTERY_HEAT_ON = "battery_heat_on";
+
+    boolean batteryHeat() {
+        return sp.getBoolean(BATTERY_HEAT_ON, false);
+    }
+
+    void setBatteryHeat(boolean on) {
+        sp.edit().putBoolean(BATTERY_HEAT_ON, on).apply();
+    }
+
     /**
      * La tarifa de casa: Tariff.PVPC, BANDS o FLAT. Sin elegir, PVPC con una SIM (o un móvil) de España y los tres
      * tramos en el resto.

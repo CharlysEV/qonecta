@@ -2473,6 +2473,23 @@ final class RouteTab implements CarScreen {
             rebuild.run();
         }), chipParams());
         body.addView(vo);
+        // «Batería caliente para el cargador» (BatteryHeat): lo mismo que en los ajustes del móvil.
+        body.addView(section(Str.get(R.string.hql_bh_set_on)));
+        LinearLayout bh = CarKit.row(ctx);
+        bh.addView(chip(capital(Str.get(R.string.hql_yes)), pc.batteryHeat(), () -> {
+            pc.setBatteryHeat(true);
+            BatteryHeat.settingChanged(ctx, true);
+            rebuild.run();
+        }), chipParams());
+        bh.addView(chip(capital(Str.get(R.string.hql_no)), !pc.batteryHeat(), () -> {
+            pc.setBatteryHeat(false);
+            BatteryHeat.settingChanged(ctx, false);
+            rebuild.run();
+        }), chipParams());
+        body.addView(bh);
+        String bhWhy = BatteryHeat.missing(ctx);
+        body.addView(hint(Str.get(R.string.hql_bh_set_on_sum, Math.round(BatteryHeat.COLD_C), Math.round(BatteryHeat.LEAD_MIN))
+                + (bhWhy.isEmpty() ? "" : "\n" + bhWhy)));
         // Navegador para «Guiar», los «Ir» y las paradas (Waze, si está instalado).
         if (NavApps.wazeInstalled(ctx)) {
             body.addView(section(Str.get(R.string.hql_nav_app)));

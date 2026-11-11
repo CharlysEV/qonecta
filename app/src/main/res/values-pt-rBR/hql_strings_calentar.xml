@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- «Batería caliente para el cargador» (BatteryHeat): las mismas claves en los 9 idiomas. -->
+    <string name="hql_bh_title">Bateria quente para o carregador</string>
+    <string name="hql_bh_card">Aquecendo a bateria para o carregador %1$s · chega em %2$d min</string>
+    <string name="hql_bh_voice">Aquecendo a bateria para o carregador %1$s. Você chega em %2$d minutos.</string>
+    <string name="hql_bh_off_late">A chegada a %1$s está atrasada: a bateria deixa de ser aquecida.</string>
+    <string name="hql_bh_off_gone">%1$s não está mais no plano: a bateria deixa de ser aquecida.</string>
+    <string name="hql_bh_failed">Não foi possível aquecer a bateria para %1$s (sem resposta da Leapmotor).</string>
+    <string name="hql_bh_unsupported">Seu carro não permite aquecer a bateria a distância: a função fica desligada para ele.</string>
+    <string name="hql_bh_set_on">Bateria quente para o carregador</string>
+    <string name="hql_bh_set_on_sum">Com uma parada de recarga rápida no plano da rota e menos de %1$d °C lá fora, cerca de %2$d min antes de chegar o app pede ao carro para aquecer a bateria, para carregar rápido desde o primeiro minuto. O aviso aparece na tela do carro e por voz, com “Cancelar”.</string>
+    <string name="hql_bh_set_needs">É preciso ter a conta Leapmotor e o PIN do carro salvo em Dados do carro.</string>
+    <string name="hql_bh_set_unsupported">Seu carro respondeu que não tem essa função: ela fica desligada para ele.</string>
+    <string name="hql_cc_battery_heat_on">Aquecer a bateria</string>
+    <string name="hql_cc_battery_heat_off">Parar de aquecer a bateria</string>
+</resources>

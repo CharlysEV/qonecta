@@ -589,6 +589,8 @@ final class RoutePlanner {
             if (m != null && m.name.equals(last.destination)) rememberTrip(m, vias, roundTrip);
         }
         instance.finishOnStop();
+        // Con la batería calentándose para una parada que no se va a hacer, se apaga (junto a ella, no).
+        if (!instance.demo && !testMode) BatteryHeat.onRouteStopped(instance.ctx);
         instance.running = false;
         CarSensors.stop();
         VoiceAlert.shutdown();
@@ -790,6 +792,8 @@ final class RoutePlanner {
         if (p != null) refreshRouteData(p);
         followChargeSession(p);
         if (p != null) followCharge(p);
+        // «Batería caliente para el cargador»: solo en un viaje de verdad (ni demostración ni coche virtual).
+        if (!demo && !testMode) BatteryHeat.onRoute(ctx, p, p == null ? null : lastChargePlan());
         // Destino: el de AA si lo manda; si no, el elegido aquí.
         Place m = manual;
         String dest = nav.active && nav.destination != null ? nav.destination : m != null ? m.name : null;
@@ -2115,6 +2119,10 @@ final class RoutePlanner {
     static final int ALERT_READY = 1;
     /** Viaje terminado (con sus cuentas): tarjeta flotante encima de AA hasta que se toque (en el panel se perdía, 17-10). */
     static final int ALERT_ENDED = 2;
+    /** «Batería caliente para el cargador» (BatteryHeat): calentando, con «Cancelar» (verde). */
+    static final int ALERT_HEAT = 3;
+    /** …y lo que cuenta después (apagado por retraso, no se pudo…): ámbar, sin botones del plan. */
+    static final int ALERT_HEAT_NOTE = 4;
 
     interface ChargeAlertListener {
         void onChargeAlert(String title, String text, int kind);

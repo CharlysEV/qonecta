@@ -43,7 +43,7 @@ class TranslationsTest {
 
     private fun strings(dir: String): Map<String, String> =
         listOf("hql_strings.xml", "hql_cloud_strings.xml", "hql_strings_i18n.xml", "hql_strings_ruta_movil.xml",
-            "hql_strings_carga_barata.xml")
+            "hql_strings_carga_barata.xml", "hql_strings_calentar.xml")
             .flatMap { elements(dir, it, "string") }.associate { it.getAttribute("name") to it.textContent }
 
     /** nombre → (cantidad → texto) */

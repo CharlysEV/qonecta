@@ -98,7 +98,26 @@ class CarCommandTest {
 
     @Test
     fun onlyTheseCommandsCanBeSent() {
-        assertEquals(listOf("110", "120", "130", "170", "192", "190"), LeapApi.COMMANDS)
+        assertEquals(listOf("110", "120", "130", "170", "192", "190", "160"), LeapApi.COMMANDS)
+    }
+
+    @Test
+    fun warmTheBatteryForTheCharger() {
+        // 11-11, «Batería caliente para el cargador»: orden 160 de leapmotor-mate y leapmotor-ha (sin probar en el coche).
+        val on = CarCommand(CarCommand.Kind.BATTERY_HEAT_ON)
+        val off = CarCommand(CarCommand.Kind.BATTERY_HEAT_OFF)
+        assertEquals("160", on.cmdId())
+        assertEquals("160", off.cmdId())
+        assertEquals("{\"value\":\"ptcon\"}", on.content("C10", Double.NaN))
+        assertEquals("{\"value\":\"ptcoff\"}", off.content("C10", Double.NaN))
+        assertEquals("{\"value\":\"ptcon\"}", on.content("T03", 5.0))
+        // La manda la app sola (con aviso y «Cancelar»): no pide confirmación.
+        assertFalse(on.needsConfirm())
+        assertFalse(off.needsConfirm())
+        // Ni la voz ni el widget la piden: «calienta el coche» sigue siendo el clima.
+        assertEquals(CarCommand.Kind.CLIMATE_ON, kind("calienta el coche"))
+        assertEquals(CarCommand.Kind.CLIMATE_ON, kind("calienta la batería"))
+        assertNull(CarCommand.fromButton("heat"))
     }
 
     @Test

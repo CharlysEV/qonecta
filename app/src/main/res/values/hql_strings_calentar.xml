@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- «Batería caliente para el cargador» (BatteryHeat): las mismas claves en los 9 idiomas. -->
+    <string name="hql_bh_title">Warm battery for the charger</string>
+    <string name="hql_bh_card">Warming the battery for the charger at %1$s · arriving in %2$d min</string>
+    <string name="hql_bh_voice">Warming the battery for the charger at %1$s. Arriving in %2$d minutes.</string>
+    <string name="hql_bh_off_late">Arrival at %1$s is delayed: battery warming stopped.</string>
+    <string name="hql_bh_off_gone">%1$s is no longer in the plan: battery warming stopped.</string>
+    <string name="hql_bh_failed">Could not warm the battery for %1$s (no answer from Leapmotor).</string>
+    <string name="hql_bh_unsupported">Your car does not allow warming the battery remotely: the feature stays off for it.</string>
+    <string name="hql_bh_set_on">Warm battery for the charger</string>
+    <string name="hql_bh_set_on_sum">With a fast-charging stop in the route plan and less than %1$d °C outside, about %2$d min before arriving the app asks the car to warm the battery, so it charges fast from the first minute. It is announced on the car screen and by voice, with “Cancel”.</string>
+    <string name="hql_bh_set_needs">It needs the Leapmotor account and the car PIN saved in Car data.</string>
+    <string name="hql_bh_set_unsupported">Your car replied that it does not have this feature: it stays off for it.</string>
+    <string name="hql_cc_battery_heat_on">Warm the battery</string>
+    <string name="hql_cc_battery_heat_off">Stop warming the battery</string>
+</resources>

@@ -12,9 +12,13 @@ import java.util.regex.Pattern;
  * apagar el clima, localizar y desbloquear el cable de carga. Los cmdId y cuerpos son los documentados por
  * leapmotor-api (markoceri, AGPL-3.0, docs/api.md «Remote Commands»); el del cable, por leapmotor-ha (kerniger, MIT).
  * Abrir el coche, el maletero y soltar el cable piden confirmación (por si la voz entiende mal).
+ *
+ * Calentar la batería (BATTERY_HEAT_ON/OFF, orden 160 de leapmotor-mate y leapmotor-ha) no sale del widget ni de la voz:
+ * la manda sola «Batería caliente para el cargador» (BatteryHeat) antes de una parada de carga rápida.
  */
 final class CarCommand {
-    enum Kind { LOCK, UNLOCK, TRUNK_OPEN, TRUNK_CLOSE, CLIMATE_ON, CLIMATE_OFF, DEFROST, FIND, CABLE_UNLOCK }
+    enum Kind { LOCK, UNLOCK, TRUNK_OPEN, TRUNK_CLOSE, CLIMATE_ON, CLIMATE_OFF, DEFROST, FIND, CABLE_UNLOCK, BATTERY_HEAT_ON,
+        BATTERY_HEAT_OFF }
 
     /** Clima: automático (el coche decide), frío o calefacción. */
     enum Mode { AUTO, COLD, HEAT }
@@ -60,6 +64,9 @@ final class CarCommand {
                 return LeapApi.CMD_FIND;
             case CABLE_UNLOCK:
                 return LeapApi.CMD_CHARGE_CABLE;
+            case BATTERY_HEAT_ON:
+            case BATTERY_HEAT_OFF:
+                return LeapApi.CMD_BATTERY_HEAT;
             default:
                 return LeapApi.CMD_CLIMATE;
         }
@@ -83,6 +90,10 @@ final class CarCommand {
                 return "{\"value\":\"false\"}";
             case CABLE_UNLOCK:
                 return "{\"operation\":\"unlock\"}";
+            case BATTERY_HEAT_ON:
+                return "{\"value\":\"ptcon\"}";
+            case BATTERY_HEAT_OFF:
+                return "{\"value\":\"ptcoff\"}";
             case DEFROST:
                 return climate("in", "hot", 32, 7, 1);
             case CLIMATE_OFF:
@@ -130,6 +141,10 @@ final class CarCommand {
                 return Str.get(R.string.hql_cc_find);
             case CABLE_UNLOCK:
                 return Str.get(R.string.hql_cc_cable_unlock);
+            case BATTERY_HEAT_ON:
+                return Str.get(R.string.hql_cc_battery_heat_on);
+            case BATTERY_HEAT_OFF:
+                return Str.get(R.string.hql_cc_battery_heat_off);
             default:
                 return Str.get(mode == Mode.COLD ? R.string.hql_cc_climate_cold : mode == Mode.HEAT ? R.string.hql_cc_climate_heat
                         : R.string.hql_cc_climate_on, tempC);

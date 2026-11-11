@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- «Batería caliente para el cargador» (BatteryHeat): las mismas claves en los 9 idiomas. -->
+    <string name="hql_bh_title">Warme accu voor de lader</string>
+    <string name="hql_bh_card">Accu wordt voorverwarmd voor de lader %1$s · aankomst over %2$d min</string>
+    <string name="hql_bh_voice">De accu wordt voorverwarmd voor de lader %1$s. Aankomst over %2$d minuten.</string>
+    <string name="hql_bh_off_late">De aankomst bij %1$s loopt vertraging op: voorverwarmen van de accu gestopt.</string>
+    <string name="hql_bh_off_gone">%1$s staat niet meer in het plan: voorverwarmen van de accu gestopt.</string>
+    <string name="hql_bh_failed">De accu kon niet worden voorverwarmd voor %1$s (geen antwoord van Leapmotor).</string>
+    <string name="hql_bh_unsupported">Je auto staat voorverwarmen van de accu op afstand niet toe: de functie blijft uit voor deze auto.</string>
+    <string name="hql_bh_set_on">Warme accu voor de lader</string>
+    <string name="hql_bh_set_on_sum">Met een snellaadstop in het routeplan en minder dan %1$d °C buiten vraagt de app de auto ongeveer %2$d min voor aankomst om de accu voor te verwarmen, zodat hij vanaf de eerste minuut snel laadt. Dit wordt gemeld op het autoscherm en met spraak, met ‘Annuleren’.</string>
+    <string name="hql_bh_set_needs">Hiervoor zijn het Leapmotor-account en de pincode van de auto, opgeslagen in Autogegevens, nodig.</string>
+    <string name="hql_bh_set_unsupported">Je auto antwoordde dat hij deze functie niet heeft: die blijft uit voor deze auto.</string>
+    <string name="hql_cc_battery_heat_on">Accu voorverwarmen</string>
+    <string name="hql_cc_battery_heat_off">Voorverwarmen van de accu stoppen</string>
+</resources>

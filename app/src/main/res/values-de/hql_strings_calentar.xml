@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- «Batería caliente para el cargador» (BatteryHeat): las mismas claves en los 9 idiomas. -->
+    <string name="hql_bh_title">Akku vorwärmen für den Lader</string>
+    <string name="hql_bh_card">Akku wird für den Lader %1$s vorgewärmt · Ankunft in %2$d min</string>
+    <string name="hql_bh_voice">Der Akku wird für den Lader %1$s vorgewärmt. Ankunft in %2$d Minuten.</string>
+    <string name="hql_bh_off_late">Die Ankunft bei %1$s verzögert sich: Akku-Vorwärmung beendet.</string>
+    <string name="hql_bh_off_gone">%1$s ist nicht mehr im Plan: Akku-Vorwärmung beendet.</string>
+    <string name="hql_bh_failed">Der Akku konnte für %1$s nicht vorgewärmt werden (keine Antwort von Leapmotor).</string>
+    <string name="hql_bh_unsupported">Dein Auto erlaubt kein Vorwärmen des Akkus aus der Ferne: Die Funktion bleibt für dieses Auto aus.</string>
+    <string name="hql_bh_set_on">Akku vorwärmen für den Lader</string>
+    <string name="hql_bh_set_on_sum">Mit einem Schnellladestopp im Routenplan und unter %1$d °C draußen bittet die App das Auto etwa %2$d min vor der Ankunft, den Akku vorzuwärmen, damit es ab der ersten Minute schnell lädt. Angekündigt auf dem Autobildschirm und per Sprache, mit „Abbrechen“.</string>
+    <string name="hql_bh_set_needs">Dafür braucht es das Leapmotor-Konto und die Fahrzeug-PIN, gespeichert in Fahrzeugdaten.</string>
+    <string name="hql_bh_set_unsupported">Dein Auto hat geantwortet, dass es diese Funktion nicht hat: Sie bleibt für dieses Auto aus.</string>
+    <string name="hql_cc_battery_heat_on">Akku vorwärmen</string>
+    <string name="hql_cc_battery_heat_off">Akku-Vorwärmung beenden</string>
+</resources>

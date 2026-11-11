@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- «Batería caliente para el cargador» (BatteryHeat): las mismas claves en los 9 idiomas. -->
+    <string name="hql_bh_title">Batterie chaude pour la borne</string>
+    <string name="hql_bh_card">Préchauffage de la batterie pour la borne %1$s · arrivée dans %2$d min</string>
+    <string name="hql_bh_voice">Préchauffage de la batterie pour la borne %1$s. Arrivée dans %2$d minutes.</string>
+    <string name="hql_bh_off_late">L\'arrivée à %1$s est retardée : préchauffage de la batterie arrêté.</string>
+    <string name="hql_bh_off_gone">%1$s n\'est plus dans le plan : préchauffage de la batterie arrêté.</string>
+    <string name="hql_bh_failed">Impossible de préchauffer la batterie pour %1$s (pas de réponse de Leapmotor).</string>
+    <string name="hql_bh_unsupported">Votre voiture ne permet pas de préchauffer la batterie à distance : la fonction reste désactivée pour elle.</string>
+    <string name="hql_bh_set_on">Batterie chaude pour la borne</string>
+    <string name="hql_bh_set_on_sum">Avec un arrêt de recharge rapide dans le plan de l\'itinéraire et moins de %1$d °C dehors, environ %2$d min avant l\'arrivée l\'app demande à la voiture de préchauffer la batterie, pour charger vite dès la première minute. C\'est annoncé sur l\'écran de la voiture et à la voix, avec « Annuler ».</string>
+    <string name="hql_bh_set_needs">Il faut le compte Leapmotor et le code PIN de la voiture enregistré dans Données de la voiture.</string>
+    <string name="hql_bh_set_unsupported">Votre voiture a répondu qu\'elle n\'a pas cette fonction : elle reste désactivée pour elle.</string>
+    <string name="hql_cc_battery_heat_on">Préchauffer la batterie</string>
+    <string name="hql_cc_battery_heat_off">Arrêter le préchauffage de la batterie</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- «Batería caliente para el cargador» (BatteryHeat): las mismas claves en los 9 idiomas. -->
+    <string name="hql_bh_title">Batería caliente para el cargador</string>
+    <string name="hql_bh_card">Calentando la batería para el cargador de %1$s · llegas en %2$d min</string>
+    <string name="hql_bh_voice">Calentando la batería para el cargador de %1$s. Llegas en %2$d minutos.</string>
+    <string name="hql_bh_off_late">La llegada a %1$s se retrasa: se deja de calentar la batería.</string>
+    <string name="hql_bh_off_gone">%1$s ya no está en el plan: se deja de calentar la batería.</string>
+    <string name="hql_bh_failed">No se pudo calentar la batería para %1$s (sin respuesta de Leapmotor).</string>
+    <string name="hql_bh_unsupported">Tu coche no permite calentar la batería a distancia: la función queda apagada para él.</string>
+    <string name="hql_bh_set_on">Batería caliente para el cargador</string>
+    <string name="hql_bh_set_on_sum">Con una parada de carga rápida en el plan de la ruta y menos de %1$d °C fuera, unos %2$d min antes de llegar la app pide al coche que caliente la batería, para cargar rápido desde el primer minuto. Lo avisa en la pantalla del coche y por voz, con «Cancelar».</string>
+    <string name="hql_bh_set_needs">Hace falta la cuenta de Leapmotor y el PIN del coche guardado en Datos del coche.</string>
+    <string name="hql_bh_set_unsupported">Tu coche contestó que no tiene esta función: queda apagada para él.</string>
+    <string name="hql_cc_battery_heat_on">Calentar la batería</string>
+    <string name="hql_cc_battery_heat_off">Dejar de calentar la batería</string>
+</resources>

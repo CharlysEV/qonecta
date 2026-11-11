@@ -129,6 +129,9 @@ final class CarUi {
     private AlertIcon alertIcon;
     private TextView alertText;
     private View alertGo;
+    /** «Cancelar» (solo con el aviso de la batería calentándose) y «Ruta» (no en los de la batería). */
+    private View alertCancel;
+    private View alertRoute;
     private boolean alertPending;
     /**
      * El aviso ya se vio (estuvo a la vista y el panel se recogió): no vuelve a salir al cambiar de pantalla; queda el
@@ -1720,6 +1723,17 @@ final class CarUi {
         glp.rightMargin = 12;
         btns.addView(go, glp);
         alertGo = go;
+        // «Batería caliente para el cargador»: «Cancelar» apaga el calentamiento (en otro hilo: es una orden por la nube).
+        TextView cancel = CarKit.pill(c, Str.get(R.string.hql_cancel), true);
+        cancel.setOnClickListener(v -> {
+            clearAlert();
+            BatteryHeat.cancelAsync(ctx);
+        });
+        LinearLayout.LayoutParams clp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        clp.rightMargin = 12;
+        btns.addView(cancel, clp);
+        cancel.setVisibility(View.GONE);
+        alertCancel = cancel;
         TextView route = CarKit.pill(c, Str.get(R.string.hql_tab_route), false);
         route.setOnClickListener(v -> {
             clearAlert();
@@ -1727,6 +1741,7 @@ final class CarUi {
             open("car");
         });
         btns.addView(route);
+        alertRoute = route;
         card.addView(btns);
         card.setVisibility(View.GONE);
         alertCard = card;
@@ -1740,7 +1755,8 @@ final class CarUi {
     private void showAlert(String title, String text, int kind) {
         if (alertCard == null) return;
         alertShown = new Object[]{title, text, kind};
-        boolean ok = kind == RoutePlanner.ALERT_READY;
+        boolean heat = kind == RoutePlanner.ALERT_HEAT || kind == RoutePlanner.ALERT_HEAT_NOTE;
+        boolean ok = kind == RoutePlanner.ALERT_READY || kind == RoutePlanner.ALERT_HEAT;
         alertCard.setBackground(CarStyle.round(CarTheme.alertBg(ok), 24));
         alertTitle.setTextColor(ok ? CarKit.GREEN : CarKit.AMBER);
         alertIcon.setColor(ok ? CarKit.GREEN : CarKit.AMBER);
@@ -1748,7 +1764,9 @@ final class CarUi {
         alertText.setText(text);
         RoutePlanner r = RoutePlanner.get();
         ChargePlanner.Result cp = r == null ? null : r.lastChargePlan();
-        alertGo.setVisibility(cp != null && cp.next() != null ? View.VISIBLE : View.GONE);
+        alertGo.setVisibility(!heat && cp != null && cp.next() != null ? View.VISIBLE : View.GONE);
+        alertCancel.setVisibility(kind == RoutePlanner.ALERT_HEAT ? View.VISIBLE : View.GONE);
+        alertRoute.setVisibility(heat ? View.GONE : View.VISIBLE);
         alertPending = true;
         if (!replaying) {
             alertSeen = false;

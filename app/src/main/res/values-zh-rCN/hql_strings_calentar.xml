@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- «Batería caliente para el cargador» (BatteryHeat): las mismas claves en los 9 idiomas. -->
+    <string name="hql_bh_title">为充电桩预热电池</string>
+    <string name="hql_bh_card">正在为 %1$s 充电桩预热电池 · %2$d 分钟后到达</string>
+    <string name="hql_bh_voice">正在为 %1$s 充电桩预热电池。%2$d 分钟后到达。</string>
+    <string name="hql_bh_off_late">到达 %1$s 的时间推迟：已停止预热电池。</string>
+    <string name="hql_bh_off_gone">%1$s 已不在计划中：已停止预热电池。</string>
+    <string name="hql_bh_failed">无法为 %1$s 预热电池（Leapmotor 无响应）。</string>
+    <string name="hql_bh_unsupported">你的车不支持远程预热电池：已为这辆车关闭此功能。</string>
+    <string name="hql_bh_set_on">为充电桩预热电池</string>
+    <string name="hql_bh_set_on_sum">路线计划中有快充停靠点且室外低于 %1$d °C 时，应用会在到达前约 %2$d 分钟请车辆预热电池，从第一分钟起就能快速充电。会在车机屏幕上并通过语音提醒，并提供“取消”。</string>
+    <string name="hql_bh_set_needs">需要 Leapmotor 账号，并在车辆数据中保存车辆 PIN。</string>
+    <string name="hql_bh_set_unsupported">你的车回复不支持此功能：已为这辆车关闭。</string>
+    <string name="hql_cc_battery_heat_on">预热电池</string>
+    <string name="hql_cc_battery_heat_off">停止预热电池</string>
+</resources>

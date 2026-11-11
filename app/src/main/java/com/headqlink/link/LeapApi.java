@@ -8,7 +8,7 @@
  * SOLO LECTURA salvo unas órdenes opcionales: de LMB10 se ha portado únicamente el login, la sesión, la lista de coches
  * y el estado, y la capa de transporte se niega a pedir cualquier ruta que no sea de las de lectura (ALLOWED_PATHS). Las
  * órdenes al coche son las de COMMANDS (con el ajuste «Órdenes desde el widget»: cerrar y abrir, maletero, clima y
- * localizar), y solo si el usuario ha guardado a propósito el PIN del coche: entonces, y solo dentro de remote(),
+ * localizar; el cable, el plan de carga y calentar la batería), y solo si el usuario ha guardado a propósito el PIN del coche: entonces, y solo dentro de remote(),
  * se permiten las cuatro rutas de REMOTE_PATHS. Nada más (ventanillas, carga, aparcar…) existe aquí. El flujo
  * (certificado, PIN cifrado, orden y confirmación) y los cuerpos de las órdenes siguen leapmotor-api (markoceri,
  * AGPL-3.0).
@@ -90,9 +90,14 @@ final class LeapApi {
     static final String CMD_CHARGE_CABLE = "192";
     /** El plan de carga: el límite y la ventana, en una sola orden que sustituye el plan entero (ChargePlan). */
     static final String CMD_CHARGE_PLAN = "190";
+    /**
+     * Calentar la batería (11-11, «Batería caliente para el cargador»): {"value":"ptcon"} la enciende y "ptcoff" la apaga;
+     * de leapmotor-mate y leapmotor-ha (MIT). Sin probar aún en el coche; el que no la tiene contesta «No such permission».
+     */
+    static final String CMD_BATTERY_HEAT = "160";
     /** Las únicas órdenes que se mandan. */
     static final List<String> COMMANDS = Collections.unmodifiableList(java.util.Arrays.asList(
-            CMD_LOCK, CMD_FIND, CMD_TRUNK, CMD_CLIMATE, CMD_CHARGE_CABLE, CMD_CHARGE_PLAN));
+            CMD_LOCK, CMD_FIND, CMD_TRUNK, CMD_CLIMATE, CMD_CHARGE_CABLE, CMD_CHARGE_PLAN, CMD_BATTERY_HEAT));
 
     /** true si la ruta es una de las de lectura (el estado, con el modelo detrás: /status/get/c10). */
     static boolean allowed(String path) {
