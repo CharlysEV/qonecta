@@ -587,7 +587,7 @@ final class BatteryHeat {
         in.enabled = cfg.batteryHeat();
         CarCloudStore store = new CarCloudStore(ctx);
         in.account = store.hasSession() && store.reloginReason() == null;
-        in.pin = store.hasPin();
+        in.pin = hasPin(store, now);
         String bad = State.load(ctx).unsupportedCar;
         in.unsupported = !bad.isEmpty() && bad.equals(carId(ctx));
         in.trip = p != null && p.n >= 2 && p.arrivedAtMs == 0;
@@ -643,13 +643,41 @@ final class BatteryHeat {
         }, "hql-battery-heat").start();
     }
 
-    /** La ruta se para (RoutePlanner.stop): en otro hilo. */
+    /** El PIN se mira como mucho cada esto (está cifrado: abrirlo en cada vuelta de 5 s gasta el Keystore). */
+    static final long PIN_CHECK_MS = 60_000;
+    private static long pinCheckedMs;
+    private static boolean pinCached;
+
+    private static synchronized boolean hasPin(CarCloudStore store, long now) {
+        if (pinCheckedMs == 0 || Math.abs(now - pinCheckedMs) >= PIN_CHECK_MS) {
+            pinCached = store.hasPin();
+            pinCheckedMs = now;
+        }
+        return pinCached;
+    }
+
+    /**
+     * Tras parar la ruta se espera esto antes de apagar: un corte del cable o de Android Auto vuelve en segundos (la ruta
+     * sigue con el mismo viaje y la misma parada) y no por eso se apaga.
+     */
+    static final long STOP_GRACE_MS = 3 * 60_000;
+
+    /** La ruta se para (RoutePlanner.stop): si no vuelve en STOP_GRACE_MS, tripStopped. En otro hilo. */
     static void onRouteStopped(Context ctx) {
         Context app = ctx.getApplicationContext() != null ? ctx.getApplicationContext() : ctx;
         if (!State.load(app).on) return;
+        L.i("calentar batería: la ruta se para con la batería calentándose; si no vuelve en " + STOP_GRACE_MS / 60_000
+                + " min, se decide si apagarla");
         new Thread(() -> {
             try {
+                Thread.sleep(STOP_GRACE_MS);
+                if (RoutePlanner.get() != null) {
+                    L.i("calentar batería: la ruta ha vuelto; sigue con la misma parada");
+                    return;
+                }
                 tripStopped(app, cloud(app), System.currentTimeMillis());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             } catch (RuntimeException e) {
                 L.w("calentar batería: al parar la ruta (" + e.getClass().getSimpleName() + ")");
             }
@@ -711,6 +739,7 @@ final class BatteryHeat {
         ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().clear().commit();
         loggedThermal = null;
         thermalLogged = false;
+        pinCheckedMs = 0;
         notice = CAR_NOTICE;
     }
 }
