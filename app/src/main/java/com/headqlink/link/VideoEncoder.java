@@ -228,6 +228,11 @@ final class VideoEncoder {
                     : "encoder: sin claves de QP (Android " + android.os.Build.VERSION.SDK_INT + " < 12 o rechazadas)");
         }
         logVendorParams();
+        latencyFrames = readLatency(codec);
+        if (latencyFrames > 1) {
+            L.i("encoder: retiene " + latencyFrames + " frames antes de soltar el primero: la puerta deja "
+                    + gateMaxPending(latencyFrames) + " dentro (antes 3)");
+        }
         if (p.lowLatency) enableVendorLowLatency();
         input = codec.createInputSurface();
         codec.start();
@@ -539,6 +544,35 @@ final class VideoEncoder {
      * Diagnóstico: parámetros de fabricante que admite este encoder (los de latencia, rendimiento o
      * prioridad) y si el de baja latencia ha quedado aplicado en la configuración de entrada.
      */
+    /**
+     * Frames que el encoder retiene antes de soltar el primero («latency» de su formato de entrada; se le pide 1, pero el
+     * MediaTek c2.mtk.avc.encoder de un realme RMX5061 contestó 3). 0 si no lo dice.
+     */
+    private volatile int latencyFrames;
+
+    int latencyFrames() {
+        return latencyFrames;
+    }
+
+    private static int readLatency(MediaCodec c) {
+        try {
+            MediaFormat in = c.getInputFormat();
+            return in.containsKey(MediaFormat.KEY_LATENCY) ? Math.max(0, in.getInteger(MediaFormat.KEY_LATENCY)) : 0;
+        } catch (RuntimeException e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Puro: cuántos frames pueden estar dentro del encoder antes de cerrar la puerta. Antes, siempre 3: con un encoder que
+     * retiene 3 (latency=3), el tercero no salía hasta que entrara un cuarto, la puerta no lo dejaba entrar y cada pocos
+     * frames se esperaba el tope de 200 ms (11-11, realme RMX5061 con MediaTek: «encoder avg 41 ms, max ~200 ms», ~24 fps,
+     * «puerta cerrada: encoder lleno» unas 400 veces cada 5 s). Uno más de los que retiene, entre 3 y 6.
+     */
+    static int gateMaxPending(int latency) {
+        return Math.max(3, Math.min(6, latency + 1));
+    }
+
     private void logVendorParams() {
         if (android.os.Build.VERSION.SDK_INT < 31) return;
         try {
