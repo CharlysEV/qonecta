@@ -630,7 +630,9 @@ final class VideoPipeline {
             denyNoSession++;
             return false;
         }
-        if (pendingEnc.get() >= GATE_MAX_PENDING) {
+        VideoEncoder enc0 = encoder;
+        int maxPending = enc0 != null ? VideoEncoder.gateMaxPending(enc0.latencyFrames()) : GATE_MAX_PENDING;
+        if (pendingEnc.get() >= maxPending) {
             if (System.nanoTime() - pendingSinceNs < GATE_PENDING_TIMEOUT_NS) {
                 denyPending++;
                 return false;

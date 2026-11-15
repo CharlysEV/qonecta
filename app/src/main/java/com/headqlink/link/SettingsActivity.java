@@ -132,8 +132,14 @@ public class SettingsActivity extends Activity implements LinkState.Listener {
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle b) {
+        super.onRestoreInstanceState(ViewStateGuard.strip(b));
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle out) {
         super.onSaveInstanceState(out);
+        ViewStateGuard.mark(out);
         out.putBoolean(STATE_PENDING, pending);
         out.putString(STATE_BEFORE_ID, beforeId);
         out.putInt(STATE_BEFORE_FPS, beforeFps);

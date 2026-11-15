@@ -38,6 +38,17 @@ public final class CarControlActivity extends AppCompatActivity {
     private AlertDialog dialog;
 
     @Override
+    protected void onSaveInstanceState(Bundle out) {
+        super.onSaveInstanceState(out);
+        ViewStateGuard.mark(out);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle b) {
+        super.onRestoreInstanceState(ViewStateGuard.strip(b));
+    }
+
+    @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         L.init(this);
