@@ -103,6 +103,12 @@ internal class QdSessionBridge(
     /** Detector de cortes de radio (qdauto §7.3), evaluado cada 100 ms en el monitor de red; por el cable, «CABLE». */
     private val stalls = StallDetector(sid, ::wallText, freezeMs = 250, cable = host.isUsb)
 
+    /**
+     * Retrasos de los toques y de la imagen (coche→móvil, dentro del móvil, imagen): la línea «retraso:» del resumen y
+     * los avisos «LAG» (como mucho uno cada 30 s en todo el proceso), que escribe el monitor de red.
+     */
+    private val lag = LagMeter(LagGate.PROCESS)
+
     /** Corte en curso al cerrarse la sesión (por el cable, «el coche no lee»), en ms; 0 si no había. Para CableFallback. */
     @Volatile
     var stallAtCloseMs = 0L
@@ -151,6 +157,7 @@ internal class QdSessionBridge(
     }
 
     init {
+        port.lag = lag
         val peer = if (host.isUsb) session.transport.describe() else "${session.remoteAddress} (${car?.name ?: "?"})"
         QdTrace.i("HQL/Puente S$sid", "sesión nueva con $peer · motor QDAuto · ${cfg.mode()} · ${host.linkLabel}")
     }
@@ -246,6 +253,8 @@ internal class QdSessionBridge(
                     if (ms > heartbeatMaxMs) heartbeatMaxMs = ms
                 }
                 lastCarHeartbeatNanos = now
+                // Con la hora del lector (no la de este hilo, que puede ir atrasado): ¿retiene el coche sus latidos?
+                lag.onCarHeartbeat(event.timeMillis)
             }
         }
         val json = event.msgType == MsgType.CONTROL || event.msgType == MsgType.APP
@@ -336,8 +345,18 @@ internal class QdSessionBridge(
             if (f.id == 0) PerfTrace.touch("touch", f.action, f.x, f.y)
             if (f.action != TouchCodec.FINGER_MOVE) edge = true
         }
-        // Todos los dedos a la vez (multitáctil: el coche manda hasta 3).
-        hub.touch(event.action, fingers)
+        // Retraso del toque: ritmo de llegada (¿lo retiene el coche?), espera en este hilo y, con la hora de llegada en
+        // TouchLag, hasta Android Auto o nuestra pantalla. Sin log por toque: solo sumas (LagMeter).
+        val now = System.nanoTime()
+        val arrival = if (event.receivedAtNanos != 0L) event.receivedAtNanos else now
+        lag.onCarTouch(arrival, now, event.pointers)
+        TouchLag.begin(lag, arrival)
+        try {
+            // Todos los dedos a la vez (multitáctil: el coche manda hasta 3).
+            hub.touch(event.action, fingers)
+        } finally {
+            TouchLag.end()
+        }
         // Solo el inicio y el fin de cada gesto (los movimientos, en el diario del coche y en la traza): el registro
         // de cada movimiento, uno cada ~16 ms, iba en este hilo, el que lee del coche.
         if (edge) L.i("$sb  global=${event.action}")
@@ -422,6 +441,8 @@ internal class QdSessionBridge(
             if (it.kind != StallDetector.Kind.MOVIL_CONGELADO) stallAtCloseMs = it.durationMs
             emitStall(it)
         }
+        // El último aviso de retraso, si quedó pendiente (el monitor ya no lo recoge).
+        SystemClock.elapsedRealtime().let { now -> lag.takeAlarm(now)?.let { (a, suppressed) -> emitLag(a, suppressed, null, now) } }
         port.close()
         logStats(force = true)
         maybeLogReconnect()
@@ -480,9 +501,13 @@ internal class QdSessionBridge(
                 while (monitorRunning && !port.closed) {
                     Thread.sleep(100)
                     val now = SystemClock.elapsedRealtime()
-                    if (now - last > 250) PerfTrace.event("stall", now - last)
+                    if (now - last > 250) {
+                        PerfTrace.event("stall", now - last)
+                        lag.noteFreeze(now, now - last)
+                    }
                     last = now
                     val net = port.monitorSample()
+                    lag.takeAlarm(now)?.let { (a, suppressed) -> emitLag(a, suppressed, net, now) }
                     net?.let { PerfTrace.net(it) }
                     if (net != null && session.socket != null) {
                         radio.add(now - radioStart, net[1] / 1000, net[4].toLong(), net[0])
@@ -627,6 +652,37 @@ internal class QdSessionBridge(
         if (ev.phase != StallDetector.Phase.PROGRESS) PerfTrace.event(row, ev.durationMs)
     }
 
+    /**
+     * Un aviso «LAG» (monitor de red, o al cerrar): una línea W con la parte, el retraso y lo que pasaba en ese momento
+     * (enlace, cola de la sesión, lo que se escribía, el coche, el térmico, si el móvil se congeló), en el log, el log
+     * unificado y el diario del coche. Como mucho uno cada 30 s (LagGate).
+     */
+    private fun emitLag(a: LagMeter.Alarm, suppressed: Int, net: IntArray?, nowMs: Long) {
+        try {
+            val io = session.io()
+            val sb = StringBuilder()
+            sb.append("enlace ").append(host.linkLabel).append(" · S").append(sid)
+            sb.append(" · cola de vídeo ").append(io.videoQueueFrames).append(" frames/")
+                .append(SessionSummary.kb(io.videoQueueBytes)).append(" KB (retraso ").append(io.videoQueueLagMs).append(" ms)")
+            sb.append(" · control ").append(io.controlQueue)
+            if (io.writingSinceNanos != 0L) {
+                sb.append(" · escribiendo ").append(io.writingLabel ?: "?").append(" desde hace ")
+                    .append((io.atNanos - io.writingSinceNanos) / 1_000_000).append(" ms")
+            }
+            sb.append(" · coche callado ").append(io.receiveSilenceMs).append(" ms")
+            net?.let { sb.append(" · outq ").append(it[0]).append(" B rtt ").append(it[1] / 1000).append(" ms") }
+            sb.append(" · térmico ").append(ThermalGuard.status())
+            sb.append(" · ").append(lag.freezeText(nowMs))
+            val text = a.line(sb.toString(), suppressed)
+            QdTrace.w("HQL/LAG", text)
+            L.quiet("W", text)
+            CarTrace.note("LAG", text)
+            PerfTrace.event("lag_ms", a.ms)
+        } catch (e: RuntimeException) {
+            L.w("aviso de retraso: $e")
+        }
+    }
+
     /** Bloque de la sesión (log unificado, L y diario del coche), fila de `sessions.csv` y viaje (qdauto §7.4). */
     private fun summarize(reason: CloseReason) {
         try {
@@ -694,6 +750,7 @@ internal class QdSessionBridge(
                 wifiBand = if (isHotspotLink()) HotspotRadio.summaryBand() else if (isP2pLink()) p2pBand() else "",
                 wifiDetail = if (isHotspotLink()) HotspotRadio.summaryDetail() else "",
                 aaVersion = if (Config.isAa(cfg.mode())) AaVersions.csvValue(AaVersions.lastName() ?: AaVersions.read(ctx)) else "",
+                latency = lag.summary(host.linkLabel),
             )
             val block = SessionSummary.block(record)
             QdTrace.block("HQL/Resumen", block)

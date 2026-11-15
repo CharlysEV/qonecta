@@ -873,6 +873,13 @@ class CommManager(
         }
     }
 
+    /** headqlink: como [send], y [onWritten] en cuanto el mensaje queda escrito hacia el teléfono (medir toques). */
+    fun send(message: AapMessage, onWritten: Runnable) {
+        if (_connectionState.value is ConnectionState.TransportStarted) {
+            _transport?.send(message, onWritten)
+        }
+    }
+
     fun sendToggleVoiceAssistant() {
         if (_connectionState.value != ConnectionState.TransportStarted)
             return

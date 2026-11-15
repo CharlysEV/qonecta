@@ -185,15 +185,27 @@ class AapTransport(
         // phone going quiet unless one end or the other is actually measured. This thread serves one
         // socket, so the write's own duration is the time the uplink refused to drain.
         val startedMs = SystemClock.elapsedRealtime()
+        // headqlink: un toque medido llega con su aviso (TrackedSend); el resto, como siempre, los bytes a pelo.
+        val tracked = it.obj as? TrackedSend
         this.sendEncryptedMessage(
-            data = it.obj as ByteArray,
+            data = tracked?.data ?: it.obj as ByteArray,
             length = it.arg2
         )
         val finishedMs = SystemClock.elapsedRealtime()
         uplinkStallMonitor.onWrite(finishedMs - startedMs, finishedMs)
             ?.let { report -> AppLog.i("AapTransport: %s", report) }
+        if (tracked != null) {
+            try {
+                tracked.onWritten.run()
+            } catch (e: RuntimeException) {
+                AppLog.w("AapTransport: aviso de envío falló: $e")
+            }
+        }
         return@Callback true
     }
+
+    /** headqlink: un mensaje y qué hacer cuando ya está escrito (para medir el retraso de los toques). */
+    private class TrackedSend(val data: ByteArray, val onWritten: Runnable)
 
     val isAlive: Boolean
         get() = pollThread?.isAlive ?: false
@@ -1166,6 +1178,23 @@ class AapTransport(
                 AppLog.v(message.toString())
             }
             val msg = handler.obtainMessage(MSG_SEND, 0, message.size, message.data)
+            handler.sendMessage(msg)
+        }
+    }
+
+    /**
+     * headqlink: como [send], en el mismo orden y por el mismo hilo, y además [onWritten] (en el hilo de envío) en
+     * cuanto el mensaje queda escrito. Solo mide: si no hay hilo de envío, no se manda ni se avisa, como [send].
+     */
+    fun send(message: AapMessage, onWritten: Runnable) {
+        val handler = sendHandler
+        if (handler == null) {
+            AppLog.i("Cannot send message, handler is null (quitting?)")
+        } else {
+            if (AppLog.LOG_VERBOSE) {
+                AppLog.v(message.toString())
+            }
+            val msg = handler.obtainMessage(MSG_SEND, 0, message.size, TrackedSend(message.data, onWritten))
             handler.sendMessage(msg)
         }
     }

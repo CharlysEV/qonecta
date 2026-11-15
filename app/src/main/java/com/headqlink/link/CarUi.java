@@ -1355,7 +1355,10 @@ final class CarUi {
             f.y = fingers[i].y;
             copy[i] = f;
         }
+        // Toque del coche: cuánto espera al hilo principal (LagMeter, «hilo principal»).
+        TouchLag.Stamp stamp = TouchLag.current();
         main.post(() -> {
+            if (stamp != null) stamp.done(LagMeter.Stage.PANTALLA);
             if (pres == null) return;
             Proto.Finger first = null;
             for (Proto.Finger f : copy) if (f != null) { first = f; break; }

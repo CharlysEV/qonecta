@@ -84,6 +84,8 @@ internal object SessionSummary {
         val pFrameOverCap: Int = 0,
         /** versionName de Android Auto en los modos Auto («17.7.663654-release»; "" = otro modo o no se sabe). */
         val aaVersion: String = "",
+        /** Línea «retraso (enlace): …» de LagMeter (toques y retrasos de la imagen); "" = nada medido (no sale). */
+        val latency: String = "",
     ) {
         val durationS: Double get() = (endWallMs - startWallMs) / 1000.0
         val fps: Double get() = if (videoSeconds > 0) frames / videoSeconds else 0.0
@@ -157,6 +159,7 @@ internal object SessionSummary {
             append(" (").append(f1(r.heartbeatMinMs / 1000.0)).append("–").append(f1(r.heartbeatMaxMs / 1000.0)).append(" s)")
         }
         append(" · ").append(r.touches).append(" toques · hueco máx. ").append(f1(r.maxCarGapMs / 1000.0)).append(" s\n")
+        if (r.latency.isNotEmpty()) append(r.latency).append('\n')
         append("radio: ").append(r.radio).append('\n')
         append("reconexión: ").append(if (r.reconnect.isEmpty()) "primera sesión" else r.reconnect)
         append(" · vídeo ").append(r.videoVerdict.ifEmpty { "—" })
