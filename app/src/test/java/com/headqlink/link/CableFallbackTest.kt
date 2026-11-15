@@ -48,21 +48,102 @@ class CableFallbackTest {
         // El coche ha contestado (CAR_INFO): no es un intento mudo.
         assertTrue(f.timer(10_000, on).reasons().isEmpty())
         assertEquals(-1L, f.timerAtMs())
-        // S2: CAR_INFO, pero el coche no lee el primer IDR y el write se queda 10 s bloqueado: fallida.
+        // S2: CAR_INFO, pero el coche no lee el primer IDR y el write se queda 10 s bloqueado: es el segundo cuelgue del
+        // cable con el coche encendido en este viaje → Wi-Fi Direct ya, ~16 s tras el atasco (antes esperaba a la S3 muda).
         val s2 = f.onSessionEnd(16_000, end(2, true, 11_000, "WRITE_STALL", 9_792), on)
-        assertFalse(s2.toWifi())
-        assertTrue(s2.toString(), s2.reasons().single().contains("intento 1 de 2 fallido tras el atasco (se atascó otra vez)"))
-        // S3: muda (ni un mensaje del coche): segundo intento fallido → Wi-Fi Direct, ~32 s tras el atasco.
-        f.onAccessoryBack(22_000)
-        val s3 = f.onSessionEnd(32_000, end(3, false, 10_000, "WATCHDOG", 9_600), on)
-        assertTrue(s3.toString(), s3.toWifi())
-        assertTrue(s3.toString(), s3.reasons().last().contains("sigo por Wi-Fi Direct hasta el final del viaje"))
+        assertTrue(s2.toString(), s2.toWifi())
+        assertTrue(s2.toString(), s2.reasons().last().contains("2 veces en este viaje"))
+        assertTrue(s2.toString(), s2.reasons().last().contains("sigo por Wi-Fi Direct hasta el final del viaje"))
         assertTrue(f.active())
         // Temporal: el cable elegido va por Wi-Fi Direct; lo que no es el cable no cambia.
         assertEquals(Config.LINK_P2P, f.linkFor(Config.LINK_USB))
         assertEquals(Config.LINK_HOTSPOT, f.linkFor(Config.LINK_HOTSPOT))
         // Ya en Wi-Fi Direct, otra sesión por el cable (no debería haberla) no decide nada.
         assertTrue(f.onSessionEnd(40_000, end(4, false, 10_000, "WATCHDOG"), on).reasons().isEmpty())
+    }
+
+    /** Fin con el coche callado [silentMs] al cerrarse (el puerto desaparecido: EIO/ENODEV). */
+    private fun gone(sid: Int, livedMs: Long, kind: String, silentMs: Long, carInfo: Boolean = true) =
+        CableFallback.End(sid, carInfo, livedMs, kind, 0, true, silentMs)
+
+    @Test
+    fun theCarGoingQuietBeforeThePortVanishesIsAHangButUnpluggingIsNot() {
+        // 14-11 14:10: «el coche no lee» 0,7 s (ya acabado), el coche callado 7 s y luego corta el puerto: WRITE_ERROR ENODEV.
+        assertTrue(CableFallback.hung(gone(3, 3_147_900, "WRITE_ERROR", 7_100)))
+        assertTrue(CableFallback.resetByCar(gone(3, 3_147_900, "WRITE_ERROR", 7_100)))
+        // Quitar el cable (o apagar el coche de golpe): el último latido es de hace 3 s como mucho.
+        assertFalse(CableFallback.hung(gone(4, 649_400, "READ_ERROR", 2_900)))
+        // Sin vídeo, el silencio antes del EIO no cuenta como reinicio (el coche aún arrancaba).
+        assertFalse(CableFallback.resetByCar(gone(5, 8_000, "READ_ERROR", 7_000, carInfo = false)))
+        // Sin dato del silencio (0), como antes.
+        assertFalse(CableFallback.hung(CableFallback.End(6, true, 60_000, "READ_ERROR", 0, true)))
+        assertTrue(gone(3, 3_147_900, "WRITE_ERROR", 7_100).toString().contains("el coche callado 7,1 s"))
+    }
+
+    @Test
+    fun theTripOfThe14thOfNovemberOpensTheHangAtTheFirstReset() {
+        val f = CableFallback()
+        // S3: 52 min bien; el coche se calla y corta el puerto: ahora sí abre el atasco (antes no contaba).
+        val s3 = f.onSessionEnd(0, gone(3, 3_147_900, "WRITE_ERROR", 7_100), on)
+        assertFalse(s3.toWifi())
+        assertTrue(s3.toString(), s3.reasons().single().contains("atasco del cable"))
+        assertEquals(1, f.resets())
+    }
+
+    @Test
+    fun theSecondResetOfTheTripSwitchesEvenIfTheCableSeemedToRecover() {
+        val f = CableFallback()
+        f.onSessionEnd(0, gone(3, 3_147_900, "WRITE_ERROR", 7_100), on)
+        f.onAccessoryGone(0)
+        f.onAccessoryBack(5_000)
+        // S4 aguanta 5 min: el atasco se olvida...
+        val s4 = f.onSessionEnd(305_000, end(4, true, 300_000, "LOCAL"), on)
+        assertFalse(s4.toWifi())
+        assertTrue(s4.toString(), s4.reasons().single().contains("se ha recuperado"))
+        assertFalse(f.cableHung(305_000))
+        // ... pero el coche vuelve a colgar el cable (WATCHDOG): segundo reinicio del viaje → Wi-Fi Direct ya.
+        f.onAccessoryBack(1_210_000)
+        val s5 = f.onSessionEnd(2_000_000, end(5, true, 790_000, "WATCHDOG", 5_000), on)
+        assertTrue(s5.toString(), s5.toWifi())
+        assertTrue(s5.toString(), s5.reasons().last().contains("2 veces en este viaje"))
+        assertTrue(f.active())
+        assertEquals(2, f.resets())
+    }
+
+    @Test
+    fun resetsWithTheCarOffDoNotCountAndANewTripStartsFromZero() {
+        val f = CableFallback()
+        val off = CableFallback.Env(true, true, CableFallback.Bt.GONE)
+        // El coche se apaga: se calla y corta el puerto, pero su Bluetooth ya no está: no es un reinicio con el coche en marcha.
+        f.onSessionEnd(0, gone(1, 1_800_000, "READ_ERROR", 6_000), off)
+        assertEquals(0, f.resets())
+        // Uno con el coche encendido, y viaje nuevo: de cero.
+        f.onSessionEnd(10_000_000, gone(2, 1_800_000, "READ_ERROR", 6_000), on)
+        assertEquals(1, f.resets())
+        f.startTrip()
+        assertEquals(0, f.resets())
+        val d = f.onSessionEnd(20_000_000, gone(3, 1_800_000, "READ_ERROR", 6_000), on)
+        assertFalse(d.toWifi())
+        assertEquals(1, f.resets())
+    }
+
+    @Test
+    fun theSecondResetWaitsIfTheSettingIsOffOrTheWifiIsOff() {
+        val f = CableFallback()
+        val noWifi = CableFallback.Env(true, true, CableFallback.Bt.CONNECTED, false, -1)
+        f.onSessionEnd(0, gone(1, 3_000_000, "READ_ERROR", 6_000), noWifi)
+        val d = f.onSessionEnd(4_000_000, end(2, true, 900_000, "WATCHDOG", 4_000), noWifi)
+        assertFalse(d.toWifi())
+        assertTrue(d.toString(), d.wifiOff())
+        // En cuanto el Wi-Fi está encendido, pasa (el temporizador lo vuelve a mirar).
+        val later = f.timer(f.timerAtMs(), on)
+        assertTrue(later.toString(), later.toWifi())
+        // Con el ajuste apagado no se pasa nunca.
+        val g = CableFallback()
+        val disabled = CableFallback.Env(false, true, CableFallback.Bt.CONNECTED)
+        g.onSessionEnd(0, gone(1, 3_000_000, "READ_ERROR", 6_000), disabled)
+        assertFalse(g.onSessionEnd(4_000_000, end(2, true, 900_000, "WATCHDOG", 4_000), disabled).toWifi())
+        assertFalse(g.active())
     }
 
     @Test
@@ -463,12 +544,15 @@ class CableFallbackTest {
         assertFalse(f.cableHung(306_000))
         f.onAccessoryGone(307_000)
         assertEquals(-1L, f.timerAtMs())
-        // Una sesión con vídeo pero corta (sin atascarse) ni suma ni resta.
-        hungAfterAnHour(f, 400_000)
-        val short = f.onSessionEnd(440_000, end(3, true, 30_000, "READ_ERROR", gone = true), on)
+        // Pero si el coche vuelve a colgar el cable en el mismo viaje, ya son dos: Wi-Fi Direct.
+        assertTrue(hungAfterAnHour(f, 400_000).toWifi())
+        // Una sesión con vídeo pero corta (sin atascarse) ni suma ni resta (otro viaje, un solo cuelgue).
+        val g = CableFallback()
+        hungAfterAnHour(g, 400_000)
+        val short = g.onSessionEnd(440_000, end(3, true, 30_000, "READ_ERROR", gone = true), on)
         assertTrue(short.toString(), short.reasons().single().contains("sigo vigilando"))
-        assertFalse(f.onSessionEnd(460_000, end(4, false, 12_000, "WATCHDOG"), on).toWifi())
-        assertTrue(f.onSessionEnd(480_000, end(5, false, 12_000, "WATCHDOG"), on).toWifi())
+        assertFalse(g.onSessionEnd(460_000, end(4, false, 12_000, "WATCHDOG"), on).toWifi())
+        assertTrue(g.onSessionEnd(480_000, end(5, false, 12_000, "WATCHDOG"), on).toWifi())
     }
 
     @Test

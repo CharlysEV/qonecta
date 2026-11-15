@@ -607,13 +607,20 @@ internal class UsbLink(
         val carMessages = stats?.messagesReceived ?: 0L
         val carInfo = bridge?.gotCarInfo == true
         val stallMs = bridge?.stallAtCloseMs ?: 0L
+        // Lo que llevaba el coche callado al cerrarse: si cortó el puerto tras callarse, lo reinició él (CableFallback).
+        val silentMs = try {
+            val last = s.io().lastReceiveNanos
+            if (last > 0) (System.nanoTime() - last) / 1_000_000 else 0L
+        } catch (_: RuntimeException) {
+            0L
+        }
         val reasonText = describe(reason)
         submit {
             val d = reopen.onSessionEnd(carMessages, carInfo, lived, reasonText)
             val gone = UsbReopenPolicy.isAccessoryGone(reasonText)
             UsbDiagnosis.sessionEnd(ctx, gone, carInfo, lived, reopen.failures, reason.kind == CloseReason.Kind.WATCHDOG)
             // Para el paso a Wi-Fi Direct (CableFallback), antes del «accesorio desaparecido» que pueda venir detrás.
-            val end = CableFallback.End(s.id, carInfo, lived, reason.kind.name, stallMs, gone)
+            val end = CableFallback.End(s.id, carInfo, lived, reason.kind.name, stallMs, gone, silentMs)
             main.post { if (!stopping && active) callbacks.onUsbSessionEnd(end) }
             network(LinkState.Level.BUSY, Str.get(R.string.hql_usb_net_waiting))
             if (!d.reopen) {

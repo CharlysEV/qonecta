@@ -40,6 +40,15 @@ import java.util.Locale;
  * Mientras se confirma, sin el aviso «la app del coche se ha colgado» ({@link #handlesHang}: por voz pedía desenchufar
  * el cable, justo antes de pasar solo a Wi-Fi Direct).
  *
+ * Además, por viaje: cada vez que el coche, encendido (su Bluetooth conectado), cuelga el cable con vídeo en marcha se
+ * cuenta un reinicio ({@link #resets}); al TRIP_RESETS-ésimo se pasa ya a Wi-Fi Direct, aunque entre medias el cable
+ * pareciera recuperado (14-11: el coche reinició su puerto a los 52 min, el cable volvió en 5 s y se cayó otra vez; al
+ * 01-11, en el Pixel 8 Pro, tres veces en una mañana). También cuenta como atasco que el coche llevara SILENT_GONE_MS
+ * callado cuando el puerto desapareció (EIO/ENODEV): así lo hace el coche al reiniciarlo (deja de leer y de mandar
+ * latidos y unos segundos después corta la corriente del puerto); al quitar el cable a propósito, el último latido es de
+ * hace 3 s como mucho. Antes ese caso no contaba: el atasco «el coche no lee» ya había acabado al cerrarse la sesión y el
+ * cierre era un error de escritura.
+ *
  * Es temporal: la conexión elegida no cambia. Se vuelve al cable en el viaje siguiente (cada arranque del servicio
  * empieza de cero: {@link #startTrip}; salvo que el cable no funcione con este coche, {@link CableMemory}: entonces el
  * viaje ya empieza por Wi-Fi Direct) o al elegirlo a mano; tras una elección a mano con el cable caído ya no se cambia
@@ -63,6 +72,10 @@ final class CableFallback {
     static final long STALL_MIN_MS = 3_000;
     /** Una sesión con CAR_INFO que dura esto sin atascarse: el cable se ha recuperado y el atasco se olvida. */
     static final long RECOVERED_MS = 60_000;
+    /** El coche callado al menos esto cuando el puerto desaparece (EIO/ENODEV): lo reinició él (manda un latido cada 3 s). */
+    static final long SILENT_GONE_MS = 5_000;
+    /** Reinicios del cable por el coche, encendido y con vídeo, en un mismo viaje para pasar ya a Wi-Fi Direct. */
+    static final int TRIP_RESETS = 2;
     /** Un atasco sin decidir se olvida pasado esto (los intentos llegan cada 16-70 s: se decide mucho antes). */
     static final long EPISODE_MS = 10 * 60_000L;
     /** BluetoothProfile.STATE_CONNECTED (aquí sin Android). */
@@ -86,8 +99,15 @@ final class CableFallback {
         final long stallMs;
         /** El descriptor del accesorio dio ENODEV/EIO: el cable se fue o el coche cortó el puerto. */
         final boolean gone;
+        /** Lo que llevaba el coche sin mandar nada al cerrarse la sesión, en ms (0: no se sabe). */
+        final long silentMs;
 
         End(int sid, boolean carInfo, long livedMs, String closeKind, long stallMs, boolean gone) {
+            this(sid, carInfo, livedMs, closeKind, stallMs, gone, 0);
+        }
+
+        End(int sid, boolean carInfo, long livedMs, String closeKind, long stallMs, boolean gone, long silentMs) {
+            this.silentMs = Math.max(0, silentMs);
             this.sid = sid;
             this.carInfo = carInfo;
             this.livedMs = livedMs;
@@ -107,6 +127,7 @@ final class CableFallback {
                     .append(carInfo ? ", con vídeo, " : ", sin CAR_INFO, ").append(closeKind.isEmpty() ? "?" : closeKind);
             if (stallMs > 0) sb.append(", «el coche no lee» ").append(secs(stallMs));
             if (gone) sb.append(", accesorio fuera");
+            if (silentMs >= SILENT_GONE_MS) sb.append(", el coche callado ").append(secs(silentMs));
             return sb.append(')').toString();
         }
     }
@@ -183,6 +204,8 @@ final class CableFallback {
     private boolean pending;
     private String pendingWhy = "";
     private String lastBlocker;
+    /** Reinicios del cable por el coche (encendido y con vídeo) en este viaje. */
+    private int resets;
     /** El cable iba por delante de una Wi-Fi elegida y se ha vuelto a ella hasta el final del viaje. */
     private boolean yielded;
     /** Atasco del cable abierto desde este instante (-1: ninguno) e intentos fallidos desde entonces. */
@@ -212,6 +235,7 @@ final class CableFallback {
     void startTrip(boolean wifiDirect, boolean hold) {
         video = false;
         lasted = false;
+        resets = 0;
         open = false;
         counted = false;
         yielded = false;
@@ -258,9 +282,22 @@ final class CableFallback {
         return active && Config.LINK_USB.equals(chosen) ? Config.LINK_P2P : chosen;
     }
 
-    /** Puro: la sesión acabó atascada (el coche callado con el cable puesto, o «el coche no lee» un buen rato). */
+    /**
+     * Puro: la sesión acabó atascada (el coche callado con el cable puesto, «el coche no lee» un buen rato, o el puerto
+     * desaparecido con vídeo tras SILENT_GONE_MS sin un mensaje del coche: lo reinició el coche).
+     */
     static boolean hung(End e) {
-        return e.carSilent() || e.stallMs >= STALL_MIN_MS;
+        return e.carSilent() || e.stallMs >= STALL_MIN_MS || resetByCar(e);
+    }
+
+    /** Puro: el coche cortó el puerto tras callarse (no es quitar el cable: entonces el último latido es reciente). */
+    static boolean resetByCar(End e) {
+        return e.gone && e.carInfo && e.silentMs >= SILENT_GONE_MS;
+    }
+
+    /** Reinicios del cable por el coche contados en este viaje. */
+    int resets() {
+        return resets;
     }
 
     /** Puro: el Bluetooth del coche por los perfiles de audio del móvil (A2DP y manos libres: BluetoothProfile.STATE_*). */
@@ -307,6 +344,18 @@ final class CableFallback {
         if (active || yielded) return;
         expire(now, d);
         boolean hung = hung(e);
+        // Un reinicio del cable por el coche encendido, con vídeo: se cuenta para todo el viaje. Al TRIP_RESETS-ésimo,
+        // Wi-Fi Direct ya, aunque el cable volviera y pareciera recuperado.
+        if (hung && e.carInfo && env.bt == Bt.CONNECTED && !manual) {
+            resets++;
+            if (resets >= TRIP_RESETS) {
+                hungAt = now;
+                failed = 0;
+                clearPending();
+                decide(now, env, d, e + ": el coche ha colgado el cable " + resets + " veces en este viaje");
+                return;
+            }
+        }
         if (hungAt < 0) {
             // Sin atasco abierto: lo abre una sesión atascada (también sin vídeo en el viaje: el QDLink del coche ya venía
             // colgado) o, ya con vídeo, una muda con el cable puesto (un fin normal o un cable quitado, no).
