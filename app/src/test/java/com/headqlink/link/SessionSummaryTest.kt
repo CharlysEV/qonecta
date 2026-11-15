@@ -266,6 +266,32 @@ class SessionSummaryTest {
     }
 
     @Test
+    fun latencyLineGoesAfterTheCarLineOnlyWhenMeasured() {
+        val r = record(15)
+        val measured = SessionSummary.Record(
+            sid = r.sid, startWallMs = r.startWallMs, endWallMs = r.endWallMs, engine = r.engine, link = r.link,
+            videoMode = r.videoMode, profile = r.profile, video = r.video, carIp = r.carIp, carPort = r.carPort,
+            carName = r.carName, local = r.local, iface = r.iface, closeKind = r.closeKind, closeDetail = r.closeDetail,
+            reachedVideo = r.reachedVideo, tCarInfoMs = r.tCarInfoMs, tVideoCtrlMs = r.tVideoCtrlMs,
+            tFirstFrameMs = r.tFirstFrameMs, tFirstIdrMs = r.tFirstIdrMs, carKeyframeRequests = r.carKeyframeRequests,
+            frames = r.frames, bytes = r.bytes, idr = r.idr, dropped = r.dropped, flushes = r.flushes,
+            maxWriteMs = r.maxWriteMs, maxLagMs = r.maxLagMs, carHeartbeats = r.carHeartbeats,
+            heartbeatMinMs = r.heartbeatMinMs, heartbeatMaxMs = r.heartbeatMaxMs, touches = r.touches,
+            maxCarGapMs = r.maxCarGapMs, stalls = r.stalls, maxStallMs = r.maxStallMs, retrans = r.retrans, radio = r.radio,
+            reconnectMs = -1, reconnect = "", videoVerdict = r.videoVerdict, aaCycles = r.aaCycles,
+            latency = "retraso (cable USB): coche→móvil 0 ráfagas | dentro del móvil — | imagen — | avisos LAG 0",
+        )
+        val lines = SessionSummary.block(measured).split('\n')
+        assertEquals(8, lines.size)
+        assertTrue(lines[4], lines[4].startsWith("coche: 25 heartbeats"))
+        assertTrue(lines[5], lines[5].startsWith("retraso (cable USB): coche→móvil"))
+        assertTrue(lines[6], lines[6].startsWith("radio: "))
+        // La fila del CSV no cambia.
+        assertEquals(SessionSummary.csvRow(r), SessionSummary.csvRow(measured))
+        assertTrue(!SessionSummary.block(record(16)).contains("retraso"))
+    }
+
+    @Test
     fun androidAutoVersionIsTheLastCsvColumnAndInTheBlock() {
         val r = record(13)
         val aa = SessionSummary.Record(

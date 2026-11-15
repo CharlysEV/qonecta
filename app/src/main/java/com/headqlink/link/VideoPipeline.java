@@ -556,7 +556,9 @@ final class VideoPipeline {
         }
         if (key) noteIdr();
         else onEncoderPFrame(len);
-        p.sendFrame(buf, 0, len, key, ptsUs, null);
+        // La marca de tiempo del encoder es la hora de dibujo (GlFrameRelay, en nanoTime): con ella, la antigüedad de la
+        // imagen al salir hacia el coche. Las que no lo son (otro reloj) se cuentan aparte, no como retraso.
+        p.sendFrame(buf, 0, len, key, ptsUs, null, true);
     }
 
     /**

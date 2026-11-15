@@ -877,8 +877,12 @@ final class AaPassthroughSource implements VideoSource {
         return at;
     }
 
-    /** Manda el toque a AA a su hora (con la marca de tiempo del momento del envío). */
-    private void sendTouch(Input.TouchEvent.PointerAction pa, int index, java.util.List<Triple<Integer, Integer, Integer>> pts) {
+    /**
+     * Manda el toque a AA a su hora (con la marca de tiempo del momento del envío). Con [stamp] (toque del coche), al
+     * quedar escrito se mide cuánto tardó desde que llegó del coche (LagMeter, «entrega a Android Auto»).
+     */
+    private void sendTouch(Input.TouchEvent.PointerAction pa, int index, java.util.List<Triple<Integer, Integer, Integer>> pts,
+                           TouchLag.Stamp stamp) {
         long now = SystemClock.uptimeMillis();
         boolean down = pa == Input.TouchEvent.PointerAction.TOUCH_ACTION_DOWN;
         boolean up = pa == Input.TouchEvent.PointerAction.TOUCH_ACTION_UP;
@@ -887,7 +891,7 @@ final class AaPassthroughSource implements VideoSource {
         if (up) tapDownAt = 0;
         lastTouchAt = at;
         if (at <= now) {
-            comm().send(new TouchEvent(SystemClock.elapsedRealtime(), pa, index, pts));
+            sendTouchNow(pa, index, pts, stamp);
             return;
         }
         if (touchHandler == null) {
@@ -895,7 +899,14 @@ final class AaPassthroughSource implements VideoSource {
             touchThread.start();
             touchHandler = new Handler(touchThread.getLooper());
         }
-        touchHandler.postAtTime(() -> comm().send(new TouchEvent(SystemClock.elapsedRealtime(), pa, index, pts)), at);
+        touchHandler.postAtTime(() -> sendTouchNow(pa, index, pts, stamp), at);
+    }
+
+    private void sendTouchNow(Input.TouchEvent.PointerAction pa, int index, java.util.List<Triple<Integer, Integer, Integer>> pts,
+                              TouchLag.Stamp stamp) {
+        TouchEvent ev = new TouchEvent(SystemClock.elapsedRealtime(), pa, index, pts);
+        if (stamp == null) comm().send(ev);
+        else comm().send(ev, () -> stamp.done(LagMeter.Stage.AA));
     }
 
     /** Dedos ahora mismo en contacto con AA (id del coche -> x, y en AA), en orden de llegada. */
@@ -986,7 +997,7 @@ final class AaPassthroughSource implements VideoSource {
                     + p0.getSecond() + "," + p0.getThird() + " (" + w + "x" + h + ")");
         }
         PerfTrace.touch("aa_touch", changedAction, p0.getSecond(), p0.getThird());
-        sendTouch(pa, index, pts);
+        sendTouch(pa, index, pts, TouchLag.current());
     }
 
     @Override

@@ -61,7 +61,14 @@ internal class SessionPort(val session: PhoneSession) {
      * Encola un frame. Siempre con una finalización propia (estadísticas, `PerfTrace.frame` y jitter del socket) que
      * después llama a [done] (la ranura del freno), si la hay. `false` si no entró (ya avisado).
      */
-    fun sendFrame(data: ByteArray, off: Int, len: Int, key: Boolean, ptsUs: Long, done: FrameCompletion?): Boolean {
+    fun sendFrame(data: ByteArray, off: Int, len: Int, key: Boolean, ptsUs: Long, done: FrameCompletion?): Boolean =
+        sendFrame(data, off, len, key, ptsUs, done, false)
+
+    /**
+     * Como el anterior; con [drawPts], [ptsUs] es la hora a la que el relé GL dibujó el frame en nuestro codificador (µs
+     * de `System.nanoTime`) y, al escribirse, se mide su antigüedad ([lag], «imagen»).
+     */
+    fun sendFrame(data: ByteArray, off: Int, len: Int, key: Boolean, ptsUs: Long, done: FrameCompletion?, drawPts: Boolean): Boolean {
         val completion = FrameCompletion { d ->
             stats.onDone(d)
             if (d.outcome == FrameOutcome.WRITTEN) {
@@ -69,11 +76,16 @@ internal class SessionPort(val session: PhoneSession) {
                 val lagMs = (d.writeStartNanos - d.enqueuedNanos) / 1_000_000
                 val writeMs = (d.writeEndNanos - d.writeStartNanos) / 1_000_000
                 PerfTrace.frame(d.payloadBytes, d.isKeyframe, lagMs, writeMs, d.queuedFramesAfter)
+                if (drawPts) lag?.onImageWritten(d.writeEndNanos, d.ptsUs)
             }
             done?.onFrameDone(d)
         }
         return session.sendFrame(data, off, len, key, ptsUs, completion)
     }
+
+    /** Medidor de retrasos de la sesión (lo pone QdSessionBridge), o null. */
+    @Volatile
+    var lag: LagMeter? = null
 
     /** Campos de la cabecera de vídeo que se fuerzan (`null` = los del coche); solo se aplica si cambia. */
     fun setHeader(w: Int, h: Int, fps: Int?, bitrate: Int?, gop: Int?) {

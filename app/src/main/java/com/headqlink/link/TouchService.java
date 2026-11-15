@@ -28,6 +28,8 @@ public class TouchService extends AccessibilityService {
     private float pendX;
     private float pendY;
     private boolean pendUp;
+    /** El toque del coche más antiguo aún sin dar a dispatchGesture (LagMeter), o null. Hilo principal. */
+    private TouchLag.Stamp pendStamp;
 
     /** Al desbloquear: el arranque del servidor de AA pedido con el móvil bloqueado o, si no, su apagado pendiente. */
     private final android.content.BroadcastReceiver userPresent = new android.content.BroadcastReceiver() {
@@ -281,7 +283,13 @@ public class TouchService extends AccessibilityService {
 
     /** action: 1 down, 2 up, 3 move (coordenadas en píxeles del display). */
     void inject(int display, int action, float x, float y) {
+        // Toque del coche: la espera al hilo principal y, en pump, hasta dispatchGesture (LagMeter).
+        TouchLag.Stamp stamp = TouchLag.current();
         main.post(() -> {
+            if (stamp != null) {
+                stamp.done(LagMeter.Stage.PANTALLA);
+                if (pendStamp == null) pendStamp = stamp;
+            }
             displayId = display;
             if (action == 2) pendUp = true;
             if (pendAction == 0 || action != 3 || pendAction == 3) {
@@ -318,6 +326,9 @@ public class TouchService extends AccessibilityService {
         GestureDescription g = new GestureDescription.Builder().addStroke(stroke).setDisplayId(displayId).build();
         if (up) stroke = null;
         busy = true;
+        TouchLag.Stamp st = pendStamp;
+        pendStamp = null;
+        if (st != null) st.done(LagMeter.Stage.GESTO);
         boolean ok = dispatchGesture(g, new GestureResultCallback() {
             @Override
             public void onCompleted(GestureDescription gd) {
