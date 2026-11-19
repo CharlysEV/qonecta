@@ -699,7 +699,7 @@ final class CarUi {
         for (LinearLayout b : labelledButtons()) {
             b.getChildAt(1).setVisibility(rail ? View.GONE : View.VISIBLE);
             b.setGravity(rail ? Gravity.CENTER : Gravity.CENTER_VERTICAL);
-            b.setPadding(rail ? 0 : 18, 0, rail ? 0 : 18, 0);
+            b.setPadding(rail ? 0 : 18, 0, rail ? 0 : 14, 0);
         }
         battery.setVisibility(rail ? View.GONE : View.VISIBLE);
         railInfo.setVisibility(rail ? View.VISIBLE : View.GONE);
@@ -756,12 +756,14 @@ final class CarUi {
                     ? radioMini.getLayoutParams().height + 6 : 0);
             buttonHeight = navButtonHeight(CarStyle.uiScale(), false, height - 40 - footer, buttons);
         }
+        int iconSz = panelIconSize(buttonHeight, rail);
         for (LinearLayout button : labelledButtons()) {
             LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) button.getLayoutParams();
             if (lp.height != buttonHeight) {
                 lp.height = buttonHeight;
                 button.setLayoutParams(lp);
             }
+            resizeButtonIcon(button, iconSz);
         }
         for (LinearLayout action : new LinearLayout[]{splitButton, swapButton}) {
             if (action == null) continue;
@@ -770,6 +772,23 @@ final class CarUi {
                 lp.height = buttonHeight;
                 action.setLayoutParams(lp);
             }
+            resizeButtonIcon(action, iconSz);
+        }
+    }
+
+    /** Puro: lado de la ficha de icono (px) dentro de un botón de buttonHeight px, dejando aire para el halo activo. */
+    static int panelIconSize(int buttonHeight, boolean rail) {
+        return Math.max(30, Math.min(rail ? 50 : 48, buttonHeight - (rail ? 12 : 16)));
+    }
+
+    private static void resizeButtonIcon(LinearLayout button, int iconSz) {
+        View icon = button.getChildAt(0);
+        if (icon == null) return;
+        ViewGroup.LayoutParams ilp = icon.getLayoutParams();
+        if (ilp != null && (ilp.width != iconSz || ilp.height != iconSz)) {
+            ilp.width = iconSz;
+            ilp.height = iconSz;
+            icon.setLayoutParams(ilp);
         }
     }
 
@@ -788,23 +807,24 @@ final class CarUi {
     private void renderSplitButton(boolean rail) {
         LinearLayout b = splitButton;
         if (b == null) return;
+        boolean dark = CarTheme.isDark(panelColor);
         b.setVisibility(splitCapable(screenName) && screen != null ? View.VISIBLE : View.GONE);
         b.getChildAt(1).setVisibility(rail ? View.GONE : View.VISIBLE);
         b.setGravity(rail ? Gravity.CENTER : Gravity.CENTER_VERTICAL);
-        b.setPadding(rail ? 0 : 18, 0, rail ? 0 : 18, 0);
+        b.setPadding(rail ? 0 : 18, 0, rail ? 0 : 14, 0);
         ((TextView) b.getChildAt(1)).setText(Str.get(split ? R.string.hql_split_off : R.string.hql_split_on));
-        int fg = split ? CarStyle.ON_ACCENT : CarTheme.navText();
-        b.setBackground(split ? CarStyle.accent(36) : null);
-        ((ImageView) b.getChildAt(0)).setImageTintList(ColorStateList.valueOf(fg));
+        int fg = split ? (dark ? 0xFFFFFFFF : 0xFF004D40) : CarTheme.navText();
+        b.setBackground(split ? PanelIcons.activePill(dark, panelRight) : null);
+        updateIconTile((ImageView) b.getChildAt(0), split, false, dark);
         ((TextView) b.getChildAt(1)).setTextColor(fg);
         LinearLayout s = swapButton;
         if (s == null) return;
         s.setVisibility(splitActive() ? View.VISIBLE : View.GONE);
         s.getChildAt(1).setVisibility(rail ? View.GONE : View.VISIBLE);
         s.setGravity(rail ? Gravity.CENTER : Gravity.CENTER_VERTICAL);
-        s.setPadding(rail ? 0 : 18, 0, rail ? 0 : 18, 0);
+        s.setPadding(rail ? 0 : 18, 0, rail ? 0 : 14, 0);
         int nav = CarTheme.navText();
-        ((ImageView) s.getChildAt(0)).setImageTintList(ColorStateList.valueOf(nav));
+        updateIconTile((ImageView) s.getChildAt(0), false, false, dark);
         ((TextView) s.getChildAt(1)).setTextColor(nav);
     }
 
@@ -2218,12 +2238,13 @@ final class CarUi {
         p.addView(navButton(c, Str.get(R.string.hql_settings), "settings", R.drawable.hql_ic_settings));
         // Desplegar el panel minimizado.
         ImageView ex = new ImageView(c);
-        ex.setImageResource(R.drawable.hql_ic_expand);
+        PanelIcons.Tile exTile = PanelIcons.forNav("expand");
+        exTile.setDarkSurface(CarTheme.isDark(panelColor));
+        ex.setImageDrawable(exTile);
+        ex.setScaleType(ImageView.ScaleType.FIT_CENTER);
         // La flecha apunta hacia el contenido: con el panel a la derecha, hacia la izquierda.
         ex.setScaleX(panelRight ? -1f : 1f);
-        ex.setImageTintList(ColorStateList.valueOf(CarStyle.TEXT));
-        ex.setBackground(CarStyle.round(CarStyle.PILL_BG, 36));
-        ex.setPadding(16, 16, 16, 16);
+        ex.setPadding(11, 11, 11, 11);
         ex.setVisibility(View.GONE);
         ex.setOnClickListener(v -> {
             setHidden(false);
@@ -2562,10 +2583,10 @@ final class CarUi {
         return oldTempVisibility != railTemp.getVisibility() || oldSocVisibility != railSoc.getVisibility();
     }
 
-    /** Elemento del panel al estilo de AA: icono + texto; el activo, en una píldora de color. */
+    /** Elemento del panel al estilo de AA: icono + texto; el activo, en una píldora de cristal tintado. */
     /** «Partir pantalla» (Web, Vídeos y TV): como un botón de la barra, pero no abre una pantalla. */
     private View buildSplitButton(Context c) {
-        LinearLayout b = actionButton(c, R.drawable.hql_ic_split, Str.get(R.string.hql_split_on));
+        LinearLayout b = actionButton(c, "split", Str.get(R.string.hql_split_on));
         b.setOnClickListener(v -> toggleSplit());
         splitButton = b;
         return b;
@@ -2573,25 +2594,27 @@ final class CarUi {
 
     /** «Cambiar de lado» (⇄), solo con la pantalla partida: AA a la otra mitad. */
     private View buildSwapButton(Context c) {
-        LinearLayout b = actionButton(c, R.drawable.hql_ic_swap, Str.get(R.string.hql_split_swap));
+        LinearLayout b = actionButton(c, "swap", Str.get(R.string.hql_split_swap));
         b.setContentDescription(Str.get(R.string.hql_split_swap));
         b.setOnClickListener(v -> swapSides());
         swapButton = b;
         return b;
     }
 
-    /** Un botón de la barra que hace algo sin abrir una pantalla: icono + texto, oculto hasta que toque. */
-    private LinearLayout actionButton(Context c, int icon, String label) {
+    /** Un botón de la barra que hace algo sin abrir una pantalla: ficha de icono + texto, oculto hasta que toque. */
+    private LinearLayout actionButton(Context c, String iconId, String label) {
         LinearLayout b = new LinearLayout(c);
         b.setOrientation(LinearLayout.HORIZONTAL);
         b.setGravity(Gravity.CENTER_VERTICAL);
-        b.setPadding(18, 0, 18, 0);
+        b.setPadding(18, 0, 14, 0);
         ImageView iv = new ImageView(c);
-        iv.setImageResource(icon);
-        b.addView(iv, new LinearLayout.LayoutParams(40, 40));
+        PanelIcons.Tile tile = PanelIcons.forNav(iconId);
+        tile.setDarkSurface(CarTheme.isDark(panelColor));
+        iv.setImageDrawable(tile);
+        b.addView(iv, new LinearLayout.LayoutParams(48, 48));
         TextView t = CarStyle.text(c, label, 25, CarStyle.TEXT);
         t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        t.setPadding(20, 0, 0, 0);
+        t.setPadding(16, 0, 0, 0);
         t.setSingleLine(true);
         b.addView(t);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 72);
@@ -2632,14 +2655,16 @@ final class CarUi {
         LinearLayout b = new LinearLayout(c);
         b.setOrientation(LinearLayout.HORIZONTAL);
         b.setGravity(Gravity.CENTER_VERTICAL);
-        b.setPadding(18, 0, 18, 0);
+        b.setPadding(18, 0, 14, 0);
         b.setTag(target);
         ImageView iv = new ImageView(c);
-        iv.setImageResource(icon);
-        b.addView(iv, new LinearLayout.LayoutParams(40, 40));
+        PanelIcons.Tile tile = PanelIcons.forNav(target);
+        tile.setDarkSurface(CarTheme.isDark(panelColor));
+        iv.setImageDrawable(tile);
+        b.addView(iv, new LinearLayout.LayoutParams(48, 48));
         TextView t = CarStyle.text(c, label, 25, CarStyle.TEXT);
         t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        t.setPadding(20, 0, 0, 0);
+        t.setPadding(16, 0, 0, 0);
         t.setSingleLine(true);
         b.addView(t);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 72);
@@ -2699,14 +2724,15 @@ final class CarUi {
         LinearLayout b = new LinearLayout(c);
         b.setOrientation(LinearLayout.HORIZONTAL);
         b.setGravity(Gravity.CENTER_VERTICAL);
-        b.setPadding(18, 0, 18, 0);
-        TextView icon = CarStyle.text(c, HomeScreen.glyph(e), 28, 0xFFFFFFFF);
+        b.setPadding(18, 0, 14, 0);
+        TextView icon = CarStyle.text(c, HomeScreen.glyph(e), 26, 0xFFFFFFFF);
         icon.setGravity(Gravity.CENTER);
         icon.setIncludeFontPadding(false);
-        b.addView(icon, new LinearLayout.LayoutParams(40, 40));
+        icon.setBackground(PanelIcons.haBadge(CarTheme.isDark(panelColor)));
+        b.addView(icon, new LinearLayout.LayoutParams(48, 48));
         TextView t = CarStyle.text(c, e.name, 25, CarTheme.navText());
         t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-        t.setPadding(20, 0, 0, 0);
+        t.setPadding(16, 0, 0, 0);
         t.setSingleLine(true);
         t.setEllipsize(android.text.TextUtils.TruncateAt.END);
         b.addView(t);
@@ -2781,7 +2807,8 @@ final class CarUi {
                 label.setTextColor(nav);
                 break;
             case HA_ARMED:
-                b.setBackground(CarStyle.round(0xFFFFB547, 36));
+                b.setBackground(CarStyle.round(0xFFFFB547, 22));
+                icon.setBackground(null);
                 icon.setText("?");
                 icon.setTextColor(0xFF1A1200);
                 label.setText(Str.get(R.string.hql_ha_tap_again));
@@ -2790,7 +2817,8 @@ final class CarUi {
             case HA_DONE:
             case HA_FAIL:
                 boolean ok = kind == HA_DONE;
-                b.setBackground(CarStyle.round(ok ? 0xFF178A4C : 0xFFC62837, 36));
+                b.setBackground(CarStyle.round(ok ? 0xFF178A4C : 0xFFC62837, 22));
+                icon.setBackground(null);
                 icon.setText(ok ? "✓" : "✕");
                 icon.setTextColor(0xFFFFFFFF);
                 label.setText(Str.get(ok ? R.string.hql_ha_done : R.string.hql_ha_not_done));
@@ -2798,6 +2826,7 @@ final class CarUi {
                 break;
             default:
                 b.setBackground(null);
+                icon.setBackground(PanelIcons.haBadge(CarTheme.isDark(panelColor)));
                 icon.setText(HomeScreen.glyph(e));
                 icon.setTextColor(0xFFFFFFFF);
                 label.setText(e.name);
@@ -2871,15 +2900,29 @@ final class CarUi {
         }
     }
 
+    private static void updateIconTile(ImageView iv, boolean selected, boolean alert, boolean dark) {
+        if (iv == null) return;
+        android.graphics.drawable.Drawable d = iv.getDrawable();
+        if (d instanceof PanelIcons.Tile) {
+            PanelIcons.Tile tile = (PanelIcons.Tile) d;
+            tile.setDarkSurface(dark);
+            tile.setSelected(selected);
+            tile.setAlert(alert);
+        }
+    }
+
     private void markNav() {
+        boolean dark = CarTheme.isDark(panelColor);
         for (LinearLayout b : navButtons) {
             boolean on = screenName.equals(b.getTag());
-            int fg = on ? CarStyle.ON_ACCENT : alertPending && "car".equals(b.getTag()) ? CarKit.AMBER : CarTheme.navText();
-            b.setBackground(on ? activeNav(36) : null);
-            if (radioMini != null) radioMini.setBackground(CarStyle.round(CarStyle.lighter(panelColor, 14), 36));
-            ((ImageView) b.getChildAt(0)).setImageTintList(ColorStateList.valueOf(fg));
+            boolean alert = alertPending && "car".equals(b.getTag());
+            int fg = on ? (dark ? 0xFFFFFFFF : 0xFF004D40) : alert ? CarKit.AMBER : CarTheme.navText();
+            b.setBackground(on ? PanelIcons.activePill(dark, panelRight) : null);
+            updateIconTile((ImageView) b.getChildAt(0), on, alert, dark);
             ((TextView) b.getChildAt(1)).setTextColor(fg);
         }
+        if (expand instanceof ImageView) updateIconTile((ImageView) expand, false, false, dark);
+        if (radioMini != null) radioMini.setBackground(CarStyle.round(CarStyle.lighter(panelColor, 14), 24));
     }
 
     /** La última pantalla que se vio junto a AA con la pantalla partida: «Auto» vuelve a ella (AA no cambia de tamaño). */

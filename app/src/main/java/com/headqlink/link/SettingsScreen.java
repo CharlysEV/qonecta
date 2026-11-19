@@ -101,11 +101,13 @@ final class SettingsScreen implements CarScreen {
         r.setPadding(20, 16, 16, 16);
         r.setTag(s);
         ImageView icon = new ImageView(c);
-        icon.setImageResource(sectionIcon(s));
-        r.addView(icon, new LinearLayout.LayoutParams(44, 44));
+        PanelIcons.Tile tile = PanelIcons.forNav(sectionIconId(s));
+        tile.setDarkSurface(CarTheme.night());
+        icon.setImageDrawable(tile);
+        r.addView(icon, new LinearLayout.LayoutParams(48, 48));
         LinearLayout texts = new LinearLayout(c);
         texts.setOrientation(LinearLayout.VERTICAL);
-        texts.setPadding(20, 0, 0, 0);
+        texts.setPadding(18, 0, 0, 0);
         TextView t = CarStyle.text(c, sectionTitle(s), 26, CarStyle.TEXT);
         t.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         texts.addView(t);
@@ -121,16 +123,16 @@ final class SettingsScreen implements CarScreen {
         return r;
     }
 
-    private static int sectionIcon(String s) {
+    private static String sectionIconId(String s) {
         switch (s) {
             case SEC_PANEL:
-                return R.drawable.hql_ic_split;
+                return "split";
             case SEC_TRIP:
-                return R.drawable.hql_ic_gauges;
+                return "car";
             case SEC_CONN:
-                return R.drawable.hql_ic_aa;
+                return "aa";
             default:
-                return R.drawable.hql_ic_photos;
+                return "photos";
         }
     }
 
@@ -175,7 +177,12 @@ final class SettingsScreen implements CarScreen {
             boolean sel = s.equals(r.getTag());
             r.setBackground(sel ? CarStyle.round(CarStyle.ACCENT_BG, 30) : null);
             ImageView icon = (ImageView) ((LinearLayout) r).getChildAt(0);
-            icon.setColorFilter(sel ? CarStyle.ACCENT : CarStyle.TEXT_DIM);
+            android.graphics.drawable.Drawable d = icon.getDrawable();
+            if (d instanceof PanelIcons.Tile) {
+                PanelIcons.Tile tile = (PanelIcons.Tile) d;
+                tile.setDarkSurface(CarTheme.night());
+                tile.setSelected(sel);
+            }
             TextView t = (TextView) ((LinearLayout) ((LinearLayout) r).getChildAt(1)).getChildAt(0);
             t.setTextColor(sel ? CarStyle.ACCENT : CarStyle.TEXT);
         }
@@ -900,6 +907,14 @@ final class SettingsScreen implements CarScreen {
             r.setOrientation(LinearLayout.HORIZONTAL);
             r.setGravity(Gravity.CENTER_VERTICAL);
             r.setPadding(0, 10, 0, 10);
+            ImageView iv = new ImageView(c);
+            PanelIcons.Tile tile = PanelIcons.forNav(id);
+            tile.setDarkSurface(CarTheme.night());
+            iv.setImageDrawable(tile);
+            iv.setAlpha(on ? 1f : 0.4f);
+            LinearLayout.LayoutParams ilp = new LinearLayout.LayoutParams(42, 42);
+            ilp.rightMargin = 16;
+            r.addView(iv, ilp);
             TextView t = CarStyle.text(c, CarUi.navLabel(id), 24, on ? CarStyle.TEXT : CarStyle.TEXT_DIM);
             r.addView(t, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
             int pos = shown.indexOf(id);
