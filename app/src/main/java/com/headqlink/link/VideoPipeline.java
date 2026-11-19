@@ -743,11 +743,12 @@ final class VideoPipeline {
     }
 
     /**
-     * Puro: intervalo de IDR (segundos). Por cable (carFps ≥ 50), 2× lo que pide el coche acotado a 2–6 s (4 s en el
-     * C10, que pide FrameInterval=2 → 1 IDR cada ~4–8 s reales; ~100 KB, <2 ms por USB). Por Wi-Fi, 30 s (10 sin IR).
+     * Puro: intervalo de IDR (segundos). Por cable (carFps ≥ 50), 4× lo que pide el coche acotado a 6–10 s (8 s en el
+     * C10, que pide FrameInterval=2 → 1 IDR cada ~8–15 s reales; ~95–125 KB con Baseline QP 24, sin las 54 ráfagas de
+     * 180–234 KB que provocaba gop=4s + QP 22). Por Wi-Fi, 30 s (10 sin IR).
      */
     static int gopSecFor(int carFps, int carInterval, boolean noIr) {
-        if (carFps >= 50) return Math.max(2, Math.min(6, carInterval > 0 ? carInterval * 2 : 4));
+        if (carFps >= 50) return Math.max(6, Math.min(10, carInterval > 0 ? carInterval * 4 : 8));
         return noIr ? 10 : 30;
     }
 
@@ -770,8 +771,7 @@ final class VideoPipeline {
     static void onTouch() {
         lastTouchMs = SystemClock.elapsedRealtime();
         VideoPipeline p = current;
-        Boolean lab = LabControl.touchBoost;
-        if (p == null || p.stopped || p.touchBoost || !(lab != null ? lab : p.boostOnTouch)) return;
+        if (p == null || p.stopped || p.touchBoost || !useInteractiveCap(p.boostOnTouch, LabControl.touchBoost)) return;
         p.touchBoost = true;
         p.h.post(() -> {
             p.applyFpsCap();
@@ -798,6 +798,11 @@ final class VideoPipeline {
     /** Con Máximo: los fps suben con los toques (onTouch). */
     private volatile boolean boostOnTouch;
 
+    /** Puro: en Máximo, tope de conducción a 30 fps en rejilla (60 al tocar o con juego), salvo desactivado en pruebas. */
+    static boolean useInteractiveCap(boolean best, Boolean labTouchBoost) {
+        return best && !Boolean.FALSE.equals(labTouchBoost);
+    }
+
     /** Puro: tope de Máximo: con juego o tocando, el que ya hay; si no, como mucho CONTENT_FPS. */
     static int interactiveCap(boolean best, boolean game, boolean touching, int cap) {
         if (!best || game || touching) return cap;
@@ -808,9 +813,9 @@ final class VideoPipeline {
         // Solo Coche a 30 se queda en 30 aunque el coche pida 60; los demás perfiles (Máximo, Muy alto…), a sus fps.
         VideoProfile prof = cfg.videoProfile();
         boolean full = gameMode || !prof.capsContentTo30();
-        // Máximo, a los fps de la sesión todo el rato (antes, 30 sin tocar la pantalla: menos que Muy alto, en contra de su
-        // nombre). La variante de pruebas puede volver a probar el empujón con los toques (LabControl.touchBoost).
-        boolean touchCap = prof.best() && Boolean.TRUE.equals(LabControl.touchBoost);
+        // Máximo por cable: en conducción sin toques, 30 fps en rejilla (elimina los huecos de 65-100 ms de AA a 60 fps
+        // mientras el mapa se mueve a 30) y 60 fps al tocar la pantalla o con juego. En pruebas se puede fijar con LabControl.
+        boolean touchCap = useInteractiveCap(prof.best(), LabControl.touchBoost);
         int content = interactiveCap(touchCap, gameMode, touchBoost, contentCap(full, cfg.fluidity(), plan.fps));
         int fps = Math.min(Math.min(thermalFpsCap, linkFpsCap), content);
         // Variante de pruebas: el tope de Claude (LabControl), si lo hay.

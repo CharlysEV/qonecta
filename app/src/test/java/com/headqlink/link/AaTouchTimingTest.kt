@@ -1,6 +1,8 @@
 package com.headqlink.link
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -28,5 +30,15 @@ class AaTouchTimingTest {
         assertEquals(1000 + min, AaPassthroughSource.touchSendAt(1010, 1000 + min, false, 0))
         // Un movimiento, a su hora si no hay nada pendiente.
         assertEquals(2000L, AaPassthroughSource.touchSendAt(2000, 1000, false, 0))
+    }
+
+    @Test
+    fun queuedTouchesNeverGetOvertakenByDirectSend() {
+        // Sin envíos pendientes y a su hora: sale directo.
+        assertFalse(AaPassthroughSource.shouldQueueTouch(1050, 1050, 0))
+        // Aplazado en el tiempo: va a la cola.
+        assertTrue(AaPassthroughSource.shouldQueueTouch(1060, 1050, 0))
+        // Aunque at <= now, si aún queda un UP pendiente en aa-touch, el siguiente DOWN también va a la cola (FIFO).
+        assertTrue(AaPassthroughSource.shouldQueueTouch(1050, 1050, 1))
     }
 }

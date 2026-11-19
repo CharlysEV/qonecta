@@ -232,4 +232,17 @@ class LinkGlanceTest {
         assertEquals(0L, LinkGlance.pushDelay(searching, 1_000, running { mode = Config.MODE_AA_EXT }, 1_100))
         assertEquals(0L, LinkGlance.pushDelay(searching, 1_000, running { locale = "pt-PT" }, 1_100))
     }
+
+    @Test
+    fun screenOffSkipsVideoOnlyWidgetUpdatesButKeepsStateChanges() {
+        val live30 = running { car = LinkState.Car.CONNECTED; video = "30 fps · 4,8 Mbps" }
+        val live29 = running { car = LinkState.Car.CONNECTED; video = "29 fps · 4,6 Mbps" }
+        val searching = running()
+        // Con pantalla apagada, solo cifras de vídeo se omiten (ahorra IPC al launcher en DOZE).
+        assertTrue(WidgetUpdater.skipWhileScreenOff(live30, live29, false))
+        // Con pantalla encendida, o primer pintado, o cambio real de estado: sí se actualiza.
+        assertFalse(WidgetUpdater.skipWhileScreenOff(live30, live29, true))
+        assertFalse(WidgetUpdater.skipWhileScreenOff(null, live29, false))
+        assertFalse(WidgetUpdater.skipWhileScreenOff(live30, searching, false))
+    }
 }

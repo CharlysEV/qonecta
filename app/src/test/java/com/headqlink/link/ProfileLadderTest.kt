@@ -45,8 +45,8 @@ class ProfileLadderTest {
         val best = VideoProfile.of(VideoProfile.BEST)
         val max = VideoProfile.of(VideoProfile.MAX)
         val high = VideoProfile.of(VideoProfile.HIGH)
-        // Máximo por cable, el más nítido (QP más bajo); por Wi-Fi y los demás, el de siempre.
-        assertTrue(best.qpFloorFor(60) < max.qpFloorFor(60))
+        // Con H.264 Baseline por defecto en Máximo (19-11), el suelo QP 24 evita IDR de 234 KB y P-frames sobre tope.
+        assertEquals(PFrameSizeController.QP_FLOOR, best.qpFloorFor(60))
         assertEquals(PFrameSizeController.QP_FLOOR, best.qpFloorFor(30))
         assertEquals(PFrameSizeController.QP_FLOOR, high.qpFloorFor(60))
         // Máximo y Muy alto, con el codificador al máximo; Alto, sin forzarlo.

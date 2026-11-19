@@ -58,6 +58,11 @@ class BestProfileTest {
         assertEquals(60, VideoPipeline.interactiveCap(false, false, false, 60))
         // Por Wi-Fi (30) no cambia nada; el tope térmico, aparte.
         assertEquals(30, VideoPipeline.interactiveCap(true, false, true, 30))
+        // En Máximo está activo por defecto (30 fps en rejilla conduciendo, 60 al tocar), salvo desactivado en pruebas.
+        assertTrue(VideoPipeline.useInteractiveCap(true, null))
+        assertTrue(VideoPipeline.useInteractiveCap(true, true))
+        assertFalse(VideoPipeline.useInteractiveCap(true, false))
+        assertFalse(VideoPipeline.useInteractiveCap(false, null))
     }
 
     @Test

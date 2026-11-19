@@ -170,6 +170,9 @@ public class LinkService extends Service implements UdpDiscovery.Listener, SspSe
             PerfTrace.event(what, 0);
             CarTrace.note("PANTALLA", what);
             QdTrace.i("HQL/Sistema", "pantalla: " + what + " · " + PhoneScreen.describe(c));
+            if (Intent.ACTION_SCREEN_ON.equals(a)) {
+                WidgetUpdater.poke();
+            }
             if (Intent.ACTION_USER_PRESENT.equals(a)) {
                 // Desbloqueado: la pantalla del coche (o la app) vuelve a estar delante en un momento.
                 main.postDelayed(() -> relatchLocation("móvil desbloqueado"), 1500);

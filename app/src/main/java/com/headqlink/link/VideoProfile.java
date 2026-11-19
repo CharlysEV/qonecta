@@ -44,10 +44,10 @@ final class VideoProfile {
     static final String BEST = "maximo";
     static final String[] ALL = {CAR, BEST, MAX, HIGH, MEDIUM, BASIC, LOW};
     /** Máximo: bitrate de partida por cable (el coche pide 50 fps o más) y por Wi-Fi, y el margen adaptable. */
-    static final int BEST_CABLE_BPS = 8_000_000;
+    static final int BEST_CABLE_BPS = 6_000_000;
     static final int BEST_WIFI_BPS = 5_000_000;
-    static final int BEST_MIN_BPS = 5_000_000;
-    static final int BEST_MAX_BPS = 10_000_000;
+    static final int BEST_MIN_BPS = 4_000_000;
+    static final int BEST_MAX_BPS = 8_000_000;
     /** Máximo por Wi-Fi: el margen adaptable (más estrecho: la radio con el coche no da para 16 Mbit/s sin saltos). */
     static final int BEST_WIFI_MIN_BPS = 4_000_000;
     static final int BEST_WIFI_MAX_BPS = 8_000_000;
@@ -204,8 +204,12 @@ final class VideoProfile {
         return new VideoProfile(BASIC, true, 30, true, false, false, 3_500_000, 3_500_000, 3_500_000);
     }
 
-    /** Suelo de QP (la nitidez máxima) de Máximo por cable: más nítido que los demás (24). Se afina con «qp N» en pruebas. */
-    static final int BEST_CABLE_QP_FLOOR = 22;
+    /**
+     * Suelo de QP de Máximo por cable: con H.264 Baseline (CAVLC), bajar a 22 duplicaba el tamaño de los IDR (hasta
+     * 234 KB) y disparaba P-frames por encima del tope (143 KB, picos de 11,2 Mbit/s en el C10 el 19-11); 24 mantiene la
+     * nitidez con IDR de ~95 KB y 0 P-frames por encima del tope. Se afina con «qp N» en pruebas.
+     */
+    static final int BEST_CABLE_QP_FLOOR = PFrameSizeController.QP_FLOOR;
 
     /**
      * QP mínimo de los fotogramas (cuanto más bajo, más nítido y más bits): Máximo por cable, BEST_CABLE_QP_FLOOR; los

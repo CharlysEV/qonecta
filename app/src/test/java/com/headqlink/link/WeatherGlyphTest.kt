@@ -1,6 +1,7 @@
 package com.headqlink.link
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -30,5 +31,14 @@ class WeatherGlyphTest {
         assertEquals(1f, WeatherGlyph.ease(1f), 1e-6f)
         assertTrue(WeatherGlyph.ease(0.5f) > 0.5f)
         assertTrue(WeatherGlyph.ease(0.9f) > WeatherGlyph.ease(0.8f))
+    }
+
+    @Test
+    fun animationOnlyRestartsWhenWeatherChangesAndAnimationIsAllowed() {
+        // Refresco de 30 s sin cambio de tiempo: nunca reinicia la animación de 1,1 s (evita ráfagas de 36 frames).
+        assertFalse(WeatherGlyph.restartAnim(false, true))
+        assertFalse(WeatherGlyph.restartAnim(false, false))
+        assertFalse(WeatherGlyph.restartAnim(true, false))
+        assertTrue(WeatherGlyph.restartAnim(true, true))
     }
 }

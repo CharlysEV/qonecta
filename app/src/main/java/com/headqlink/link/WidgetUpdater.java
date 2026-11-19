@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.SystemClock;
 
 import com.andrerinas.openheadunit.R;
@@ -89,10 +90,25 @@ public final class WidgetUpdater implements LinkState.Listener, SharedPreference
         dueAt = at;
     }
 
+    /**
+     * Puro: ¿saltar el repintado de solo cifras de vídeo mientras la pantalla del móvil está apagada?
+     * Con la pantalla apagada nadie ve el widget de inicio (evita IPC cada 5 s en DOZE); los cambios de estado real sí
+     * salen y al encender la pantalla {@link #poke()} actualiza las cifras.
+     */
+    static boolean skipWhileScreenOff(LinkGlance last, LinkGlance next, boolean interactive) {
+        return !interactive && last != null && last.sameButVideo(next);
+    }
+
+    private boolean screenOn() {
+        PowerManager pm = app.getSystemService(PowerManager.class);
+        return pm == null || pm.isInteractive();
+    }
+
     private void flush() {
         dueAt = -1;
         if (!hasWidgets()) return;
         LinkGlance g = glance(app);
+        if (skipWhileScreenOff(last, g, screenOn())) return;
         long wait = LinkGlance.pushDelay(last, lastMs, g, SystemClock.uptimeMillis());
         if (wait < 0) return;
         if (wait > 0) {

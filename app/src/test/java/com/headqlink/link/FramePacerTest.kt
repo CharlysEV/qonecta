@@ -1,6 +1,7 @@
 package com.headqlink.link
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -171,5 +172,18 @@ class FramePacerTest {
         assertEquals(0, GlFrameRelay.discarded(25, 30, 5))
         assertEquals(4, GlFrameRelay.discarded(25, 24, 3))
         assertEquals(0, GlFrameRelay.discarded(0, 10, 10))
+    }
+
+    @Test
+    fun overlayUpdatesRideTheNextAaFrameWhileAaIsActive() {
+        val t0 = 10_000_000_000L
+        // AA visible y activo (último frame hace 15 ms): la capa propia espera al siguiente frame de AA en vez de
+        // inyectar otro frame a los pocos milisegundos.
+        assertTrue(GlFrameRelay.shouldCoalesceOverlay(true, true, false, t0 + 15 * ms, t0))
+        // AA quieto (>= 80 ms sin frame), sin primer frame aún o con pantalla propia encima: se dibuja ya.
+        assertFalse(GlFrameRelay.shouldCoalesceOverlay(true, true, false, t0 + 80 * ms, t0))
+        assertFalse(GlFrameRelay.shouldCoalesceOverlay(true, true, false, t0 + 15 * ms, 0L))
+        assertFalse(GlFrameRelay.shouldCoalesceOverlay(true, false, false, t0 + 15 * ms, t0))
+        assertFalse(GlFrameRelay.shouldCoalesceOverlay(false, true, true, t0 + 15 * ms, t0))
     }
 }

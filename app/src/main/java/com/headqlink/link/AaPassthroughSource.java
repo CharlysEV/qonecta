@@ -868,6 +868,8 @@ final class AaPassthroughSource implements VideoSource {
     static final long MIN_TAP_MS = 50;
     private android.os.HandlerThread touchThread;
     private Handler touchHandler;
+    /** Envíos aún pendientes en touchHandler: mientras quede alguno, todo lo nuevo se encola para no adelantarlo. */
+    private final java.util.concurrent.atomic.AtomicInteger pendingTouchPosts = new java.util.concurrent.atomic.AtomicInteger();
     /** Hora (uptime) del último DOWN de un dedo solo y del último envío programado (para no desordenar). */
     private long tapDownAt;
     private long lastTouchAt;
@@ -877,6 +879,11 @@ final class AaPassthroughSource implements VideoSource {
         long at = Math.max(now, lastAt);
         if (up && downAt > 0) at = Math.max(at, downAt + MIN_TAP_MS);
         return at;
+    }
+
+    /** Puro: ¿encolar el toque en el hilo de toques? Si va aplazado o aún queda alguno pendiente en ese hilo (FIFO). */
+    static boolean shouldQueueTouch(long at, long now, int pendingQueued) {
+        return at > now || pendingQueued > 0;
     }
 
     /**
@@ -892,7 +899,7 @@ final class AaPassthroughSource implements VideoSource {
         if (down) tapDownAt = at;
         if (up) tapDownAt = 0;
         lastTouchAt = at;
-        if (at <= now) {
+        if (!shouldQueueTouch(at, now, pendingTouchPosts.get())) {
             sendTouchNow(pa, index, pts, stamp);
             return;
         }
@@ -901,7 +908,16 @@ final class AaPassthroughSource implements VideoSource {
             touchThread.start();
             touchHandler = new Handler(touchThread.getLooper());
         }
-        touchHandler.postAtTime(() -> sendTouchNow(pa, index, pts, stamp), at);
+        pendingTouchPosts.incrementAndGet();
+        if (!touchHandler.postAtTime(() -> {
+            try {
+                sendTouchNow(pa, index, pts, stamp);
+            } finally {
+                pendingTouchPosts.decrementAndGet();
+            }
+        }, at)) {
+            pendingTouchPosts.decrementAndGet();
+        }
     }
 
     private void sendTouchNow(Input.TouchEvent.PointerAction pa, int index, java.util.List<Triple<Integer, Integer, Integer>> pts,
@@ -1036,6 +1052,7 @@ final class AaPassthroughSource implements VideoSource {
             touchThread = null;
             touchHandler = null;
         }
+        pendingTouchPosts.set(0);
         main.removeCallbacks(heldRelaunch);
         relaunchHeld = false;
         if (active == this) active = null;

@@ -145,6 +145,9 @@ final class GlFrameRelay {
 
     private boolean hasNew;
     private long frameNs;
+    /** Último frame recibido de AA (ns, hilo GL): si AA está activo, los cambios de la capa van montados en el siguiente. */
+    private long lastAaNs;
+    private boolean overlayFlushScheduled;
     /**
      * Desde cuándo la puerta (el enlace) retiene un frame pendiente, o 0. Al dibujar va a la traza como gate_hold_ms
      * (docs §23: para ver si un P-frame grande sigue a un rato con la puerta cerrada).
@@ -154,6 +157,30 @@ final class GlFrameRelay {
     private boolean released;
     /** Último dibujo (ns), para el flujo constante del modo extendido. */
     private long lastDrawNs;
+
+    /** Si AA entregó un frame hace menos de esto, la capa propia espera al siguiente frame de AA en vez de colar uno extra. */
+    static final long OVERLAY_AA_ACTIVE_NS = 80_000_000L;
+    /** Plazo máximo de espera de un cambio de la capa propia por si AA se queda quieto justo entonces (ms). */
+    static final long OVERLAY_FLUSH_MS = 40;
+
+    /**
+     * Puro: ¿esperar al próximo frame de AA antes de recomponer un cambio de nuestra interfaz?
+     * Solo cuando AA se ve, ya ha dado imagen y está entregando frames (último hace menos de OVERLAY_AA_ACTIVE_NS).
+     * Así las actualizaciones del marcador o del panel van montadas en el siguiente frame de AA en vez de inyectar
+     * fotogramas extra a 1-10 ms del anterior.
+     */
+    static boolean shouldCoalesceOverlay(boolean aaVisible, boolean aaHasFrame, boolean ownScreenOnTop,
+                                         long nowNs, long lastAaNs) {
+        return aaVisible && aaHasFrame && !ownScreenOnTop && lastAaNs > 0 && nowNs - lastAaNs < OVERLAY_AA_ACTIVE_NS;
+    }
+
+    private final Runnable overlayFlush = () -> {
+        overlayFlushScheduled = false;
+        if (released) return;
+        if (!hasNew) frameNs = System.nanoTime();
+        hasNew = true;
+        tryDraw();
+    };
 
     /**
      * Modo extendido: como mucho a esto se manda la imagen aunque no cambie nada (fps). Con una pantalla nuestra
@@ -452,6 +479,8 @@ final class GlFrameRelay {
         if (h == null) return;
         h.post(() -> {
             released = true;
+            h.removeCallbacks(overlayFlush);
+            overlayFlushScheduled = false;
             if (st != null) st.release();
             if (input != null) input.release();
             if (ovSt != null) ovSt.release();
@@ -541,9 +570,7 @@ final class GlFrameRelay {
         statOverlay++;
         if (splashOnly && aaHasFrame) return;
         ov2St.getTransformMatrix(ov2M);
-        if (!hasNew) frameNs = System.nanoTime();
-        hasNew = true;
-        tryDraw();
+        onOverlayUpdated();
     }
 
     /** Nuevo frame de nuestra interfaz: también hay que recomponer. */
@@ -560,7 +587,24 @@ final class GlFrameRelay {
         // La animación de carga ya no se ve: sus últimos frames no provocan dibujos.
         if (splashOnly && aaHasFrame) return;
         ovSt.getTransformMatrix(ovM);
-        if (!hasNew) frameNs = System.nanoTime();
+        onOverlayUpdated();
+    }
+
+    /** Hilo GL: un cambio de nuestra capa va montado en el próximo frame de AA si AA está activo, o sale ya. */
+    private void onOverlayUpdated() {
+        long now = System.nanoTime();
+        if (shouldCoalesceOverlay(aaVisible, aaHasFrame, ownScreenOnTop(), now, lastAaNs)) {
+            if (!overlayFlushScheduled) {
+                overlayFlushScheduled = true;
+                h.postDelayed(overlayFlush, OVERLAY_FLUSH_MS);
+            }
+            return;
+        }
+        if (overlayFlushScheduled) {
+            h.removeCallbacks(overlayFlush);
+            overlayFlushScheduled = false;
+        }
+        if (!hasNew) frameNs = now;
         hasNew = true;
         tryDraw();
     }
@@ -576,12 +620,18 @@ final class GlFrameRelay {
             if (onFirstAaFrame != null) onFirstAaFrame.run();
         }
         statDecoded++;
+        long now = System.nanoTime();
+        lastAaNs = now;
+        if (overlayFlushScheduled) {
+            h.removeCallbacks(overlayFlush);
+            overlayFlushScheduled = false;
+        }
         // Con una pantalla nuestra delante, AA sigue mandando frames pero no se ven: no deben
         // provocar dibujos (se mezclarían su ritmo y el de nuestra interfaz y saldrían frames
         // a intervalos irregulares).
         if (ownScreenOnTop()) return;
         hasNew = true;
-        frameNs = System.nanoTime();
+        frameNs = now;
         tryDraw();
     }
 

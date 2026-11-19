@@ -47,11 +47,13 @@ class VideoPipelineHealthTest {
 
     @Test
     fun cableUsesShortGopWithoutIntraRefreshWhileWifiKeepsIntraRefresh() {
-        // Cable (C10 pide 60 fps e intervalo 2): sin intra-refresh y GOP de 4 s (evita pixelación de 56 s).
+        // Cable (C10 pide 60 fps e intervalo 2): sin intra-refresh y GOP de 8 s (acotado 6-10 s; evita tanto los 56 s
+        // de pixelación de IR como las 54 ráfagas de IDR de gop=4 s).
         assertEquals(0, VideoPipeline.intraRefreshFor(60, 60, false))
-        assertEquals(4, VideoPipeline.gopSecFor(60, 2, false))
-        assertEquals(6, VideoPipeline.gopSecFor(60, 5, false))
-        assertEquals(4, VideoPipeline.gopSecFor(60, 0, false))
+        assertEquals(8, VideoPipeline.gopSecFor(60, 2, false))
+        assertEquals(6, VideoPipeline.gopSecFor(60, 1, false))
+        assertEquals(10, VideoPipeline.gopSecFor(60, 5, false))
+        assertEquals(8, VideoPipeline.gopSecFor(60, 0, false))
         // Wi-Fi (30 fps): mantiene intra-refresh y GOP largo para no meter ráfagas por radio.
         assertEquals(30, VideoPipeline.intraRefreshFor(30, 30, false))
         assertEquals(30, VideoPipeline.gopSecFor(30, 3, false))

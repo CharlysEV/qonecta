@@ -44,15 +44,22 @@ final class WeatherGlyph extends View {
         super(c);
     }
 
+    /** Puro: si cambia el icono o el color y se permite animar, se reinicia la animación. */
+    static boolean restartAnim(boolean changed, boolean animate) {
+        return changed && animate;
+    }
+
     /** El tiempo nuevo (y el color del texto del panel): si cambia, vuelve a animar; si no, se queda como está. */
     void set(int code, boolean day, int color, boolean animate) {
         Kind k = kind(code, day);
-        this.animate = animate;
         boolean changed = k != kind || color != this.color;
+        if (!changed && animate == this.animate) return;
+        this.animate = animate;
         kind = k;
         this.color = color;
-        setVisibility(k == Kind.NONE ? GONE : VISIBLE);
-        if (changed || animate) animStart = System.currentTimeMillis();
+        int vis = k == Kind.NONE ? GONE : VISIBLE;
+        if (getVisibility() != vis) setVisibility(vis);
+        if (restartAnim(changed, animate)) animStart = System.currentTimeMillis();
         invalidate();
     }
 
