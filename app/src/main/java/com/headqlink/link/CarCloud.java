@@ -201,6 +201,8 @@ final class CarCloud {
     /** Lecturas seguidas en las que el coche no había subido un dato nuevo (aparcado o dormido). */
     private static volatile int staleReads;
     private static volatile long lastDataTime;
+    /** Último intento de lectura (elapsedRealtime), compartido entre arranques para evitar ráfagas de fondo. */
+    private static volatile long lastAttemptElapsedMs;
     /** Tope diario de lecturas (Policy.DAILY_CAP), por día local. */
     private static int readsToday;
     private static long readsDay = -1;
@@ -224,10 +226,24 @@ final class CarCloud {
 
     /** Lo pide alguien (el sondeo sigue mientras alguien lo tenga). */
     static synchronized void acquire(Context ctx, String who) {
+        boolean hadInteractive = !owners.isEmpty() && !(owners.size() == 1 && owners.contains("check"));
         owners.add(who);
+        // Al abrir la app o conectar el coche (no en comprobaciones de fondo «check»), leer al instante.
+        if (!hadInteractive && !"check".equals(who)) {
+            lastAttemptElapsedMs = 0;
+            wake();
+        }
         start(ctx);
         // Con Leapmotor Mate en Home Assistant, también se lee (sin él, no hace nada).
         MateFeed.acquire(ctx, who, false);
+    }
+
+    /** ¿Sigue en pausa desde el último intento (coche dormido), para que la comprobación de fondo no espere en vano? */
+    static boolean inBackoff(long nowElapsedMs) {
+        long last = lastAttemptElapsedMs;
+        if (last <= 0 || nowElapsedMs < last) return false;
+        long wait = Policy.delayMs(0, hubVisible, staleReads, driving(), chargeWatchMs, onlyChargeWatch());
+        return nowElapsedMs - last < wait;
     }
 
     /** Ya no lo necesita; sin nadie, se para. */
@@ -331,14 +347,13 @@ final class CarCloud {
         L.i("nube Leapmotor: sondeo en marcha (cada 2 min; 90 s con la sección Coche en pantalla; 5-15 min si el coche no sube "
                 + "datos nuevos; como mucho " + Policy.DAILY_CAP + " lecturas al día)");
         int failures = 0;
-        long lastAttempt = 0;
         while (alive(gen)) {
             CarCloudStore st = new CarCloudStore(app);
             State g = gate(st);
             if (g != null) {
                 if (current.state != g) current = Snapshot.of(g);
                 failures = 0;
-                lastAttempt = 0; // en cuanto se pueda, se lee
+                lastAttemptElapsedMs = 0; // en cuanto se pueda, se lee
                 pollNow = false;
                 sleep(Policy.IDLE_MS);
                 continue;
@@ -350,11 +365,12 @@ final class CarCloud {
             }
             if (pollNow) {
                 pollNow = false;
-                lastAttempt = 0;
+                lastAttemptElapsedMs = 0;
                 failures = 0;
             }
             // Espera hasta que toque (se recalcula si la sección Coche aparece o desaparece).
-            long due = lastAttempt == 0 ? 0 : lastAttempt + Policy.delayMs(failures, hubVisible, staleReads, driving(), chargeWatchMs, onlyChargeWatch());
+            long last = lastAttemptElapsedMs;
+            long due = last == 0 ? 0 : last + Policy.delayMs(failures, hubVisible, staleReads, driving(), chargeWatchMs, onlyChargeWatch());
             long now = SystemClock.elapsedRealtime();
             if (now < due) {
                 sleep(due - now);
@@ -364,7 +380,7 @@ final class CarCloud {
                 sleep(Policy.STALE_MS[Policy.STALE_MS.length - 1]);
                 continue;
             }
-            lastAttempt = SystemClock.elapsedRealtime();
+            lastAttemptElapsedMs = SystemClock.elapsedRealtime();
             if (!current.hasData() && current.state != State.ERROR) {
                 current = new Snapshot(State.WAITING, null, 0, 0, st.capacityKwh(), st.carType(), 0, false);
             }

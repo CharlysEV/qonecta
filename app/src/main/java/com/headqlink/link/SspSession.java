@@ -678,9 +678,10 @@ final class SspSession {
             // Sin IDR periódicos: el coche pide uno cuando lo necesita y sale al instante. VBR con tope:
             // con CBR el encoder rellenaba hasta 8 Mbps con la pantalla quieta (radio siempre cargada).
             vp.cbr = cfg.getBool("enc_cbr");
-            // Variante de prueba enc_no_ir: sin intra-refresh (keyframes cada 10 s).
-            vp.intraRefreshFrames = cfg.getBool("enc_no_ir") ? 0 : vp.fps;
-            vp.iFrameIntervalSec = cfg.getBool("enc_no_ir") ? 10 : 30;
+            // Variante de prueba enc_no_ir: sin intra-refresh (keyframes cada 10 s); por cable, sin IR y GOP corto.
+            boolean noIr = cfg.getBool("enc_no_ir");
+            vp.intraRefreshFrames = VideoPipeline.intraRefreshFor(vp.fps, carFps, noIr);
+            vp.iFrameIntervalSec = VideoPipeline.gopSecFor(carFps, carInterval, noIr);
             vp.repeatAfterUs = 100_000;
             // Bitrate del perfil (adaptable en Alto y Muy alto; en Coche, el que pide el coche), salvo kbps manual.
             VideoProfile prof = cfg.videoProfile();

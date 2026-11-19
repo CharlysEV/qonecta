@@ -551,7 +551,11 @@ internal class UsbLink(
         // Por cable: si el coche manda heartbeats sin empezar la sesión, se repite el AppStatus; y si a los 12 s sigue
         // sin CAR_INFO, se cierra para volver a abrir (antes se esperaba a que el coche se callara: ~30 s).
         val config = SessionConfigs.forCurrentSettings(cfg, phone ?: SessionConfigs.phoneIdentity(ctx, cfg), ::portFor)
-            .copy(appStatusResendMax = USB_APP_STATUS_RESENDS, handshakeTimeoutMs = USB_HANDSHAKE_TIMEOUT_MS)
+            .copy(
+                appStatusResendMax = USB_APP_STATUS_RESENDS,
+                appStatusResendIntervalMs = USB_APP_STATUS_RESEND_INTERVAL_MS,
+                handshakeTimeoutMs = USB_HANDSHAKE_TIMEOUT_MS,
+            )
         val s = PhoneSession(transport, config, forward, QdTrace.qdLog)
         created = s
         val h = hub
@@ -726,6 +730,9 @@ internal class UsbLink(
     companion object {
         /** AppStatus repetidos como mucho si el coche manda heartbeats sin CAR_INFO (el primero se perdió). */
         const val USB_APP_STATUS_RESENDS = 3
+
+        /** Espera mínima antes de repetir el AppStatus por cable si el coche ya late sin CAR_INFO. */
+        const val USB_APP_STATUS_RESEND_INTERVAL_MS = 1_000L
 
         /** Sin CAR_INFO en este tiempo por cable, la sesión se cierra para volver a abrir (con el AppStatus repetido antes). */
         const val USB_HANDSHAKE_TIMEOUT_MS = 12_000L

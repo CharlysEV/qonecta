@@ -22,7 +22,14 @@ public class ChargeCheckJob extends JobService {
     static final long EVERY_MS = 15 * 60_000L;
     /** Lo que se espera a una lectura nueva de la nube antes de dejarlo para la próxima. */
     private static final long WAIT_READ_MS = 45_000;
+    /** Si ya hay una lectura reciente (menos de esto), no se vuelve a despertar la nube (evita dobles ráfagas de Doze). */
+    static final long FRESH_READ_MS = 5 * 60_000L;
     private static final String OWNER = "check";
+
+    /** Puro: ¿la última foto de la nube es lo bastante reciente como para no repetir la consulta de fondo? */
+    static boolean recentlyFetched(long fetchedAtMs, long nowWallMs) {
+        return fetchedAtMs > 0 && nowWallMs >= fetchedAtMs && nowWallMs - fetchedAtMs < FRESH_READ_MS;
+    }
 
     /** La programa (si no lo estaba) con cuenta de Leapmotor; sin cuenta, la quita. */
     public static void schedule(Context c) {
@@ -87,6 +94,12 @@ public class ChargeCheckJob extends JobService {
         }
         boolean already = CarCloud.running();
         long before = CarCloud.snapshot().fetchedAtMs;
+        if (!already && (recentlyFetched(before, System.currentTimeMillis())
+                || CarCloud.inBackoff(SystemClock.elapsedRealtime()))) {
+            ChargeWatch.background(ctx, CarCloud.car());
+            CheapCharge.background(ctx, CarCloud.car());
+            return;
+        }
         CarCloud.acquire(ctx, OWNER);
         try {
             // Si ya se leía (la app abierta, el coche), la foto es reciente; si no, se espera la lectura que acaba de pedir.

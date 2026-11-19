@@ -361,9 +361,10 @@ final class VideoPipeline {
             // perfil Alto con el mismo bitrate, y el CBR rellena la radio con la pantalla quieta (ver SspSession). Las
             // ráfagas del VBR las frena el bitrate adaptable al enlace (LinkRateController).
             VideoProfile prof = cfg.videoProfile();
+            boolean noIr = cfg.getBool("enc_no_ir");
             vp.cbr = cfg.getBool("enc_cbr");
-            vp.intraRefreshFrames = cfg.getBool("enc_no_ir") ? 0 : vp.fps;
-            vp.iFrameIntervalSec = cfg.getBool("enc_no_ir") ? 10 : 30;
+            vp.intraRefreshFrames = intraRefreshFor(vp.fps, carFps, noIr);
+            vp.iFrameIntervalSec = gopSecFor(carFps, plan.car.argsInterval, noIr);
             vp.repeatAfterUs = 100_000;
             if (cfg.getInt(Config.KBPS) <= 0) {
                 // El del perfil; en Coche, el que pide el coche (VIDEO_ARGS BitRate; con Fluidez 60, 8-12 Mbit/s).
@@ -729,6 +730,25 @@ final class VideoPipeline {
         int n = (int) Math.floor((cap + 0.5) / videoFps);
         if (n < 1) return cap;
         return Math.max(1, Math.min(cap, Math.round(n * videoFps)));
+    }
+
+    /**
+     * Puro: periodo de intra-refresh (0 = apagado). Por cable (el coche pide ≥50 fps, como el C10 por USB), sin
+     * intra-refresh y con GOP corto (gopSecFor): en el C10 con QDLink 4.9, el intra-refresh + GOP de 30 s (56 s reales
+     * a 32 fps) dejaba pixelación prolongada hasta el siguiente KEY_FRAME_REQ. Por Wi-Fi se mantiene para evitar picos.
+     */
+    static int intraRefreshFor(int fps, int carFps, boolean noIr) {
+        if (noIr || carFps >= 50) return 0;
+        return fps;
+    }
+
+    /**
+     * Puro: intervalo de IDR (segundos). Por cable (carFps ≥ 50), 2× lo que pide el coche acotado a 2–6 s (4 s en el
+     * C10, que pide FrameInterval=2 → 1 IDR cada ~4–8 s reales; ~100 KB, <2 ms por USB). Por Wi-Fi, 30 s (10 sin IR).
+     */
+    static int gopSecFor(int carFps, int carInterval, boolean noIr) {
+        if (carFps >= 50) return Math.max(2, Math.min(6, carInterval > 0 ? carInterval * 2 : 4));
+        return noIr ? 10 : 30;
     }
 
     /** Puro: tope por el contenido: sin juego, 30 (salvo «Fluidez» a 60); con juego, los de la sesión. */

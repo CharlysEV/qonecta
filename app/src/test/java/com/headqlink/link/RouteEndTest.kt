@@ -48,4 +48,12 @@ class RouteEndTest {
         assertFalse(RoutePlanner.freshEnough(arrived - 5 * 60_000, arrived))
         assertFalse(RoutePlanner.freshEnough(0, arrived))
     }
+
+    @Test
+    fun anArrivedRouteIsNotReplannedWhileParking() {
+        assertTrue(RoutePlanner.shouldReplan(false, false, 0L))
+        assertFalse(RoutePlanner.shouldReplan(false, false, 1_795_085_865_278L))
+        assertFalse(RoutePlanner.shouldReplan(true, false, 0L))
+        assertFalse(RoutePlanner.shouldReplan(false, true, 0L))
+    }
 }

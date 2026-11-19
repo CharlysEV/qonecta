@@ -1299,6 +1299,7 @@ final class CarUi {
         if (p == null || !p.isShowing() || p.getWindow() == null || p.getWindow().peekDecorView() == null) return;
         try {
             p.dispatchTouchEvent(ev);
+            if (phoneOff != null) phoneOff.requestDrawAfterTouch();
         } catch (NullPointerException e) {
             L.w("CarUi: toque descartado: la pantalla del coche se estaba cerrando");
         }

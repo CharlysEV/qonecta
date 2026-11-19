@@ -134,15 +134,31 @@ final class PhoneOffRenderer {
         update();
     }
 
+    /** Segundo repintado tras un toque con pantalla apagada (ms), para recoger el estado visual sin VSYNC. */
+    static final long TOUCH_FOLLOWUP_MS = 60;
+    private final Runnable touchFollowup = this::scheduleDraw;
+
     /** Hilo principal: dibuja ya (el juego tiene fotograma nuevo), sin esperar al dibujo de la Presentation. */
     void requestDraw() {
         scheduleDraw();
+    }
+
+    /**
+     * Hilo principal: tras un toque a nuestra interfaz con la pantalla del móvil apagada, Android no entrega VSYNC a la
+     * pantalla virtual, así que OnDrawListener puede no dispararse. Se fuerza un dibujo inmediato y otro breve después.
+     */
+    void requestDrawAfterTouch() {
+        if (!active) return;
+        scheduleDraw();
+        main.removeCallbacks(touchFollowup);
+        main.postDelayed(touchFollowup, TOUCH_FOLLOWUP_MS);
     }
 
     /** Hilo principal; antes de soltar la pantalla virtual. */
     void stop() {
         stopped = true;
         main.removeCallbacks(poll);
+        main.removeCallbacks(touchFollowup);
         if (dm != null) dm.unregisterDisplayListener(listener);
         leave();
     }
@@ -201,6 +217,7 @@ final class PhoneOffRenderer {
         boolean was = active;
         active = false;
         posted = false;
+        main.removeCallbacks(touchFollowup);
         View r = drawing;
         drawing = null;
         if (was) useManual.accept(false);

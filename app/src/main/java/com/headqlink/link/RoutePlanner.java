@@ -895,7 +895,7 @@ final class RoutePlanner {
                 updateMapsRatio(p, dest);
                 maybeReadMapsBox(p);
             }
-            String why = origin == null && !p.doubt ? replanReason(p, s, nav, dest) : null;
+            String why = shouldReplan(origin != null, p.doubt, p.arrivedAtMs) ? replanReason(p, s, nav, dest) : null;
             long t = SystemClock.elapsedRealtime();
             if (why == null || t - lastReplanMs < REPLAN_GAP_MS) return;
             lastReplanMs = t;
@@ -1183,6 +1183,15 @@ final class RoutePlanner {
             lastKm = Double.NaN;
             return true;
         }
+    }
+
+    /**
+     * Puro: ¿tiene sentido comprobar si hay que recalcular este plan? No con origen fijado a mano, ni en modo duda, ni si
+     * la ruta ya se dio por terminada al llegar (arrivedAtMs != 0: evitando recálculos mientras se busca aparcamiento y
+     * protegiendo las cuentas pendientes con la lectura final de la nube).
+     */
+    static boolean shouldReplan(boolean hasOrigin, boolean doubt, long arrivedAtMs) {
+        return !hasOrigin && !doubt && arrivedAtMs == 0;
     }
 
     /**

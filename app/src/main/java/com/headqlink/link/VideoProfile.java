@@ -44,10 +44,10 @@ final class VideoProfile {
     static final String BEST = "maximo";
     static final String[] ALL = {CAR, BEST, MAX, HIGH, MEDIUM, BASIC, LOW};
     /** Máximo: bitrate de partida por cable (el coche pide 50 fps o más) y por Wi-Fi, y el margen adaptable. */
-    static final int BEST_CABLE_BPS = 12_000_000;
+    static final int BEST_CABLE_BPS = 8_000_000;
     static final int BEST_WIFI_BPS = 5_000_000;
     static final int BEST_MIN_BPS = 5_000_000;
-    static final int BEST_MAX_BPS = 16_000_000;
+    static final int BEST_MAX_BPS = 10_000_000;
     /** Máximo por Wi-Fi: el margen adaptable (más estrecho: la radio con el coche no da para 16 Mbit/s sin saltos). */
     static final int BEST_WIFI_MIN_BPS = 4_000_000;
     static final int BEST_WIFI_MAX_BPS = 8_000_000;
@@ -85,9 +85,9 @@ final class VideoProfile {
         return BEST.equals(id);
     }
 
-    /** Perfil H.264 que pide el modo (null: el de Avanzado, Baseline de serie). */
+    /** Perfil H.264 que pide el modo (null: el de Avanzado, Baseline de serie). En el C10 por cable, Baseline evita retrasos/pixelación de CABAC (High sigue elegible en Avanzado). */
     String h264() {
-        return best() ? "high" : null;
+        return best() ? "baseline" : null;
     }
 
     /**

@@ -737,7 +737,9 @@ final class AaPassthroughSource implements VideoSource {
         relay = new GlFrameRelay(surface, width, height, nw, nh, fps, aaVideoX(), aaVideoW(), true);
         relay.setGate(gate);
         relay.setFixedRate(fixedRate);
-        relay.setBurstTolerance(new Config(ctx).videoProfile().best());
+        // En modo extendido (AA + CarUi), un periodo entero de tolerancia dejaba salir dos frames seguidos a 0,2-0,8 ms
+        // cada vez que CarUi dibujaba tras AA, saturando en ráfagas el decodificador USB del C10.
+        relay.setBurstTolerance(!extended && new Config(ctx).videoProfile().best());
         relay.setMovie(movieFps);
         relay.setSplashOnly(!extended);
         // La capa se diseña a la resolución de la pantalla del coche; el relay la escala al vídeo.

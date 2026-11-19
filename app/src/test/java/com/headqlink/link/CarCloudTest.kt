@@ -307,4 +307,15 @@ class CarCloudTest {
         // Sin datos: no.
         assertFalse(CarCloud.socStale(CarCloud.Snapshot.of(CarCloud.State.NO_ACCOUNT), now))
     }
+
+    @Test
+    fun chargeCheckSkipsAcquireWhenRecentFetchExists() {
+        val now = 1_800_000_000_000L
+        assertFalse(ChargeCheckJob.recentlyFetched(0L, now))
+        assertTrue(ChargeCheckJob.recentlyFetched(now - 60_000L, now))
+        assertTrue(ChargeCheckJob.recentlyFetched(now - ChargeCheckJob.FRESH_READ_MS + 1L, now))
+        assertFalse(ChargeCheckJob.recentlyFetched(now - ChargeCheckJob.FRESH_READ_MS, now))
+        // Reloj atrasado (fetched > now): no se fía del caché.
+        assertFalse(ChargeCheckJob.recentlyFetched(now + 1_000L, now))
+    }
 }

@@ -34,7 +34,7 @@ class BestProfileTest {
         assertEquals(8_000_000, high.maxBitrateFor(30))
         assertEquals(high.maxBitrate, high.maxBitrateFor(60))
         assertTrue(p.adaptiveBitrate())
-        assertEquals("high", p.h264())
+        assertEquals("baseline", p.h264())
         // Siempre a resolución completa (la protección térmica no la baja a 720p).
         assertFalse(ThermalResolution.applies(p))
         assertEquals(1920, p.videoSize(1920, 882)[0])
