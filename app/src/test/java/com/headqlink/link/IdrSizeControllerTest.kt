@@ -153,4 +153,19 @@ class IdrSizeControllerTest {
         assertEquals("solo el primero pasa del tope", 1, dropped)
         assertTrue("$last", last <= IdrSizeController.TARGET_BYTES)
     }
+
+    @Test
+    fun customQpFloorPreventsRelaxingBelowProfileFloor() {
+        val c = IdrSizeController(true, cap, IdrSizeController.TARGET_BYTES, 24)
+        assertEquals(24, c.qpMin())
+        assertTrue(c.describe(), c.describe().contains("24-40"))
+        // Aunque salgan muchos IDR pequeños, nunca baja de 24 (evita engordar IDR en Baseline o Wi-Fi).
+        repeat(20) { c.onIdr(80 * kb, -1, 0.0) }
+        assertEquals(24, c.qpMin())
+        // Si uno grande sube el mínimo, al relajarse vuelve a detenerse en 24.
+        c.onIdr(600 * kb, -1, 0.0)
+        assertEquals(30, c.qpMin())
+        repeat(50) { c.onIdr(80 * kb, -1, 0.0) }
+        assertEquals(24, c.qpMin())
+    }
 }

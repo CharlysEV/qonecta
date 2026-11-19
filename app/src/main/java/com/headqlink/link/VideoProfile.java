@@ -48,9 +48,9 @@ final class VideoProfile {
     static final int BEST_WIFI_BPS = 5_000_000;
     static final int BEST_MIN_BPS = 4_000_000;
     static final int BEST_MAX_BPS = 8_000_000;
-    /** Máximo por Wi-Fi: el margen adaptable (más estrecho: la radio con el coche no da para 16 Mbit/s sin saltos). */
-    static final int BEST_WIFI_MIN_BPS = 4_000_000;
-    static final int BEST_WIFI_MAX_BPS = 8_000_000;
+    /** Máximo por Wi-Fi: margen adaptable acotado (la radio 5 GHz del C10 se satura a 6-8 Mbit/s; 19-11). */
+    static final int BEST_WIFI_MIN_BPS = 2_500_000;
+    static final int BEST_WIFI_MAX_BPS = 5_500_000;
     /** Coche: fps y bitrate si el coche no manda VIDEO_ARGS (como el C10). */
     static final int CAR_DEFAULT_FPS = 30;
     static final int CAR_DEFAULT_BPS = 5_000_000;
@@ -85,9 +85,18 @@ final class VideoProfile {
         return BEST.equals(id);
     }
 
-    /** Perfil H.264 que pide el modo (null: el de Avanzado, Baseline de serie). En el C10 por cable, Baseline evita retrasos/pixelación de CABAC (High sigue elegible en Avanzado). */
+    /** Perfil H.264 que pide el modo (null: el de Avanzado, Baseline de serie). En cable, Baseline evita retrasos de CABAC. */
     String h264() {
         return best() ? "baseline" : null;
+    }
+
+    /**
+     * Perfil H.264 según el transporte: en Máximo por Wi-Fi (carFps < 50), High (CABAC: ~40-50 % menos bitrate sobre la
+     * radio 5 GHz del C10, evitando la saturación y caídas del 19-11); por cable (≥50 fps), Baseline.
+     */
+    String h264For(int carFps) {
+        if (!best()) return null;
+        return byWifi(carFps) ? "high" : "baseline";
     }
 
     /**

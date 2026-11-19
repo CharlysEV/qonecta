@@ -333,7 +333,7 @@ final class VideoPipeline {
         vp.height = plan.videoH;
         vp.fps = plan.fps;
         vp.bitrate = cfg.bitrate(carBitrate);
-        vp.profile = cfg.profile();
+        vp.profile = cfg.profile(carFps);
         lowDelaySps = cfg.spsLowDelay() && !cfg.prependSpsPps();
         boostOnTouch = cfg.videoProfile().best();
         vp.prependSpsPps = cfg.prependSpsPps();
@@ -369,7 +369,7 @@ final class VideoPipeline {
             if (cfg.getInt(Config.KBPS) <= 0) {
                 // El del perfil; en Coche, el que pide el coche (VIDEO_ARGS BitRate; con Fluidez 60, 8-12 Mbit/s).
                 vp.bitrate = prof.startBitrate(carBitrate, carFps, plan.videoW);
-                if (prof.adaptiveBitrate()) {
+                if (useAbr(prof.adaptiveBitrate(), carFps)) {
                     abrBps = vp.bitrate;
                     abrInitial = vp.bitrate;
                     abrMin = prof.minBitrateFor(carFps);
@@ -442,7 +442,8 @@ final class VideoPipeline {
         } catch (IOException | RuntimeException e) {
             throw new EncoderStartFailed(e, wanted, encoderParams());
         }
-        IdrSizeController ctl = new IdrSizeController(encoder.qpControl(), PAYLOAD_CAP);
+        int idrFloor = Math.max(IdrSizeController.QP_FLOOR, vp.qpIMin);
+        IdrSizeController ctl = new IdrSizeController(encoder.qpControl(), PAYLOAD_CAP, IdrSizeController.TARGET_BYTES, idrFloor);
         idrCtl = ctl;
         L.i("VIDEO " + ctl.describe());
         PFrameSizeController pc = new PFrameSizeController(encoder.qpPControl(), SystemClock::elapsedRealtime);
@@ -740,6 +741,16 @@ final class VideoPipeline {
     static int intraRefreshFor(int fps, int carFps, boolean noIr) {
         if (noIr || carFps >= 50) return 0;
         return fps;
+    }
+
+    /**
+     * Puro: ¿usar el ABR clásico (adaptBitrate) en vez de LinkRateController?
+     * Solo por cable (o sin VIDEO_ARGS): por Wi-Fi (carFps < 50), LinkRateController vigila outq, rtt y cortes de radio,
+     * mantiene el techo en lo que pide el coche (5,08 Mbps en C10, nunca 8 Mbps), baja hasta la mitad/emergencia y avisa
+     * de congestión a PFrameSizeController.
+     */
+    static boolean useAbr(boolean adaptiveProfile, int carFps) {
+        return adaptiveProfile && !VideoProfile.byWifi(carFps);
     }
 
     /**

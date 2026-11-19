@@ -60,4 +60,15 @@ class VideoPipelineHealthTest {
         assertEquals(0, VideoPipeline.intraRefreshFor(30, 30, true))
         assertEquals(10, VideoPipeline.gopSecFor(30, 3, true))
     }
+
+    @Test
+    fun wifiUsesLinkRateControllerInsteadOfClassicAbr() {
+        // Por Wi-Fi (<50 fps), incluso Máximo/Muy alto/Alto usan LinkRateController (baja hasta la mitad y vigila outq/rtt).
+        assertFalse(VideoPipeline.useAbr(true, 30))
+        assertFalse(VideoPipeline.useAbr(false, 30))
+        // Por cable (≥50 fps o sin VIDEO_ARGS), los perfiles adaptables mantienen ABR.
+        assertTrue(VideoPipeline.useAbr(true, 60))
+        assertTrue(VideoPipeline.useAbr(true, 0))
+        assertFalse(VideoPipeline.useAbr(false, 60))
+    }
 }

@@ -668,7 +668,7 @@ final class SspSession {
         vp.height = videoH;
         vp.fps = source instanceof AaPassthroughSource ? cfg.aaFps(carFps) : cfg.fps(carFps);
         vp.bitrate = cfg.bitrate(carBitrate);
-        vp.profile = cfg.profile();
+        vp.profile = cfg.profile(carFps);
         vp.prependSpsPps = cfg.prependSpsPps();
         vp.lowLatency = LowLatency.enabled;
         vp.noRepeat = cfg.getBool("enc_no_repeat");

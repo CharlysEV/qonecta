@@ -1409,12 +1409,20 @@ final class Config {
     }
 
     /**
-     * Perfil H.264 del encoder: el de Avanzado (Baseline de serie) o, con el perfil de imagen Máximo, el suyo (High) salvo
-     * que en Avanzado se elija otro estando en Máximo (H264_BEST).
+     * Perfil H.264 del encoder: el de Avanzado (Baseline de serie) o, con el perfil de imagen Máximo, el suyo salvo que en
+     * Avanzado se elija otro estando en Máximo (H264_BEST).
      */
     String profile() {
         VideoProfile p = videoProfile();
         if (p.h264() != null) return sp.getString(H264_BEST, p.h264());
+        return sp.getString(PROFILE, "baseline");
+    }
+
+    /** Como {@link #profile()}, teniendo en cuenta si la sesión va por Wi-Fi (carFps < 50) o cable. */
+    String profile(int carFps) {
+        VideoProfile p = videoProfile();
+        String def = p.h264For(carFps);
+        if (def != null) return sp.getString(H264_BEST, def);
         return sp.getString(PROFILE, "baseline");
     }
 

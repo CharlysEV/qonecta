@@ -39,8 +39,9 @@ final class IdrSizeController {
     private final boolean qpKeys;
     private final int capBytes;
     private final int targetBytes;
+    private final int qpFloor;
 
-    private int qpMin = QP_START;
+    private int qpMin;
     private boolean qpIgnored;
     private int over;
     private int under;
@@ -62,13 +63,20 @@ final class IdrSizeController {
      * pasar el núcleo (tope del mensaje menos sus 48 B de cabeceras).
      */
     IdrSizeController(boolean qpKeys, int capBytes) {
-        this(qpKeys, capBytes, TARGET_BYTES);
+        this(qpKeys, capBytes, TARGET_BYTES, QP_FLOOR);
     }
 
     IdrSizeController(boolean qpKeys, int capBytes, int targetBytes) {
+        this(qpKeys, capBytes, targetBytes, QP_FLOOR);
+    }
+
+    /** Con suelo propio de QP-I (p. ej. 24 para que no relaje por debajo del suelo del perfil en Baseline/Wi-Fi). */
+    IdrSizeController(boolean qpKeys, int capBytes, int targetBytes, int qpFloor) {
         this.qpKeys = qpKeys;
         this.capBytes = capBytes;
         this.targetBytes = Math.min(targetBytes, capBytes);
+        this.qpFloor = Math.max(QP_FLOOR, Math.min(QP_CEIL, qpFloor));
+        this.qpMin = Math.max(this.qpFloor, QP_START);
     }
 
     /** Lo que pasó con un IDR (para el log y para aplicar el QP nuevo). */
@@ -182,7 +190,7 @@ final class IdrSizeController {
             if (bytes < targetBytes * WELL_BELOW) {
                 if (++under >= RELAX_AFTER) {
                     under = 0;
-                    if (qpKeys && qpMin > QP_FLOOR) {
+                    if (qpKeys && qpMin > qpFloor) {
                         qpMin--;
                         relaxes++;
                     }
@@ -224,7 +232,7 @@ final class IdrSizeController {
     /** Cómo se controla el tamaño (para el log al arrancar). */
     synchronized String describe() {
         return "tamaño de los IDR: objetivo " + kb(targetBytes) + " KB, tope del núcleo " + kb(capBytes) + " KB · "
-                + (qpKeys ? "QP-I mínimo adaptable " + QP_FLOOR + "-" + QP_CEIL + " (empieza en " + qpMin + ")"
+                + (qpKeys ? "QP-I mínimo adaptable " + qpFloor + "-" + QP_CEIL + " (empieza en " + qpMin + ")"
                 : "sin claves de QP (Android < 12): cada IDR pedido baja el bitrate al " + pct(dip) + " %");
     }
 

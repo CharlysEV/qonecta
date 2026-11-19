@@ -24,17 +24,21 @@ class BestProfileTest {
         // por Wi-Fi Direct y el mapa iba a saltos).
         assertEquals(5_080_320, p.startBitrate(5_080_320, 30, 1920))
         assertEquals(VideoProfile.BEST_WIFI_BPS, p.startBitrate(0, 30, 1920))
-        assertEquals(4_000_000, p.minBitrateFor(30))
-        assertEquals(8_000_000, p.maxBitrateFor(30))
+        assertEquals(VideoProfile.BEST_WIFI_MIN_BPS, p.minBitrateFor(30))
+        assertEquals(VideoProfile.BEST_WIFI_MAX_BPS, p.maxBitrateFor(30))
         assertEquals(VideoProfile.BEST_MIN_BPS, p.minBitrateFor(60))
         assertEquals(VideoProfile.BEST_MAX_BPS, p.maxBitrateFor(60))
         assertEquals(VideoProfile.BEST_MAX_BPS, p.maxBitrateFor(0))
         // Muy alto y Alto por Wi-Fi, frenados como Máximo (antes 60 fps y hasta 14-16 Mbit/s); por cable, los suyos.
         val high = VideoProfile.of(VideoProfile.HIGH)
-        assertEquals(8_000_000, high.maxBitrateFor(30))
+        assertEquals(VideoProfile.BEST_WIFI_MAX_BPS, high.maxBitrateFor(30))
         assertEquals(high.maxBitrate, high.maxBitrateFor(60))
         assertTrue(p.adaptiveBitrate())
         assertEquals("baseline", p.h264())
+        // Por cable, Baseline; por Wi-Fi (carFps < 50), High (CABAC: menos bitrate sobre la radio 5 GHz).
+        assertEquals("baseline", p.h264For(60))
+        assertEquals("baseline", p.h264For(0))
+        assertEquals("high", p.h264For(30))
         // Siempre a resolución completa (la protección térmica no la baja a 720p).
         assertFalse(ThermalResolution.applies(p))
         assertEquals(1920, p.videoSize(1920, 882)[0])
